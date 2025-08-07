@@ -5,7 +5,7 @@ export default function VehicleNewPage(){
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
       {/* Imagen con eslogan (solo en mobile) */}
-      <div className="mb-6 flex justify-center md:hidden">
+      <div className="flex justify-start md:hidden w-full pl-4">
         <img
           src="/isologo-dark.webp"
           alt="Logo claro"
@@ -18,10 +18,10 @@ export default function VehicleNewPage(){
         />
       </div>
 
-        {/* Contenedor del formulario */}
-        <div className="w-full max-w-lg">
-            <VehicleForm />
-        </div>
+      {/* Contenedor del formulario */}
+      <div className="w-full max-w-lg">
+        <VehicleForm />
+      </div>
     </div>
   );
 }
