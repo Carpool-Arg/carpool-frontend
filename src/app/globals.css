@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
+/* ======= Variables base ======= */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Fuentes */
+  --font-outfit: 'Outfit', sans-serif;
+  --font-inter: 'Inter', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* ======= Variables si el sistema está en dark mode (auto) ======= */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #60a5fa;
+    --secondary: #34d399;
   }
 }
 
+/* ======= Soporte para modo oscuro por clase manual ======= */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --primary: #60a5fa;
+  --secondary: #34d399;
+}
+
+/* ======= Estilos globales ======= */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit);
+}
+
+/* ======= Clases utilitarias personalizadas ======= */
+.font-outfit {
+  font-family: var(--font-outfit);
+}
+
+.font-inter {
+  font-family: var(--font-inter);
+}
+
+@theme {
+  --color-primary: #2563EB;
+  --color-primary-light: #3B82F6;
+  --color-primary-dark: #1E40AF;
+
+  --color-secondary: #7B5FFF;
+  --color-secondary-light: #FFFFFF;
+
+  /* Dark tones */
+  --color-backgound: #0a0a0a;
+  --color-dark-1: #1E1E1E;
+  --color-dark-2: #131314;
+  --color-dark-3: #252526;
+  --color-dark-4: #2D2D30;
+
+  /* Gray tones */
+  --color-gray-1: #F3F4F6;
+  --color-gray-2: #363635;
+  --color-gray-3: #BFC5CE;
+  --color-gray-4: #B8BFCC;
+  --color-gray-5: #6B7280;
+
+  /* Accents and messages */
+  --color-warning: #D2AB20;   /* amarillo/dorado, útil para advertencias */
+  --color-error: #F84800;     /* rojo intenso, típico para errores */
+  --color-success: #2AC144;   /* verde, para éxito o validaciones positivas */
+  --color-info: #DDFBE2;      /* verde muy claro, para fondos informativos suaves */
+  --color-accent-soft: #EEB9A4; /* un acento suave, quizás para fondos o toques suaves */
+}
+
+.grecaptcha-badge {
+  visibility: hidden;
 }
