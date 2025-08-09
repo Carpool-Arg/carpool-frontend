@@ -43,3 +43,44 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const token = req.cookies.get('token')?.value;
+    const body = await req.json();
+
+    const response = await fetch(`${apiUrl}/vehicles`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json" ,
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.state !== 'OK') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: data.messages?.[0] || 'Error en cargar vehículos',
+        },
+        { status: response.status }
+      );
+    }
+
+    return new NextResponse(JSON.stringify(data), {
+      status: response.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error: any) {
+    return new NextResponse(
+      JSON.stringify({ message: "Error en la API de cargar vehículos", detail: error.message }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+}
