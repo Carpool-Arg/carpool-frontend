@@ -45,13 +45,6 @@ export const registerVehicleStep3Schema = z.object({
       invalid_type_error: 'Debe ingresar un número válido.'
     })
     .min(1, 'La cantidad de asientos disponibles debe ser al menos 1.'),
-
-  luggageCapacity: z
-    .number({
-      required_error: 'La cantidad de equipaje disponible no puede estar en blanco.',
-      invalid_type_error: 'Debe ingresar un número válido.'
-    })
-    .min(0, 'La cantidad de equipaje disponible debe ser un número positivo o cero')
 })
 
 // Esquema completo (por si quieres validar todo en un solo paso)

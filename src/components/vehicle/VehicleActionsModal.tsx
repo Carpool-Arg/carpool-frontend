@@ -4,23 +4,48 @@ import { X, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Separator from "../ui/Separator";
+import { useRouter } from "next/navigation";
+import { deleteVehicle } from "@/services/vehicleService";
 
 interface Props {
   vehicle: Vehicle;
   isOpen: boolean;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onDeleteSuccess: (id: number) => void;  // Nuevo prop para avisar el borrado exitoso
 }
 
-export function VehicleActionsModal({ vehicle, isOpen, onClose, onEdit, onDelete }: Props) {
+export function VehicleActionsModal({ vehicle, isOpen, onClose, onDeleteSuccess }: Props) {
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleEdit = () => {
+    router.push(`/vehicle/edit/${vehicle.id}`)
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await deleteVehicle(vehicle.id);
+      if (!response.success) {
+        setError(response.message || "Error al eliminar el vehículo");
+        return;
+      }
+      onDeleteSuccess(vehicle.id);  // Avisar al padre que borró bien
+      onClose(); // cerrar modal
+    } catch {
+      setError("Error al eliminar el vehículo");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
       setVisible(true);
     } else {
-      // esperar animación antes de desmontar
       const timer = setTimeout(() => setVisible(false), 200);
       return () => clearTimeout(timer);
     }
@@ -30,7 +55,6 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onEdit, onDelete
 
   return (
     <div className="fixed inset-0 z-90 flex items-end justify-center">
-      {/* Fondo gris semi-transparente */}
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-200 ${
           isOpen ? "opacity-30" : "opacity-0"
@@ -38,13 +62,11 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onEdit, onDelete
         onClick={onClose}
       />
 
-      {/* Contenedor del modal */}
       <div
         className={`relative w-full max-w-md bg-white rounded-t-2xl p-6 z-50 shadow-xl transition-transform duration-300 ${
           isOpen ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {/* Arrastre visual */}
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
 
         <div className="flex items-center gap-4 mb-4">
@@ -56,23 +78,25 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onEdit, onDelete
           </h2>
         </div>
         
-        {/* Separator entre los datos del vehículo y los botones */}
         <Separator/>
 
+        {error && <p className="text-red-600 mb-2">{error}</p>}
+
         <button
-          onClick={onEdit}
-          className="flex items-center gap-2 mb-4 text-gray-800 hover:text-blue-600"
+          onClick={handleEdit}
+          className="flex items-center gap-2 mb-4 text-gray-800 hover:text-blue-600 cursor-pointer"
+          disabled={loading}
         >
           <Pencil size={18} />
           Editar vehículo
         </button>
 
         <button
-          onClick={onDelete}
-          className="flex items-center gap-2 text-red-600 hover:text-red-800"
+          onClick={handleDelete}
+          className="flex items-center gap-2 text-red-600 hover:text-red-800 cursor-pointer"
+          disabled={loading}
         >
-          <X size={18} />
-          Dar de baja el automóvil
+          {loading ? "Eliminando..." : <><X size={18} />Dar de baja el automóvil</>}
         </button>
       </div>
     </div>

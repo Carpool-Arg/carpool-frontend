@@ -6,7 +6,6 @@ type Vehicle = {
   year: number;
   color: string;
   availableSeats: number;
-  luggageCapacity: number;
   vehicleTypeId: number;
   vehicleTypeName: string;
   driverId: number;

@@ -1,16 +1,17 @@
 'use client'
 import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema, RegisterVehicleStep3Data, registerVehicleStep3Schema } from "@/schemas/auth/vehicleSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { VehicleTypeList } from "./type/VehicleTypeList"
-import { registerVehicle } from "@/services/vehicleService"
+import { registerVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 import { Alert } from "../ui/Alert"
+import { vehicleFormData } from "@/types/forms"
 
-export function VehicleForm() {
+export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,15 +43,35 @@ export function VehicleForm() {
     mode: 'onChange',
     defaultValues: {
       availableSeats: 1,
-      luggageCapacity: 0
     }
   })
 
-  const handleNextFromStep1 = (data: RegisterVehicleStep1Data) => {
+  //Precargar datos si estamos en edición
+  useEffect(() => {
+    if (initialData) {
+      console.log(initialData)
+      step1Form.reset({
+        vehicleTypeId: initialData.vehicleTypeId
+      })
+      step2Form.reset({
+        domain: initialData.domain,
+        brand: initialData.brand,
+        model: initialData.model,
+        year: initialData.year,
+        color: initialData.color
+      })
+      step3Form.reset({
+        availableSeats: initialData.availableSeats,
+      })
+    }
+
+  }, [initialData])
+
+  const handleNextFromStep1 = () => {
     setStep(2)
   }
 
-  const handleNextFromStep2 = (data: RegisterVehicleStep2Data) => {
+  const handleNextFromStep2 = () => {
     setStep(3)
   }
 
@@ -61,24 +82,38 @@ export function VehicleForm() {
   const handleSubmitFinal = async (data: RegisterVehicleStep3Data) => {
     setLoading(true)
     try {
-      const vehicleData = { 
-        ...step2Form.getValues(),        // datos básicos
-        ...data,                        // capacidad
-        vehicleType_Id: step1Form.getValues().vehicleTypeId  // renombrar aquí
+      // Datos comunes
+      const baseData: vehicleFormData = {
+        ...step2Form.getValues(),
+        ...data,
+        vehicleType_Id: step1Form.getValues().vehicleTypeId, // Nota el guion bajo
+      };
+
+      let response;
+
+      //Verificar si viene initialData, si es así significa que estamos editando
+      if (initialData) {
+        // Si es update, quitamos el domain
+        const { domain, ...updateData } = baseData;
+
+        response = await updateVehicle(initialData.id, updateData);
+      } else {
+        // Si es registro
+        response = await registerVehicle(baseData);
       }
-      console.log(vehicleData)
-      const response = await registerVehicle(vehicleData)
+
       if (!response.success) {
-        setError(response.message || "Error al registrar el vehículo")
-        return
+        setError(response.message || "Error al guardar el vehículo");
+        return;
       }
-      router.push('/vehicle')
+
+      router.push("/vehicle");
     } catch (err) {
-      setError('Error al registrar el vehículo')
+      setError("Error al guardar el vehículo");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4 p-6 w-full">
@@ -111,7 +146,7 @@ export function VehicleForm() {
           <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
           <form onSubmit={step2Form.handleSubmit(handleNextFromStep2)} className="flex flex-col gap-4">
             <Input label="Patente o dominio" {...step2Form.register('domain')} error={step2Form.formState.errors.domain?.message} />
-            <Input label="Marca" {...step2Form.register('brand')} error={step2Form.formState.errors.brand?.message} />
+            <Input label="Marca" {...step2Form.register('brand')} disabled={!!initialData} error={step2Form.formState.errors.brand?.message}  />
             <Input label="Modelo" {...step2Form.register('model')} error={step2Form.formState.errors.model?.message} />
             <Input label="Año" type="number" {...step2Form.register('year', { valueAsNumber: true })} error={step2Form.formState.errors.year?.message} />
             <Input label="Color" {...step2Form.register('color')} error={step2Form.formState.errors.color?.message} />
@@ -132,13 +167,10 @@ export function VehicleForm() {
           <h1 className="text-xl font-semibold">Espacio</h1>
           <form onSubmit={step3Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
             <Input label="Asientos disponibles" type="number" {...step3Form.register('availableSeats', { valueAsNumber: true })} error={step3Form.formState.errors.availableSeats?.message} />
-            <Input label="Equipaje" type="number" {...step3Form.register('luggageCapacity', { valueAsNumber: true })} error={step3Form.formState.errors.luggageCapacity?.message} />
-            <p className="text-xs text-gray-500">Cantidad aproximada de mochilas, bolsos y/o valijas que entran</p>
-
             <div className="flex gap-4">
               <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>Volver</Button>
               <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-                {loading ? 'Guardando...' : 'Guardar'}
+                {loading ? (initialData ? 'Actualizando...' : 'Guardando...') : (initialData ? 'Actualizar' : 'Guardar')}
               </Button>
             </div>
           </form>
