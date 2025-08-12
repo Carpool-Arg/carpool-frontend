@@ -12,6 +12,7 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { Alert } from "../ui/Alert"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 
 export function LoginForm() {
@@ -104,6 +105,10 @@ export function LoginForm() {
         />
       </div>
 
+      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer">
+        ¿Olvidaste tu contraseña?
+      </Link>
+
       <Button
         variant="primary"
         type="submit"
@@ -144,6 +149,8 @@ export function LoginForm() {
         y
         <a href="/privacy" className="text-dark-2 dark:text-gray-1 font-medium ml-1">Política de Privacidad</a>.
       </p>
+      
+
 
       
     </form>

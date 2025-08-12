@@ -10,6 +10,8 @@ export async function middleware(req: NextRequest) {
     '/register', 
     '/email-verify',
     '/email-verified',
+    '/send-change-password-email',
+    '/password-change',
     '/api/login', 
     '/api/register', 
     '/api/google', 
@@ -17,6 +19,8 @@ export async function middleware(req: NextRequest) {
     '/api/email-verify',
     '/api/complete-registration',
     '/api/resend-activation',
+    '/api/send-change-password-email',
+    '/api/password-change',
     '/complete-profile'
   ];
   
