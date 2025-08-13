@@ -42,7 +42,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (json.user) {
           setUser({ 
             username: json.user.username,
+            profileImage: json.user.profileImage,
             roles: json.user.roles,
+            id: json.user.id,
+            name: json.user.name,
+            lastname: json.user.lastname,
+            email: json.user.email,
+            dni: json.user.dni,
+            phone: json.user.phone,
+            gender: json.user.gender,
+            status: json.user.status,
            });
           return true;
         }

@@ -4,14 +4,14 @@ import Image from 'next/image';
 
 
 export function ProfileHeader({ user }: { user: User }) {
-  const hasImage = !!user.imageUrl;
+  const hasImage = !!user.profileImage;
 
   return (
     <div className="flex flex-col items-center gap-2">
       
-      {hasImage ? (
+      {!hasImage ? (
         <Image
-          src={user.imageUrl||''}
+          src={user.profileImage||''}
           alt="Foto de perfil"
           width={96}    // 24 * 4 (px) si usás Tailwind w-24 (6rem = 96px)
           height={96}
@@ -23,7 +23,7 @@ export function ProfileHeader({ user }: { user: User }) {
           <UserIcon className="w-12 h-12 text-gray-2/50" />
         </div>
       )}
-      <h2 className="text-xl font-semibold text-gray-2">{user.username}</h2>
+      <h2 className="text-xl font-semibold text-gray-2 dark:text-gray-1">{user.username}</h2>
     </div>
   );
 }
