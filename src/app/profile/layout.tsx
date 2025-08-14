@@ -10,7 +10,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="max-w-md mx-auto">
-      <div className='py-8'>
+      <div className='md:py-8'>
         <ProfileHeader user={user} />
         <div className="mt-6">{children}</div>
       </div>

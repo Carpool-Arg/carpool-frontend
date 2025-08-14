@@ -14,7 +14,6 @@ export interface RegisterFormData {
   phone: string;
 }
 
-
 export interface CompleteRegistrationFormData {
   username: string;
   password: string;

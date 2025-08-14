@@ -1,11 +1,16 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input'; // <-- tu input reutilizable
+import { Input } from '@/components/ui/Input'; 
 import { useAuth } from '@/contexts/authContext';
+import { updateUser } from '@/services/userService';
 import { SquarePen, Trash } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
+/**
+ * Interfaz para representar los campos editables del usuario en el formulario.
+ */
 interface EditableUser {
   id: number
   name: string
@@ -14,12 +19,29 @@ interface EditableUser {
   email: string
   gender: string
   profileImage?: string
-  phone?: string
+  phone: string
 }
 
+
+/**
+ * Componente ProfileDetails
+ *
+ * Muestra y permite editar el perfil del usuario.
+ * - Campos editables: género, correo, teléfono.
+ * - Campos de solo lectura: nombre, apellido, DNI.
+ * - Permite editar o eliminar la foto de perfil.
+ *
+ * Funcionalidades:
+ * - Obtiene los datos del usuario desde el contexto Auth.
+ * - Carga los géneros disponibles desde el backend.
+ * - Detecta cambios para habilitar/deshabilitar el botón "Guardar cambios".
+ * - Actualiza el perfil usando el servicio `updateUser`.
+ * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
+ */
 export default function ProfileDetails() {
-  const { user } = useAuth();
+  const { user, fetchUser } = useAuth();
   const [genders, setGenders] = useState<string[]>();
+  const router = useRouter();
 
   const [editableUser, setEditableUser] = useState<EditableUser>({
     id: 0,
@@ -84,9 +106,28 @@ export default function ProfileDetails() {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    console.log('Guardar datos en backend:', editableUser);
+  const handleSave = async () => {
+    try {
+      const response = await updateUser({
+        phone: editableUser.phone ?? '', // siempre enviar string
+        gender: editableUser.gender as "Masculino" | "Femenino" | "Otro" | undefined,
+        removeProfileImage: false,
+      });
+
+      if (response.state === 'ERROR') {
+        console.error('Error al actualizar usuario:', response.messages.join(', '));
+        return;
+      }
+
+      console.log('Usuario actualizado correctamente:', response.data);
+      // Aquí podrías actualizar el contexto de usuario si querés reflejar los cambios en la UI
+      await fetchUser();
+      router.push('/profile');
+    } catch (error) {
+      console.error('Error inesperado al actualizar usuario:', error);
+    }
   };
+
 
   const handleEditPhoto = () => console.log('Abrir diálogo para editar foto');
   const handleDeletePhoto = () => console.log('Borrar foto de perfil');
@@ -124,7 +165,7 @@ export default function ProfileDetails() {
         className="space-y-4"
       >
         {/* Nombre y Apellido (disabled) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nombre"
             value={editableUser.name}
@@ -139,8 +180,7 @@ export default function ProfileDetails() {
           />
         </div>
 
-        {/* DNI y Género (DNI disabled) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Input
             label="DNI"
             value={editableUser.dni}
@@ -149,23 +189,23 @@ export default function ProfileDetails() {
           />
           <div className="flex flex-col">
             <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
-                Género
+              Género
             </label>
             <select
-                value={editableUser.gender}
-                onChange={(e) => handleChange('gender', e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-background dark:border-gray-2 dark:text-white"
+              value={editableUser.gender}
+              onChange={(e) => handleChange('gender', e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
             >
-                <option value="">Seleccionar</option>
-                {genders?.map((g: string) => (
+              <option value="">Seleccionar</option>
+              {genders?.map((g: string) => (
                 <option key={g} value={g}>
-                    {g}
+                  {g}
                 </option>
-                ))}
+              ))}
             </select>
-            </div>
-
+          </div>
         </div>
+
 
         <Input
           label="Correo"

@@ -28,7 +28,7 @@ export const AppHeader = ({ showBack, rightAction }: AppHeaderProps) => {
     'App';
 
   return (
-    <div className="flex items-center justify-between h-12 px-4 bg-background border-b border-gray-2 dark:border-gray-2">
+    <div className="flex items-center justify-between h-12 px-4 bg-dark-5 border-b border-gray-2 dark:border-gray-2">
       {showBack ? (
         <button onClick={() => history.back()} className="text-gray-700 dark:text-gray-200 cursor-pointer">
           <ChevronLeft size={18}/>
