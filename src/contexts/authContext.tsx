@@ -14,6 +14,8 @@ interface AuthContextType {
   authGoogle: (idToken: string) => Promise<void>;
   initialized: boolean;
   fetchUser: () => Promise<boolean>;
+  prevImage: string | null;
+  setPrevImage: (value: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -177,6 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     authGoogle,
     initialized,
     fetchUser,
+    prevImage,
+    setPrevImage
   };
 
   return (

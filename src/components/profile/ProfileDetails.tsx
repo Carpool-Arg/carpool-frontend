@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input'; 
 import { useAuth } from '@/contexts/authContext';
+import { ProfileData } from '@/schemas/profile/profileSchema';
 import { updateUser } from '@/services/userService';
 import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -22,7 +23,6 @@ interface EditableUser {
   phone: string
 }
 
-
 /**
  * Componente ProfileDetails
  *
@@ -39,9 +39,18 @@ interface EditableUser {
  * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
  */
 export default function ProfileDetails() {
-  const { user, fetchUser } = useAuth();
-  const [genders, setGenders] = useState<string[]>();
+  const { user, fetchUser, setPrevImage } = useAuth();
   const router = useRouter();
+
+  const [genderLabel, setGenderLabel] = useState<string>("");
+  const genders = [
+    { label: "Masculino", value: "MALE" },
+    { label: "Femenino", value: "FEMALE" },
+    { label: "Otro", value: "UNSPECIFIED" },
+  ];
+
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [editableUser, setEditableUser] = useState<EditableUser>({
     id: 0,
@@ -56,36 +65,28 @@ export default function ProfileDetails() {
   const [isChanged, setIsChanged] = useState(false);
 
   useEffect(() => {
+    return () => {
+      if (selectedFile) URL.revokeObjectURL(selectedFile.name);
+    };
+  }, [selectedFile]);
+
+
+  useEffect(() => {
     if (user) {
+      const label = genders.find(g => g.value === user.gender)?.label ?? "Otro";
+      setGenderLabel(label);
       setEditableUser({
         id: user.id ?? 0,
         name: user.name ?? '',
         lastname: user.lastname ?? '',
         dni: user.dni ?? '',
         email: user.email ?? '',
-        gender: user.gender ?? '',
+        gender: user.gender ?? 'UNSPECIFIED',
         profileImage: user.profileImage ?? '',
         phone: user.phone ?? ''
       });
     }
   }, [user]);
-
-  useEffect(() => {
-    async function fetchGenders() {
-      try {
-        const res = await fetch('/api/genders',{
-          method:'GET'
-        }) // ruta donde esté tu backend
-        const data = await res.json()
-        console.log('data',data)
-        setGenders(data.data) // asumiendo que vienen en data.data
-      } catch (error) {
-        console.error('Error cargando géneros', error)
-      }
-    }
-
-    fetchGenders()
-  }, [])
 
 
   useEffect(() => {
@@ -108,29 +109,69 @@ export default function ProfileDetails() {
 
   const handleSave = async () => {
     try {
+      const genderValue: ProfileData['gender'] = 
+        genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
+
       const response = await updateUser({
-        phone: editableUser.phone ?? '', // siempre enviar string
-        gender: editableUser.gender as "Masculino" | "Femenino" | "Otro" | undefined,
+        phone: editableUser.phone,
+        gender: genderValue,
         removeProfileImage: false,
+        file: selectedFile ?? undefined,
       });
 
       if (response.state === 'ERROR') {
-        console.error('Error al actualizar usuario:', response.messages.join(', '));
+        console.error(response.messages[0]);
         return;
       }
 
-      console.log('Usuario actualizado correctamente:', response.data);
-      // Aquí podrías actualizar el contexto de usuario si querés reflejar los cambios en la UI
       await fetchUser();
       router.push('/profile');
     } catch (error) {
-      console.error('Error inesperado al actualizar usuario:', error);
+      console.error(error);
     }
   };
 
+  const handleEditPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setSelectedFile(file);
 
-  const handleEditPhoto = () => console.log('Abrir diálogo para editar foto');
-  const handleDeletePhoto = () => console.log('Borrar foto de perfil');
+    // Crear URL temporal para preview
+    const previewUrl = URL.createObjectURL(file);
+    setPrevImage(previewUrl); // esto actualizará el header en vivo
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!user) return;
+
+    try {
+      const genderValue: ProfileData['gender'] = 
+      genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
+      const response = await updateUser({
+        phone: editableUser.phone,
+        gender: genderValue,
+        removeProfileImage: true, // <- borra la imagen en el backend
+      });
+
+      if (response.state === 'ERROR') {
+        console.error(response.messages[0]);
+        return;
+      }
+
+      // Actualizar el usuario en el contexto
+      await fetchUser();
+
+      // Limpiar la preview en el header
+      setPrevImage(null);
+
+      // Opcional: resetear selectedFile
+      setSelectedFile(null);
+
+      console.log('Imagen de perfil eliminada correctamente');
+    } catch (error) {
+      console.error('Error al eliminar la foto de perfil:', error);
+    }
+  };
 
   if (!user ) return <p>Cargando usuario...</p>;
 
@@ -138,14 +179,16 @@ export default function ProfileDetails() {
     <div className="space-y-4 max-w-md">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
-        <Button
-          onClick={handleEditPhoto}
-          className="px-1 text-sm flex items-center gap-1"
-          variant="outline"
-        >
+        <label className="px-1 text-sm flex items-center gap-1 border rounded cursor-pointer">
           <SquarePen size={14} />
           Editar foto
-        </Button>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleEditPhoto}
+          />
+        </label>
         <Button
           onClick={handleDeletePhoto}
           className="px-1 text-sm flex items-center gap-1"
@@ -192,20 +235,18 @@ export default function ProfileDetails() {
               Género
             </label>
             <select
-              value={editableUser.gender}
-              onChange={(e) => handleChange('gender', e.target.value)}
+              value={genderLabel}
+              onChange={(e) => setGenderLabel(e.target.value)}
               className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
             >
               <option value="">Seleccionar</option>
-              {genders?.map((g: string) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
+              {genders.map(g => (
+                <option key={g.value} value={g.label}>{g.label}</option>
               ))}
             </select>
+
           </div>
         </div>
-
 
         <Input
           label="Correo"

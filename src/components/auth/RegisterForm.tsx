@@ -26,7 +26,7 @@ export function RegisterForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [genders, setGenders] = useState<string[]>([])
+  const genders = ["Masculino", "Femenino", "Otro"];
   const router = useRouter()
   const { authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
@@ -84,22 +84,6 @@ export function RegisterForm() {
     return () => subscription.unsubscribe();
   }, [step2Form, dniValidation]);
 
-   useEffect(() => {
-    async function fetchGenders() {
-      try {
-        const res = await fetch('/api/genders',{
-          method:'GET'
-        }) // ruta donde esté tu backend
-        const data = await res.json()
-        console.log('data',data)
-        setGenders(data.data) // asumiendo que vienen en data.data
-      } catch (error) {
-        console.error('Error cargando géneros', error)
-      }
-    }
-
-    fetchGenders()
-  }, [])
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;

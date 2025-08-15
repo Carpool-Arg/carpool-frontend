@@ -1,8 +1,6 @@
 import { ProfileData } from "@/schemas/profile/profileSchema";
 import { UserResponse } from "@/types/response/user";
 
-
-
 /**
  * Actualiza el perfil de un usuario en el backend.
  *
