@@ -21,7 +21,9 @@ export async function middleware(req: NextRequest) {
     '/api/resend-activation',
     '/api/send-change-password-email',
     '/api/password-change',
-    '/complete-profile'
+    '/complete-profile',
+    '/api/unlock-account',
+    '/unlock-account'
   ];
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
