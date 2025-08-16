@@ -68,7 +68,7 @@ body {
 
   /* Accents and messages */
   --color-warning: #D2AB20;   /* amarillo/dorado, útil para advertencias */
-  --color-error: #F84800;     /* rojo intenso, típico para errores */
+  --color-error: #f52222;     /* rojo intenso, típico para errores */
   --color-success: #2AC144;   /* verde, para éxito o validaciones positivas */
   --color-info: #DDFBE2;      /* verde muy claro, para fondos informativos suaves */
   --color-accent-soft: #EEB9A4; /* un acento suave, quizás para fondos o toques suaves */
