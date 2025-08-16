@@ -54,7 +54,7 @@ export async function fetchWithRefresh(
 ): Promise<Response> {
   const tokenManager = TokenManager.getInstance();
 
-  let res = await fetch(input, {
+  const res = await fetch(input, {
     ...init,
     credentials: 'include',
   });

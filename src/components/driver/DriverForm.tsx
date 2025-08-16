@@ -44,8 +44,13 @@ export function DriverForm() {
       }
       await fetchUser();
       router.push('/profile');
-    } catch (err:any) {
-      setError(err.message || 'Error al crear el perfil de conductor');
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al crear el perfil de conductor');
     }
   }
 

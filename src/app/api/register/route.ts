@@ -40,9 +40,14 @@ export async function POST(req: NextRequest) {
       status: response.status,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
     return new NextResponse(
-      JSON.stringify({ message: "Error en la API de register", detail: error.message }),
+      JSON.stringify({ message: "Error en la API de register", detail: message }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },

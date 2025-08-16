@@ -31,15 +31,15 @@ export async function POST(req: NextRequest) {
     
     // Caso 2: Usuario activo, continuar con login
     const decoded = parseJwt(accessToken);
-    const iat = Number(decoded.iat);
-    const exp = Number(decoded.exp);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
     const maxAge = exp > iat ? exp - iat : 60 * 60 * 2;
 
     const response = NextResponse.json({
       data: data.data,
       success: true,
       user: {
-        username: decoded.username,
+        username: decoded?.username,
       },
       needsAction: false,
     });
@@ -51,18 +51,25 @@ export async function POST(req: NextRequest) {
       path: "/",
       maxAge,
     });
-
-    response.cookies.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 días
-    });
-
+    
+    if (refreshToken) {
+      response.cookies.set("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 7 días
+      });
+    }
     return response;
-  } catch (error: any) {
-    console.error("Error en api/auth/google:", error);
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    
+    console.error("Error en api/auth/google:", message);
     return NextResponse.json(
       { success: false, message: "Error interno en el servidor" },
       { status: 500 }

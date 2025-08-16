@@ -40,8 +40,13 @@ export const loginUser = async (data: LoginFormData & { recaptchaToken?: string 
         messages: result.messages,
       };
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Network error' };
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, error: message || 'Network error' };
   }
 };
 
@@ -62,8 +67,13 @@ export const authWithGoogle = async (idToken: string): Promise<{ success: boolea
     } else {
       return { success: false, error: result.message || 'Fallo login con Google' };
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Error de red' };
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, error: message || 'Error de red' };
   }
 };
 
@@ -90,8 +100,13 @@ export async function completeRegistration(email: string, data: CompleteRegistra
     const response: CompleteRegResponse = await res.json();
 
     return {success: true, data: response}
-  } catch (err: any) {
-    return {success: false, message: err.message}
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return {success: false, message: message}
   }
 }
 
@@ -124,8 +139,13 @@ export async function registerUser(data: RegisterFormData & { recaptchaToken?: s
         }
 
         return { success: true, data: responseBody };
-    } catch (err: any) {
-        return {success: false, message: err.message}
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      return {success: false, message: message}
    }
 } 
 
@@ -144,8 +164,13 @@ export async function logoutUser(): Promise<{
     }
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, message: err.message };
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, message: message };
   }
 }
 

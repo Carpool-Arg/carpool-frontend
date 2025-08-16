@@ -46,14 +46,14 @@ export async function POST(req: NextRequest) {
 
     
     
-    const iat = Number(decoded.iat);
-    const exp = Number(decoded.exp);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
     const maxAge = exp > iat ? exp - iat : 60 * 60 * 2;
 
     const response = NextResponse.json({
       success: true,
       user: {
-        username: decoded.username,
+        username: decoded?.username,
       }
     });
 
@@ -76,13 +76,18 @@ export async function POST(req: NextRequest) {
 
     return response;
 
-  } catch (error: any) {
-    console.error('Login error:', error);
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    console.error('Login error:', message);
     return NextResponse.json(
       {
         success: false,
         message: "Error en la API de login",
-        error: error.message,
+        error: message,
       },
       { status: 500 }
     );

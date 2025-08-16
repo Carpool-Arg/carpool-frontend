@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -33,11 +32,17 @@ export async function POST(req: NextRequest) {
       status: response.status,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+
     return new NextResponse(
       JSON.stringify({
         message: "Error en la API de complete registration",
-        detail: error.message,
+        detail: message,
       }),
       {
         status: 500,

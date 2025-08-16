@@ -11,13 +11,10 @@ import Spinner from "../ui/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { Alert } from "../ui/Alert"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 
 
 export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
   const { login, loading, authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
 
@@ -55,8 +52,13 @@ export function LoginForm() {
       await login({ ...data, recaptchaToken: gRecaptchaToken })
 
       
-    } catch (err:any) {
-      setError(err.message || 'Error al iniciar sesión');
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión');
     }
   }
 
@@ -69,8 +71,13 @@ export function LoginForm() {
     setError(null)
     try {
       await authGoogle(credentialResponse.credential)
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión con Google')
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión con Google')
     }
   }
 

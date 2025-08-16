@@ -2,10 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
 
+type Authority = { authority: string };
+
 export async function GET(request: NextRequest) {
-  
-  // Verificar todas las cookies
-  const allCookies = request.cookies.getAll();
   
   const token = request.cookies.get("token")?.value;
   
@@ -22,12 +21,12 @@ export async function GET(request: NextRequest) {
     }
 
     // authorities es un string JSON, lo parseamos
-    const rawAuthorities = typeof decoded.authorities === 'string'
+    const rawAuthorities: Authority[] = typeof decoded.authorities === 'string'
       ? JSON.parse(decoded.authorities)
       : decoded.authorities;
     
     const roles = rawAuthorities
-      .map((a: any) => {
+      .map((a) => {
         switch (a.authority) {
           case 'ROLE_USER': //Transformamos ROLE_USER a algo mas legible como user.
             return 'user';
@@ -45,7 +44,7 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json({ user });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { user: null, message: "Token inválido" },
       { status: 400 }

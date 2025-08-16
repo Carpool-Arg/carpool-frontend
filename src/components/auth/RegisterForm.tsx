@@ -22,8 +22,6 @@ import { Check, X } from 'lucide-react'
 import { Alert } from "../ui/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
-
 export function RegisterForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -93,7 +91,7 @@ export function RegisterForm() {
 
 
   // Maneja el siguiente paso
-  const handleNext = async (data: RegisterStep1Data) => {
+  const handleNext = async () => {
     setError(null)
     setStep(2)
   }
@@ -137,7 +135,7 @@ export function RegisterForm() {
       }
 
       router.push('/email-verify')
-    } catch (err) {
+    } catch {
       setError('Error al registrar usuario')
     } finally {
       setLoading(false)
@@ -153,8 +151,13 @@ export function RegisterForm() {
     setError(null)
     try {
       await authGoogle(credentialResponse.credential)
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión con Google')
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión con Google')
     }
   }
 

@@ -23,7 +23,12 @@ export async function registerDriver( data: DriverData): Promise<{
     const response: DriverResponse = await res.json();
 
     return {success: true, data: response}
-  } catch (err: any) {
-    return {success: false, message: err.message}
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return {success: false, message: message}
   }
 }

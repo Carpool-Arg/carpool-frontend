@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Info, X } from 'lucide-react'
+import { AlertCircle, CheckCircle, Info } from 'lucide-react'
 
 export function Alert({
   type = 'error',

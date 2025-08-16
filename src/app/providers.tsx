@@ -7,8 +7,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { usePathname } from 'next/navigation';
 import Spinner from '@/components/ui/Spinner';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
-import { GiConsoleController } from 'react-icons/gi';
-
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -41,7 +39,6 @@ export function AppProviders({ children }: AppProvidersProps) {
   if (!clientId) {
     console.error('NEXT_PUBLIC_GOOGLE_CLIENT_ID no está configurado');
   }
-  console.log('site key', process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY)
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <GoogleOAuthProvider clientId={clientId || ''}>

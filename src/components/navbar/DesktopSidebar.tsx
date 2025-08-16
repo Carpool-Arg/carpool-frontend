@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User, Infinity, UserCircle, User2, UserCircle2, LogOut } from 'lucide-react';
+import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 
 const navItems = [

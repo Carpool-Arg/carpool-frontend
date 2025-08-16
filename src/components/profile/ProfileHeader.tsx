@@ -1,6 +1,7 @@
-import { ChevronLeft, User as UserIcon } from 'lucide-react';
+import { User as UserIcon } from 'lucide-react';
 import { User } from "@/types/user";
-import Link from 'next/link';
+import Image from 'next/image';
+
 
 export function ProfileHeader({ user }: { user: User }) {
   const hasImage = !!user.imageUrl;
@@ -9,10 +10,13 @@ export function ProfileHeader({ user }: { user: User }) {
     <div className="flex flex-col items-center gap-2">
       
       {hasImage ? (
-        <img
-          src={user.imageUrl}
+        <Image
+          src={user.imageUrl||''}
           alt="Foto de perfil"
-          className="w-24 h-24 rounded-full object-cover"
+          width={96}    // 24 * 4 (px) si usás Tailwind w-24 (6rem = 96px)
+          height={96}
+          className="rounded-full object-cover"
+          priority={true}  // opcional, si querés que cargue rápido
         />
       ) : (
         <div className="w-24 h-24 rounded-full bg-gray-1 flex items-center justify-center">
