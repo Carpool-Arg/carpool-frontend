@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
     '/api/send-change-password-email',
     '/api/password-change',
     '/complete-profile',
-    '/api/users/unlock-account',
+    '/api/unlock-account',
     '/unlock-account'
   ];
   
