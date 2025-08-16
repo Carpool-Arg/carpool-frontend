@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ChangePasswordData, changePasswordSchema } from "@/schemas/change-password/changePasswordSchema";
+import { unlockAccount } from "@/services/userService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, ChevronLeft, LockKeyhole, XCircle } from "lucide-react";
 import Image from "next/image";
@@ -38,47 +39,21 @@ export default function PasswordChangePage(){
     const goToLogin = () =>{
         router.push("/login")
     }
-    const handleSubmit = async (data: ChangePasswordData)=>{
-        setStatus('loading')
-        setMessage(null)
-        if(!token){
-            setStatus('error')
-            setMessage('No se ha proporcionado un token.')
-            return
+
+    const handleSubmit = async (data: ChangePasswordData) => {
+        setStatus("loading");
+        setMessage(null);
+
+        const result = await unlockAccount(data, token || "");
+
+        if (result.success) {
+            setStatus("success");
+        } else {
+            setStatus("error");
         }
 
-        try{
-            const completeData = {
-                ...data,
-                token
-            }
-            const headers: Record<string, string> = {
-                'Content-Type': 'application/json',
-            };
-
-            const response = await fetch('/api/unlock-account',{
-                method: 'POST',
-                headers,
-                body: JSON.stringify(completeData),
-
-            })
-
-            const responseBody =await response.json();
-
-            if (!response.ok){
-                setStatus('error')
-                setMessage(responseBody.message)
-            }
-
-            if (response.ok){
-                setStatus('success')
-                setMessage('Se actualizó tu contraseña, puedes volver a intentar iniciar sesión')
-            }
-        }catch(error:any){
-            setStatus('error')
-            setMessage('Ocurrió un problema.')
-        }
-    }
+        setMessage(result.message);
+    };
 
     if(status=== 'success'){
         return (
