@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const pathname = usePathname();
 
   // Rutas públicas donde no necesitamos autenticación
-  const publicRoutes = ['/login', '/register', '/complete-profile', '/email-verify', '/email-verified'];
+  const publicRoutes = ['/login', '/register', '/complete-profile', '/email-verify', '/email-verified', '/send-change-password-email','/password-change','/unlock-account'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   // Función para obtener el usuario actual
