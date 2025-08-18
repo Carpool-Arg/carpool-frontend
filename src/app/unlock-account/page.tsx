@@ -74,9 +74,12 @@ export default function PasswordChangePage(){
                 setStatus('success')
                 setMessage('Se actualizó tu contraseña, puedes volver a intentar iniciar sesión')
             }
-        }catch(error:any){
+        } catch (error: unknown) {
+            let message = "Error desconocido";
+            if (error instanceof Error) message = error.message;
             setStatus('error')
-            setMessage('Ocurrió un problema.')
+            setMessage(`${message}`||'Ocurrió un problema.')
+            setStatus('error')
         }
     }
 

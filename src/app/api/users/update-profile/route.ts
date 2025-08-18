@@ -1,5 +1,4 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
-import { ProfileData } from "@/schemas/profile/profileSchema";
 import { UserResponse } from "@/types/response/user";
 import { NextRequest, NextResponse } from "next/server";
 

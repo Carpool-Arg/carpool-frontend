@@ -23,6 +23,12 @@ interface EditableUser {
   phone: string
 }
 
+const genders = [
+  { label: "Masculino", value: "MALE" },
+  { label: "Femenino", value: "FEMALE" },
+  { label: "Otro", value: "UNSPECIFIED" },
+];
+
 /**
  * Componente ProfileDetails
  *
@@ -38,16 +44,14 @@ interface EditableUser {
  * - Actualiza el perfil usando el servicio `updateUser`.
  * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
  */
+
+ 
 export default function ProfileDetails() {
   const { user, fetchUser, setPrevImage } = useAuth();
   const router = useRouter();
 
   const [genderLabel, setGenderLabel] = useState<string>("");
-  const genders = [
-    { label: "Masculino", value: "MALE" },
-    { label: "Femenino", value: "FEMALE" },
-    { label: "Otro", value: "UNSPECIFIED" },
-  ];
+ 
 
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

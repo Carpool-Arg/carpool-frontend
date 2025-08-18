@@ -11,6 +11,7 @@ import Spinner from "../ui/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { Alert } from "../ui/Alert"
+import Link from "next/link"
 
 
 export function LoginForm() {

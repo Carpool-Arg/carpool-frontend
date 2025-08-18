@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/contexts/authContext';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {

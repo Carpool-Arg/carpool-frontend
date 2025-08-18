@@ -18,8 +18,6 @@ export default function PasswordChangePage(){
     const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
 
-
-
     const passwordsForm = useForm<ChangePasswordData>({
         resolver: zodResolver(changePasswordSchema),
         mode: 'onChange',
@@ -75,9 +73,11 @@ export default function PasswordChangePage(){
                 setStatus('success')
                 setMessage('Se actualizó tu contraseña, puedes volver a intentar iniciar sesión')
             }
-        }catch(error:any){
+        } catch (error: unknown) {
+            let message = "Error desconocido";
+            if (error instanceof Error) message = error.message;
             setStatus('error')
-            setMessage('Ocurrió un problema.')
+            setMessage(`${message}`||'Ocurrió un problema.')
         }
     }
 

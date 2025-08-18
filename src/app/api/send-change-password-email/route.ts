@@ -27,9 +27,11 @@ export async function POST(req: NextRequest) {
             headers: {"Content-Type": "application/json"},
         })
         
-    }catch(error: any){
+    } catch (error: unknown) {
+        let message = "Error desconocido";
+        if (error instanceof Error) message = error.message;
         return new NextResponse(
-            JSON.stringify({message: "Error en la API de envio de correo para recuperacion de contraseña", detail: error.message}),
+            JSON.stringify({message: "Error en la API de envio de correo para recuperacion de contraseña", detail: message}),
             {
                 status: 500,
                 headers: { "Content-Type": "application/json" }, 

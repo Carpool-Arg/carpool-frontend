@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Spinner from "@/components/ui/Spinner";
-import { Mail, CheckCircle, Clock, XCircle, AlertCircle, ChevronLeft } from "lucide-react";
+import { Mail, CheckCircle, Clock, XCircle, ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,8 +48,11 @@ export default function ChangePasswordEmailPage() {
         setStatus('success');
         setMessage('Correo enviado correctamente.');
       }
-    } catch (err) {
-      setStatus('error');
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
+      setStatus('error')
+      setMessage(`${message}`||'Ocurrió un problema.')
       setError('Error de red al enviar el correo.');
     } finally {
       setLoading(false);
