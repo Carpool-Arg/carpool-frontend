@@ -8,5 +8,7 @@ const withPWA = require('next-pwa')({
 })
 
 module.exports = withPWA({
-  // tu config de Next.js
+  images: {
+    domains: ['localhost'], // permitimos localhost
+  },
 })

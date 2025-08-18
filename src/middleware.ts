@@ -19,6 +19,8 @@ export async function middleware(req: NextRequest) {
     '/api/email-verify',
     '/api/complete-registration',
     '/api/resend-activation',
+    '/api/genders',
+    '/complete-profile'
     '/api/send-change-password-email',
     '/api/password-change',
     '/complete-profile',

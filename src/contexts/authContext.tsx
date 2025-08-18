@@ -14,6 +14,8 @@ interface AuthContextType {
   authGoogle: (idToken: string) => Promise<void>;
   initialized: boolean;
   fetchUser: () => Promise<boolean>;
+  prevImage: string | null;
+  setPrevImage: (value: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -42,7 +45,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (json.user) {
           setUser({ 
             username: json.user.username,
+            profileImage: json.user.profileImage,
             roles: json.user.roles,
+            id: json.user.id,
+            name: json.user.name,
+            lastname: json.user.lastname,
+            email: json.user.email,
+            dni: json.user.dni,
+            phone: json.user.phone,
+            gender: json.user.gender,
+            status: json.user.status,
            });
           return true;
         }
@@ -168,6 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     authGoogle,
     initialized,
     fetchUser,
+    prevImage,
+    setPrevImage
   };
 
   return (

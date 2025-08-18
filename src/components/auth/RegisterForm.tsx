@@ -26,6 +26,7 @@ export function RegisterForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const genders = ["Masculino", "Femenino", "Otro"];
   const router = useRouter()
   const { authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
@@ -51,7 +52,8 @@ export function RegisterForm() {
       name: '',
       lastname: '',
       dni: '',
-      phone: ''
+      phone: '',
+      gender:'No especificado'
     }
   })
 
@@ -82,13 +84,13 @@ export function RegisterForm() {
     return () => subscription.unsubscribe();
   }, [step2Form, dniValidation]);
 
+
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
     if (validation.available === true) return <Check className="w-4 h-4 text-success" />;
     if (validation.available === false) return <X className="w-4 h-4 text-error" />;
     return null;
   };
-
 
   // Maneja el siguiente paso
   const handleNext = async () => {
@@ -164,6 +166,12 @@ export function RegisterForm() {
   const onGoogleError = () => {
     setError('Error en autenticación con Google')
   }
+
+  const genderLabels: Record<string, string> = {
+    MALE: "Masculino",
+    FEMALE: "Femenino",
+    UNSPECIFIED: "No especificado",
+  };
   
   return (
     <div className="flex flex-col gap-4 p-6 w-full">
@@ -281,7 +289,6 @@ export function RegisterForm() {
                 type="text"
                 {...step2Form.register('name')}
                 error={step2Form.formState.errors.name?.message}
-                
               />
             </div>
             <div>
@@ -290,7 +297,6 @@ export function RegisterForm() {
                 type="text"
                 {...step2Form.register('lastname')}
                 error={step2Form.formState.errors.lastname?.message}
-                
               />
             </div>
           </div>
@@ -304,7 +310,6 @@ export function RegisterForm() {
               rightIcon={getRightIcon(dniValidation)}
               className="font-outfit"
             />
-
             {dniValidation.message && (
               <p className={`text-xs font-inter mt-1 ${
                 dniValidation.messageType === 'success' ? 'text-success' : 'text-error'
@@ -320,29 +325,47 @@ export function RegisterForm() {
               type="tel"
               {...step2Form.register('phone')}
               error={step2Form.formState.errors.phone?.message}
-              
             />
+          </div>
+
+          <div>
+            <label htmlFor="gender" className="block mb-1 font-medium text-sm font-outfit">Género</label>
+            <select
+              id="gender"
+              {...step2Form.register('gender', { required: "El género es obligatorio" })}
+              className={`w-full rounded-md border px-3 py-2 font-outfit text-sm ${
+                step2Form.formState.errors.gender ? 'border-error' : 'border-gray-300'
+              }`}
+              defaultValue=""
+            >
+              <option value="" disabled>Seleccioná un género</option>
+              {genders.map((gender) => (
+                <option key={gender} value={gender}>
+                  {genderLabels[gender] || gender}
+                </option>
+              ))}
+            </select>
+            {step2Form.formState.errors.gender && (
+              <p className="text-error text-xs mt-1">{step2Form.formState.errors.gender.message}</p>
+            )}
           </div>
 
           <div className="flex gap-4">
             <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>
               Atrás
             </Button>
-            <Button 
-              type="submit" 
-              variant="primary" 
-              className="w-full" 
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
               disabled={loading || step2Form.formState.isSubmitting}
             >
-              {loading ? (
-                <Spinner size={20} />
-              ) : (
-                'Registrarse'
-              )}
+              {loading ? <Spinner size={20} /> : 'Registrarse'}
             </Button>
           </div>
         </form>
       )}
+
     </div>
   )
 }

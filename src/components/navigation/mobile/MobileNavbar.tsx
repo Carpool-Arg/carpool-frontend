@@ -26,7 +26,7 @@ export default function MobileNavbar() {
   if (!shouldShowNavbar) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-4 dark:border-gray-2 md:hidden bg-background">
+    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-4 dark:border-gray-2 md:hidden bg-dark-5">
       <ul className="flex justify-around items-center h-14">
         {navItems.map(({ href, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
