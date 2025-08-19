@@ -1,4 +1,3 @@
-// src/app/api/me/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
 
@@ -8,6 +7,7 @@ type Authority = { authority: string };
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
+  console.log('token',token)
 
   if (!token) {
     return NextResponse.json({ user: null }, { status: 401 });
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
         'Authorization': `Bearer ${token}`
       }
     });
+    console.log('response',response)
 
     if (!response.ok) {
       return NextResponse.json({ user: null }, { status: response.status });

@@ -142,7 +142,7 @@ export function RegisterForm() {
         return
       }
 
-      router.push('/email-verify')
+      router.push(`/email-verify?email=${completeData.email}`)
     } catch {
       setError('Error al registrar usuario')
     } finally {

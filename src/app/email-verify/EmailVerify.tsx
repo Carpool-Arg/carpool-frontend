@@ -44,10 +44,13 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
   };
 
   useEffect(() => {
-    if (queryEmail && !resent) {
-      resendActivation(queryEmail);
+    if (queryEmail) {
+      setEmail(queryEmail);
+      setResent(false); // marca que aún no se reenvió
+      setMessage(null);  // opcional: limpia mensajes anteriores
+      setError(null);
     }
-  }, [queryEmail, resent]);
+  }, [queryEmail]);
   
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
