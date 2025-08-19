@@ -31,7 +31,7 @@ class TokenManager {
 
   private async performRefresh(): Promise<string | null> {
     try {
-      const refresh = await fetch('/api/refresh', {
+      const refresh = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include', // lee refreshToken de cookie
       });

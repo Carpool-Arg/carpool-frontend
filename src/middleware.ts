@@ -1,32 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTokenExpired } from "./utils/jwt";
+import { PUBLIC_PATHS } from "./constants/publicPaths";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Rutas públicas que no necesitan autenticación
-  const publicPaths = [
-    '/login', 
-    '/register', 
-    '/email-verify',
-    '/email-verified',
-    '/send-change-password-email',
-    '/password-change',
-    '/api/login', 
-    '/api/register', 
-    '/api/google', 
-    '/api/refresh', 
-    '/api/email-verify',
-    '/api/complete-registration',
-    '/api/resend-activation',
-    '/api/genders',
-    '/complete-profile',
-    '/api/send-change-password-email',
-    '/api/password-change',
-    '/complete-profile',
-    '/api/unlock-account',
-    '/unlock-account'
-  ];
+  const publicPaths = [...PUBLIC_PATHS.pages, ...PUBLIC_PATHS.api];
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();

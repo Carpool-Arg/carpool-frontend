@@ -5,8 +5,10 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log('body',body)
 
     const recaptchaToken = req.headers.get('recaptcha');
+    console.log('recaptchaToken',recaptchaToken)
 
     // Preparar headers para el backend
     const backendHeaders: Record<string, string> = {
@@ -23,8 +25,10 @@ export async function POST(req: NextRequest) {
       headers: backendHeaders,
       body: JSON.stringify(body),
     });
+    console.log('response',response)
 
     const data = await response.json();
+    console.log('data',data)
 
     if (!response.ok || data.state !== 'OK') {
       return NextResponse.json(

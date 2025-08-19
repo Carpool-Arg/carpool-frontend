@@ -22,7 +22,7 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
       setError(null);
       setMessage(null);
 
-      const res = await fetch(`/api/resend-activation`, {
+      const res = await fetch(`/api/users/resend-activation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailToSend }),

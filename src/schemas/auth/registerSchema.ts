@@ -61,7 +61,7 @@ export const registerStep2Schema = z.object({
     .max(25, 'El teléfono no puede tener más de 25 dígitos')
     .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.'),
   
-  gender: z.enum(['Masculino', 'Femenino', 'No especificado']).optional(),
+  gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
 })
 
 // Esquema completo para el registro (usando el esquema base sin refine)

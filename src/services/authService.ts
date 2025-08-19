@@ -52,7 +52,7 @@ export const loginUser = async (data: LoginFormData & { recaptchaToken?: string 
 
 export const authWithGoogle = async (idToken: string): Promise<{ success: boolean; data?: GoogleLoginResponse['data']; error?: string }> => {
   try {
-    const res = await fetch('/api/google', {
+    const res = await fetch('/api/auht-google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -86,7 +86,7 @@ export async function completeRegistration(email: string, data: CompleteRegistra
   try {
     const body = { ...data, email };
 
-    const res = await fetch(`/api/complete-registration`, {
+    const res = await fetch(`/api/users/complete-registration`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -126,7 +126,7 @@ export async function registerUser(data: RegisterFormData & { recaptchaToken?: s
           headers['recaptcha'] = recaptchaToken;
         }
 
-        const res = await fetch('/api/register',{
+        const res = await fetch('/api/users',{
             method: 'POST',
             headers,  //equivalente a headers: headers
             body: JSON.stringify(registerData),
@@ -154,7 +154,7 @@ export async function logoutUser(): Promise<{
   message?: string;
 }> {
   try {
-    const res = await fetch('/api/logout', {
+    const res = await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });

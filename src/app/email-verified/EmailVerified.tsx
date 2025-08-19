@@ -20,7 +20,7 @@ export default function EmailVerifiedPage({ token }: Props) {
 
     const verify = async () => {
       try {
-        const res = await fetch(`/api/email-verify`, {
+        const res = await fetch(`/api/users/activate-account`, {
           method: 'POST',
           body: JSON.stringify({ token }),
         })

@@ -33,7 +33,7 @@ export default function ChangePasswordEmailPage() {
       setError(null);
       setMessage(null);
 
-      const res = await fetch(`/api/send-change-password-email`, {
+      const res = await fetch(`/api/password-change/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailToSend }),

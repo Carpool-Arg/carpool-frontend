@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Carpool App 🚗
 
-## Getting Started
+Carpool es una aplicación web desarrollada con **Next.js** y **Spring Boot** que permite a los usuarios publicar y reservar viajes compartidos. La app soporta dos tipos de usuarios: **conductores** y **pasajeros**, y permite que un mismo usuario pueda desempeñar ambos roles.
 
-First, run the development server:
+---
+
+## Características
+
+* Registro y login de usuarios con **JWT**.
+* Autenticación vía **Google**.
+* Perfil de usuario con información personal.
+* Publicación de viajes por conductores (origen, destino, cantidad de asientos y precio).
+* Reserva de viajes por pasajeros.
+* Gestión de estado de reservas y stock de asientos.
+* Interfaz adaptativa según el rol del usuario.
+* Sistema de validación de tokens y refresco automático.
+
+---
+
+## Tecnologías
+
+* **Frontend**: Next.js, React, Tailwind CSS, TypeScript
+* **Backend**: Spring Boot, Java
+* **Base de datos**: Postgre SQL
+* **Autenticación**: JWT, OAuth con Google
+
+---
+
+## Instalación y ejecución
+
+1. Clonar el repositorio:
+
+```bash
+git clone https://github.com/tu-usuario/carpool-app.git
+cd carpool-app
+```
+
+2. Instalar dependencias:
+
+```bash
+npm install
+# o
+yarn install
+# o
+pnpm install
+```
+
+3. Configurar variables de entorno:
+
+Crea un archivo `.env` en la raíz del proyecto con tus variables, por ejemplo:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=tu_google_client_id
+```
+
+4. Ejecutar la aplicación en modo desarrollo:
 
 ```bash
 npm run dev
-# or
+# o
 yarn dev
-# or
+# o
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estructura del proyecto
 
-## Learn More
+* `app/` → rutas y páginas de Next.js.
+* `components/` → componentes reutilizables de UI.
+* `contexts/` → contexto de autenticación (`AuthProvider`).
+* `services/` → llamadas a la API (`authService`, `reservationService`, etc.).
+* `types/` → definición de tipos de TypeScript.
+* `middleware.ts` → middleware de autenticación y validación de rutas.
+* `constants/` → constantes del proyecto.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Rutas Públicas y Privadas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+El sistema cuenta con **rutas públicas** (login, registro, recuperación de contraseña, etc.) y **rutas privadas** protegidas mediante middleware que valida el token JWT.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Equipo
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **SARGON** 
+
+---
+
+## Recursos
+
+* [Next.js Documentation](https://nextjs.org/docs)
+* [React Documentation](https://reactjs.org/docs/getting-started.html)
+* [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+* [Tailwind CSS](https://tailwindcss.com/docs)
+

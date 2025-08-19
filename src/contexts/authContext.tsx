@@ -1,5 +1,6 @@
 'use client'
 
+import { PUBLIC_PATHS } from '@/constants/publicPaths';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/authService';
 import { LoginFormData } from '@/types/forms';
 import { User } from '@/types/user';
@@ -29,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const pathname = usePathname();
 
   // Rutas públicas donde no necesitamos autenticación
-  const publicRoutes = ['/login', '/register', '/complete-profile', '/email-verify', '/email-verified', '/send-change-password-email','/password-change','/unlock-account'];
+  const publicRoutes = [...PUBLIC_PATHS.pages];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   // Función para obtener el usuario actual

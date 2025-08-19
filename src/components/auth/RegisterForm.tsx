@@ -22,11 +22,16 @@ import { Check, X } from 'lucide-react'
 import { Alert } from "../ui/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 
+const genders = [
+  { label: "Masculino", value: "MALE" },
+  { label: "Femenino", value: "FEMALE" },
+  { label: "Otro", value: "UNSPECIFIED" },
+];
+
 export function RegisterForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const genders = ["Masculino", "Femenino", "Otro"];
   const router = useRouter()
   const { authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
@@ -53,7 +58,7 @@ export function RegisterForm() {
       lastname: '',
       dni: '',
       phone: '',
-      gender:'No especificado'
+      gender:'UNSPECIFIED'
     }
   })
 
@@ -115,7 +120,7 @@ export function RegisterForm() {
         ...step1Data,
         ...data
       }
-
+      console.log('complete data register',completeData)
       // Ejecutar reCAPTCHA
       if (!executeRecaptcha) {
         setError('reCAPTCHA no está disponible')
@@ -131,6 +136,7 @@ export function RegisterForm() {
       }
 
       const response = await registerUser({...completeData, recaptchaToken: gRecaptchaToken})
+      console.log('response register',response)
       if (!response.success) {
         setError(response.message || "Error al registrar usuario")
         return
@@ -340,8 +346,8 @@ export function RegisterForm() {
             >
               <option value="" disabled>Seleccioná un género</option>
               {genders.map((gender) => (
-                <option key={gender} value={gender}>
-                  {genderLabels[gender] || gender}
+                <option key={gender.value} value={gender.value}>
+                  {gender.label}
                 </option>
               ))}
             </select>

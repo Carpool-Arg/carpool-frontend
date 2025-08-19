@@ -18,7 +18,6 @@ export default function PasswordChangePage(){
     const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
 
-
     const passwordsForm = useForm<ChangePasswordData>({
         resolver: zodResolver(changePasswordSchema),
         mode: 'onChange',
@@ -56,7 +55,7 @@ export default function PasswordChangePage(){
                 'Content-Type': 'application/json',
             };
 
-            const response = await fetch('/api/unlock-account',{
+            const response = await fetch('/api/users/unlock-account',{
                 method: 'POST',
                 headers,
                 body: JSON.stringify(completeData),
