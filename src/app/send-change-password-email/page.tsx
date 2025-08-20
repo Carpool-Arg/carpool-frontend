@@ -9,8 +9,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ChangePasswordEmailPage() {
-
-
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);

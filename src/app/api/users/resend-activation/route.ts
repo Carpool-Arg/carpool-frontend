@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const email = body.email;
 
-
     if (!email) {
       return new NextResponse(
         JSON.stringify({ message: "Falta el parámetro 'email'" }),

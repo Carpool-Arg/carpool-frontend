@@ -9,13 +9,13 @@ type Props = {
 }
 
 export default function EmailVerifyPage({ queryEmail }: Props) {
-  const [email, setEmail] = useState(queryEmail || '');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>(queryEmail || "");
+  const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState<number>(0);
 
-  const resendActivation = async (emailToSend: string) => {
+  const resendActivation = async (emailToSend: string): Promise<void> => {
     if (!emailToSend) return;
     try {
       setLoading(true);
@@ -23,21 +23,21 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
       setMessage(null);
 
       const res = await fetch(`/api/users/resend-activation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailToSend }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || 'Error al reenviar el correo.');
+        setError(result.message || "Error al reenviar el correo.");
       } else {
-        setMessage('Correo reenviado correctamente.');
-        setResent(true);
+        setMessage("Correo reenviado correctamente.");
+        setCooldown(30); // arranca cooldown de 30s
       }
     } catch {
-      setError('Error de red al reenviar el correo.');
+      setError("Error de red al reenviar el correo.");
     } finally {
       setLoading(false);
     }
@@ -46,11 +46,20 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
   useEffect(() => {
     if (queryEmail) {
       setEmail(queryEmail);
-      setResent(false); // marca que aún no se reenvió
-      setMessage(null);  // opcional: limpia mensajes anteriores
+      setMessage(null);
       setError(null);
     }
   }, [queryEmail]);
+
+  useEffect(() => {
+    if (cooldown === 0) return;
+
+    const timer = setInterval(() => {
+      setCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [cooldown]);
   
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -101,10 +110,10 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
           
           <Button
             onClick={handleManualResend}
-            disabled={loading}
+            disabled={loading || cooldown > 0}
             variant="outline"
           >
-            Reenviar
+            {cooldown > 0 ? `Reenviar en ${cooldown}s` : "Reenviar"}
           </Button>
         </div>
       )}
@@ -143,11 +152,11 @@ export default function EmailVerifyPage({ queryEmail }: Props) {
       {queryEmail && (
         <Button
           onClick={handleManualResend}
-          disabled={loading}
+          disabled={loading || cooldown > 0}
           variant="outline"
           className="mt-6 text-sm"
         >
-          ¿No recibiste el correo? Reenviar
+          {cooldown > 0 ? `Reenviar en ${cooldown}s` : "¿No recibiste el correo? Reenviar"}
         </Button>
       )}
     </div>

@@ -34,7 +34,6 @@ export async function updateUser(data: ProfileData): Promise<UserResponse> {
 
     const response: UserResponse = await res.json();
     return response;
-
   } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;

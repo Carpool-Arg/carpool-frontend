@@ -105,22 +105,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await loginUser(data);
-      console.log('result', result)
 
       const code = result.messages?.[0]; 
-      console.log('data desde login',data)
 
       if (code === 'PENDING_VERIFICATION') {
         router.push('/email-verify');
         return;
       }
 
-      if (result.success) {
+      if (result.state === "OK") {
         await fetchUser();
         router.push('/home');
       } else {
         setUser(null);
-        throw new Error(result.error || 'Error al iniciar sesión');
+        throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -136,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const result = await authWithGoogle(idToken);
       
-      if (result.success && result.data) {
+      if (result.state === "OK" && result.data) {
         await fetchUser();
         // Redirigir según el estado del usuario
         if (result.data.status === 'PENDING_PROFILE') {
@@ -146,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         setUser(null);
-        throw new Error(result.error || 'Error al iniciar sesión con Google');
+        throw new Error(result.messages?.[1] || 'Error al iniciar sesión con Google');
       }
     } catch (error) {
       console.error('Google login error:', error);
@@ -164,8 +162,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       router.push('/login');
     } catch (error) {
-      console.error('Logout error:', error);
-      // Limpiar estado local incluso si falla el logout del servidor
       setUser(null);
       router.push('/login');
     } finally {

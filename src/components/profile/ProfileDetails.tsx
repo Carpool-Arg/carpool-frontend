@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { updateUser } from '@/services/userService';
+import { UserResponse } from '@/types/response/user';
 import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -44,15 +45,11 @@ const genders = [
  * - Actualiza el perfil usando el servicio `updateUser`.
  * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
  */
-
- 
 export default function ProfileDetails() {
   const { user, fetchUser, setPrevImage } = useAuth();
   const router = useRouter();
 
   const [genderLabel, setGenderLabel] = useState<string>("");
- 
-
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -130,8 +127,9 @@ export default function ProfileDetails() {
 
       await fetchUser();
       router.push('/profile');
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      console.error(message);
     }
   };
 
@@ -172,8 +170,9 @@ export default function ProfileDetails() {
       setSelectedFile(null);
 
       console.log('Imagen de perfil eliminada correctamente');
-    } catch (error) {
-      console.error('Error al eliminar la foto de perfil:', error);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      console.error(message);
     }
   };
 
