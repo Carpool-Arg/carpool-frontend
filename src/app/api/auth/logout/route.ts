@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
   try {
     // Extraer el token de acceso de la cookie
     const accessToken = req.cookies.get('token')?.value;
+    const refreshToken = req.cookies.get('refreshToken')?.value;
+
 
     if (!accessToken) {
       return NextResponse.json({ 
@@ -26,12 +28,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Llamar al backend para hacer logout e invalidar el token
-    const res = await fetch(`${apiUrl}/logout`, {
+    const res = await fetch(`${apiUrl}/auth/logout`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({refreshToken})
     });
 
     const response: VoidResponse = await res.json();
