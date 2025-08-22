@@ -31,6 +31,7 @@ export function LoginForm() {
       password: ''
     }
   })
+  
 
   const onSubmit = async (data: LoginData) => {
     setError(null);
@@ -113,7 +114,7 @@ export function LoginForm() {
         />
       </div>
 
-      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer">
+      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer text-sm">
         ¿Olvidaste tu contraseña?
       </Link>
 

@@ -9,6 +9,7 @@ export default function EmailVerifiedPage() {
   const searchParams = useSearchParams();
   const status = searchParams.get("status");
   const router = useRouter();
+  
   const [showFallbackAction, setShowFallbackAction] = useState(false);
 
   // Si después de 10 segundos no hay status, mostrar acción

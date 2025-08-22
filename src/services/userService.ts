@@ -11,7 +11,6 @@ import { UserResponse } from "@/types/response/user";
  * @param {ProfileData} data - Datos del perfil a actualizar.
  * @returns {Promise<UserResponse>} - Resultado de la actualización.
  */
-
 export async function updateUser(data: ProfileData): Promise<UserResponse> {
   try {
     const formData = new FormData();
@@ -37,7 +36,6 @@ export async function updateUser(data: ProfileData): Promise<UserResponse> {
   } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
-
     return { data: null, messages: [message], state: "ERROR" };
   }
 }

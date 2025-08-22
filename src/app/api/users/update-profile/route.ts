@@ -15,7 +15,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * @param {NextRequest} req - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
  */
-
 export async function PUT(req: NextRequest) {
   try {
     // Recibir FormData de la petición

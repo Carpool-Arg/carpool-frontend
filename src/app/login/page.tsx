@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Columna izquierda: Imagen + slogan + fondo */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center">
+      <div className="hidden md:flex fixed inset-y-0 left-0 w-1/2 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
         <div className="flex flex-col items-center text-center w-[200px]">
           <Image
             src="/carpool-wslogan.png"
@@ -19,10 +19,9 @@ export default function LoginPage() {
             Un viaje compartido, un destino en común.
           </h1>
         </div>
-
       </div>
-      <div className="w-full md:w-1/2 flex items-center justify-center px-6 md:px-[156px] py-12 min-h-screen md:min-h-0">
-        <div className="w-full max-w-md">
+      <div className="w-full md:ml-[50%] md:w-1/2 flex items-center justify-center px-6 md:px-[156px] py-12 min-h-screen overflow-y-auto">
+        <div className="w-full max-w-lg">
           {/* Logo solo en mobile */}
           <div className="md:hidden mb-6 flex justify-center">
             <Image

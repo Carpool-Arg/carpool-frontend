@@ -36,10 +36,9 @@ export function DriverForm() {
   const onSubmit = async (data: DriverData) => {
     setError(null);
     try {
-      console.log('data enviada',data)
       const response = await registerDriver(data)
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario");
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al registrar usuario");
         return
       }
       await fetchUser();

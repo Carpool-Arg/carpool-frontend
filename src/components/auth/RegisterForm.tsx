@@ -120,7 +120,7 @@ export function RegisterForm() {
         ...step1Data,
         ...data
       }
-      console.log('complete data register',completeData)
+      
       // Ejecutar reCAPTCHA
       if (!executeRecaptcha) {
         setError('reCAPTCHA no está disponible')
@@ -136,9 +136,9 @@ export function RegisterForm() {
       }
 
       const response = await registerUser({...completeData, recaptchaToken: gRecaptchaToken})
-      console.log('response register',response)
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario")
+
+      if (response.state !== "OK") {
+        setError(response.messages?.[0] || "Error al registrar usuario")
         return
       }
 

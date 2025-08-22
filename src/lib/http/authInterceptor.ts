@@ -42,7 +42,6 @@ class TokenManager {
       }
 
       const data = await refresh.json();
-      console.log('data desde el interceptor',data)
       // Suponemos que el backend devuelve { accessToken, refreshToken }
       return data.data?.accessToken;
     } catch (error) {

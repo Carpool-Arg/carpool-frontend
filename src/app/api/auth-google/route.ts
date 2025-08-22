@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
   try {
     // Extraer el client id token de la cookie
     const { idToken } = await req.json();
-    console.log('idToken',idToken)
 
     if (!idToken) {
       return NextResponse.json({ 
@@ -50,7 +49,6 @@ export async function POST(req: NextRequest) {
     }
 
     const response: GoogleLoginResponse = await res.json();
-    console.log('response',response)
 
     if (!response.data?.accessToken || !response.data?.refreshToken) {
       return NextResponse.json({ 

@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { updateUser } from '@/services/userService';
-import { UserResponse } from '@/types/response/user';
 import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -128,8 +127,10 @@ export default function ProfileDetails() {
       await fetchUser();
       router.push('/profile');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error desconocido";
-      console.error(message);
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
+
+      return { data: null, messages: [message], state: "ERROR" };
     }
   };
 
@@ -171,8 +172,10 @@ export default function ProfileDetails() {
 
       console.log('Imagen de perfil eliminada correctamente');
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error desconocido";
-      console.error(message);
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
+
+      return { data: null, messages: [message], state: "ERROR" };
     }
   };
 

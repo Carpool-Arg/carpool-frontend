@@ -41,26 +41,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         credentials: 'include',
       });
       if (res.ok) {
-        const json = await res.json();
-        console.log('json',json)
-        if (json.user) {
+        const response = await res.json();
+        if (response.data) {
           setUser({ 
-            username: json.user.username,
-            profileImage: json.user.profileImage,
-            roles: json.user.roles,
-            id: json.user.id,
-            name: json.user.name,
-            lastname: json.user.lastname,
-            email: json.user.email,
-            dni: json.user.dni,
-            phone: json.user.phone,
-            gender: json.user.gender,
-            status: json.user.status,
+            username: response.data.username,
+            profileImage: response.data.profileImage,
+            roles: response.data.roles,
+            id: response.data.id,
+            name: response.data.name,
+            lastname: response.data.lastname,
+            email: response.data.email,
+            dni: response.data.dni,
+            phone: response.data.phone,
+            gender: response.data.gender,
+            status: response.data.status,
            });
           return true;
         }
       }
-      
       setUser(null);
       return false;
     } catch (err) {
@@ -106,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const result = await loginUser(data);
 
+      // Estado del usuario
       const code = result.messages?.[0]; 
 
       if (code === 'PENDING_VERIFICATION') {
@@ -120,10 +119,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
       setUser(null);
-      throw error;
+      throw new Error(message); 
     } finally {
       setLoading(false);
     }
@@ -156,18 +156,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = useCallback(async () => {
-    setLoading(true);
     try {
-      await logoutUser();
-      setUser(null);
-      router.push('/login');
+      const res = await logoutUser(); // logoutUser debería lanzar error solo si hay fallo de red
+      if (res.state === "OK") { // suponiendo que devuelve { ok: boolean } o status 200
+        setUser(null);
+        router.push('/login');
+      } else {
+        console.error('Logout failed', res.messages?.[0]);
+        // opcional: mostrar mensaje de error sin redirigir
+      }
     } catch (error) {
-      setUser(null);
-      router.push('/login');
-    } finally {
-      setLoading(false);
+      console.error('Error during logout:', error);
+      // opcional: mostrar mensaje al usuario
     }
   }, [router]);
+
 
   const value = {
     user,

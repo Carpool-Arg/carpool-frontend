@@ -18,6 +18,7 @@ type Authority = { authority: string };
  * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
  */
 export async function GET(request: NextRequest) {
+
   // Obtenemos el token JWT desde las cookies
   const token = request.cookies.get("token")?.value;
 
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Llamada al backend para obtener la información del usuario
-    const res = await fetchWithRefresh(`${apiUrl}/users`, {
+    const res = await fetch(`${apiUrl}/users/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -80,8 +81,8 @@ export async function GET(request: NextRequest) {
     // Retornamos la respuesta con la estructura consistente { data, messages, state }
     return NextResponse.json({
       data: user,
-      messages: ["Usuario obtenido correctamente"],
-      state: "SUCCESS"
+      messages: response.messages?.[0],
+      state: "OK"
     }, { status: res.status });
 
   } catch (error: unknown) {

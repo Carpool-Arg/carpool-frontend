@@ -17,6 +17,5 @@ export interface UserDetailsData {
   status?: string;
 }
 
-
 export type UserResponse = BaseResponse<UserData>
 export type UserDetailsResponse = BaseResponse<UserDetailsData>

@@ -53,7 +53,7 @@ export const authWithGoogle = async (idToken: string): Promise<GoogleLoginRespon
     });
 
     const response: GoogleLoginResponse = await res.json();
-    console.log('response',response)
+    
     return response;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error desconocido";

@@ -14,9 +14,7 @@ const navItems = [
 
 export default function DesktopSidebar() {
   const pathname = usePathname();
-  const { user, loading, logout } = useAuth();
-
-  if (!user || loading) return null;
+  const { user, logout } = useAuth();
 
 
   return (
@@ -47,7 +45,7 @@ export default function DesktopSidebar() {
 
       {/* Bottom section: usuario y logout */}
       <div className="text-sm text-gray-600 flex flex-col gap-1">
-        <span className="font-medium px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user.username}</span>
+        <span className="font-medium px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user?.username}</span>
         <button
           onClick={logout}
           className="text-red-500 hover:bg-red-100 dark:hover:bg-red-950 px-4 py-2 font-medium transition-colors text-left rounded-md cursor-pointer flex items-center gap-2"
