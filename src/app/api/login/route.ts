@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
+      const errorData = await res.json();
       const errorRes = NextResponse.json(
-        { data: null, messages: [errorText], state: "ERROR" },
+        { data: null, messages: errorData.messages, state: "ERROR" },
         { status: res.status }
       );
       

@@ -112,12 +112,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      if (code === 'PENDING_PROFILE') {
+        setUser(null);
+        throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
+      }
+      console.log(result)
       if (result.state === "OK") {
         await fetchUser();
         router.push('/home');
       } else {
         setUser(null);
-        throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
+        throw new Error(result.messages?.[0]|| 'Error al iniciar sesión');
       }
     } catch (error: unknown) {
       let message = "Error desconocido";
