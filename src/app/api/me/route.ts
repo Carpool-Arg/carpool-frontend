@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Llamada al backend para obtener la información del usuario
-    const res = await fetch(`${apiUrl}/users/me`, {
+    const res = await fetch(`${apiUrl}/users`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
