@@ -1,33 +1,24 @@
-export interface LoginResponse {
-  data: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  messages: string[];
-  state: string;
+import { BaseResponse } from "./response";
+
+export interface LoginData {
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface RegisterResponse {
-  data: null;
-  messages: string[];
-  state: string;
-}
-
-export interface GoogleLoginResponse {
-  data: {
-    accessToken: string;
-    refreshToken: string | null;
-    email: string;
-    name: string;
-    status: string;
-    needsAction: boolean;
-  };
-  messages: string[];
-  state: string;
+export interface GoogleLoginData {
+  accessToken: string;
+  refreshToken: string | null;
+  email: string;
+  name: string;
+  status: string;
+  needsAction: boolean;
 };
 
-export interface CompleteRegResponse {
-  data: unknown; // cambiar por la data que devuelve el back (campos)
-  messages: string[];
-  state: string;
+export interface CompleteRegData {
+  data: unknown //poner la data que devuelve el back
 }
+
+export type VoidResponse = BaseResponse<void>;
+export type LoginResponse = BaseResponse<LoginData>;
+export type GoogleLoginResponse = BaseResponse<GoogleLoginData>;
+export type CompleteRegResponse = BaseResponse<CompleteRegData>;

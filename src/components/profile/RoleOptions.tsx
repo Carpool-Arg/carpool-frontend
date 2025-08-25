@@ -18,7 +18,7 @@ export function RoleOptions({ role, logout }: RoleOptionsProps) {
 
   return (
     <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl shadow-md">
-      <Link href="/profile" className={linkClasses}>
+      <Link href="/profile/details" className={linkClasses}>
         <span>Perfil</span>
         <ChevronRight size={18} />
       </Link>

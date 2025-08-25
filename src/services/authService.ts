@@ -1,5 +1,5 @@
 import { CompleteRegistrationFormData, LoginFormData, RegisterFormData } from "@/types/forms";
-import { CompleteRegResponse, GoogleLoginResponse, LoginResponse, RegisterResponse } from "@/types/response/auth";
+import { CompleteRegResponse, GoogleLoginResponse, LoginResponse, VoidResponse } from "@/types/response/auth";
 
 // src/services/authService.ts
 export const loginUser = async (data: LoginFormData & { recaptchaToken?: string }): Promise<{
@@ -112,7 +112,7 @@ export async function completeRegistration(email: string, data: CompleteRegistra
 
 export async function registerUser(data: RegisterFormData & { recaptchaToken?: string }): Promise<{
     success:boolean;
-    data?:RegisterResponse;
+    data?:VoidResponse;
     message?: string}
 > {
     try {
