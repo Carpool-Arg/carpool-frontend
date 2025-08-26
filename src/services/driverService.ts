@@ -22,11 +22,11 @@ export async function registerDriver( data: DriverData): Promise<DriverResponse>
       credentials: 'include', 
     });
 
-    if (!res.ok){
-      throw new Error('Datos inválidos')
-    }
-
     const response: DriverResponse = await res.json();
+
+    if (!res.ok){
+      throw new Error(response.messages?.[0])
+    }
 
     return response;
   } catch (error: unknown) {

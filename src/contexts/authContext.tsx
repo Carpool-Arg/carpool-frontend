@@ -116,7 +116,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
       }
-      console.log(result)
       if (result.state === "OK") {
         await fetchUser();
         router.push('/home');
@@ -149,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         setUser(null);
-        throw new Error(result.messages?.[1] || 'Error al iniciar sesión con Google');
+        throw new Error(result.messages?.[0] || 'Error al iniciar sesión con Google');
       }
     } catch (error) {
       console.error('Google login error:', error);
@@ -160,12 +159,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = useCallback(async () => {
+  const logout = async () => {
     try {
       const res = await logoutUser(); // logoutUser debería lanzar error solo si hay fallo de red
       if (res.state === "OK") { // suponiendo que devuelve { ok: boolean } o status 200
+        await router.push('/login'); 
         setUser(null);
-        router.push('/login');
       } else {
         console.error('Logout failed', res.messages?.[0]);
         // opcional: mostrar mensaje de error sin redirigir
@@ -174,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error during logout:', error);
       // opcional: mostrar mensaje al usuario
     }
-  }, [router]);
+  };
 
 
   const value = {

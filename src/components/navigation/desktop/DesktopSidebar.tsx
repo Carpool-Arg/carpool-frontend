@@ -21,7 +21,10 @@ export default function DesktopSidebar() {
     <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-dark-5 border-r border-gray-200 dark:border-gray-700 flex-col justify-between px-6 py-8 z-50">
       {/* Top section: logo y navegación */}
       <div>
-        <h1 className="text-xl font-semibold mb-10 flex items-center gap-1 justify-center"><Infinity size={40} />Carpool</h1>
+        <h1 className="text-2xl font-semibold mb-10 flex items-center gap-2 justify-start">
+          <span className='bg-primary/80 rounded-lg p-1'><Infinity size={42} /></span>
+          Carpool
+        </h1>
         <nav className="flex flex-col gap-2">
           {navItems.map(({ href, icon: Icon, label }) => {
             const isActive = pathname.startsWith(href);

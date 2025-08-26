@@ -14,8 +14,17 @@ export const driverSchema = z.object({
 
   birthDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'La fecha de nacimiento no es válida',
+    .refine((date) => {
+      const parsed = Date.parse(date);
+      if (isNaN(parsed)) return false;
+      const birth = new Date(parsed);
+      const today = new Date();
+      const age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      const dayDiff = today.getDate() - birth.getDate();
+      return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
+    }, {
+      message: 'Debes ser mayor de 18 años',
     }),
 
   addressStreet: z

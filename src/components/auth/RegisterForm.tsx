@@ -172,12 +172,6 @@ export function RegisterForm() {
   const onGoogleError = () => {
     setError('Error en autenticación con Google')
   }
-
-  const genderLabels: Record<string, string> = {
-    MALE: "Masculino",
-    FEMALE: "Femenino",
-    UNSPECIFIED: "No especificado",
-  };
   
   return (
     <div className="flex flex-col gap-4 p-6 w-full">
@@ -339,12 +333,12 @@ export function RegisterForm() {
             <select
               id="gender"
               {...step2Form.register('gender', { required: "El género es obligatorio" })}
-              className={`w-full rounded-md border px-3 py-2 font-outfit text-sm ${
-                step2Form.formState.errors.gender ? 'border-error' : 'border-gray-300'
+              className={`w-full rounded-md border px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5 ${
+                step2Form.formState.errors.gender ? 'border-error' : ''
               }`}
               defaultValue=""
             >
-              <option value="" disabled>Seleccioná un género</option>
+              <option value="" disabled >Seleccioná un género</option>
               {genders.map((gender) => (
                 <option key={gender.value} value={gender.value}>
                   {gender.label}

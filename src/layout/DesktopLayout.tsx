@@ -10,7 +10,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
 
   // Definí en qué rutas querés que aparezca el header
-  const showHeader = [ '/profile/details', '/settings'].includes(pathname);
+  const showHeader = [ '/profile/details', '/register-driver'].includes(pathname);
   return (
     <div className="flex min-h-screen">
       {shouldShowSidebar && <DesktopSidebar />}

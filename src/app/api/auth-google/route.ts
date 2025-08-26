@@ -35,15 +35,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      const errorRes = NextResponse.json(
-        { data: null, messages: [errorText], state: "ERROR" },
-        { status: res.status }
-      );
-      
-      // Limpiar cookies si falla
-      errorRes.cookies.delete('token');
-      errorRes.cookies.delete('refreshToken');
+      const errorJson: GoogleLoginResponse = await res.json();
+
+      const errorRes = NextResponse.json(errorJson, { status: res.status });
+      errorRes.cookies.delete("token");
+      errorRes.cookies.delete("refreshToken");
 
       return errorRes;
     }
