@@ -1,15 +1,15 @@
 'use client'
 
-import { ChangePasswordData, changePasswordSchema } from "@/schemas/change-password/changePasswordSchema";
-import { CheckCircle, ChevronLeft, LockKeyhole, XCircle } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+
+import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
+
 import { Button } from "../ui/Button";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/Input";
+import { ChangePasswordData, changePasswordSchema, ResetPasswordData, resetPasswordSchema } from "@/schemas/password/passwordSchema";
 
 type PasswordFormdProps = {
     title: string;
@@ -30,8 +30,8 @@ export default function PasswordForm({
     const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
 
-    const passwordsForm = useForm<ChangePasswordData>({
-        resolver: zodResolver(changePasswordSchema),
+    const passwordsForm = useForm<ResetPasswordData>({
+        resolver: zodResolver(resetPasswordSchema),
         mode: "onChange",
         defaultValues: { password: "", confirmPassword: "" },
     });
@@ -43,7 +43,7 @@ export default function PasswordForm({
         }
     }, [token]);
 
-    const handleSubmit = async (data: ChangePasswordData) => {
+    const handleSubmit = async (data: ResetPasswordData) => {
         setStatus("loading");
         setMessage(null);
         if (!token) {

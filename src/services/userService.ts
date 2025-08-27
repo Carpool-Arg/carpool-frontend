@@ -1,3 +1,5 @@
+import { PUT } from "@/app/api/users/update-profile/route";
+import { ChangePasswordData } from "@/schemas/password/passwordSchema";
 import { ProfileData } from "@/schemas/profile/profileSchema";
 import { UserResponse } from "@/types/response/user";
 
@@ -32,6 +34,28 @@ export async function updateUser(data: ProfileData): Promise<UserResponse> {
     });
 
     const response: UserResponse = await res.json();
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+
+export async function updatePassword(data: ChangePasswordData): Promise<UserResponse> {
+  try {
+    const res = await fetch('/api/users/update-password',{
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
+    })
+
+    const response: UserResponse = await res.json();
+
     return response;
   } catch (error: unknown) {
     let message = "Error desconocido";
