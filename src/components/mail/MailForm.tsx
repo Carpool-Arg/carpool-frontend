@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "../ui/Button"
-import { ChevronLeft, Clock, Mail, XCircle } from "lucide-react"
+import { Clock, Mail, XCircle } from "lucide-react"
 import { Input } from "../ui/Input"
-import Link from "next/link"
-import Image from "next/image"
+
 
 type MailFormProps = {
     queryEmail: boolean
@@ -26,54 +25,66 @@ export default function MailForm({
     paramMail,
     onResend,
 }: MailFormProps){
-    const [email, setEmail] = useState('')
-    const [cooldown,setCooldown] = useState(0)
-    const [loading,setLoading] = useState(false)
-    const [message, setMessage] = useState('')
-    const [error,setError] = useState('')
-    
-    const handleResend = async()  => {
-        if(!email && !queryEmail){
-            setError('Ingresá un correo válido')
-            return
-        }
-        setError('')
-        setLoading(true)
-        setMessage('')
+    const [email, setEmail] = useState<string>('')
+    const [cooldown,setCooldown] = useState<number>(0)
+    const [loading,setLoading] = useState<boolean>(false)
+    const [message, setMessage] = useState<string>('')
+    const [error, setError] = useState<string>('')
 
-        try {
-            await onResend(email)
-            setMessage('Correo enviado correctamente.')
-            setCooldown(30) // ejemplo de cooldown en segundos
-            const interval = setInterval(() => {
-                setCooldown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(interval)
-                    return 0
-                }
-                return prev - 1
-                })
-            }, 1000)
-            } catch (err) {
-            setError('Hubo un problema al reenviar el correo.')
-            } finally {
-            setLoading(false)
-        }
+    const [hasQueryEmail, setHasQueryEmail] = useState<boolean>(queryEmail) //guarda el boolean para saber si hubo o no query param
+    const [initialMail, setInitialMail] = useState<string>(paramMail || '') //guarda el email del query param
+
+    
+    const handleResend = async () => {
+      //si hay email por query param usa ese sino el email ingresado en el form
+      const targetEmail = hasQueryEmail ? initialMail : email
+
+      if (!targetEmail) {
+        setError('Ingresá un correo válido')
+        return
+      }
+
+      setError('')
+      setLoading(true)
+      setMessage('')
+
+      try {
+        await onResend(targetEmail) // usás el correcto según el caso
+        setMessage('Correo enviado correctamente.')
+        setCooldown(30) // cooldown
+        const interval = setInterval(() => {
+          setCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(interval)
+              return 0
+            }
+            return prev - 1
+          })
+        }, 1000)
+      } catch (err) {
+        setError('Hubo un problema al reenviar el correo.')
+      } finally {
+        setLoading(false)
+      }
     }
-
-    
 
     const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 
-    const handleSend = () => {
-        if (!isValidEmail(email)) {
+    const handleSend = async () => {
+      if (!isValidEmail(email)) {
         setError('Ingresá un correo electrónico válido.');
         return;
-        }
-        handleResend();
-    };
+      }
+      try {
+        await handleResend() // renvia el correo
+        setHasQueryEmail(true) // simula que el email viene del query param
+        setInitialMail(email) // guarda el email para que se muestre en la pantalla correcta
+      } catch (err) {
+        console.error(err)
+      }
+    }
 
     useEffect(() => {
     if (message || error) {
@@ -113,13 +124,13 @@ export default function MailForm({
       {/* Título y subtítulo */}
       <h1 className="text-2xl font-semibold mb-2">{title}</h1>
       <p className="text-gray-3 mt-4 max-w-md font-inter">
-        {(queryEmail && paramMail)
-          ? `Te enviamos un correo a: ${obscureEmail(paramMail)}. Revisa tu bandeja de entrada.`
+        {(hasQueryEmail && initialMail)
+          ? `Te enviamos un correo a: ${obscureEmail(initialMail)}. Revisa tu bandeja de entrada.`
           : subtitle}
       </p>
 
       {/* Input y botón si no hay queryEmail */}
-      {!queryEmail && (
+      {!hasQueryEmail && (
           <div className="my-6 flex items-center gap-2">
           <Input
             type="email"
@@ -163,8 +174,8 @@ export default function MailForm({
       </div>
 
       {/* Mensajes */}
-      {(loading && queryEmail)  && <p className="mt-4 text-primary">Reenviando correo...</p>}
-      {(message && queryEmail) && <p className="mt-4 text-success">{message}</p>}
+      {(loading && hasQueryEmail)  && <p className="mt-4 text-primary">Reenviando correo...</p>}
+      {(message && hasQueryEmail) && <p className="mt-4 text-success">{message}</p>}
         {(error) && (
             <div
                 className="fixed bottom-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white 
@@ -176,8 +187,8 @@ export default function MailForm({
         )}
 
       {/* Botón secundario si hay queryEmail */}
-      {queryEmail && (
-          <Button
+      {hasQueryEmail && (
+        <Button
           onClick={handleResend}
           disabled={loading || cooldown > 0}
           variant="outline"
@@ -188,8 +199,4 @@ export default function MailForm({
       )}
     </div>
   )
-
-
-    
-    
 }

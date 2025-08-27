@@ -22,7 +22,7 @@ export default function DesktopSidebar() {
       {/* Top section: logo y navegación */}
       <div>
         <h1 className="text-2xl font-semibold mb-10 flex items-center gap-2 justify-start">
-          <span className='bg-primary/80 rounded-lg p-1'><Infinity size={42} /></span>
+          <span className='bg-gradient-to-bl from-primary-light via-primary/85 via-70% to-primary-dark rounded-lg p-1'><Infinity size={42} /></span>
           Carpool
         </h1>
         <nav className="flex flex-col gap-2">

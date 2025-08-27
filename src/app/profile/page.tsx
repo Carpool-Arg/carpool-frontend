@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
 import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
-import { RoleOptions } from '@/components/profile/RoleOptions';
+import { RoleOptions } from '@/components/profile/ProfileOptions';
 import { Alert } from '@/components/ui/Alert';
 import { useRouter } from 'next/navigation';
 

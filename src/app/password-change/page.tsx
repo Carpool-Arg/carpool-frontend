@@ -1,9 +1,10 @@
 
 
+
 import PasswordForm from "@/components/password/PasswordForm";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ChangePasswordData, changePasswordSchema } from "@/schemas/change-password/changePasswordSchema";
+import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, ChevronLeft, LockKeyhole, XCircle } from "lucide-react";
 import Image from "next/image";

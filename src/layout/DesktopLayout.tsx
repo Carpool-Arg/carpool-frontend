@@ -6,11 +6,17 @@ import { usePathname } from "next/navigation";
 
 export default function DesktopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/register-driver'];
+  const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/register-driver', '/settings'];
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
 
   // Definí en qué rutas querés que aparezca el header
-  const showHeader = [ '/profile/details', '/register-driver'].includes(pathname);
+  const showHeader = [ 
+    '/profile/details', 
+    '/register-driver', 
+    '/settings', 
+    '/settings/security',
+    '/settings/security/update-password' 
+  ].includes(pathname);
   return (
     <div className="flex min-h-screen">
       {shouldShowSidebar && <DesktopSidebar />}

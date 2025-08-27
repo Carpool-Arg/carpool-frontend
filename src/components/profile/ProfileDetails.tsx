@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { updateUser } from '@/services/userService';
-import { SquarePen, Trash } from 'lucide-react';
+import { Edit, Settings2, SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -185,7 +185,7 @@ export default function ProfileDetails() {
     <div className="space-y-4 max-w-md">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
-        <label className="px-1 text-sm flex items-center gap-1 border rounded cursor-pointer">
+        <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer">
           <SquarePen size={14} />
           Editar foto
           <input
@@ -197,7 +197,7 @@ export default function ProfileDetails() {
         </label>
         <Button
           onClick={handleDeletePhoto}
-          className="px-1 text-sm flex items-center gap-1"
+          className="text-sm flex items-center gap-1"
           variant="danger"
         >
           <Trash size={14} />
@@ -253,13 +253,16 @@ export default function ProfileDetails() {
 
           </div>
         </div>
-
+        
         <Input
           label="Correo"
           type="email"
           value={editableUser.email}
           onChange={(e) => handleChange('email', e.target.value)}
+          disabled
+          className="w-full"
         />
+
         <Input
           label="Celular"
           value={editableUser.phone}

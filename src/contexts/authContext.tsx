@@ -137,7 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await authWithGoogle(idToken);
-      
       if (result.state === "OK" && result.data) {
         await fetchUser();
         // Redirigir según el estado del usuario
