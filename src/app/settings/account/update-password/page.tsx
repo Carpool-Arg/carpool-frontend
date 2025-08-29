@@ -1,4 +1,4 @@
-import UpdatePasswordForm from "@/components/password/UpdatePasswordForm";
+import UpdatePasswordForm from "@/components/settings/UpdatePasswordForm";
 import { SecurityOptions } from "@/components/settings/SecurityOptions";
 
 
