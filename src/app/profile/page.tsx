@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
-import { ProfileHeader } from '../../components/profile/ProfileHeader';
-import { RoleSwithcer } from '../../components/profile/RoleSwitcher';
-import { RoleOptions } from '@/components/profile/RoleOptions';
-import { useRouter } from 'next/navigation';
+import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
+import { ProfileOptions } from '@/components/profile/ProfileOptions';
 import { Alert } from '@/components/ui/Alert';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -18,12 +17,11 @@ export default function ProfilePage() {
   const isDriver = user.roles?.includes('driver');
 
   const handleRegisterAsDriver = () => {
-    router.push('/register-driver'); // cambiar ruta
+    router.push('/register-driver');
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 py-12">
-      <ProfileHeader user={user} />
+    <>
       <RoleSwithcer role={role} onChange={setRole} />
 
       {role === 'conductor' && !isDriver ? (
@@ -38,11 +36,11 @@ export default function ProfilePage() {
           </Alert>
         </div>
       ) : (
-        <RoleOptions
+        <ProfileOptions
           role={role === 'conductor' ? 'driver' : 'passenger'}
           logout={logout}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -22,7 +22,11 @@ import { Check, X } from 'lucide-react'
 import { Alert } from "../ui/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const genders = [
+  { label: "Masculino", value: "MALE" },
+  { label: "Femenino", value: "FEMALE" },
+  { label: "Otro", value: "UNSPECIFIED" },
+];
 
 export function RegisterForm() {
   const [step, setStep] = useState(1)
@@ -53,7 +57,8 @@ export function RegisterForm() {
       name: '',
       lastname: '',
       dni: '',
-      phone: ''
+      phone: '',
+      gender:'UNSPECIFIED'
     }
   })
 
@@ -84,6 +89,7 @@ export function RegisterForm() {
     return () => subscription.unsubscribe();
   }, [step2Form, dniValidation]);
 
+
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
     if (validation.available === true) return <Check className="w-4 h-4 text-success" />;
@@ -91,9 +97,8 @@ export function RegisterForm() {
     return null;
   };
 
-
   // Maneja el siguiente paso
-  const handleNext = async (data: RegisterStep1Data) => {
+  const handleNext = async () => {
     setError(null)
     setStep(2)
   }
@@ -115,7 +120,7 @@ export function RegisterForm() {
         ...step1Data,
         ...data
       }
-
+      
       // Ejecutar reCAPTCHA
       if (!executeRecaptcha) {
         setError('reCAPTCHA no está disponible')
@@ -131,13 +136,14 @@ export function RegisterForm() {
       }
 
       const response = await registerUser({...completeData, recaptchaToken: gRecaptchaToken})
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario")
+
+      if (response.state !== "OK") {
+        setError(response.messages?.[0] || "Error al registrar usuario")
         return
       }
 
-      router.push('/email-verify')
-    } catch (err) {
+      router.push(`/email-verify?email=${completeData.email}`)
+    } catch {
       setError('Error al registrar usuario')
     } finally {
       setLoading(false)
@@ -153,8 +159,13 @@ export function RegisterForm() {
     setError(null)
     try {
       await authGoogle(credentialResponse.credential)
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión con Google')
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión con Google')
     }
   }
 
@@ -278,7 +289,6 @@ export function RegisterForm() {
                 type="text"
                 {...step2Form.register('name')}
                 error={step2Form.formState.errors.name?.message}
-                
               />
             </div>
             <div>
@@ -287,7 +297,6 @@ export function RegisterForm() {
                 type="text"
                 {...step2Form.register('lastname')}
                 error={step2Form.formState.errors.lastname?.message}
-                
               />
             </div>
           </div>
@@ -301,7 +310,6 @@ export function RegisterForm() {
               rightIcon={getRightIcon(dniValidation)}
               className="font-outfit"
             />
-
             {dniValidation.message && (
               <p className={`text-xs font-inter mt-1 ${
                 dniValidation.messageType === 'success' ? 'text-success' : 'text-error'
@@ -317,29 +325,47 @@ export function RegisterForm() {
               type="tel"
               {...step2Form.register('phone')}
               error={step2Form.formState.errors.phone?.message}
-              
             />
+          </div>
+
+          <div>
+            <label htmlFor="gender" className="block mb-1 font-medium text-sm font-outfit">Género</label>
+            <select
+              id="gender"
+              {...step2Form.register('gender', { required: "El género es obligatorio" })}
+              className={`w-full rounded-md border px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5 ${
+                step2Form.formState.errors.gender ? 'border-error' : ''
+              }`}
+              defaultValue=""
+            >
+              <option value="" disabled >Seleccioná un género</option>
+              {genders.map((gender) => (
+                <option key={gender.value} value={gender.value}>
+                  {gender.label}
+                </option>
+              ))}
+            </select>
+            {step2Form.formState.errors.gender && (
+              <p className="text-error text-xs mt-1">{step2Form.formState.errors.gender.message}</p>
+            )}
           </div>
 
           <div className="flex gap-4">
             <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>
               Atrás
             </Button>
-            <Button 
-              type="submit" 
-              variant="primary" 
-              className="w-full" 
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
               disabled={loading || step2Form.formState.isSubmitting}
             >
-              {loading ? (
-                <Spinner size={20} />
-              ) : (
-                'Registrarse'
-              )}
+              {loading ? <Spinner size={20} /> : 'Registrarse'}
             </Button>
           </div>
         </form>
       )}
+
     </div>
   )
 }

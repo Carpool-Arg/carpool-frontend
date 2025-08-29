@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTokenExpired } from "./utils/jwt";
+import { PUBLIC_PATHS } from "./constants/publicPaths";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Rutas públicas que no necesitan autenticación
-  const publicPaths = [
-    '/login', 
-    '/register', 
-    '/email-verify',
-    '/email-verified',
-    '/api/login', 
-    '/api/register', 
-    '/api/google', 
-    '/api/refresh', 
-    '/api/email-verify',
-    '/api/complete-registration',
-    '/api/resend-activation',
-    '/complete-profile'
-  ];
+  const publicPaths = [...PUBLIC_PATHS.pages, ...PUBLIC_PATHS.api];
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
@@ -192,13 +179,6 @@ function setTokenCookies(response: NextResponse, tokens: { accessToken: string; 
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|api/me).*)'
+    '/((?!_next/static|_next/image|favicon.ico|api/me|icons|manifest.webmanifest).*)'
   ],
 };

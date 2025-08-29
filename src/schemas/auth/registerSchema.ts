@@ -17,7 +17,7 @@ const registerStep1BaseSchema = z.object({
   
   password: z
     .string()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .max(255, 'La contraseña no puede tener más de 255 caracteres')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
   
@@ -59,7 +59,9 @@ export const registerStep2Schema = z.object({
     .string()
     .min(7, 'El teléfono debe tener al menos 7 dígitos')
     .max(25, 'El teléfono no puede tener más de 25 dígitos')
-    .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.')
+    .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.'),
+  
+  gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
 })
 
 // Esquema completo para el registro (usando el esquema base sin refine)

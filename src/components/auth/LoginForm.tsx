@@ -11,12 +11,11 @@ import Spinner from "../ui/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 import { Alert } from "../ui/Alert"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 
 export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
   const { login, loading, authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
 
@@ -32,6 +31,7 @@ export function LoginForm() {
       password: ''
     }
   })
+  
 
   const onSubmit = async (data: LoginData) => {
     setError(null);
@@ -54,8 +54,13 @@ export function LoginForm() {
       await login({ ...data, recaptchaToken: gRecaptchaToken })
 
       
-    } catch (err:any) {
-      setError(err.message || 'Error al iniciar sesión');
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión');
     }
   }
 
@@ -68,8 +73,13 @@ export function LoginForm() {
     setError(null)
     try {
       await authGoogle(credentialResponse.credential)
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión con Google')
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al iniciar sesión con Google')
     }
   }
 
@@ -103,6 +113,10 @@ export function LoginForm() {
           error={errors.password?.message}
         />
       </div>
+
+      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer text-sm">
+        ¿Olvidaste tu contraseña?
+      </Link>
 
       <Button
         variant="primary"
@@ -144,6 +158,8 @@ export function LoginForm() {
         y
         <a href="/privacy" className="text-dark-2 dark:text-gray-1 font-medium ml-1">Política de Privacidad</a>.
       </p>
+      
+
 
       
     </form>

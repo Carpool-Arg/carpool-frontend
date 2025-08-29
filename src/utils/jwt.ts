@@ -1,4 +1,13 @@
-export function parseJwt(token: string): any | null {
+
+type JwtPayload = {
+  sub: string;
+  username: string;
+  authorities: string | { authority: string }[]; // Puede venir como string (JSON) o como objeto ya parseado
+  exp: number;
+  iat: number;
+};
+
+export function parseJwt(token: string): JwtPayload | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -16,7 +25,7 @@ export function parseJwt(token: string): any | null {
     }
 
     return decoded;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -26,8 +35,13 @@ export function isTokenExpired(token: string): boolean {
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     const now = Math.floor(Date.now() / 1000);
     return payload.exp < now;
-  } catch (error) {
-    console.error('Error parsing token:', error);
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    console.error('Error parsing token:', message);
     return true; // Si no se puede parsear, considerarlo expirado
   }
 }

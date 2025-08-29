@@ -1,13 +1,27 @@
+import { fetchWithRefresh } from "@/lib/http/authInterceptor";
+import { DriverResponse } from "@/types/response/driver";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * Actualiza el perfil de un usuario.
+ *
+ * Recibe los datos del perfil desde la petición, realiza la llamada 
+ * al backend para registrar al usuario como conductor, devuelve la respuesta
+ * estándar de tipo `DriverResponse` y actualiza el access y el refresh token.
+ * 
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con el estado del registro
+ */
 export async function POST(req: NextRequest) {
   try {
+    // Recibir el token de la petición
     const token = req.cookies.get('token')?.value;
     const body = await req.json();
 
-    const response = await fetch(`${apiUrl}/drivers`, {
+    // Llamada al backend con interceptor para refresco de tokens
+    const res = await fetchWithRefresh(`${apiUrl}/drivers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" ,
         'Authorization': `Bearer ${token}`
@@ -15,25 +29,16 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const { state, messages, data} = await response.json();
+    const response: DriverResponse = await res.json();
 
-    if (!response.ok || state !== 'OK') {
-      return NextResponse.json(
-        {
-          success: false,
-          message: messages?.[1] || 'Error en registrar al conductor',
-        },
-        { status: response.status }
-      );
-    }
+    const newAccessToken = response.data?.accessToken;
+    const newRefreshToken = response.data?.refreshToken;
 
-    const newAccessToken = data?.accessToken;
-    const newRefreshToken = data?.refreshToken;
-
-    const res = NextResponse.json({ success: true, data: data }, { status: response.status });
+    // Guardar nuevos tokens en cookies
+    const nextRes = NextResponse.json(response, { status: res.status });
 
     if (newAccessToken) {
-      res.cookies.set("token", newAccessToken, {
+      nextRes.cookies.set("token", newAccessToken, {
         httpOnly: true,
         path: "/",
         secure: process.env.NODE_ENV === "production",
@@ -42,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (newRefreshToken) {
-      res.cookies.set("refreshToken", newRefreshToken, {
+      nextRes.cookies.set("refreshToken", newRefreshToken, {
         httpOnly: true,
         path: "/",
         secure: process.env.NODE_ENV === "production",
@@ -50,14 +55,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return res;
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify({ message: "Error en la API de drivers", detail: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    // Devolver respuesta estandarizada
+    return nextRes;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return NextResponse.json({
+      data: null,
+      messages: [message],
+      state: "ERROR",
+    }, { status: 500 });
   }
 }

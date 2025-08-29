@@ -1,7 +1,8 @@
+// TokenManager.ts
 class TokenManager {
   private static instance: TokenManager;
   private isRefreshing = false;
-  private refreshPromise: Promise<boolean> | null = null;
+  private refreshPromise: Promise<string | null> | null = null; // Devuelve nuevo accessToken
 
   static getInstance(): TokenManager {
     if (!TokenManager.instance) {
@@ -10,7 +11,7 @@ class TokenManager {
     return TokenManager.instance;
   }
 
-  async refreshToken(): Promise<boolean> {
+  async refreshToken(): Promise<string | null> {
     // Si ya hay un refresh en progreso, esperar a que termine
     if (this.isRefreshing && this.refreshPromise) {
       return this.refreshPromise;
@@ -20,30 +21,32 @@ class TokenManager {
     this.refreshPromise = this.performRefresh();
 
     try {
-      const result = await this.refreshPromise;
-      return result;
+      const token = await this.refreshPromise;
+      return token;
     } finally {
       this.isRefreshing = false;
       this.refreshPromise = null;
     }
   }
 
-  private async performRefresh(): Promise<boolean> {
+  private async performRefresh(): Promise<string | null> {
     try {
-      const refresh = await fetch('/api/refresh', {
+      const refresh = await fetch('/api/auth/refresh', {
         method: 'POST',
-        credentials: 'include',
+        credentials: 'include', // lee refreshToken de cookie
       });
 
-      if (refresh.ok) {
-        return true;
-      } else {
+      if (!refresh.ok) {
         console.error('[TOKEN] Refresh falló:', refresh.status);
-        return false;
+        return null;
       }
+
+      const data = await refresh.json();
+      // Suponemos que el backend devuelve { accessToken, refreshToken }
+      return data.data?.accessToken;
     } catch (error) {
       console.error('[TOKEN] Error en refresh:', error);
-      return false;
+      return null;
     }
   }
 }
@@ -54,10 +57,8 @@ export async function fetchWithRefresh(
 ): Promise<Response> {
   const tokenManager = TokenManager.getInstance();
 
-  let res = await fetch(input, {
-    ...init,
-    credentials: 'include',
-  });
+  // Primer intento
+  let res = await fetch(input, { ...init, credentials: 'include' });
 
   if (res.status !== 401) {
     return res;
@@ -65,10 +66,10 @@ export async function fetchWithRefresh(
 
   console.warn(`[fetchWithRefresh] Token expirado para ${input}. Intentando refrescar...`);
 
-  // Usar el token manager para evitar múltiples refresh
-  const refreshSuccess = await tokenManager.refreshToken();
-   
-  if (!refreshSuccess) {
+  // Intentar refresh
+  const newAccessToken = await tokenManager.refreshToken();
+
+  if (!newAccessToken) {
     console.error('[fetchWithRefresh] No se pudo refrescar el token');
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
@@ -76,11 +77,13 @@ export async function fetchWithRefresh(
     throw new Error('Token inválido o expirado');
   }
 
-  // Reintentamos la petición original
-  const retryRes = await fetch(input, {
-    ...init,
-    credentials: 'include',
-  });
+  // Reemplazar Authorization con el nuevo token
+  const newHeaders = {
+    ...(init?.headers || {}),
+    'Authorization': `Bearer ${newAccessToken}`,
+  };
 
-  return retryRes;
+  // Reintento con nuevo token
+  res = await fetch(input, { ...init, headers: newHeaders, credentials: 'include' });
+  return res;
 }

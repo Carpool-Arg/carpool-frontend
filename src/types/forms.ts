@@ -1,6 +1,6 @@
 export interface LoginFormData {
-    username: string
-    password: string
+  username: string
+  password: string
 }
 
 export interface RegisterFormData {
@@ -13,7 +13,6 @@ export interface RegisterFormData {
   dni: string;
   phone: string;
 }
-
 
 export interface CompleteRegistrationFormData {
   username: string;

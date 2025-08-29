@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { completeRegistrationSchema, CompleteRegistrationData } from "@/schemas/auth/completeRegistrationSchema"
-import { completeRegistration, registerUser } from "@/services/authService"
+import { completeRegistration } from "@/services/authService"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
 import Spinner from "../ui/Spinner"
@@ -33,7 +33,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     try {
       await completeRegistration(email,data)
       router.push('/email-verify')
-    } catch (err) {
+    } catch {
       setError('Error al registrar usuario')
     } finally {
       setLoading(false)

@@ -33,18 +33,34 @@ export function DriverForm() {
     }
   })
 
+  const formatDate = (date: string) => {
+    const [y, m, d] = date.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
   const onSubmit = async (data: DriverData) => {
     setError(null);
     try {
-      const response = await registerDriver(data)
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario");
+       const payload = {
+        ...data,
+        birthDate: formatDate(data.birthDate), 
+        licenseExpirationDate: formatDate(data.licenseExpirationDate),
+      };
+      
+      const response = await registerDriver(payload)
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al registrar usuario");
         return
       }
       await fetchUser();
       router.push('/profile');
-    } catch (err:any) {
-      setError(err.message || 'Error al crear el perfil de conductor');
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      setError(message || 'Error al crear el perfil de conductor');
     }
   }
 
@@ -56,30 +72,44 @@ export function DriverForm() {
         {error && <Alert message={error} />}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Clase de licencia */}
           <Input
-            label="Licencia de conducir"
+            label="Clase de Licencia"
             type="text"
             autoComplete="licenseClass"
+            className="md:col-span-1 w-1/2"
             {...register('licenseClass')}
             error={errors.licenseClass?.message}
           />
 
+          {/* Vencimiento */}
           <Input
             label="Vencimiento"
-            type="text"
+            type="date"
             autoComplete="licenseExpirationDate"
             {...register('licenseExpirationDate')}
             error={errors.licenseExpirationDate?.message}
           />
 
+          {/* Fecha de nacimiento */}
           <Input
             label="Fecha de Nacimiento"
-            type="text"
+            type="date"
             autoComplete="birthDate"
             {...register('birthDate')}
             error={errors.birthDate?.message}
           />
 
+          {/* Localidad */}
+          <Input
+            label="Localidad"
+            type="text"
+            autoComplete="locality"
+            {...register('locality')}
+            error={errors.locality?.message}
+          />
+
+          
           <Input
             label="Dirección"
             type="text"
@@ -95,15 +125,11 @@ export function DriverForm() {
             {...register('addressNumber')}
             error={errors.addressNumber?.message}
           />
+          
 
-          <Input
-            label="Localidad"
-            type="text"
-            autoComplete="locality"
-            {...register('locality')}
-            error={errors.locality?.message}
-          />
         </div>
+
+
         <Button
           variant="primary"
           type="submit"
