@@ -23,6 +23,8 @@ export const AppHeader = ({ showBack, rightAction }: AppHeaderProps) => {
     '/search': 'Buscar',
     '/notifications': 'Notificaciones',
     '/register-driver': 'Registrar conductor',
+    '/vehicle': 'Vehículos',
+    '/vehicle/new': 'Registrar Vehículo'
   };
 
   // Buscar título exacto o por prefijo

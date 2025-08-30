@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Separator from "../ui/Separator";
 import { useRouter } from "next/navigation";
 import { deleteVehicle } from "@/services/vehicleService";
+import { IoCarSport } from "react-icons/io5";
 
 interface Props {
   vehicle: Vehicle;
@@ -54,7 +55,7 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onDeleteSuccess 
   if (!visible && !isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-90 flex items-end justify-center">
+    <div className="fixed inset-0 z-90 flex items-end justify-center h-screen">
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-200 ${
           isOpen ? "opacity-30" : "opacity-0"
@@ -63,28 +64,35 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onDeleteSuccess 
       />
 
       <div
-        className={`relative w-full max-w-md bg-white rounded-t-2xl p-6 z-50 shadow-xl transition-transform duration-300 ${
-          isOpen ? "translate-y-0" : "translate-y-full"
-        }`}
+        className={`relative w-full max-w-md rounded-t-2xl dark:bg-dark-2 p-6 z-50 shadow-xl
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-y-0" : "translate-y-full"}
+        `}
       >
-        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
-
-        <div className="flex items-center gap-4 mb-4">
-          <div className="relative w-12 h-12">
-            <Image src="/car-placeholder.webp" alt="Auto" fill className="object-contain" />
-          </div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            {vehicle.brand?.toUpperCase()} {vehicle.model?.toUpperCase()}
-          </h2>
+        <div className="mb-4 flex items-center justify-center">
+          <button 
+          onClick={onClose} 
+          className="h-1.5 w-12 rounded-full bg-dark-4 "/>
         </div>
         
-        <Separator/>
+
+
+        <div className="flex items-center gap-4 mb-4">
+          <span className="text-4xl">
+            <IoCarSport/>
+          </span>
+          <h1 className="text-lg font-semibold">
+            {vehicle.brand?.toUpperCase()} <span className="font-light">{vehicle.model?.toUpperCase()}</span>
+          </h1>
+        </div>
+        
+        <Separator color="bg-gray-5"/>
 
         {error && <p className="text-red-600 mb-2">{error}</p>}
 
         <button
           onClick={handleEdit}
-          className="flex items-center gap-2 mb-4 text-gray-800 hover:text-blue-600 cursor-pointer"
+          className="flex items-center gap-2 mb-4 text-gray-1 hover:text-gray-5 cursor-pointer"
           disabled={loading}
         >
           <Pencil size={18} />
@@ -93,7 +101,7 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onDeleteSuccess 
 
         <button
           onClick={handleDelete}
-          className="flex items-center gap-2 text-red-600 hover:text-red-800 cursor-pointer"
+          className="flex items-center gap-2 text-error hover:text-red-800 cursor-pointer"
           disabled={loading}
         >
           {loading ? "Eliminando..." : <><X size={18} />Dar de baja el automóvil</>}

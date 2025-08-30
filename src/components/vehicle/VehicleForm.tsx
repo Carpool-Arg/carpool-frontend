@@ -116,7 +116,7 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6 w-full">
+    <div className="flex flex-col gap-4 w-full">
       
       {/* STEP 1 */}
       {step === 1 && (
@@ -145,18 +145,55 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
         <>
           <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
           <form onSubmit={step2Form.handleSubmit(handleNextFromStep2)} className="flex flex-col gap-4">
-            <Input label="Patente o dominio" {...step2Form.register('domain')} error={step2Form.formState.errors.domain?.message} />
-            <Input label="Marca" {...step2Form.register('brand')} disabled={!!initialData} error={step2Form.formState.errors.brand?.message}  />
-            <Input label="Modelo" {...step2Form.register('model')} error={step2Form.formState.errors.model?.message} />
-            <Input label="Año" type="number" {...step2Form.register('year', { valueAsNumber: true })} error={step2Form.formState.errors.year?.message} />
-            <Input label="Color" {...step2Form.register('color')} error={step2Form.formState.errors.color?.message} />
+            {/* Marca y modelo */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Marca"
+                {...step2Form.register("brand")}
+                disabled={!!initialData}
+                error={step2Form.formState.errors.brand?.message}
+              />
+              <Input
+                label="Modelo"
+                {...step2Form.register("model")}
+                error={step2Form.formState.errors.model?.message}
+              />
+            </div>
 
-            {/* Contenedor de botones en línea */}
+            {/* Patente y año */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Patente o dominio"
+                {...step2Form.register("domain")}
+                error={step2Form.formState.errors.domain?.message}
+              />
+              <Input
+                label="Año"
+                type="number"
+                {...step2Form.register("year", { valueAsNumber: true })}
+                error={step2Form.formState.errors.year?.message}
+              />
+            </div>
+
+            {/* Color */}
+            <Input
+              label="Color"
+              {...step2Form.register("color")}
+              error={step2Form.formState.errors.color?.message}
+            />
+
+            {/* Botones */}
             <div className="flex gap-4 mt-4">
-              <Button variant="outline" onClick={handlePrev} className="w-1/2">Volver</Button>
-              <Button type="submit" variant="primary" className="w-1/2">Siguiente</Button>
+              <Button variant="outline" onClick={handlePrev} className="w-1/2">
+                Volver
+              </Button>
+              <Button type="submit" variant="primary" className="w-1/2">
+                Siguiente
+              </Button>
             </div>
           </form>
+
+
         </>
       )}
 

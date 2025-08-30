@@ -7,7 +7,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   // Definí en qué rutas querés que aparezca el header
-  const showHeader = ['/profile/details', '/settings'].includes(pathname);
+  const showHeader = ['/profile/details', '/settings', '/vehicle'].includes(pathname);
 
   return (
     <div className="flex flex-col h-screen">

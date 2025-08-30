@@ -18,6 +18,8 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
     '/settings/account',
     '/settings/account/update-password',
     '/settings/account/update-email',
+    '/vehicle',
+    '/vehicle/new'
   ].includes(pathname);
   return (
     <div className="flex min-h-screen">

@@ -32,7 +32,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           </Link>
 
           {isDriver && (
-            <Link href="/vehiculos" className={linkClasses}>
+            <Link href="/vehicle" className={linkClasses}>
               <div className="flex items-center gap-2">   
                 <CarFront size={18}/>
                 <span>Mis vehículos</span>
