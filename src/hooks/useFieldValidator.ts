@@ -5,7 +5,7 @@ import type { DebouncedFunc } from 'lodash';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Tipos permitidos para los campos que se pueden validar
-type FieldType = 'username' | 'email' | 'dni';
+type FieldType = 'username' | 'email' | 'dni' | 'phone';
 
 // Tipos permitidos para el tipo de mensaje
 type MessageType = 'success' | 'error' | null;
@@ -21,7 +21,7 @@ export function useFieldValidator(field: FieldType) {
 
   // Función que hace la validación real (sin debounce)
   const validateFn = useCallback(async (value: string) => {
-    if (!value || (field === "username" && value.length < 3)) {
+    if (!value || !(value.length > 1)) {
       setAvailable(null);
       setChecking(false);
       return;
@@ -68,11 +68,20 @@ export function useFieldValidator(field: FieldType) {
     debouncedValidateRef.current?.(value);
   }, []);
 
+  const reset = useCallback(() => {
+    setAvailable(null);
+    setChecking(false);
+    setMessage(null);
+    setMessageType(null);
+  }, []);
+
   return {
     available,
     checking,
     message,
     messageType,
     validate,
+    reset
   };
+  
 }

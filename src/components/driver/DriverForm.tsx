@@ -25,8 +25,7 @@ export function DriverForm() {
     mode: 'onChange',
     defaultValues: {
       licenseClass: '',
-      licenseExpirationDate: '',// formato ISO (YYYY-MM-DD)
-      birthDate: '',          
+      licenseExpirationDate: '',// formato ISO (YYYY-MM-DD)       
       addressStreet: '',
       addressNumber: '',
       locality: '',
@@ -43,7 +42,6 @@ export function DriverForm() {
     try {
        const payload = {
         ...data,
-        birthDate: formatDate(data.birthDate), 
         licenseExpirationDate: formatDate(data.licenseExpirationDate),
       };
       
@@ -71,60 +69,66 @@ export function DriverForm() {
 
         {error && <Alert message={error} />}
 
+        {/* Clase de licencia */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Clase de licencia */}
-          <Input
-            label="Clase de Licencia"
-            type="text"
-            autoComplete="licenseClass"
-            className="md:col-span-1 w-1/2"
-            {...register('licenseClass')}
-            error={errors.licenseClass?.message}
-          />
+          <div className="md:col-span-1">
+
+            <Input
+              label="Clase de Licencia"
+              type="text"
+              autoComplete="licenseClass"
+              className="md:col-span-1 w-1/2"
+              {...register('licenseClass')}
+              error={errors.licenseClass?.message}
+              />
+          </div>
 
           {/* Vencimiento */}
-          <Input
-            label="Vencimiento"
-            type="date"
-            autoComplete="licenseExpirationDate"
-            {...register('licenseExpirationDate')}
-            error={errors.licenseExpirationDate?.message}
-          />
+          <div className="md:col-span-1">
 
-          {/* Fecha de nacimiento */}
-          <Input
-            label="Fecha de Nacimiento"
-            type="date"
-            autoComplete="birthDate"
-            {...register('birthDate')}
-            error={errors.birthDate?.message}
-          />
-
-          {/* Localidad */}
-          <Input
-            label="Localidad"
-            type="text"
-            autoComplete="locality"
-            {...register('locality')}
-            error={errors.locality?.message}
-          />
+            <Input
+              label="Vencimiento"
+              type="date"
+              autoComplete="licenseExpirationDate"
+              {...register('licenseExpirationDate')}
+              error={errors.licenseExpirationDate?.message}
+              />
+          </div>
 
           
-          <Input
-            label="Dirección"
-            type="text"
-            autoComplete="addressStreet"
-            {...register('addressStreet')}
-            error={errors.addressStreet?.message}
-          />
+          {/* Localidad */}
+          <div className="md:col-span-2">
+            
+            <Input
+              label="Localidad"
+              type="text"
+              autoComplete="locality"
+              className="md:col-span-2"
+              {...register('locality')}
+              error={errors.locality?.message}
+              />
+          </div>
 
-          <Input
-            label="Número"
-            type="text"
-            autoComplete="addressNumber"
-            {...register('addressNumber')}
-            error={errors.addressNumber?.message}
-          />
+          <div className="md:col-span-1">
+
+            <Input
+              label="Dirección"
+              type="text"
+              autoComplete="addressStreet"
+              {...register('addressStreet')}
+              error={errors.addressStreet?.message}
+              />
+          </div>
+          
+          <div className="md:col-span-1">
+            <Input
+              label="Número"
+              type="text"
+              autoComplete="addressNumber"
+              {...register('addressNumber')}
+              error={errors.addressNumber?.message}
+              />
+          </div>
           
 
         </div>

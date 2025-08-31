@@ -29,7 +29,6 @@ export const changePasswordSchema = z
 
 export type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
-// ✅ Reset password (con token por email): solo password + confirmPassword
 export const resetPasswordSchema = z
   .object({
     password: passwordSchema,

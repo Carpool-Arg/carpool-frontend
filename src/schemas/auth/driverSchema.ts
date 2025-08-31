@@ -10,23 +10,16 @@ export const driverSchema = z.object({
     .string()
     .refine((date) => !isNaN(Date.parse(date)), {
       message: 'La fecha de vencimiento no es válida',
-    }),
-
-  birthDate: z
-    .string()
+    })
     .refine((date) => {
-      const parsed = Date.parse(date);
-      if (isNaN(parsed)) return false;
-      const birth = new Date(parsed);
+      const inputDate = new Date(date);
       const today = new Date();
-      const age = today.getFullYear() - birth.getFullYear();
-      const monthDiff = today.getMonth() - birth.getMonth();
-      const dayDiff = today.getDate() - birth.getDate();
-      return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
+      today.setHours(0, 0, 0, 0); // Normalizar horas para comparar solo la fecha
+      return inputDate >= today;
     }, {
-      message: 'Debes ser mayor de 18 años',
+      message: 'No puede ser una fecha pasada.',
     }),
-
+    
   addressStreet: z
     .string()
     .min(1, 'La calle es obligatoria')
