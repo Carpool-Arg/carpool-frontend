@@ -23,7 +23,7 @@ export const Button: React.FC<ButtonProps> = ({
     danger:
       'bg-red-800 text-white hover:bg-red-700 cursor-pointer',
     outline:
-      'bg-transparent border border-gray-400 text-gray-700 hover:bg-gray-100 dark:border-gray-5 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer',
+      'bg-transparent border border-gray-5 text-gray-2 hover:bg-gray-1 dark:border-gray-5 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer',
   }
 
   return (

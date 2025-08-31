@@ -30,5 +30,5 @@ export interface vehicleFormData {
   year: number;
   color: string;
   availableSeats: number;
-  vehicleType_Id: number;
+  vehicleTypeId: number;
 }

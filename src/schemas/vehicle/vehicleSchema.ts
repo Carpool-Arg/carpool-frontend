@@ -34,12 +34,8 @@ export const registerVehicleStep2Schema = z.object({
   color: z
     .string()
     .min(1, 'El color del vehículo no puede estar en blanco.')
-    .regex(/^[a-zA-Z ]+$/, 'El color debe contener solo letras y espacios')
-})
-
-// Paso 3: Datos de capacidad
-export const registerVehicleStep3Schema = z.object({
-  availableSeats: z
+    .regex(/^[a-zA-Z ]+$/, 'El color debe contener solo letras y espacios'),
+    availableSeats: z
     .number({
       required_error: 'La cantidad de asientos disponibles no puede estar en blanco.',
       invalid_type_error: 'Debe ingresar un número válido.'
@@ -47,13 +43,13 @@ export const registerVehicleStep3Schema = z.object({
     .min(1, 'La cantidad de asientos disponibles debe ser al menos 1.'),
 })
 
+
+
 // Esquema completo (por si quieres validar todo en un solo paso)
 export const completeRegisterVehicleSchema = registerVehicleStep1Schema
   .merge (registerVehicleStep2Schema)
-  .merge(registerVehicleStep3Schema)
 
 // Tipos TypeScript generados
 export type RegisterVehicleStep1Data = z.infer<typeof registerVehicleStep1Schema>;
-export type RegisterVehicleStep2Data = z.infer<typeof registerVehicleStep2Schema>
-export type RegisterVehicleStep3Data = z.infer<typeof registerVehicleStep3Schema>
-export type CompleteRegisterVehicleData = z.infer<typeof completeRegisterVehicleSchema>
+export type RegisterVehicleStep2Data = z.infer<typeof registerVehicleStep2Schema>;
+export type CompleteRegisterVehicleData = z.infer<typeof completeRegisterVehicleSchema>;

@@ -1,5 +1,5 @@
 'use client'
-import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema, RegisterVehicleStep3Data, registerVehicleStep3Schema } from "@/schemas/auth/vehicleSchema"
+import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema } from "@/schemas/vehicle/vehicleSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -33,16 +33,8 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
       brand: '',
       model: '',
       year: new Date().getFullYear(),
-      color: ''
-    }
-  })
-
-  // Paso 3: Datos de capacidad
-  const step3Form = useForm<RegisterVehicleStep3Data>({
-    resolver: zodResolver(registerVehicleStep3Schema),
-    mode: 'onChange',
-    defaultValues: {
-      availableSeats: 1,
+      color: '',
+      availableSeats: 1
     }
   })
 
@@ -58,10 +50,8 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
         brand: initialData.brand,
         model: initialData.model,
         year: initialData.year,
-        color: initialData.color
-      })
-      step3Form.reset({
         availableSeats: initialData.availableSeats,
+        color: initialData.color
       })
     }
 
@@ -71,15 +61,12 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
     setStep(2)
   }
 
-  const handleNextFromStep2 = () => {
-    setStep(3)
-  }
 
   const handlePrev = () => {
     setStep(step - 1)
   }
 
-  const handleSubmitFinal = async (data: RegisterVehicleStep3Data) => {
+  const handleSubmitFinal = async (data: RegisterVehicleStep2Data) => {
     setLoading(true)
     try {
       // Datos comunes
@@ -144,7 +131,7 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
       {step === 2 && (
         <>
           <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
-          <form onSubmit={step2Form.handleSubmit(handleNextFromStep2)} className="flex flex-col gap-4">
+          <form onSubmit={step2Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
             {/* Marca y modelo */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
@@ -169,48 +156,39 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
               />
               <Input
                 label="Año"
-                type="number"
+                type="year"
+                placeholder="AAAA"
                 {...step2Form.register("year", { valueAsNumber: true })}
                 error={step2Form.formState.errors.year?.message}
               />
             </div>
 
-            {/* Color */}
-            <Input
-              label="Color"
-              {...step2Form.register("color")}
-              error={step2Form.formState.errors.color?.message}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Color */}
+              <Input
+                label="Color"
+                {...step2Form.register("color")}
+                error={step2Form.formState.errors.color?.message}
+              />
+              
+              {/* Capacidad */}
+              <Input 
+                label="Asientos" 
+                type="number" {...step2Form.register('availableSeats', { valueAsNumber: true })} 
+                error={step2Form.formState.errors.availableSeats?.message} 
+              />
+            </div>
 
             {/* Botones */}
-            <div className="flex gap-4 mt-4">
-              <Button variant="outline" onClick={handlePrev} className="w-1/2">
-                Volver
-              </Button>
-              <Button type="submit" variant="primary" className="w-1/2">
-                Siguiente
-              </Button>
-            </div>
-          </form>
-
-
-        </>
-      )}
-
-      {/* STEP 3 */}
-      {step === 3 && (
-        <>
-          {error && <Alert message={error} />}
-          <h1 className="text-xl font-semibold">Espacio</h1>
-          <form onSubmit={step3Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
-            <Input label="Asientos disponibles" type="number" {...step3Form.register('availableSeats', { valueAsNumber: true })} error={step3Form.formState.errors.availableSeats?.message} />
-            <div className="flex gap-4">
+             <div className="flex gap-4">
               <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>Volver</Button>
               <Button type="submit" variant="primary" className="w-full" disabled={loading}>
                 {loading ? (initialData ? 'Actualizando...' : 'Guardando...') : (initialData ? 'Actualizar' : 'Guardar')}
               </Button>
             </div>
           </form>
+
+
         </>
       )}
     </div>

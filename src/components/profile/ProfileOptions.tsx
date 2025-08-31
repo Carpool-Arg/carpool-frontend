@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CarFront, ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
+import { FaCarAlt } from 'react-icons/fa';
 
 interface ProfileOptionsProps {
   role: 'driver' | 'passenger';
@@ -34,7 +35,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           {isDriver && (
             <Link href="/vehicle" className={linkClasses}>
               <div className="flex items-center gap-2">   
-                <CarFront size={18}/>
+                <FaCarAlt size={18}/>
                 <span>Mis vehículos</span>
               </div>
               

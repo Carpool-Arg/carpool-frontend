@@ -1,5 +1,5 @@
-import React, { forwardRef, useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import React, { forwardRef, useState } from "react"
+import { Eye, EyeOff, Calendar } from "lucide-react"
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -10,8 +10,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className, type, rightIcon, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false)
-    const isPassword = type === 'password'
-                
+    const isPassword = type === "password"
+    const isYear = type === "year"
+
     return (
       <div className="flex flex-col relative">
         {label && (
@@ -22,16 +23,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className="relative">
           <input
             ref={ref}
-            type={isPassword && showPassword ? 'text' : type}
+            type={isPassword && showPassword ? "text" : isYear ? "text" : type}
+            maxLength={isYear ? 4 : undefined} // solo 4 caracteres para year
+            inputMode={isYear ? "numeric" : undefined} // teclado numérico en móviles
+            pattern={isYear ? "\\d{4}" : undefined} // valida 4 dígitos
             disabled={props.disabled}
             className={`w-full rounded-md px-3 py-2 
-              ${isPassword ? 'pr-10' : rightIcon ? 'pr-10' : 'pr-3'}
-              ${error ? 'border-red-500' : ''}
-              ${props.disabled ? 'bg-gray-100 dark:bg-gray-2 dark:text-gray-3 cursor-not-allowed' : 'border border-gray-300 dark:bg-dark-5 dark:border-gray-2 dark:placeholder-gray-400 dark:text-white'}
-              ${className ?? ''}
+              ${isPassword || isYear || rightIcon ? "pr-10" : "pr-3"}
+              ${error ? "border-red-500" : ""}
+              ${props.disabled
+                ? "bg-gray-100 dark:bg-gray-2 dark:text-gray-3 cursor-not-allowed"
+                : "border border-gray-300 dark:bg-dark-5 dark:border-gray-2 dark:placeholder-gray-400 dark:text-white"}
+              ${className ?? ""}
             `}
             {...props}
           />
+          {/* Toggle password */}
           {isPassword && (
             <button
               type="button"
@@ -42,9 +49,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           )}
-          {!isPassword && rightIcon && (
+
+          {/* Icono derecho */}
+          {!isPassword && (rightIcon || isYear) && (
             <div className="absolute inset-y-0 right-3 flex items-center text-gray-500">
-              {rightIcon}
+              {isYear ? <Calendar size={18} /> : rightIcon}
             </div>
           )}
         </div>
@@ -54,4 +63,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 )
 
-Input.displayName = 'Input'
+Input.displayName = "Input"

@@ -12,7 +12,6 @@ interface VehicleCardProps {
 
 export function VehicleCard({ vehicle, onDeleteSuccess }: VehicleCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <>
       <div
@@ -21,9 +20,11 @@ export function VehicleCard({ vehicle, onDeleteSuccess }: VehicleCardProps) {
       >
         
         <div className="flex items-center gap-4">
-          <span className="text-4xl">
+          <Image src={`/${vehicle.vehicleTypeName}.png`} alt="Car logo" width={50} height={50}/>
+
+          {/* <span className="text-4xl">
             <IoCarSport/>
-          </span>
+          </span> */}
           <div>
             <p className="font-semibold leading-none">
               {vehicle.brand} 
@@ -35,7 +36,7 @@ export function VehicleCard({ vehicle, onDeleteSuccess }: VehicleCardProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <p className="text-sm font-inter text-gray-1/75">
+          <p className="text-sm font-inter text-gray-2 dark:text-gray-1/75">
             {vehicle.domain}
           </p>
           <ChevronRight size={18}/>

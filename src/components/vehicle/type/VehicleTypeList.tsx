@@ -9,16 +9,10 @@ interface VehicleTypeListProps {
 }
 
 export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) {
-  //const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
+  const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const vehicleTypes = [
-    { id: 1, name: "Auto", description: "Vehículo de uso personal estándar" },
-    { id: 2, name: "SUV", description: "Vehículo utilitario deportivo" },
-    { id: 3, name: "Pick-up", description: "Camioneta con caja trasera" },
-  ];
-  /**
   useEffect(() => {
     const fetchVehicleType = async () => {
       const result = await getVehicleTypes();
@@ -34,7 +28,7 @@ export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) 
     fetchVehicleType();
   }, []);
 
-   */
+   
 
   if (loading) return <p>Cargando tipos de vehículos...</p>;
   if (error) return <p className="text-red-500">{error}</p>;

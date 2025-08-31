@@ -161,8 +161,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       const res = await logoutUser(); // logoutUser debería lanzar error solo si hay fallo de red
-      if (res.state === "OK") { // suponiendo que devuelve { ok: boolean } o status 200
-        await router.push('/login'); 
+      console.log('res',res)
+      if (res.state === "OK") { 
+        router.push('/login'); 
         setUser(null);
       } else {
         console.error('Logout failed', res.messages?.[0]);
