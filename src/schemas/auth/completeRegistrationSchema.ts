@@ -1,5 +1,6 @@
 // schemas/registerSchema.ts
 import { z } from 'zod'
+import { passwordSchema } from '../password/passwordSchema';
 
 // Esquema para completar el registro
 export const completeRegistrationSchema = z
@@ -33,11 +34,24 @@ export const completeRegistrationSchema = z
       .max(25, 'El teléfono no puede tener más de 25 dígitos')
       .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.'),
 
-    password: z
+    birthDate: z
       .string()
-      .min(6, 'La contraseña debe tener al menos 6 caracteres')
-      .max(255, 'La contraseña no puede tener más de 255 caracteres')
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
+      .refine((date) => {
+        const parsed = Date.parse(date);
+        if (isNaN(parsed)) return false;
+        const birth = new Date(parsed);
+        const today = new Date();
+        const age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        const dayDiff = today.getDate() - birth.getDate();
+        return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
+        }, {
+        message: 'Debes ser mayor de 18 años',
+      }),
+
+    gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
+
+    password: passwordSchema,
 
     confirmPassword: z
       .string()

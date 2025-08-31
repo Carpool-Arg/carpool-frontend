@@ -118,9 +118,30 @@ export function RegisterForm() {
     return null;
   };
 
+  const validationsStep1Passed = () =>{
+    return(
+      usernameValidation.messageType === 'success' &&
+      emailValidation.messageType === 'success' 
+    );
+  }
+
+  const validationsStep2Passed = () =>{
+    return(
+      dniValidation.messageType === 'success' &&
+      phoneValidation.messageType === 'success' 
+    );
+  }
+
   // Maneja el siguiente paso
   const handleNext = async () => {
     setError(null)
+
+    //Comprobamos que no hayan errores en las validaciones de los datos unicos del
+    // usuario en el paso 1
+    if(!validationsStep1Passed()){
+      return
+    }
+
     setStep(2)
   }
 
@@ -133,6 +154,12 @@ export function RegisterForm() {
   const handleSubmit = async (data: RegisterStep2Data) => {
     setLoading(true)
     setError(null)
+
+    //Comprobamos que no hayan errores en las validaciones de los datos unicos del
+    // usuario en el paso 2 
+    if(!validationsStep2Passed()){
+      return
+    }
 
     try {
       // Combinar datos de ambos pasos
