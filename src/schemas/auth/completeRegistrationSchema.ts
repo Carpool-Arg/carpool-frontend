@@ -49,7 +49,7 @@ export const completeRegistrationSchema = z
         message: 'Debes ser mayor de 18 años',
       }),
 
-    gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
+    gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']),
 
     password: passwordSchema,
 

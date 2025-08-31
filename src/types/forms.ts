@@ -21,4 +21,6 @@ export interface CompleteRegistrationFormData {
   lastname: string;
   dni: string;
   phone: string;
+  gender: string;
+  birthDate:string;
 }
