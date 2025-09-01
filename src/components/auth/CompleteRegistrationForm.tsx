@@ -87,11 +87,16 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     );
   }
 
+  const formatDate = (date: string) => {
+    const [y, m, d] = date.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
   const onSubmit = async (data: CompleteRegistrationData) => {
     setLoading(true)
     setError(null)
     try {
-      await completeRegistration(email,data)
+      await completeRegistration(email,{...data, birthDate: formatDate(data.birthDate)})
       router.push('/email-verify')
     } catch {
       setError('Error al registrar usuario')

@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             phone: response.data.phone,
             gender: response.data.gender,
             status: response.data.status,
+            birthDate: response.data.birthDate,
            });
           return true;
         }

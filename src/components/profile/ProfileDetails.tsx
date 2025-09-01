@@ -21,6 +21,7 @@ interface EditableUser {
   gender: string
   profileImage?: string
   phone: string
+  birthDate: string
 }
 
 const genders = [
@@ -61,6 +62,7 @@ export default function ProfileDetails() {
     gender: '',
     profileImage: '',
     phone: '',
+    birthDate:'',
     });
   const [isChanged, setIsChanged] = useState(false);
 
@@ -73,8 +75,6 @@ export default function ProfileDetails() {
 
   useEffect(() => {
     if (user) {
-      const label = genders.find(g => g.value === user.gender)?.label ?? "Otro";
-      setGenderLabel(label);
       setEditableUser({
         id: user.id ?? 0,
         name: user.name ?? '',
@@ -83,7 +83,8 @@ export default function ProfileDetails() {
         email: user.email ?? '',
         gender: user.gender ?? 'UNSPECIFIED',
         profileImage: user.profileImage ?? '',
-        phone: user.phone ?? ''
+        phone: user.phone ?? '',
+        birthDate: user.birthDate ?? '',
       });
     }
   }, [user]);
@@ -98,8 +99,7 @@ export default function ProfileDetails() {
     const changed =
       editableUser.email !== (user.email ?? '') ||
       editableUser.gender !== (user.gender ?? '') ||
-      editableUser.phone !== (user.phone ?? '');
-
+      editableUser.phone !== (user.phone ?? '') 
     setIsChanged(changed);
   }, [editableUser, user]);
 
@@ -218,42 +218,33 @@ export default function ProfileDetails() {
           <Input
             label="Nombre"
             value={editableUser.name}
-            onChange={(e) => handleChange('name', e.target.value)}
             disabled
           />
           <Input
             label="Apellido"
             value={editableUser.lastname}
-            onChange={(e) => handleChange('lastname', e.target.value)}
             disabled
           />
         </div>
+
+
 
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="DNI"
             value={editableUser.dni}
-            onChange={(e) => handleChange('dni', e.target.value)}
             disabled
           />
-          <div className="flex flex-col">
-            <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
-              Género
-            </label>
-            <select
-              value={genderLabel}
-              onChange={(e) => setGenderLabel(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
-            >
-              <option value="">Seleccionar</option>
-              {genders.map(g => (
-                <option key={g.value} value={g.label}>{g.label}</option>
-              ))}
-            </select>
 
-          </div>
+          <Input
+            label="Fecha de nacimiento"
+            value={editableUser.birthDate}
+            disabled
+          />
+
         </div>
         
+
         <Input
           label="Correo"
           type="email"
@@ -263,11 +254,37 @@ export default function ProfileDetails() {
           className="w-full"
         />
 
-        <Input
-          label="Celular"
-          value={editableUser.phone}
-          onChange={(e) => handleChange('phone', e.target.value)}
-        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Celular"
+            value={editableUser.phone}
+            onChange={(e) => handleChange('phone', e.target.value)}
+          />
+
+          <div className="flex flex-col">
+            <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
+              Género
+            </label>
+            <select
+              value={editableUser.gender}
+              onChange={(e) => {
+                setGenderLabel(e.target.value);
+                setEditableUser((prev) => ({
+                  ...prev,
+                  gender: e.target.value
+                }));
+              }}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
+            >
+              <option value="">Seleccionar</option>
+              {genders.map(g => (
+                <option key={g.value} value={g.value}>{g.label}</option>
+              ))}
+            </select>
+
+          </div>
+        </div>
 
         <button
           type="submit"

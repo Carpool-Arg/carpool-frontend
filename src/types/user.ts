@@ -10,4 +10,5 @@ export interface User {
   status?: string;
   profileImage?: string;
   roles: Array<'user' | 'driver' | null>;
+  birthDate: string
 }

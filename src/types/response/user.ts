@@ -14,7 +14,8 @@ export interface UserDetailsData {
   gender: string;
   phone: string;
   profileImage?: string;
-  status?: string;
+  status: string;
+  birthDate:string; 
 }
 
 export type UserResponse = BaseResponse<UserData>
