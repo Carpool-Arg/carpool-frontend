@@ -84,7 +84,6 @@ function redirectToLogin(req: NextRequest, pathname: string) {
       }
     );
   }
-  
   const url = req.nextUrl.clone();
   url.pathname = '/login';
   return NextResponse.redirect(url);

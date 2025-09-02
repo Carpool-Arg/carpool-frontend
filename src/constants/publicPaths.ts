@@ -22,3 +22,37 @@ export const PUBLIC_PATHS = {
     '/api/users/unlock-account',
   ],
 } as const;
+
+export const HEADER_PATHS = [
+  '/vehicle/edit',
+  '/vehicle/new',
+  '/vehicle',
+  '/profile/details',
+  '/profile',
+  '/register-driver',
+  '/settings/account/update-password',
+  '/settings/account/update-email',
+  '/settings/account',
+  '/settings/security',
+  '/settings'
+] as const;
+
+export const HEADER_TITLES: Record<string, string> = {
+  '/vehicle/edit': 'Editar Vehículo',
+  '/vehicle/new': 'Registrar Vehículo',
+  '/vehicle': 'Vehículos',
+  '/profile/details': 'Perfil',
+  '/profile': 'Perfil de usuario',
+  '/register-driver': 'Registrar conductor',
+  '/settings/account/update-password': 'Contraseña',
+  '/settings/account/update-email': 'Correo electrónico',
+  '/settings/account': 'Cuenta',
+  '/settings/security': 'Seguridad',
+  '/settings': 'Configuración'
+};
+
+export const getMatchingHeaderPath = (pathname: string) => {
+  return HEADER_PATHS
+    .sort((a, b) => b.length - a.length) // rutas más específicas primero
+    .find(route => pathname.startsWith(route));
+};

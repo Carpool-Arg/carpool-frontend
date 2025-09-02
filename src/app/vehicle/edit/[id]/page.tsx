@@ -1,0 +1,45 @@
+"use client"
+
+import { VehicleUpdateForm } from "@/components/vehicle/VehicleUpdateForm";
+import { getVehicleById } from "@/services/vehicleService";
+import { VehicleResponse } from "@/types/response/vehicle";
+import { useParams } from "next/navigation"; 
+import { useEffect, useState } from "react";
+
+export default function VehicleEditPage(){
+    //Capturar el id
+    const { id } = useParams(); // obtienes el id directamente
+
+    const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+    if (!id) return; // Aún no está disponible
+
+    const fetchVehicle = async () => {
+        try {
+            const response: VehicleResponse = await getVehicleById(Number(id));
+            if (response.state === "ERROR" || !response.data) {
+                setError(response.messages?.[0] || "Error al obtener los datos del vehículo");
+                return;
+            }
+            setVehicle(response.data);
+        } catch {
+            setError("Error al obtener los datos del vehículo");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchVehicle();
+    }, [id]);
+   
+    return (
+    <div className="min-h-screen flex flex-col items-center md:py-8">
+        <div className="w-full max-w-lg">
+            {vehicle && <VehicleUpdateForm vehicle={vehicle} />}
+        </div>
+    </div>
+    );
+}

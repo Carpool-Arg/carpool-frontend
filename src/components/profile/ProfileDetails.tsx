@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { updateUser } from '@/services/userService';
-import { Edit, Settings2, SquarePen, Trash } from 'lucide-react';
+import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -64,6 +64,7 @@ export default function ProfileDetails() {
     phone: '',
     birthDate:'',
     });
+  
   const [isChanged, setIsChanged] = useState(false);
 
   useEffect(() => {

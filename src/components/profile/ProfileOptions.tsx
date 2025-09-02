@@ -1,5 +1,9 @@
+'use client'
 import Link from 'next/link';
 import { CarFront, ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
+import { FaCarAlt } from 'react-icons/fa';
+import { AlertDialog } from '../ui/AlertDialog';
+import { useState } from 'react';
 
 interface ProfileOptionsProps {
   role: 'driver' | 'passenger';
@@ -8,6 +12,12 @@ interface ProfileOptionsProps {
 
 export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
   const isDriver = role === 'driver';
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  const handleLogout =  () => {
+    logout()
+    setIsDialogOpen(false)
+  }
 
   const linkClasses = `
     flex items-center justify-between gap-2 px-4 py-3
@@ -32,9 +42,9 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           </Link>
 
           {isDriver && (
-            <Link href="/vehiculos" className={linkClasses}>
+            <Link href="/vehicle" className={linkClasses}>
               <div className="flex items-center gap-2">   
-                <CarFront size={18}/>
+                <FaCarAlt size={18}/>
                 <span>Mis vehículos</span>
               </div>
               
@@ -120,7 +130,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
         <p className='px-6 text-sm mb-0.5 text-white/75'>Sesión</p>
         <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl">
           <button
-            onClick={logout}
+            onClick={() => setIsDialogOpen(true)}
             className={`
               ${linkClasses}
               text-red-500 hover:bg-red-100 dark:hover:bg-red-950 cursor-pointer
@@ -136,6 +146,16 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           </button>
         </div>
       </div>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleLogout} // tu función de logout
+        type="info"
+        title="Cerrar sesión"
+        description="¿Estás seguro de que querés cerrar sesión? Tendrás que volver a iniciar sesión para continuar usando la aplicación."
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+      />
     </div>
   );
 }

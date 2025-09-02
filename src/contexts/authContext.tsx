@@ -71,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Inicializar autenticación solo una vez
   useEffect(() => {
+    if (initialized) return; 
     let isMounted = true;
 
     const initializeAuth = async () => {
@@ -161,20 +162,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      const res = await logoutUser(); // logoutUser debería lanzar error solo si hay fallo de red
-      if (res.state === "OK") { // suponiendo que devuelve { ok: boolean } o status 200
-        await router.push('/login'); 
+      const res = await logoutUser(); 
+      if (res.state === "OK") { 
+        router.push('/login'); 
         setUser(null);
+        setInitialized(false);
       } else {
         console.error('Logout failed', res.messages?.[0]);
-        // opcional: mostrar mensaje de error sin redirigir
+        
       }
     } catch (error) {
       console.error('Error during logout:', error);
       // opcional: mostrar mensaje al usuario
     }
   };
-
 
   const value = {
     user,

@@ -1,5 +1,6 @@
 'use client'
 
+import { getMatchingHeaderPath, HEADER_TITLES } from '@/constants/publicPaths';
 import { ChevronLeft } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
@@ -11,25 +12,8 @@ interface AppHeaderProps {
 export const AppHeader = ({ showBack, rightAction }: AppHeaderProps) => {
   const pathname = usePathname();
 
-  // Mapa de rutas a títulos
-  const routeTitles: Record<string, string> = {
-    '/profile/details': 'Perfil',
-    '/settings': 'Configuración',
-    '/settings/security': 'Seguridad',
-    '/settings/account': 'Cuenta',
-    '/settings/account/update-password': 'Contraseña',
-    '/settings/account/update-email': 'Correo electrónico',
-    '/home': 'Inicio',
-    '/search': 'Buscar',
-    '/notifications': 'Notificaciones',
-    '/register-driver': 'Registrar conductor',
-  };
-
-  // Buscar título exacto o por prefijo
-  const title =
-    routeTitles[pathname] ??
-    Object.entries(routeTitles).find(([key]) => pathname.startsWith(key))?.[1] ??
-    'App';
+  const matchingPath = getMatchingHeaderPath(pathname);
+  const title = matchingPath ? HEADER_TITLES[matchingPath] : 'App';
 
   return (
     <div className="flex items-center justify-between h-10 px-4 bg-dark-5 border-b border-gray-2 dark:border-gray-2">
