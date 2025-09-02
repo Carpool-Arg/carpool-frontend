@@ -1,7 +1,8 @@
 "use client"
 
 import { VehicleUpdateForm } from "@/components/vehicle/VehicleUpdateForm";
-import { getMyVehicleById } from "@/services/vehicleService";
+import { getVehicleById } from "@/services/vehicleService";
+import { VehicleResponse } from "@/types/response/vehicle";
 import { useParams } from "next/navigation"; 
 import { useEffect, useState } from "react";
 
@@ -18,29 +19,26 @@ export default function VehicleEditPage(){
 
     const fetchVehicle = async () => {
         try {
-        const response = await getMyVehicleById(Number(id));
-        if (!response.success || !response.data) {
-            setError(response.message || "Error al obtener los datos del vehículo");
-            return;
-        }
-        setVehicle(response.data.data);
+            const response: VehicleResponse = await getVehicleById(Number(id));
+            if (response.state === "ERROR" || !response.data) {
+                setError(response.messages?.[0] || "Error al obtener los datos del vehículo");
+                return;
+            }
+            setVehicle(response.data);
         } catch {
-        setError("Error al obtener los datos del vehículo");
+            setError("Error al obtener los datos del vehículo");
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
     fetchVehicle();
     }, [id]);
-
-    // Pasarlos al form
    
     return (
     <div className="min-h-screen flex flex-col items-center md:py-8">
-        {/* Contenedor del formulario */}
         <div className="w-full max-w-lg">
-            {vehicle && <VehicleUpdateForm initialData={vehicle} />}
+            {vehicle && <VehicleUpdateForm vehicle={vehicle} />}
         </div>
     </div>
     );

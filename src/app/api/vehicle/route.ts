@@ -1,3 +1,5 @@
+import { VoidResponse } from "@/types/response/response";
+import { VehicleResponse } from "@/types/response/vehicle";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -13,34 +15,43 @@ export async function GET(req: NextRequest) {
       ? `${apiUrl}/vehicles/${id}`
       : `${apiUrl}/vehicles/my-vehicles`;
 
-    const response = await fetch(endpoint, {
+    const res = await fetch(endpoint, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    const { data, state, messages } = await response.json();
+    if (!res.ok) {
+      const errorData = await res.json();
+      const errorRes = NextResponse.json(
+        { data: null, messages: errorData.messages, state: "ERROR" },
+        { status: res.status }
+      );
+      return errorRes;
+    }
 
-    if (!response.ok || state !== "OK") {
+    const response: VehicleResponse = await res.json();
+
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
       return NextResponse.json(
-        {
-          success: false,
-          message: messages?.[0] || "Error al obtener vehículo(s)",
-        },
-        { status: response.status }
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status } 
       );
     }
 
-    return NextResponse.json({ success: true, data });
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify({
-        success: false,
-        message: "Error en la API de vehículos",
-        detail: error.message,
-      }),
-      {status: 500}
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
     );
+    return errorRes;
   }
 }
 
@@ -50,7 +61,7 @@ export async function POST(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const body = await req.json();
 
-    const response = await fetch(`${apiUrl}/vehicles`, {
+    const res = await fetch(`${apiUrl}/vehicles`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json" ,
@@ -59,30 +70,37 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
+    if (!res.ok) {
+      const errorData = await res.json();
+      const errorRes = NextResponse.json(
+        { data: null, messages: errorData.messages, state: "ERROR" },
+        { status: res.status }
+      );
+      return errorRes;
+    }
 
-    if (!response.ok || data.state !== 'OK') {
+    const response: VoidResponse = await res.json();
+
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
       return NextResponse.json(
-        {
-          success: false,
-          message: data.messages?.[0] || 'Error en cargar vehículos',
-        },
-        { status: response.status }
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status } 
       );
     }
 
-    return new NextResponse(JSON.stringify(data), {
-      status: response.status,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    return new NextResponse(
-      JSON.stringify({ message: "Error en la API de cargar vehículos", detail: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
     );
+    return errorRes;
   }
 }
 
@@ -93,35 +111,35 @@ export async function DELETE(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
-    const response = await fetch(`${apiUrl}/vehicles/${id}`, {
+    const res = await fetch(`${apiUrl}/vehicles/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    const data = await response.json();
+    const response: VoidResponse = await res.json();
 
-    if (!response.ok || data.state !== "OK") {
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
       return NextResponse.json(
-        {
-          success: false,
-          message: data.messages?.[0] || "Error al eliminar vehículo",
-        },
-        { status: response.status }
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status } 
       );
     }
 
-    return NextResponse.json({ success: true, data });
-  } catch (error: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Error en la API de eliminar vehículo",
-        detail: error.message,
-      },
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
       { status: 500 }
     );
+    return errorRes;
   }
 }
 
@@ -141,7 +159,7 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
 
-    const response = await fetch(`${apiUrl}/vehicles/${id}`, {
+    const res = await fetch(`${apiUrl}/vehicles/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -150,28 +168,28 @@ export async function PUT(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
+    const response: VoidResponse = await res.json();
 
-    if (!response.ok || data.state !== "OK") {
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
       return NextResponse.json(
-        {
-          success: false,
-          message: data.messages?.[0] || "Error al actualizar vehículo",
-        },
-        { status: response.status }
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status } 
       );
     }
 
-    return NextResponse.json({ success: true, data });
-  } catch (error: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Error en la API de actualizar vehículo",
-        detail: error.message,
-      },
+    return NextResponse.json(response,{ status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
       { status: 500 }
     );
+    return errorRes;
   }
 }
 

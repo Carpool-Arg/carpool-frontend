@@ -5,14 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
 import { VehicleTypeList } from "./type/VehicleTypeList"
-import { updateVehicle } from "@/services/vehicleService"
+import { deleteVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 
 import { vehicleFormData } from "@/types/forms"
+import { Button } from "../ui/Button"
+import { CircleX, X } from "lucide-react"
+import { AlertDialog } from "../ui/AlertDialog"
 
-export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
+export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editableVehicle, setEditableVehicle] = useState<Vehicle>({
@@ -40,37 +43,47 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
 
   //Precargar datos si estamos en edición
   useEffect(() => {
-    if (initialData) {
+    if (vehicle) {
       vehicleForm.reset({
-        vehicleTypeId: initialData.vehicleTypeId,
-        domain: initialData.domain,
-        brand: initialData.brand,
-        model: initialData.model,
-        year: initialData.year,
-        color: initialData.color,
-        availableSeats: initialData.availableSeats
+        vehicleTypeId: vehicle.vehicleTypeId,
+        domain: vehicle.domain,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        color: vehicle.color,
+        availableSeats: vehicle.availableSeats
       })
-      setEditableVehicle(initialData)
+      setEditableVehicle(vehicle)
     }
 
-  }, [initialData])
+  }, [vehicle])
 
   useEffect(() => {
-    if (!initialData) {
+    const subscription = vehicleForm.watch((value) => {
+      setEditableVehicle((prev) => ({
+        ...prev,
+        vehicleTypeId: value.vehicleTypeId ?? 0
+      }));
+    });
+    return () => subscription.unsubscribe();
+  }, [vehicleForm]);
+
+  useEffect(() => {
+    if (!vehicle) {
       setIsChanged(false);
       return;
     }
 
     const changed =
-      editableVehicle.color !== (initialData.color ?? '') ||
-      editableVehicle.model !== (initialData.model ?? '') ||
-      editableVehicle.availableSeats !== (initialData.availableSeats ?? 1) ||
-      editableVehicle.year !== (initialData.year ?? '') ||
-      editableVehicle.vehicleTypeId !== (initialData.vehicleTypeId ?? '') ||
-      editableVehicle.brand !== (initialData.brand ?? '');
+      editableVehicle.color !== (vehicle.color ?? '') ||
+      editableVehicle.model !== (vehicle.model ?? '') ||
+      editableVehicle.availableSeats !== (vehicle.availableSeats ?? 1) ||
+      editableVehicle.year !== (vehicle.year ?? '') ||
+      editableVehicle.vehicleTypeId !== (vehicle.vehicleTypeId ?? '') ||
+      editableVehicle.brand !== (vehicle.brand ?? '');
 
     setIsChanged(changed);
-  }, [editableVehicle, initialData]);
+  }, [editableVehicle, vehicle]);
 
 
   const handleSubmit = async () => {
@@ -90,10 +103,10 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
 
       console.log('updateData',updateData)
 
-      const response = await updateVehicle(initialData!.id, updateData);
+      const response = await updateVehicle(vehicle!.id, updateData);
 
-      if (!response.success) {
-        setError(response.message || "Error al actualizar el vehículo");
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al actualizar el vehículo");
         return;
       }
 
@@ -107,12 +120,30 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
 
   const handleChange = (field: keyof typeof editableVehicle, value: string) => {
     setEditableVehicle((prev) => ({
-    ...prev,
-    [field]:
-      field === "year" || field === "availableSeats"
-        ? Number(value) 
-        : value,
-  }));
+      ...prev,
+      [field]:
+        field === "year" || field === "availableSeats"
+          ? Number(value) 
+          : value,
+    }));
+  };
+
+  const handleDelete = async () => {
+    if (!vehicle) return;
+    setLoading(true);
+    try {
+      const response = await deleteVehicle(vehicle.id);
+      if (response.state === "OK") {
+        router.push("/vehicle"); // redirige después de eliminar
+      } else {
+        setError(response.messages?.[0] || "Error al eliminar el vehículo");
+      }
+    } catch (err) {
+      setError("Error al eliminar el vehículo");
+    } finally {
+      setLoading(false);
+      setIsDialogOpen(false);
+    }
   };
 
 
@@ -147,7 +178,7 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
                     label="Patente o dominio"
                     {...vehicleForm.register("domain")}
                     error={vehicleForm.formState.errors.domain?.message}
-                    disabled={!!initialData}
+                    disabled={!!vehicle}
                 />
             </div>
             
@@ -168,10 +199,18 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
             
         </div>
 
+        
+      </form>
+
+      <div className="grid grid-cols-3 gap-4">
+        <Button variant="danger" className="flex items-center gap-1" onClick={() => setIsDialogOpen(true)}>
+          <CircleX size={14}/>
+          Dar de baja
+        </Button>
         <button
           type="submit"
           disabled={!isChanged}
-          className={`w-full px-4 py-2 rounded-lg , ${
+          className={`w-full col-span-2 px-4 py-2 rounded-lg , ${
             isChanged ? 
                 'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
             : 
@@ -180,7 +219,19 @@ export function VehicleUpdateForm({ initialData }: { initialData?: Vehicle }) {
         >
           Guardar cambios
         </button>
-      </form>
+
+      </div>
+
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleDelete}
+        type="error"
+        title="Confirmar eliminación"
+        description="¿Estás seguro de que querés eliminar este vehículo? Esta acción no se puede deshacer."
+        confirmText="Aceptar"
+        cancelText="Cancelar"
+      />
 
     </div>
   )

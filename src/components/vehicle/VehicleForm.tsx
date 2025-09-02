@@ -1,17 +1,17 @@
 'use client'
 import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema } from "@/schemas/vehicle/vehicleSchema"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react"
+import{ zodResolver } from "@hookform/resolvers/zod"
+
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { VehicleTypeList } from "./type/VehicleTypeList"
 import { registerVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
-import { Alert } from "../ui/Alert"
 import { vehicleFormData } from "@/types/forms"
+import { useState } from "react"
 
-export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
+export function VehicleForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -38,25 +38,6 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
     }
   })
 
-  //Precargar datos si estamos en edición
-  useEffect(() => {
-    if (initialData) {
-      console.log(initialData)
-      step1Form.reset({
-        vehicleTypeId: initialData.vehicleTypeId
-      })
-      step2Form.reset({
-        domain: initialData.domain,
-        brand: initialData.brand,
-        model: initialData.model,
-        year: initialData.year,
-        availableSeats: initialData.availableSeats,
-        color: initialData.color
-      })
-    }
-
-  }, [initialData])
-
   const handleNextFromStep1 = () => {
     setStep(2)
   }
@@ -75,22 +56,11 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
         ...data,
         vehicleTypeId: step1Form.getValues().vehicleTypeId, // Nota el guion bajo
       };
+      
+      const response = await registerVehicle(baseData);
 
-      let response;
-
-      //Verificar si viene initialData, si es así significa que estamos editando
-      if (initialData) {
-        // Si es update, quitamos el domain
-        const { domain, ...updateData } = baseData;
-
-        response = await updateVehicle(initialData.id, updateData);
-      } else {
-        // Si es registro
-        response = await registerVehicle(baseData);
-      }
-
-      if (!response.success) {
-        setError(response.message || "Error al guardar el vehículo");
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al guardar el vehículo");
         return;
       }
 
@@ -137,7 +107,6 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
               <Input
                 label="Marca"
                 {...step2Form.register("brand")}
-                disabled={!!initialData}
                 error={step2Form.formState.errors.brand?.message}
               />
               <Input
@@ -183,7 +152,7 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
              <div className="flex gap-4">
               <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>Volver</Button>
               <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-                {loading ? (initialData ? 'Actualizando...' : 'Guardando...') : (initialData ? 'Actualizar' : 'Guardar')}
+                {loading ?  'Guardando...' :  'Guardar'}
               </Button>
             </div>
           </form>

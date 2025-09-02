@@ -1,5 +1,5 @@
 "use client";
-import { myVehicles } from "@/services/vehicleService";
+import { deleteVehicle, getVehicles } from "@/services/vehicleService";
 import { useEffect, useState } from "react";
 import { VehicleCard } from "./VehicleCard";
 import useIsMobile from "@/hooks/useIsMobile";
@@ -20,11 +20,12 @@ export function VehicleList() {
 
   const fetchVehicle = async () => {
     setLoading(true)
-    const result = await myVehicles();
-    if (result.success && result.data) {
-      setVehicles(result.data.data);
+    const result = await getVehicles();
+    console.log('result',result)
+    if (result.state === "OK" && result.data) {
+      setVehicles(result.data);
     } else {
-      setError(result.message || "Error al obtener vehículos");
+      setError(result.messages?.[0] || "Error al obtener vehículos");
     }
     setLoading(false);
   };
@@ -33,8 +34,18 @@ export function VehicleList() {
     fetchVehicle();
   }, []);
 
-  const handleVehicleDeleted = (id: number) => {
-    setVehicles((prev) => prev.filter((v) => v.id !== id));
+  const handleDelete = async (id: number) => {
+    const response = await deleteVehicle(id);
+    if (response.state === "OK") {
+      setVehicles((prev) => prev.filter((v) => v.id !== id));
+      setIsModalOpen(false);
+    } else {
+      setError(response.messages?.[0] || "Error al eliminar el vehículo");
+    }
+  };
+
+  const handleEdit = (id: number) => {
+    router.push(`/vehicle/edit/${id}`);
   };
 
   const handleCardClick = (vehicle: Vehicle) => {
@@ -68,7 +79,8 @@ export function VehicleList() {
           vehicle={selectedVehicle}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onDeleteSuccess={handleVehicleDeleted}
+          onConfirmDelete={handleDelete}
+          onEdit={handleEdit}
         />
       )}
       

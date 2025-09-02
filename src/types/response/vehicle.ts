@@ -1,21 +1,4 @@
-export interface VehicleGetResponse {
-  data: Vehicle[];
-  messages: string[];
-  state: string;
-}
-export interface vehicleByIdResponse {
-  data: Vehicle;
-  messages: string[];
-  state: string;
-}
+import { BaseResponse } from "./response";
 
-export interface VehiclePostResponse {
-  data: null;
-  messages: string[];
-  state: string;
-}
-export interface VehicleDeleteResponse {
-  data: null;
-  messages: string[];
-  state: string;
-}
+export type VehiclesResponse = BaseResponse<Vehicle[]>
+export type VehicleResponse = BaseResponse<Vehicle>
