@@ -73,7 +73,7 @@ export function VehicleForm({ initialData }: { initialData?: Vehicle }) {
       const baseData: vehicleFormData = {
         ...step2Form.getValues(),
         ...data,
-        vehicleType_Id: step1Form.getValues().vehicleTypeId, // Nota el guion bajo
+        vehicleTypeId: step1Form.getValues().vehicleTypeId, // Nota el guion bajo
       };
 
       let response;

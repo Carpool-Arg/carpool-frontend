@@ -16,7 +16,14 @@ export function VehicleTypeCard({ vehicleType, selected, onSelect }: VehicleType
     >
       <div className="flex items-center gap-4">
         
-        <Image src={`/${vehicleType.name}.png`} alt="Vehicle logo" width={50} height={50}/>
+        <div className="w-10 h-10 relative flex-shrink-0">
+          <Image
+            src={`/${vehicleType.name}.png`}
+            alt="Vehicle logo"
+            fill
+            style={{ objectFit: "contain" }}
+          />
+        </div>
         
         <div>
           <p className="font-medium leading-none">{vehicleType.name}</p>

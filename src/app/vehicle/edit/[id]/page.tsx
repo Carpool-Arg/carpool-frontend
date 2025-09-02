@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function VehicleEditPage(){
     //Capturar el id
-    const { id } = useParams(); // ✅ obtienes el id directamente
+    const { id } = useParams(); // obtienes el id directamente
 
     const [vehicle, setVehicle] = useState<Vehicle | null>(null);
     const [loading, setLoading] = useState(true);
@@ -34,16 +34,13 @@ export default function VehicleEditPage(){
     fetchVehicle();
     }, [id]);
 
-    if (error) return <p className="text-red-600">{error}</p>;
-    if (!vehicle) return <p>No se encontró el vehículo.</p>;
-
     // Pasarlos al form
-    console.log('vehicle',vehicle)
+   
     return (
     <div className="min-h-screen flex flex-col items-center md:py-8">
         {/* Contenedor del formulario */}
         <div className="w-full max-w-lg">
-            <VehicleUpdateForm initialData={vehicle} />
+            {vehicle && <VehicleUpdateForm initialData={vehicle} />}
         </div>
     </div>
     );

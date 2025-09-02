@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { VehicleTypeCard } from "./VehicleTypeCard";
 import { getVehicleTypes } from "@/services/vehicleTypeService";
+import { VehicleTypeCardSkeleton } from "./VehicleTypeSkeleton";
 
 interface VehicleTypeListProps {
   selectedId: number | null;
@@ -14,6 +15,7 @@ export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setLoading(true)
     const fetchVehicleType = async () => {
       const result = await getVehicleTypes();
 
@@ -28,22 +30,21 @@ export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) 
     fetchVehicleType();
   }, []);
 
-   
-
-  if (loading) return <p>Cargando tipos de vehículos...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (vehicleTypes.length === 0) return <p>No hay tipos de vehículos registrados.</p>;
 
   return (
     <div className="space-y-4">
-      {vehicleTypes.map((vehicleType) => (
-        <VehicleTypeCard
-          key={vehicleType.id}
-          vehicleType={vehicleType}
-          selected={selectedId === vehicleType.id}
-          onSelect={onSelect}
-        />
-      ))}
-    </div>
+        {loading
+          ? Array.from({ length: 3 }).map((_, idx) => (
+              <VehicleTypeCardSkeleton key={idx} />
+            ))
+          : vehicleTypes.map((vehicleType) => (
+              <VehicleTypeCard
+                key={vehicleType.id}
+                vehicleType={vehicleType}
+                selected={selectedId === vehicleType.id}
+                onSelect={onSelect}
+              />
+            ))}
+      </div>
   );
 }
