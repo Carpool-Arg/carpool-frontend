@@ -1,4 +1,4 @@
-import { DriverData } from "@/schemas/driver/driverSchema";
+import { DriverData } from "@/schemas/auth/driverSchema";
 import { DriverResponse } from "@/types/response/driver";
 
 /**

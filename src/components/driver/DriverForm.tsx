@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
 import { Alert } from "../ui/Alert"
 import { useRouter } from "next/navigation"
-import { DriverData, driverSchema } from "@/schemas/driver/driverSchema"
+import { DriverData, driverSchema } from "@/schemas/auth/driverSchema"
 import { registerDriver } from "@/services/driverService"
 
 export function DriverForm() {
