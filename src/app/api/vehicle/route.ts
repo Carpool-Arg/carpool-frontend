@@ -4,7 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-// GET: Listar vehículos del usuario
+/**
+ * Obtiene los vehículos del usuario o un vehículo específico por ID.
+ *
+ * Llama al backend usando el token de autenticación, y devuelve la lista
+ * de vehículos del usuario o un solo vehículo si se proporciona el ID.
+ *
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con los vehículos o error
+ */
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
@@ -20,15 +28,6 @@ export async function GET(req: NextRequest) {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      const errorRes = NextResponse.json(
-        { data: null, messages: errorData.messages, state: "ERROR" },
-        { status: res.status }
-      );
-      return errorRes;
-    }
 
     const response: VehicleResponse = await res.json();
 
@@ -55,7 +54,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// METODO POST - ALMACENAR UN VEHICULO
+/**
+ * Crea un nuevo vehículo para el usuario autenticado.
+ *
+ * Recibe los datos del vehículo en el body, realiza la llamada al backend
+ * y devuelve la respuesta estándar indicando si se creó correctamente.
+ *
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con estado de la creación
+ */
 export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
@@ -69,15 +76,6 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify(body),
     });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      const errorRes = NextResponse.json(
-        { data: null, messages: errorData.messages, state: "ERROR" },
-        { status: res.status }
-      );
-      return errorRes;
-    }
 
     const response: VoidResponse = await res.json();
 
@@ -104,7 +102,15 @@ export async function POST(req: NextRequest) {
   }
 }
 
-//METODO DELETE - ELIMINAR UN VEHICULO
+/**
+ * Elimina un vehículo existente por ID.
+ *
+ * Toma el ID desde los query params, llama al backend para eliminar el vehículo
+ * y devuelve la respuesta estándar indicando el estado de la eliminación.
+ *
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con estado de eliminación
+ */
 export async function DELETE(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
@@ -143,7 +149,16 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-// METODO PUT - ACTUALIZAR UN VEHÍCULO
+/**
+ * Actualiza un vehículo existente por ID.
+ *
+ * Toma el ID desde los query params y los datos actualizados desde el body,
+ * realiza la llamada al backend y devuelve la respuesta estándar indicando
+ * si la actualización fue exitosa.
+ *
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con estado de la actualización
+ */
 export async function PUT(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;

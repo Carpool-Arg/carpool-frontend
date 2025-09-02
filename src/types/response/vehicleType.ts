@@ -1,5 +1,4 @@
-export interface VehicleTypeResponse {
-  data: VehicleType[];
-  messages: string[];
-  state: string;
-}
+import { BaseResponse } from "./response";
+
+
+export type VehicleTypeResponse = BaseResponse<VehicleType[]>

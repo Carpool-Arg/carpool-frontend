@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { IoCarSport } from "react-icons/io5";
+
 
 interface VehicleTypeCardProps {
   vehicleType: VehicleType;

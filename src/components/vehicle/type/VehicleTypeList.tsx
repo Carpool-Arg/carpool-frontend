@@ -19,10 +19,10 @@ export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) 
     const fetchVehicleType = async () => {
       const result = await getVehicleTypes();
 
-      if (result.success && result.data) {
-        setVehicleTypes(result.data.data);
+      if (result.state === 'OK' && result.data) {
+        setVehicleTypes(result.data);
       } else {
-        setError(result.message || "Error al obtener los tipos de vehículos");
+        setError(result.messages?.[0] || "Error al obtener los tipos de vehículos");
       }
       setLoading(false);
     };
