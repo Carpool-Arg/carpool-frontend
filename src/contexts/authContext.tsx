@@ -2,6 +2,7 @@
 
 import { PUBLIC_PATHS } from '@/constants/publicPaths';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/authService';
+import { getUserFile } from '@/services/mediaService';
 import { LoginFormData } from '@/types/forms';
 import { User } from '@/types/user';
 import { useRouter, usePathname } from 'next/navigation';
@@ -40,12 +41,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         method: 'GET',
         credentials: 'include',
       });
+
       if (res.ok) {
         const response = await res.json();
         if (response.data) {
+          let profileImage = response.data.profileImage;
+          try {
+            const imgUrl = await getUserFile(response.data.id); 
+            if (imgUrl) {
+              profileImage = imgUrl.data;
+            }
+          } catch (err) {
+            console.warn("No se pudo cargar la imagen:", err);
+          }
           setUser({ 
             username: response.data.username,
-            profileImage: response.data.profileImage,
+            profileImage,
             roles: response.data.roles,
             id: response.data.id,
             name: response.data.name,

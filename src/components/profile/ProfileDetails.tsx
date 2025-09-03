@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input'; 
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
+import { deleteUserFile, uploadUserFile } from '@/services/mediaService';
 import { updateUser } from '@/services/userService';
 import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -110,6 +111,12 @@ export default function ProfileDetails() {
 
   const handleSave = async () => {
     try {
+      if (!user) return;
+
+      if (selectedFile) {
+        await uploadUserFile(user.id!, selectedFile);
+      }
+
       const genderValue: ProfileData['gender'] = 
         genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
 
@@ -140,21 +147,24 @@ export default function ProfileDetails() {
     const file = e.target.files[0];
     setSelectedFile(file);
 
-    // Crear URL temporal para preview
+    // preview para el header
     const previewUrl = URL.createObjectURL(file);
-    setPrevImage(previewUrl); // esto actualizará el header en vivo
+    setPrevImage(previewUrl);
   };
 
   const handleDeletePhoto = async () => {
     if (!user) return;
 
     try {
+      await deleteUserFile(user.id!)
+
       const genderValue: ProfileData['gender'] = 
       genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
+
       const response = await updateUser({
         phone: editableUser.phone,
         gender: genderValue,
-        removeProfileImage: true, // <- borra la imagen en el backend
+        removeProfileImage: true, // borra la imagen en el backend
       });
 
       if (response.state === 'ERROR') {
