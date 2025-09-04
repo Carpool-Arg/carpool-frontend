@@ -96,8 +96,13 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     setLoading(true)
     setError(null)
     try {
-      await completeRegistration(email,{...data, birthDate: formatDate(data.birthDate)})
-      router.push('/email-verify')
+      const payload = {
+        ...data,
+        gender: data.gender || "UNSPECIFIED",   
+        birthDate: formatDate(data.birthDate),
+      }
+      await completeRegistration(email, payload)
+      router.push(`/email-verify?email=${email}`)
     } catch {
       setError('Error al registrar usuario')
     } finally {
@@ -189,9 +194,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
             <select
               id="gender"
               {...register('gender', { required: "El género es obligatorio" })}
-              className={`w-full rounded-md border px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5 ${
-                errors.gender ? 'border-error' : ''
-              }`}
+              className={`w-full rounded-md border border-gray-2 px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5`}
               defaultValue=""
             >
               <option value="" disabled >Seleccioná un género</option>

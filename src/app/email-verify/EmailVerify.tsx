@@ -6,7 +6,6 @@ import { Mail, Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
 type Props = {
   queryEmail: string | null
 }
