@@ -1,25 +1,16 @@
 'use client'
 
 import PasswordForm from "@/components/password/PasswordForm";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, ChevronLeft, LockKeyhole, XCircle } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { unlockAccount } from "@/services/userService";
 
 export default function PasswordChangePage(){
 
     return (
         <PasswordForm
-        title="Recuperá tu cuenta"
-        successTitle="¡Cuenta recuperada correctamente!"
-        successMessage="Se actualizó tu contraseña, puedes volver a intentar iniciar sesión"
-        endpoint="/api/users/unlock-account"
+            title="Recuperá tu cuenta"
+            successTitle="¡Cuenta recuperada correctamente!"
+            successMessage="Se actualizó tu contraseña, puedes volver a intentar iniciar sesión"
+            onSubmit={unlockAccount}
         />
     );
     // const searchParams = useSearchParams();
