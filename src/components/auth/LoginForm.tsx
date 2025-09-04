@@ -114,7 +114,7 @@ export function LoginForm() {
         />
       </div>
 
-      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer text-sm">
+      <Link href="/password-change/send-email" className="flex justify-start hover:underline cursor-pointer text-sm">
         ¿Olvidaste tu contraseña?
       </Link>
 

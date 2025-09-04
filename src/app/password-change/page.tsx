@@ -1,10 +1,11 @@
-
+'use client'
 
 
 import PasswordForm from "@/components/password/PasswordForm";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
+import { resetPassword } from "@/services/userService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, ChevronLeft, LockKeyhole, XCircle } from "lucide-react";
 import Image from "next/image";
@@ -88,7 +89,7 @@ export default function PasswordChangePage(){
         title="Cambiá tu contraseña"
         successTitle="¡Contraseña actualizada!"
         successMessage="Se actualizó tu contraseña, puedes volver a intentar iniciar sesión"
-        endpoint="/api/password-change" 
+        onSubmit={resetPassword} 
         />
     )
 

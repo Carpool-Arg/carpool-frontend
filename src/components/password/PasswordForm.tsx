@@ -56,7 +56,8 @@ export default function PasswordForm({
       const response = await onSubmit(completeData)
 
       if(response.state === "ERROR" ){
-        setMessage(response.messages?.[0] || "Error al obtener los datos del vehículo");
+        setStatus('error')
+        setMessage(response.messages?.[0] || "Error inesperado.");
         return;
       }
       setStatus('success')
