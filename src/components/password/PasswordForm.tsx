@@ -1,6 +1,5 @@
 'use client'
 
-
 import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
 import { Button } from "../ui/Button";
 import { useEffect, useState } from "react";
@@ -54,6 +53,7 @@ export default function PasswordForm({
     try {
       const completeData = { ...data, token };
       const response = await onSubmit(completeData)
+      console.log('response',response)
 
       if(response.state === "ERROR" ){
         setStatus('error')
@@ -87,14 +87,15 @@ export default function PasswordForm({
     );
   }
 
-  if (status === "error" && !token) {
+  if (status === "error" || !token) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-6 px-8 text-center">
         <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
           <XCircle className="w-10 h-10 text-error" />
         </div>
-        <h1 className="text-2xl font-semibold mb-2 text-error">Error</h1>
-        <p className="text-gray-3 mt-4 max-w-md mb-8 font-inter">{message}</p>
+        <h1 className="text-2xl font-semibold mb-2 text-error">Ups… ocurrió un problema</h1>
+        <p className="text-gray-3 mt-4 max-w-md font-inter">No pudimos cambiar tu contraseña. Por favor, vuelve a intentarlo más tarde.</p>
+        <p className="text-gray-3 max-w-md mb-8 mt-2 font-inter">{message}</p>
         <Button variant="outline" onClick={goToLogin}>
           Volver al inicio
         </Button>
@@ -140,13 +141,6 @@ export default function PasswordForm({
             </Button>
           </div>
         </form>
-
-        {status === "error" && (
-          <div className="fixed bottom-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white bg-error">
-            <XCircle className="w-5 h-5" />
-            <span>{message}</span>
-          </div>
-        )}
       </div>
     </div>
   );

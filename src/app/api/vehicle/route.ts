@@ -167,8 +167,8 @@ export async function PUT(req: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { success: false, message: "Falta el parámetro ID" },
-        { status: 400 }
+        { data: null, messages:'ID inválido', state: "ERROR" },
+        { status: 400} 
       );
     }
 

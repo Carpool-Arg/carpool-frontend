@@ -103,19 +103,7 @@ export default function MailForm({
 
     return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center py-6 px-8">
-        {/**<div className="flex flex-col w-full justify-start mb-4 space-y-2">
-          <Link href="/login" className="flex items-center text-sm hover:text-gray-3">
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Volver
-          </Link>
-          <Image
-            src="/isologo.webp"
-            alt="Logo de Carpool"
-            width={50}
-            height={50}
-            className="mb-4"
-            />
-        </div>**/}
+
       {/* Icono */}
       <div className="w-20 h-20 bg-gray-1/90 rounded-full flex items-center justify-center mb-4">
         <Mail className="w-10 h-10 text-primary" />
