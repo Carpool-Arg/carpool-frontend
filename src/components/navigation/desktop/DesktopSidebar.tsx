@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut } from 'lucide-react';
+import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut, PlusCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 import { useState } from 'react';
 import { AlertDialog } from '@/components/ui/AlertDialog';
@@ -10,6 +10,7 @@ import { AlertDialog } from '@/components/ui/AlertDialog';
 const navItems = [
   { href: '/home', icon: Home, label: 'Inicio' },
   { href: '/search', icon: Search, label: 'Buscar' },
+  { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje' },
   { href: '/notifications', icon: Bell, label: 'Notificaciones' },
   { href: '/profile', icon: User, label: 'Perfil' },
 ];
