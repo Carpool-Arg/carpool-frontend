@@ -134,6 +134,10 @@ export function LoginForm() {
         )}
       </Button>
 
+      <Link href="/register" className="flex justify-start hover:underline cursor-pointer text-sm">
+        ¿No tenes cuenta? Registrate acá
+      </Link>
+
       <div className="flex items-center gap-2 text-gray-500">
         <div className="flex-1 h-px bg-gray-4/50" />
         <span className="text-sm font-inter">o</span>

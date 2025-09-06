@@ -21,6 +21,7 @@ import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Check, X } from 'lucide-react'
 import { Alert } from "../ui/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
+import Link from "next/link"
 
 const genders = [
   { label: "Masculino", value: "MALE" },
@@ -297,6 +298,10 @@ export function RegisterForm() {
               
             />
           </div>
+
+          <Link href="/login" className="flex justify-start hover:underline cursor-pointer text-sm">
+            ¿Ya tenes cuenta? Iniciar sesión
+          </Link>
 
           <Button variant="primary" type="submit" className="w-full">
             Continuar

@@ -30,6 +30,7 @@ export default function LoginPage() {
               width={220}
               height={50}
               priority
+              className="dark:invert"
             />
           </div>
 
