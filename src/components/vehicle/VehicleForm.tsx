@@ -65,7 +65,7 @@ export function VehicleForm() {
       }
 
       router.push("/vehicle");
-    } catch (err) {
+    } catch (error: unknown) {
       setError("Error al guardar el vehículo");
     } finally {
       setLoading(false);

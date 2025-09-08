@@ -29,10 +29,9 @@ export const driverSchema = z.object({
     .string()
     .regex(/^\d+$/, 'El número de calle debe contener solo dígitos'),
 
-  locality: z
-    .string()
+  cityId: z
+    .number()
     .min(1, 'La localidad es obligatoria')
-    .max(100, 'La localidad no puede tener más de 100 caracteres'),
 });
 
 export type DriverData = z.infer<typeof driverSchema>;

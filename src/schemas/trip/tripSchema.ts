@@ -1,12 +1,19 @@
 import { z } from "zod";
 
 export const tripSchema = z.object({
-  date: z.string().nonempty("La fecha es obligatoria"),
-  time: z.string().nonempty("La hora es obligatoria"),
+  startDateTime: z.string().nonempty("La fecha es obligatoria"),
 
-  originTown: z.string().nonempty("La ciudad de origen es obligatoria"),
-  destinationTown: z.string().nonempty("La ciudad de destino es obligatoria"),
-  intermediateTown: z.string().optional(), // opcional
+
+  originCityId: z
+    .number({ invalid_type_error: "La ciudad de origen es obligatoria" })
+    .int("La ciudad de origen debe ser un número entero")
+    .min(1, "La ciudad de origen es obligatoria"),
+  
+  destinationCityId: z
+    .number({ invalid_type_error: "La ciudad de destino es obligatoria" })
+    .int("La ciudad de destino debe ser un número entero")
+    .min(1, "La ciudad de destino es obligatoria"),
+  intermediateCity: z.string().optional(), // opcional
 
   availableSeat: z
     .number({ invalid_type_error: "Los asientos deben ser un número" })
@@ -27,3 +34,7 @@ export const tripSchema = z.object({
 
 
 export type TripFormData = z.infer<typeof tripSchema>;
+
+export type TripRequest = Omit<TripFormData, "date" | "time"> & {
+  startDateTime: string;
+};
