@@ -5,25 +5,31 @@ import { AppHeader } from "@/components/navigation/mobile/AppHeader";
 import { HEADER_PATHS } from "@/constants/publicPaths";
 import { usePathname } from "next/navigation";
 
-const pathToRegex = (path: string): RegExp => {
-  const regex = path.replace(/:[^/]+/g, "[^/]+"); // reemplaza ":id" por "([^/]+)"
-  return new RegExp(`^${regex}$`);
-};
-
 export default function DesktopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/register-driver', '/settings','/vehicle', '/vehicle/new', '/trip/new'];
+  const allowedPaths = [
+    '/home', '/search', '/notifications', '/profile', 
+    '/register-driver', '/settings','/vehicle', '/vehicle/new', '/trip/new'
+  ];
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
-
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       {shouldShowSidebar && <DesktopSidebar />}
-      <main className={`${shouldShowSidebar ? 'ml-64' : ''} flex-1`}>
-        {showHeader && <AppHeader showBack />}
+
+    <main
+      className={`${shouldShowSidebar ? 'ml-64' : ''} flex-1`}
+      style={{
+        height: showHeader ? 'calc(100vh - 2.5rem)' : '100vh', // h-10 = 2.5rem
+      }}
+    >
+      {showHeader && <AppHeader showBack />}
+      <div className="h-full overflow-auto">
         {children}
-      </main>
+      </div>
+    </main>
+
     </div>
   );
 }

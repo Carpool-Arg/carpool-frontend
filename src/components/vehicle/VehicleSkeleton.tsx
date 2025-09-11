@@ -2,7 +2,7 @@
 
 export function VehicleCardSkeleton() {
   return (
-    <div className="flex items-center justify-between border border-gray-2 dark:border-gray-2 rounded-lg p-4 shadow animate-pulse">
+    <div className="flex items-center justify-between border border-gray-5 dark:border-gray-2 rounded-lg p-4 shadow animate-pulse">
       
       {/* Left: imagen y texto */}
       <div className="flex items-center gap-4">

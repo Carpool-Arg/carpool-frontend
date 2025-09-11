@@ -40,7 +40,7 @@ export const HEADER_PATHS = [
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
-  '/trip/new': 'Publicar Viaje',
+   '/trip/new': 'Publicar viaje',
   '/vehicle/edit': 'Editar Vehículo',
   '/vehicle/new': 'Registrar Vehículo',
   '/vehicle': 'Vehículos',

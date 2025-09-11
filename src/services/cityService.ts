@@ -1,6 +1,6 @@
-import { CityResponse } from "@/types/response/city";
+import { CitiesResponse, CityResponse } from "@/types/response/city";
 
-export async function fetchCities(query: string): Promise<CityResponse> {
+export async function fetchCities(query: string): Promise<CitiesResponse> {
     console.log(query)
   const res = await fetch(`/api/city/autocomplete?name=${query}`,{
     headers: {
@@ -11,6 +11,21 @@ export async function fetchCities(query: string): Promise<CityResponse> {
 
   if (!res.ok) throw new Error("Error al obtener localidades");
 
+  const response: CitiesResponse = await res.json();
+  return response; 
+}
+
+export async function fetchCityById(id: number): Promise<CityResponse> {
+
+  const res = await fetch(`/api/city/${id}`,{
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: 'include'
+  });
+
+  if (!res.ok) throw new Error("Error la localidad");
+
   const response: CityResponse = await res.json();
-  return response; // tu Response<T> trae el objeto en `data`
+  return response; 
 }

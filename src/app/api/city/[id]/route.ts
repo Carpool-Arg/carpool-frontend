@@ -1,22 +1,24 @@
-import { CitiesResponse, CityResponse } from "@/types/response/city";
+import { CityResponse } from "@/types/response/city";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const id  = params.id;
   try {
     const token = req.cookies.get('token')?.value;
-    const { searchParams } = new URL(req.url);
-    const name = searchParams.get("name");
 
-    const res = await fetch(`${apiUrl}/city/autocomplete?name=${name}`, {
+    const res = await fetch(`${apiUrl}/city/${id}`, {
       headers: {
         "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: CitiesResponse = await res.json();
+    const response: CityResponse = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =
