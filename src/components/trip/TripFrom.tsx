@@ -177,7 +177,7 @@ export function TripForm() {
       )}
 
       {step === 2 && (
-        // === PASO 2: Seleccionar equipaje ===
+        // === PASO 2: Datos viaje ===
         <div className="flex flex-col justify-between h-full">
           <div className='space-y-5'>
             <div className="flex items-center justify-between mb-2">
@@ -209,8 +209,6 @@ export function TripForm() {
               </div>
             )}
 
-          
-
             <div className="md:col-span-2">
               <Controller
                 name="originCityId"
@@ -227,6 +225,7 @@ export function TripForm() {
                 )}
               />
             </div>
+            
             <div className="md:col-span-2">
               <Controller
                 name="destinationCityId"
@@ -315,9 +314,6 @@ export function TripForm() {
             </div>
           </div>
 
-
-          
-
           <div className="flex justify-center gap-2 mt-8">
             <Button 
               type="button" 
@@ -342,8 +338,7 @@ export function TripForm() {
       )}
 
       {step === 3 && (
-        // === PASO 3: Completar resto del form ===
-        
+        // === PASO 3: Seleccionar equipaje ===
         <div className='flex flex-col justify-between h-full items-center'>
           <div className='flex flex-col justify-center items-center'>
             <h2 className="text-xl text-center font-medium mb-16 ">
@@ -394,6 +389,10 @@ export function TripForm() {
         </div>
         
       )}
+
+      {/**
+       *  === PASO 4: Paradas intermedias ===
+       */}
       
     </form>
   );
