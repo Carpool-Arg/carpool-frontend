@@ -9,7 +9,7 @@ import { capitalize, capitalizeWords } from "@/utils/string";
 
 interface CityAutocompleteProps {
   value: number | null;
-  onChange: (value: number) => void;
+  onChange: (city: {id:number;name: string}) => void;
   error?: string;
   label: string;
   placeholder: string;
@@ -79,13 +79,13 @@ export function CityAutocomplete({
   const handleSelect = (city: City) => {
     setQuery(city.name);
     setSelected(true);       
-    onChange(city.id);
+    onChange({id:city.id, name: city.name});
     setShowDropdown(false);
   };
 
   return (
     <div className="relative w-full">
-      <label className="block mb-1 text-sm font-medium font-inter">{label}</label>
+      <label className="block mb-2 text-sm font-medium font-inter">{label}</label>
 
       <div className="relative">
         {icon && !loading &&  (

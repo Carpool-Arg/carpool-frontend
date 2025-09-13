@@ -15,6 +15,7 @@ import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { CityAutocomplete } from '../city/CityAutocomplete';
 import { Button } from '../ui/Button';
 import { VehicleSelector } from './VehicleSelector';
+import { TripStopForm } from './stops/TripStopsForm';
 
 const baggageOptions = [
   {
@@ -40,7 +41,7 @@ const baggageOptions = [
 ];
 
 export function TripForm() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [error, setError] = useState<string>('');
   const router = useRouter()
   const {user} = useAuth();
@@ -314,7 +315,7 @@ export function TripForm() {
             </div>
           </div>
 
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center gap-7.5 mt-8">
             <Button 
               type="button" 
               variant="outline" 
@@ -367,7 +368,7 @@ export function TripForm() {
 
 
 
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="flex justify-center gap-7.5 mt-8">
             <Button 
               type="button" 
               variant="outline" 
@@ -377,12 +378,13 @@ export function TripForm() {
               Atrás
             </Button>
             <Button
-              type="submit"
+              type="button"
               variant="primary"
+              onClick={() => setStep(4)}
               disabled={!isValid}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
-              Crear viaje
+              Siguiente
             </Button>
           </div>
         
@@ -390,9 +392,44 @@ export function TripForm() {
         
       )}
 
-      {/**
-       *  === PASO 4: Paradas intermedias ===
-       */}
+      {step === 4 && (
+        <div className='flex flex-col justify-between h-full items-center'>
+          <div className='flex flex-col items-center gap-8 justify-center h-full'>
+            <Image src={"/map-pin-2.svg"} 
+              alt='Imagen MapPin' 
+              width={121}
+              height={0}
+              priority
+              className='h-auto'
+              />
+            <h1 className="text-2xl text-center font-semibold">
+              ¿Deseas sumar paradas intermedias?
+            </h1>
+          </div>
+          <div className="flex justify-center gap-7.5">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setStep(2)}
+              className='px-6 py-2 text-sm font-inter font-medium'
+            >
+              No
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => setStep(5)}
+              className='px-6 py-2 text-sm font-inter font-medium'
+            >
+              Si
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {step==5 &&(
+        <TripStopForm></TripStopForm>
+      )}
       
     </form>
   );
