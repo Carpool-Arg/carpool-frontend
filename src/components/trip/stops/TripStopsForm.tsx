@@ -10,14 +10,16 @@ import { useState } from "react"
 import { title } from "process"
 import { Column } from "./Column"
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable"
+import { TripStopProps } from "./TripStop"
+import { City } from "@/types/city"
+import { TripStop } from "@/types/tripStop"
+import { Button } from "@/components/ui/Button"
 
 export function TripStopForm(){
 
-    const [tripStops, setTripStops] = useState([
-        {id:1, title: "Localidad Intermedia 1"},
-        {id:2, title: "Localidad Intermedia 2"},
-        {id:3, title: "Localidad Intermedia 3"},
-    ])
+    const [tripStopsList, setTripStopsList] = useState<TripStopProps[]>([])
+    const [tripStops, setTripStops] = useState<TripStop[]>([])
+    
     const{
         register,
         handleSubmit, 
@@ -35,13 +37,25 @@ export function TripStopForm(){
         }
     })
 
-    const [cityName, setCityname] = useState("")
+    const [city, setCity] = useState<City>()
 
+    const onSubmit = () =>{
+        const tripStops: TripStop[] = tripStopsList.map((stop, index) => ({
+        cityId: stop.cityId,
+        order: index + 1,           // order empieza en 1 según el índice
+        start: false,               // todos en false
+        destination: false,         // todos en false
+        observation: stop.observation
+        }));
 
-    const addTripStop = (title:string) =>{
-        setTripStops((tripStops) => [...tripStops, {id: tripStops.length + 1,title}])
+        setTripStops(tripStops);
+        console.log(tripStops)
+    } 
+
+    const addTripStop = (title:string,cityId:number,observation:string) =>{
+        setTripStopsList((tripStopsList) => [...tripStopsList, {id: tripStopsList.length + 1,title,cityId,observation}])
     }
-    const getTripStopsPos = (id:UniqueIdentifier) => tripStops.findIndex(tripStop => 
+    const getTripStopsPos = (id:UniqueIdentifier) => tripStopsList.findIndex(tripStop => 
         tripStop.id === id
     )
 
@@ -51,11 +65,11 @@ export function TripStopForm(){
         if (!over) return
         if(active.id === over.id) return;
 
-        setTripStops(tripStops =>{
+        setTripStopsList(tripStopsList =>{
             const originalPos = getTripStopsPos(active.id)
             const newPos = getTripStopsPos(over.id)
 
-            return arrayMove(tripStops,originalPos,newPos)
+            return arrayMove(tripStopsList,originalPos,newPos)
         })
     }
 
@@ -83,7 +97,7 @@ export function TripStopForm(){
                         value={field.value}
                         onChange={ (city) => {
                             field.onChange(city.id)
-                            setCityname(city.name)
+                            setCity({id:city.id,name:city.name})
                         }}
                         error={errors.cityId?.message}
                         label='Ingrese la localidad intermedia'
@@ -106,7 +120,7 @@ export function TripStopForm(){
                 <div>
                     <button className="bg-gray-2 rounded-full p-2"
                     onClick={()=>{
-                        addTripStop(cityName)
+                        addTripStop(city?.name ?? '', city?.id ?? 0,getValues('observation'))
                     }}>
                         <Plus size={18}/>
                     </button>
@@ -116,8 +130,27 @@ export function TripStopForm(){
                     <h1>Paradas intermedias</h1>
                     <DndContext  sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}
                     >
-                        <Column tripStops={tripStops}/>
+                        <Column tripStops={tripStopsList}/>
                     </DndContext>
+                </div>
+
+                <div className="flex justify-center gap-7.5 mt-8">
+                <Button 
+                    type="button" 
+                    variant="outline" 
+                    
+                    className='px-15 py-2 text-sm font-inter font-medium'
+                >
+                    Atrás
+                </Button>
+                <Button
+                    type="button"
+                    variant="primary"
+                    onClick={onSubmit}
+                    className='px-12 py-2 text-sm font-inter font-medium'
+                >
+                    Siguiente
+                </Button>
                 </div>
             </div>
         </div>

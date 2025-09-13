@@ -9,7 +9,7 @@ import { capitalize, capitalizeWords } from "@/utils/string";
 
 interface CityAutocompleteProps {
   value: number | null;
-  onChange: (city: {id:number;name: string}) => void;
+  onChange: (value: {id:number;name: string}) => void;
   error?: string;
   label: string;
   placeholder: string;

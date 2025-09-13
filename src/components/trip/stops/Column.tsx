@@ -1,15 +1,12 @@
 import React from 'react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { TripStop } from './TripStop';
+import { TripStop, TripStopProps } from './TripStop';
 
 
-export interface TripStop{
-    title: string,
-    id: number
-}
+
 
 interface ColumnProps{
-    tripStops: TripStop[];
+    tripStops: TripStopProps[];
 }
 
 
@@ -19,7 +16,7 @@ export const Column = ({ tripStops} :ColumnProps) => {
         <SortableContext items={tripStops} strategy=
         {verticalListSortingStrategy}>
         {tripStops.map((tripStop) => 
-            <TripStop id={tripStop.id} title={tripStop.title} key = {tripStop.id}/>
+            <TripStop id={tripStop.id} title={tripStop.title} cityId={tripStop.cityId} observation={tripStop.observation} key = {tripStop.id}/>
         )}
         </SortableContext>
     </div>

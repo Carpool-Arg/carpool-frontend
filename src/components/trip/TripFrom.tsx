@@ -217,7 +217,7 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(city) => field.onChange(city.id)}
                     error={errors.originCityId?.message}
                     label='Desde'
                     placeholder='Localidad origen'
@@ -234,7 +234,7 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(city) => field.onChange(city.id)}
                     error={errors.destinationCityId?.message}
                     label='Hasta'
                     placeholder='Localidad destino'

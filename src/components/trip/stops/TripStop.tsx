@@ -2,9 +2,11 @@ import React from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-interface TripStopProps{
+export interface TripStopProps{
     id:number,
     title: string
+    cityId: number
+    observation: string
 }
 
 export const TripStop = ({id,title}: TripStopProps) => {
