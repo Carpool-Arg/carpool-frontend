@@ -13,6 +13,7 @@ import { vehicleFormData } from "@/types/forms"
 import { Button } from "../ui/Button"
 import { CircleX, X } from "lucide-react"
 import { AlertDialog } from "../ui/AlertDialog"
+import { Alert } from "../ui/Alert"
 
 export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -149,6 +150,7 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
 
   return (
     <div className="flex flex-col gap-4 w-full">
+      {error && <Alert message={error} />}
       <h1 className="text-xl font-semibold">Selecciona el tipo de vehículo</h1>
       <form onSubmit={vehicleForm.handleSubmit(handleSubmit)} className="flex flex-col gap-4">
         {/* Lista de tipos de vehículos */}
@@ -200,27 +202,25 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         </div>
 
         
+        <div className="grid grid-cols-3 gap-4">
+          <Button variant="danger" className="flex items-center gap-1" onClick={() => setIsDialogOpen(true)}>
+            <CircleX size={14}/>
+            Dar de baja
+          </Button>
+          <button
+            type="submit"
+            disabled={!isChanged}
+            className={`w-full col-span-2 px-4 py-2 rounded-lg , ${
+              isChanged ? 
+                  'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
+              : 
+                  ' cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
+            }`}
+          >
+            Guardar cambios
+          </button>
+        </div>
       </form>
-
-      <div className="grid grid-cols-3 gap-4">
-        <Button variant="danger" className="flex items-center gap-1" onClick={() => setIsDialogOpen(true)}>
-          <CircleX size={14}/>
-          Dar de baja
-        </Button>
-        <button
-          type="submit"
-          disabled={!isChanged}
-          className={`w-full col-span-2 px-4 py-2 rounded-lg , ${
-            isChanged ? 
-                'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
-            : 
-                ' cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
-          }`}
-        >
-          Guardar cambios
-        </button>
-
-      </div>
 
       <AlertDialog
         isOpen={isDialogOpen}

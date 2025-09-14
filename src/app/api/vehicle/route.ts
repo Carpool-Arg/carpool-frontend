@@ -173,7 +173,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-
+   
     const res = await fetch(`${apiUrl}/vehicles/${id}`, {
       method: "PUT",
       headers: {
