@@ -16,6 +16,7 @@ import { CityAutocomplete } from '../city/CityAutocomplete';
 import { Button } from '../ui/Button';
 import { VehicleSelector } from './VehicleSelector';
 import { TripStopForm } from './stops/TripStopsForm';
+import { TripStop } from '@/types/tripStop';
 
 const baggageOptions = [
   {
@@ -45,6 +46,7 @@ export function TripForm() {
   const [error, setError] = useState<string>('');
   const router = useRouter()
   const {user} = useAuth();
+  const [tripStops, setTripStops] = useState<TripStop[]>([])
 
   const { 
     register, 
@@ -82,6 +84,13 @@ export function TripForm() {
       setValue('availableSeat', selectedVehicle.availableSeats);
     }
   }, [selectedVehicle, setValue]);
+
+
+  const handleTripStopsSubmit = (stops: TripStop[]) =>{
+    setTripStops(stops)
+    console.log(stops)
+  }
+
 
   const onSubmit = async (data: TripFormData) => {
     try {
@@ -217,7 +226,7 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={(city) => field.onChange(city.id)}
+                    onChange={(city) => field.onChange(city?.id)}
                     error={errors.originCityId?.message}
                     label='Desde'
                     placeholder='Localidad origen'
@@ -234,7 +243,7 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={(city) => field.onChange(city.id)}
+                    onChange={(city) => field.onChange(city?.id)}
                     error={errors.destinationCityId?.message}
                     label='Hasta'
                     placeholder='Localidad destino'
@@ -428,7 +437,7 @@ export function TripForm() {
       )}
 
       {step==5 &&(
-        <TripStopForm></TripStopForm>
+        <TripStopForm onSubmitTripStops={handleTripStopsSubmit}></TripStopForm>
       )}
       
     </form>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Equal } from 'lucide-react'
 
 export interface TripStopProps{
     id:number,
@@ -17,6 +18,9 @@ export const TripStop = ({id,title}: TripStopProps) => {
         transform: CSS.Transform.toString(transform)
     }
     return (
-        <div ref={setNodeRef} {...attributes} {...listeners} style = {style} className='bg-gray-5 rounded-md shadow-lg w-full p-5 flex items-center justify-start gap-5 touch-none'>{title}</div>
+        <div ref={setNodeRef} {...attributes} {...listeners} style = {style} className='border border-gray-2 rounded-md shadow-lg w-full flex items-center px-2 py-1 justify-between gap-5 touch-none font-inter text-sm'>
+            {title}
+            <span className='text-gray-5'> <Equal /> </span>
+        </div>
     )
 }

@@ -1,22 +1,37 @@
 import React from 'react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { TripStop, TripStopProps } from './TripStop';
+import { Trash2 } from 'lucide-react';
 
 
 
 
 interface ColumnProps{
     tripStops: TripStopProps[];
+    onDelete: (id: number) => void;
 }
 
 
-export const Column = ({ tripStops} :ColumnProps) => {
+export const Column = ({ tripStops, onDelete} :ColumnProps) => {
   return (
-    <div className='bg-gray-5 rounded-lg p-3.5 w-2/3 max-w-lg flex flex-col gap-3.5'>
+    <div className='rounded-lg flex flex-col gap-3.5 w-full'>
         <SortableContext items={tripStops} strategy=
         {verticalListSortingStrategy}>
-        {tripStops.map((tripStop) => 
+        {tripStops.map((tripStop,index) => 
+          <div className='flex items-center gap-3'>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-300">
+                {index + 1}.
+            </span>
             <TripStop id={tripStop.id} title={tripStop.title} cityId={tripStop.cityId} observation={tripStop.observation} key = {tripStop.id}/>
+            <button
+              type="button"
+              onClick={() => onDelete(tripStop.cityId)}
+              className="rounded-full bg-gray-2 p-2 ml-2 hover:bg-red-100 dark:hover:bg-red-900"
+            >
+              <Trash2 size={18} className="text-red-500" />
+            </button> 
+          
+          </div>
         )}
         </SortableContext>
     </div>

@@ -1,7 +1,6 @@
 import { CitiesResponse, CityResponse } from "@/types/response/city";
 
 export async function fetchCities(query: string): Promise<CitiesResponse> {
-    console.log(query)
   const res = await fetch(`/api/city/autocomplete?name=${query}`,{
     headers: {
         "Content-Type": "application/json",

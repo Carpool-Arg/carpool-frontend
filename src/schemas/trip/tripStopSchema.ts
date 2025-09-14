@@ -16,7 +16,7 @@ export const tripStopSchema = z
 
     observation: z
         .string()
-        .min(1, 'La marca del vehículo no puede estar en blanco.')
+        .min(1, 'La observacion no puede quedar vacia.')
 })
 
 export type TripStopFormData = z.infer<typeof tripStopSchema>;
