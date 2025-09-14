@@ -58,7 +58,7 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onConfirmDelete,
         {/* Info vehículo */}
         <div className="flex items-center gap-4 mb-4">
           <Image
-            src={`/${vehicle.vehicleTypeName}.png`}
+            src={`/${vehicle.vehicleTypeName.toLowerCase()}.png`}
             alt="Car logo"
             width={56}
             height={56}

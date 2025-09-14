@@ -8,6 +8,7 @@ interface VehicleTypeCardProps {
 }
 
 export function VehicleTypeCard({ vehicleType, selected, onSelect }: VehicleTypeCardProps) {
+  console.log(vehicleType.name)
   return (
     <div
       onClick={() => onSelect(vehicleType.id)}
@@ -18,7 +19,7 @@ export function VehicleTypeCard({ vehicleType, selected, onSelect }: VehicleType
         
         <div className="w-10 h-10 relative flex-shrink-0">
           <Image
-            src={`/${vehicleType.name}.png`}
+            src={`/${vehicleType.name.toLowerCase()}.png`}
             alt="Vehicle logo"
             fill
             style={{ objectFit: "contain" }}

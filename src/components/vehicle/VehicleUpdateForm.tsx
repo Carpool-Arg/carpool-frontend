@@ -19,33 +19,27 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [editableVehicle, setEditableVehicle] = useState<Vehicle>({
-      id: 0,
-      brand: '',
-      model: '',
-      domain: '',
-      year: 0,
-      vehicleTypeId: 0,
-      vehicleTypeName: '',
-      availableSeats: 1,
-      color: '',
-      driverId:0,
-      createdAt: ''
-      });
-  const [isChanged, setIsChanged] = useState(false);
+  const [initialValues, setInitialValues] = useState<CompleteRegisterVehicleData | null>(null);
   const router = useRouter()
 
-  // Paso 1: Selección de tipo de vehículo
   const vehicleForm = useForm<CompleteRegisterVehicleData>({
     resolver: zodResolver(completeRegisterVehicleSchema),
-    mode: 'onChange',
-    defaultValues: { vehicleTypeId: 0 }
+    mode: 'onChange', // Importante: esto hace que valide en cada cambio
+    defaultValues: { 
+      vehicleTypeId: 0,
+      domain: '',
+      brand: '',
+      model: '',
+      year: 0,
+      color: '',
+      availableSeats: 1
+    }
   })
 
-  //Precargar datos si estamos en edición
+  // Precargar datos si estamos en edición
   useEffect(() => {
     if (vehicle) {
-      vehicleForm.reset({
+      const values = {
         vehicleTypeId: vehicle.vehicleTypeId,
         domain: vehicle.domain,
         brand: vehicle.brand,
@@ -53,64 +47,67 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         year: vehicle.year,
         color: vehicle.color,
         availableSeats: vehicle.availableSeats
-      })
-      setEditableVehicle(vehicle)
+      };
+      
+      vehicleForm.reset(values);
+      setInitialValues(values);
     }
+  }, [vehicle, vehicleForm]);
 
-  }, [vehicle])
+  // Función para comparar valores ignorando diferencias de capitalización en strings
+  const compareValues = (current: CompleteRegisterVehicleData, initial: CompleteRegisterVehicleData) => {
+    const normalizeString = (str: string | undefined) => 
+      typeof str === 'string' ? str.toLowerCase().trim() : str;
 
-  useEffect(() => {
-    const subscription = vehicleForm.watch((value) => {
-      setEditableVehicle((prev) => ({
-        ...prev,
-        vehicleTypeId: value.vehicleTypeId ?? 0
-      }));
-    });
-    return () => subscription.unsubscribe();
-  }, [vehicleForm]);
+    return (
+      normalizeString(current.brand) !== normalizeString(initial.brand) ||
+      normalizeString(current.model) !== normalizeString(initial.model) ||
+      normalizeString(current.color) !== normalizeString(initial.color) ||
+      normalizeString(current.domain) !== normalizeString(initial.domain) ||
+      current.year !== initial.year ||
+      current.availableSeats !== initial.availableSeats ||
+      current.vehicleTypeId !== initial.vehicleTypeId
+    );
+  };
 
-  useEffect(() => {
-    if (!vehicle) {
-      setIsChanged(false);
-      return;
-    }
+  // Verificar si los valores han cambiado comparando con los valores iniciales
+  const watchedValues = vehicleForm.watch();
+  const isChanged = initialValues ? 
+    compareValues(watchedValues, initialValues) : 
+    false;
 
-    const changed =
-      editableVehicle.color !== (vehicle.color ?? '') ||
-      editableVehicle.model !== (vehicle.model ?? '') ||
-      editableVehicle.availableSeats !== (vehicle.availableSeats ?? 1) ||
-      editableVehicle.year !== (vehicle.year ?? '') ||
-      editableVehicle.vehicleTypeId !== (vehicle.vehicleTypeId ?? '') ||
-      editableVehicle.brand !== (vehicle.brand ?? '');
+  // Verificar si el formulario es válido
+  const { isValid, errors } = vehicleForm.formState;
+  
+  // El botón debe estar habilitado solo si hay cambios Y el formulario es válido
+  const canSubmit = isChanged && isValid && !loading;
 
-    setIsChanged(changed);
-  }, [editableVehicle, vehicle]);
-
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (values: CompleteRegisterVehicleData) => {
+    if (!vehicle) return;
+    
     setLoading(true)
     try {
-      // Tomamos todos los valores del form y armamos el objeto que el backend espera
-      const values = vehicleForm.getValues();
       const updateData: vehicleFormData = {
         brand: values.brand,
         model: values.model,
         year: values.year,
         color: values.color,
         availableSeats: values.availableSeats,
-        domain: values.domain,           // ahora siempre lo incluimos
-        vehicleTypeId: values.vehicleTypeId, // importante que coincida con lo que espera el backend
+        domain: values.domain,
+        vehicleTypeId: values.vehicleTypeId,
       };
 
-      console.log('updateData',updateData)
+      console.log('updateData', updateData)
 
-      const response = await updateVehicle(vehicle!.id, updateData);
+      const response = await updateVehicle(vehicle.id, updateData);
 
       if (response.state === "ERROR") {
         setError(response.messages?.[0] || "Error al actualizar el vehículo");
         return;
       }
 
+      // Actualizar los valores iniciales después de guardar exitosamente
+      setInitialValues(values);
       router.push("/vehicle");
     } catch (err) {
       setError("Error al actualizar el vehículo");
@@ -119,23 +116,13 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
     }
   };
 
-  const handleChange = (field: keyof typeof editableVehicle, value: string) => {
-    setEditableVehicle((prev) => ({
-      ...prev,
-      [field]:
-        field === "year" || field === "availableSeats"
-          ? Number(value) 
-          : value,
-    }));
-  };
-
   const handleDelete = async () => {
     if (!vehicle) return;
     setLoading(true);
     try {
       const response = await deleteVehicle(vehicle.id);
       if (response.state === "OK") {
-        router.push("/vehicle"); // redirige después de eliminar
+        router.push("/vehicle");
       } else {
         setError(response.messages?.[0] || "Error al eliminar el vehículo");
       }
@@ -147,7 +134,6 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
     }
   };
 
-
   return (
     <div className="flex flex-col gap-4 w-full">
       {error && <Alert message={error} />}
@@ -156,68 +142,78 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         {/* Lista de tipos de vehículos */}
         <VehicleTypeList 
           selectedId={vehicleForm.watch("vehicleTypeId")} 
-          onSelect={(id) => vehicleForm.setValue("vehicleTypeId", id, { shouldValidate: true })} 
+          onSelect={(id) => vehicleForm.setValue("vehicleTypeId", id, { 
+            shouldValidate: true,
+            shouldDirty: true 
+          })} 
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Marca"
             {...vehicleForm.register("brand")}
-            onChange={(e) => handleChange('brand', e.target.value)}
-            error={vehicleForm.formState.errors.brand?.message}
+            error={errors.brand?.message}
           />
           <Input
             label="Modelo"
             {...vehicleForm.register("model")}
-            onChange={(e) => handleChange('model', e.target.value)}
-            error={vehicleForm.formState.errors.model?.message}
+            error={errors.model?.message}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-                <Input
-                    label="Patente o dominio"
-                    {...vehicleForm.register("domain")}
-                    error={vehicleForm.formState.errors.domain?.message}
-                    disabled={!!vehicle}
-                />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 col-span-2">
-              <Input
-                label="Año"
-                type="number" {...vehicleForm.register("year", { valueAsNumber: true })}
-                onChange={(e) => handleChange('year', e.target.value)}
-                error={vehicleForm.formState.errors.year?.message}
+          <div className="md:col-span-2">
+            <Input
+              label="Patente o dominio"
+              {...vehicleForm.register("domain")}
+              error={errors.domain?.message}
+              disabled={!!vehicle}
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 col-span-2">
+            <Input
+              label="Año"
+              type="year" 
+              {...vehicleForm.register("year", { valueAsNumber: true })}
+              error={errors.year?.message}
             />
             <Input 
-                label="Asientos" 
-                type="number" {...vehicleForm.register('availableSeats', { valueAsNumber: true })} 
-                onChange={(e) => handleChange('availableSeats', e.target.value)}
-                error={vehicleForm.formState.errors.availableSeats?.message} 
+              label="Asientos" 
+              type="number" 
+              {...vehicleForm.register('availableSeats', { valueAsNumber: true })} 
+              error={errors.availableSeats?.message} 
             />
-            </div>
-            
+          </div>
         </div>
 
+        <Input
+          label="Color"
+          {...vehicleForm.register("color")}
+          error={errors.color?.message}
+        />
         
         <div className="grid grid-cols-3 gap-4">
-          <Button variant="danger" className="flex items-center gap-1" onClick={() => setIsDialogOpen(true)}>
+          <Button 
+            type="button"
+            variant="danger" 
+            className="flex items-center gap-1" 
+            onClick={() => setIsDialogOpen(true)}
+          >
             <CircleX size={14}/>
             Dar de baja
           </Button>
           <button
             type="submit"
-            disabled={!isChanged}
-            className={`w-full col-span-2 px-4 py-2 rounded-lg , ${
-              isChanged ? 
-                  'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
+            disabled={!canSubmit}
+            className={`w-full col-span-2 px-4 py-2 rounded-lg transition-colors ${
+              canSubmit ? 
+                'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
               : 
-                  ' cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
+                'cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
             }`}
           >
-            Guardar cambios
+            {loading ? 'Guardando...' : 'Guardar cambios'}
           </button>
         </div>
       </form>
@@ -232,8 +228,6 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         confirmText="Aceptar"
         cancelText="Cancelar"
       />
-
     </div>
   )
 }
-

@@ -58,7 +58,7 @@ export async function middleware(req: NextRequest) {
     //Si la ruta requiere el rol de chofer y no lo tiene, redireccionarlo al home
     if (requiresDriver && !isDriver) {
       const url = req.nextUrl.clone();
-      url.pathname = "/home"; // 
+      url.pathname = "/home"; 
       return NextResponse.redirect(url);
     }
   } catch (error) {
