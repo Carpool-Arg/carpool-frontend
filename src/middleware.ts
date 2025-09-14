@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isTokenExpired } from "./utils/jwt";
+import { isTokenExpired, parseJwt } from "./utils/jwt";
 import { PUBLIC_PATHS } from "./constants/publicPaths";
+import { DRIVER_PATHS } from "./constants/protectedPaths";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const publicPaths = [...PUBLIC_PATHS.pages, ...PUBLIC_PATHS.api];
-  
+
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
@@ -36,6 +37,32 @@ export async function middleware(req: NextRequest) {
     }
     
     // Si no se pudo renovar, redirigir a login
+    return redirectToLogin(req, pathname);
+  }
+
+  //Validar permiso en la request que estamos haciendo
+  try {
+    //Obtener el payload del token
+    const payload = parseJwt(token);
+
+    if (!payload) {
+      return redirectToLogin(req, pathname);
+    }
+
+    //Verificar si el rol del usuario es de chofer
+    const isDriver = (payload.authorities as string)?.includes("ROLE_DRIVER");
+
+    //Obtenre las rutas que requieren el rol de chofer
+    const requiresDriver = DRIVER_PATHS.some(path => pathname.startsWith(path));
+
+    //Si la ruta requiere el rol de chofer y no lo tiene, redireccionarlo al home
+    if (requiresDriver && !isDriver) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/home"; 
+      return NextResponse.redirect(url);
+    }
+  } catch (error) {
+    console.error("Error decoding token:", error);
     return redirectToLogin(req, pathname);
   }
 

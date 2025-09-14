@@ -35,12 +35,14 @@ export const registerVehicleStep2Schema = z.object({
     .string()
     .min(1, 'El color del vehículo no puede estar en blanco.')
     .regex(/^[a-zA-Z ]+$/, 'El color debe contener solo letras y espacios'),
+
     availableSeats: z
     .number({
       required_error: 'La cantidad de asientos disponibles no puede estar en blanco.',
       invalid_type_error: 'Debe ingresar un número válido.'
     })
-    .min(1, 'La cantidad de asientos disponibles debe ser al menos 1.'),
+    .min(1, 'La cantidad de asientos disponibles debe ser al menos 1.')
+    .max(40, 'La cantidad de asientos no puede ser mayor a 40')
 })
 
 

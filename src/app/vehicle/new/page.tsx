@@ -1,4 +1,3 @@
-'use client'; 
 import { VehicleForm } from "@/components/vehicle/VehicleForm";
 
 export default function VehicleNewPage(){
