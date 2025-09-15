@@ -10,14 +10,16 @@ export const driverSchema = z.object({
     .string()
     .refine((date) => !isNaN(Date.parse(date)), {
       message: 'La fecha de vencimiento no es válida',
+    })
+    .refine((date) => {
+      const inputDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalizar horas para comparar solo la fecha
+      return inputDate >= today;
+    }, {
+      message: 'No puede ser una fecha pasada.',
     }),
-
-  birthDate: z
-    .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'La fecha de nacimiento no es válida',
-    }),
-
+    
   addressStreet: z
     .string()
     .min(1, 'La calle es obligatoria')

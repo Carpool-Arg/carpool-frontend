@@ -25,21 +25,29 @@ export function DriverForm() {
     mode: 'onChange',
     defaultValues: {
       licenseClass: '',
-      licenseExpirationDate: '',// formato ISO (YYYY-MM-DD)
-      birthDate: '',          
+      licenseExpirationDate: '',// formato ISO (YYYY-MM-DD)       
       addressStreet: '',
       addressNumber: '',
       locality: '',
     }
   })
 
+  const formatDate = (date: string) => {
+    const [y, m, d] = date.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
   const onSubmit = async (data: DriverData) => {
     setError(null);
     try {
-      console.log('data enviada',data)
-      const response = await registerDriver(data)
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario");
+       const payload = {
+        ...data,
+        licenseExpirationDate: formatDate(data.licenseExpirationDate),
+      };
+      
+      const response = await registerDriver(payload)
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al registrar usuario");
         return
       }
       await fetchUser();
@@ -61,55 +69,71 @@ export function DriverForm() {
 
         {error && <Alert message={error} />}
 
+        {/* Clase de licencia */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Licencia de conducir"
-            type="text"
-            autoComplete="licenseClass"
-            {...register('licenseClass')}
-            error={errors.licenseClass?.message}
-          />
+          <div className="md:col-span-1">
 
-          <Input
-            label="Vencimiento"
-            type="text"
-            autoComplete="licenseExpirationDate"
-            {...register('licenseExpirationDate')}
-            error={errors.licenseExpirationDate?.message}
-          />
+            <Input
+              label="Clase de Licencia"
+              type="text"
+              autoComplete="licenseClass"
+              className="md:col-span-1 w-1/2"
+              {...register('licenseClass')}
+              error={errors.licenseClass?.message}
+              />
+          </div>
 
-          <Input
-            label="Fecha de Nacimiento"
-            type="text"
-            autoComplete="birthDate"
-            {...register('birthDate')}
-            error={errors.birthDate?.message}
-          />
+          {/* Vencimiento */}
+          <div className="md:col-span-1">
 
-          <Input
-            label="Dirección"
-            type="text"
-            autoComplete="addressStreet"
-            {...register('addressStreet')}
-            error={errors.addressStreet?.message}
-          />
+            <Input
+              label="Vencimiento"
+              type="date"
+              autoComplete="licenseExpirationDate"
+              {...register('licenseExpirationDate')}
+              error={errors.licenseExpirationDate?.message}
+              />
+          </div>
 
-          <Input
-            label="Número"
-            type="text"
-            autoComplete="addressNumber"
-            {...register('addressNumber')}
-            error={errors.addressNumber?.message}
-          />
+          
+          {/* Localidad */}
+          <div className="md:col-span-2">
+            
+            <Input
+              label="Localidad"
+              type="text"
+              autoComplete="locality"
+              className="md:col-span-2"
+              {...register('locality')}
+              error={errors.locality?.message}
+              />
+          </div>
 
-          <Input
-            label="Localidad"
-            type="text"
-            autoComplete="locality"
-            {...register('locality')}
-            error={errors.locality?.message}
-          />
+          <div className="md:col-span-1">
+
+            <Input
+              label="Dirección"
+              type="text"
+              autoComplete="addressStreet"
+              {...register('addressStreet')}
+              error={errors.addressStreet?.message}
+              />
+          </div>
+          
+          <div className="md:col-span-1">
+            <Input
+              label="Número"
+              type="text"
+              autoComplete="addressNumber"
+              {...register('addressNumber')}
+              error={errors.addressNumber?.message}
+              />
+          </div>
+          
+
         </div>
+
+
         <Button
           variant="primary"
           type="submit"

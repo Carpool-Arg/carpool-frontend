@@ -21,12 +21,18 @@ import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Check, X } from 'lucide-react'
 import { Alert } from "../ui/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
+import Link from "next/link"
+
+const genders = [
+  { label: "Masculino", value: "MALE" },
+  { label: "Femenino", value: "FEMALE" },
+  { label: "Otro", value: "UNSPECIFIED" },
+];
 
 export function RegisterForm() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const genders = ["Masculino", "Femenino", "Otro"];
   const router = useRouter()
   const { authGoogle } = useAuth()
   const { executeRecaptcha } = useGoogleReCaptcha()
@@ -52,37 +58,58 @@ export function RegisterForm() {
       name: '',
       lastname: '',
       dni: '',
+      birthDate: '',
       phone: '',
-      gender:'No especificado'
+      gender:'UNSPECIFIED'
     }
   })
+
+  const formatDate = (date: string) => {
+    const [y, m, d] = date.split('-');
+    return `${d}/${m}/${y}`;
+  };
 
   const usernameValidation = useFieldValidator('username');
   const emailValidation = useFieldValidator('email');
   const dniValidation = useFieldValidator('dni');
+  const phoneValidation = useFieldValidator('phone')
 
   //  observador del input, se activa cuando el value del input cambia
   // Watch para campos de step1Form: username y email
   useEffect(() => {
     const subscription = step1Form.watch((value, { name }) => {
       if (name === "username" && value.username) {
-        usernameValidation.validate(value.username);
+        if (!step1Form.formState.errors.username){
+          usernameValidation.validate(value.username);
+        }
       } else if (name === "email" && value.email) {
-        emailValidation.validate(value.email);
+        if(!step1Form.formState.errors.email){
+          emailValidation.validate(value.email);
+        }
       }
     });
     return () => subscription.unsubscribe();
   }, [step1Form, usernameValidation, emailValidation]);
 
+  
+
+
+
   // Watch para campo de step2Form: dni
   useEffect(() => {
     const subscription = step2Form.watch((value, { name }) => {
       if (name === "dni" && value.dni) {
-        dniValidation.validate(value.dni);
+        if(!step2Form.formState.errors.dni){
+          dniValidation.validate(value.dni);
+        }
+      }else if(name === "phone" && value.phone){
+        if (!step2Form.formState.errors.phone){
+          phoneValidation.validate(value.phone)
+        }
       }
     });
     return () => subscription.unsubscribe();
-  }, [step2Form, dniValidation]);
+  }, [step2Form, dniValidation, phoneValidation]);
 
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
@@ -92,9 +119,30 @@ export function RegisterForm() {
     return null;
   };
 
+  const validationsStep1Passed = () =>{
+    return(
+      usernameValidation.messageType === 'success' &&
+      emailValidation.messageType === 'success' 
+    );
+  }
+
+  const validationsStep2Passed = () =>{
+    return(
+      dniValidation.messageType === 'success' &&
+      phoneValidation.messageType === 'success' 
+    );
+  }
+
   // Maneja el siguiente paso
   const handleNext = async () => {
     setError(null)
+
+    //Comprobamos que no hayan errores en las validaciones de los datos unicos del
+    // usuario en el paso 1
+    if(!validationsStep1Passed()){
+      return
+    }
+
     setStep(2)
   }
 
@@ -108,14 +156,21 @@ export function RegisterForm() {
     setLoading(true)
     setError(null)
 
+    //Comprobamos que no hayan errores en las validaciones de los datos unicos del
+    // usuario en el paso 2 
+    if(!validationsStep2Passed()){
+      return
+    }
+
     try {
       // Combinar datos de ambos pasos
       const step1Data = step1Form.getValues()
       const completeData: CompleteRegisterData = {
         ...step1Data,
-        ...data
+        ...data,
+        birthDate: formatDate(data.birthDate)
       }
-
+      
       // Ejecutar reCAPTCHA
       if (!executeRecaptcha) {
         setError('reCAPTCHA no está disponible')
@@ -131,12 +186,13 @@ export function RegisterForm() {
       }
 
       const response = await registerUser({...completeData, recaptchaToken: gRecaptchaToken})
-      if (!response.success) {
-        setError(response.message || "Error al registrar usuario")
+
+      if (response.state !== "OK") {
+        setError(response.messages?.[0] || "Error al registrar usuario")
         return
       }
 
-      router.push('/email-verify')
+      router.push(`/email-verify?email=${completeData.email}`)
     } catch {
       setError('Error al registrar usuario')
     } finally {
@@ -166,12 +222,6 @@ export function RegisterForm() {
   const onGoogleError = () => {
     setError('Error en autenticación con Google')
   }
-
-  const genderLabels: Record<string, string> = {
-    MALE: "Masculino",
-    FEMALE: "Femenino",
-    UNSPECIFIED: "No especificado",
-  };
   
   return (
     <div className="flex flex-col gap-4 p-6 w-full">
@@ -198,10 +248,10 @@ export function RegisterForm() {
               type="text"
               {...step1Form.register('username')}
               error={step1Form.formState.errors.username?.message}
-              rightIcon={getRightIcon(usernameValidation)}
+              rightIcon={!step1Form.formState.errors.username?.message ? getRightIcon(usernameValidation): undefined}
               className="font-outfit"
             />
-            {usernameValidation.message && (
+            {(usernameValidation.message && !step1Form.formState.errors.username?.message) && (
               <p className={`text-xs font-inter mt-1 ${
                 usernameValidation.messageType === 'success' ? 'text-success' : 'text-error'
               }`}>
@@ -216,11 +266,11 @@ export function RegisterForm() {
               type="email"
               {...step1Form.register('email')}
               error={step1Form.formState.errors.email?.message}
-              rightIcon={getRightIcon(emailValidation)}
+              rightIcon={!step1Form.formState.errors.email?.message ? getRightIcon(emailValidation): undefined}
               className="font-outfit"
             />
 
-            {emailValidation.message && (
+            {(emailValidation.message && !step1Form.formState.errors.email?.message) && (
               <p className={`text-xs font-inter mt-1 ${
                 emailValidation.messageType === 'success' ? 'text-success' : 'text-error'
               }`}>
@@ -249,9 +299,19 @@ export function RegisterForm() {
             />
           </div>
 
+          
+
           <Button variant="primary" type="submit" className="w-full">
             Continuar
           </Button>
+          
+          <p className="flex justify-start items-center text-sm font-inter gap-1">
+            ¿Ya tenes cuenta?
+            <Link href="/login" className="hover:underline cursor-pointer font-medium">
+             Iniciar sesión
+          </Link>
+          </p>
+         
 
           <div className="flex items-center gap-2 text-gray-500">
             <div className="flex-1 h-px bg-gray-4/50" />
@@ -301,31 +361,54 @@ export function RegisterForm() {
             </div>
           </div>
 
-          <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div>
+              <Input
+                label="DNI"
+                type="text"
+                {...step2Form.register('dni')}
+                error={step2Form.formState.errors.dni?.message}
+                rightIcon={!step2Form.formState.errors.dni?.message ?getRightIcon(dniValidation):undefined}
+                />
+              {(dniValidation.message && !step2Form.formState.errors.dni?.message) && (
+                <p className={`text-xs font-inter mt-1 ${
+                  dniValidation.messageType === 'success' ? 'text-success' : 'text-error'
+                }`}>
+                  {dniValidation.message}
+                </p>
+              )}
+            </div>
+
+            {/* Fecha de nacimiento */}
             <Input
-              label="DNI"
-              type="text"
-              {...step2Form.register('dni')}
-              error={step2Form.formState.errors.dni?.message}
-              rightIcon={getRightIcon(dniValidation)}
-              className="font-outfit"
-            />
-            {dniValidation.message && (
-              <p className={`text-xs font-inter mt-1 ${
-                dniValidation.messageType === 'success' ? 'text-success' : 'text-error'
-              }`}>
-                {dniValidation.message}
-              </p>
-            )}
+              label="Fecha de Nacimiento"
+              type="date"
+              autoComplete="birthDate"
+              {...step2Form.register('birthDate')}
+              error={step2Form.formState.errors.birthDate?.message}
+              />
+            <div>
           </div>
 
+          </div>
           <div>
+
             <Input
               label="Teléfono"
               type="tel"
               {...step2Form.register('phone')}
               error={step2Form.formState.errors.phone?.message}
-            />
+              rightIcon={!step2Form.formState.errors.phone?.message ?getRightIcon(phoneValidation):undefined}
+              />
+
+            {(phoneValidation.message && !step2Form.formState.errors.phone?.message) && (
+              <p className={`text-xs font-inter mt-1 ${
+                phoneValidation.messageType === 'success' ? 'text-success' : 'text-error'
+              }`}>
+                {phoneValidation.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -333,15 +416,15 @@ export function RegisterForm() {
             <select
               id="gender"
               {...step2Form.register('gender', { required: "El género es obligatorio" })}
-              className={`w-full rounded-md border px-3 py-2 font-outfit text-sm ${
-                step2Form.formState.errors.gender ? 'border-error' : 'border-gray-300'
+              className={`w-full rounded-md border px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5 ${
+                step2Form.formState.errors.gender ? 'border-error' : ''
               }`}
               defaultValue=""
             >
-              <option value="" disabled>Seleccioná un género</option>
+              <option value="" disabled >Seleccioná un género</option>
               {genders.map((gender) => (
-                <option key={gender} value={gender}>
-                  {genderLabels[gender] || gender}
+                <option key={gender.value} value={gender.value}>
+                  {gender.label}
                 </option>
               ))}
             </select>

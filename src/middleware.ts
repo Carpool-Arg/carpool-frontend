@@ -1,33 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isTokenExpired } from "./utils/jwt";
+import { isTokenExpired, parseJwt } from "./utils/jwt";
+import { PUBLIC_PATHS } from "./constants/publicPaths";
+import { DRIVER_PATHS } from "./constants/protectedPaths";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Rutas públicas que no necesitan autenticación
-  const publicPaths = [
-    '/login', 
-    '/register', 
-    '/email-verify',
-    '/email-verified',
-    '/send-change-password-email',
-    '/password-change',
-    '/api/login', 
-    '/api/register', 
-    '/api/google', 
-    '/api/refresh', 
-    '/api/email-verify',
-    '/api/complete-registration',
-    '/api/resend-activation',
-    '/api/genders',
-    '/complete-profile',
-    '/api/send-change-password-email',
-    '/api/password-change',
-    '/complete-profile',
-    '/api/unlock-account',
-    '/unlock-account'
-  ];
-  
+  const publicPaths = [...PUBLIC_PATHS.pages, ...PUBLIC_PATHS.api];
+
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
@@ -57,6 +37,32 @@ export async function middleware(req: NextRequest) {
     }
     
     // Si no se pudo renovar, redirigir a login
+    return redirectToLogin(req, pathname);
+  }
+
+  //Validar permiso en la request que estamos haciendo
+  try {
+    //Obtener el payload del token
+    const payload = parseJwt(token);
+
+    if (!payload) {
+      return redirectToLogin(req, pathname);
+    }
+
+    //Verificar si el rol del usuario es de chofer
+    const isDriver = (payload.authorities as string)?.includes("ROLE_DRIVER");
+
+    //Obtenre las rutas que requieren el rol de chofer
+    const requiresDriver = DRIVER_PATHS.some(path => pathname.startsWith(path));
+
+    //Si la ruta requiere el rol de chofer y no lo tiene, redireccionarlo al home
+    if (requiresDriver && !isDriver) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/home"; 
+      return NextResponse.redirect(url);
+    }
+  } catch (error) {
+    console.error("Error decoding token:", error);
     return redirectToLogin(req, pathname);
   }
 
@@ -105,7 +111,6 @@ function redirectToLogin(req: NextRequest, pathname: string) {
       }
     );
   }
-  
   const url = req.nextUrl.clone();
   url.pathname = '/login';
   return NextResponse.redirect(url);

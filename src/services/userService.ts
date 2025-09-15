@@ -1,4 +1,8 @@
+import { PUT } from "@/app/api/users/update-profile/route";
+import { UpdateEmailData } from "@/schemas/email/emailSchema";
+import { ChangePasswordData, ResetPasswordData } from "@/schemas/password/passwordSchema";
 import { ProfileData } from "@/schemas/profile/profileSchema";
+import { VoidResponse } from "@/types/response/response";
 import { UserResponse } from "@/types/response/user";
 
 /**
@@ -11,7 +15,6 @@ import { UserResponse } from "@/types/response/user";
  * @param {ProfileData} data - Datos del perfil a actualizar.
  * @returns {Promise<UserResponse>} - Resultado de la actualización.
  */
-
 export async function updateUser(data: ProfileData): Promise<UserResponse> {
   try {
     const formData = new FormData();
@@ -34,11 +37,95 @@ export async function updateUser(data: ProfileData): Promise<UserResponse> {
 
     const response: UserResponse = await res.json();
     return response;
-
   } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
 
+
+export async function updatePassword(data: ChangePasswordData): Promise<UserResponse> {
+  try {
+    const res = await fetch('/api/users/update-password',{
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
+    })
+
+    const response: UserResponse = await res.json();
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function updateEmail(data: UpdateEmailData): Promise<UserResponse> {
+  try {
+    const res = await fetch('/api/users/update-email',{
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
+    })
+
+    const response: UserResponse = await res.json();
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+
+export async function unlockAccount(data: ResetPasswordData): Promise<VoidResponse> {
+  try {
+    const res = await fetch('/api/users/unlock-account',{
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
+    })
+
+    const response: VoidResponse = await res.json();
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function resetPassword(data: ResetPasswordData): Promise<VoidResponse> {
+  try {
+    const res = await fetch('/api/password-change',{
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include"
+    })
+
+    const response: VoidResponse = await res.json();
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
   }
 }

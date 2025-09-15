@@ -9,6 +9,12 @@ const withPWA = require('next-pwa')({
 
 module.exports = withPWA({
   images: {
-    domains: ['localhost'], // permitimos localhost
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "carpool-media.5dce6dd8fd2b8c12742c81bbb251a9ca.r2.cloudflarestorage.com",
+        pathname: "/**",
+      },
+    ],
   },
 })

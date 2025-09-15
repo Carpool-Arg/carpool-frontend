@@ -1,6 +1,8 @@
 'use client'
 
+import { PUBLIC_PATHS } from '@/constants/publicPaths';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/authService';
+import { getUserFile } from '@/services/mediaService';
 import { LoginFormData } from '@/types/forms';
 import { User } from '@/types/user';
 import { useRouter, usePathname } from 'next/navigation';
@@ -29,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const pathname = usePathname();
 
   // Rutas públicas donde no necesitamos autenticación
-  const publicRoutes = ['/login', '/register', '/complete-profile', '/email-verify', '/email-verified', '/send-change-password-email','/password-change','/unlock-account'];
+  const publicRoutes = [...PUBLIC_PATHS.pages];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   // Función para obtener el usuario actual
@@ -39,27 +41,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         method: 'GET',
         credentials: 'include',
       });
+
       if (res.ok) {
-        const json = await res.json();
-        console.log('json',json)
-        if (json.user) {
+        const response = await res.json();
+        if (response.data) {
+          let profileImage = response.data.profileImage;
+          try {
+            const imgUrl = await getUserFile(response.data.id); 
+            if (imgUrl) {
+              profileImage = imgUrl.data;
+            }
+          } catch (err) {
+            console.warn("No se pudo cargar la imagen:", err);
+          }
           setUser({ 
-            username: json.user.username,
-            profileImage: json.user.profileImage,
-            roles: json.user.roles,
-            id: json.user.id,
-            name: json.user.name,
-            lastname: json.user.lastname,
-            email: json.user.email,
-            dni: json.user.dni,
-            phone: json.user.phone,
-            gender: json.user.gender,
-            status: json.user.status,
+            username: response.data.username,
+            profileImage,
+            roles: response.data.roles,
+            id: response.data.id,
+            name: response.data.name,
+            lastname: response.data.lastname,
+            email: response.data.email,
+            dni: response.data.dni,
+            phone: response.data.phone,
+            gender: response.data.gender,
+            status: response.data.status,
+            birthDate: response.data.birthDate,
            });
           return true;
         }
       }
-      
       setUser(null);
       return false;
     } catch (err) {
@@ -71,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Inicializar autenticación solo una vez
   useEffect(() => {
+    if (initialized) return; 
     let isMounted = true;
 
     const initializeAuth = async () => {
@@ -104,27 +116,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await loginUser(data);
-      console.log('result', result)
 
+      // Estado del usuario
       const code = result.messages?.[0]; 
-      console.log('data desde login',data)
 
       if (code === 'PENDING_VERIFICATION') {
         router.push('/email-verify');
         return;
       }
 
-      if (result.success) {
+      if (code === 'PENDING_PROFILE') {
+        setUser(null);
+        throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
+      }
+      if (result.state === "OK") {
         await fetchUser();
         router.push('/home');
       } else {
         setUser(null);
-        throw new Error(result.error || 'Error al iniciar sesión');
+        throw new Error(result.messages?.[0]|| 'Error al iniciar sesión');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: unknown) {
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
       setUser(null);
-      throw error;
+      throw new Error(message); 
     } finally {
       setLoading(false);
     }
@@ -134,8 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await authWithGoogle(idToken);
-      
-      if (result.success && result.data) {
+      if (result.state === "OK" && result.data) {
         await fetchUser();
         // Redirigir según el estado del usuario
         if (result.data.status === 'PENDING_PROFILE') {
@@ -145,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         setUser(null);
-        throw new Error(result.error || 'Error al iniciar sesión con Google');
+        throw new Error(result.messages?.[0] || 'Error al iniciar sesión con Google');
       }
     } catch (error) {
       console.error('Google login error:', error);
@@ -156,21 +171,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = useCallback(async () => {
-    setLoading(true);
+  const logout = async () => {
     try {
-      await logoutUser();
-      setUser(null);
-      router.push('/login');
+      const res = await logoutUser(); 
+      if (res.state === "OK") { 
+        router.push('/login'); 
+        setUser(null);
+        setInitialized(false);
+      } else {
+        console.error('Logout failed', res.messages?.[0]);
+        
+      }
     } catch (error) {
-      console.error('Logout error:', error);
-      // Limpiar estado local incluso si falla el logout del servidor
-      setUser(null);
-      router.push('/login');
-    } finally {
-      setLoading(false);
+      console.error('Error during logout:', error);
+      // opcional: mostrar mensaje al usuario
     }
-  }, [router]);
+  };
 
   const value = {
     user,

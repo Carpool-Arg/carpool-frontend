@@ -1,5 +1,6 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
 import { UserResponse } from "@/types/response/user";
+import { parseJwt } from "@/utils/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -14,13 +15,13 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * @param {NextRequest} req - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
  */
-
 export async function PUT(req: NextRequest) {
   try {
-    // Recibir FormData directamente
+    // Recibir FormData de la petición
     const formData = await req.formData();
     const token = req.cookies.get('token')?.value;
 
+    // Llamada al backend con interceptor para refresco de tokens
     const res = await fetchWithRefresh(`${apiUrl}/users/update-profile`, {
       method: "PUT",
       headers: { 
@@ -34,14 +35,21 @@ export async function PUT(req: NextRequest) {
     const newAccessToken = response.data?.accessToken;
     const newRefreshToken = response.data?.refreshToken;
 
+    // Guardar nuevos tokens en cookies
     const nextRes = NextResponse.json(response, { status: res.status });
 
     if (newAccessToken) {
+      const decoded = parseJwt(newAccessToken);
+      const iat = Number(decoded?.iat);
+      const exp = Number(decoded?.exp);
+      const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
+
       nextRes.cookies.set("token", newAccessToken, {
         httpOnly: true,
         path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
+        maxAge,
       });
     }
 
@@ -51,18 +59,17 @@ export async function PUT(req: NextRequest) {
         path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7, // 7 días
       });
     }
 
+    // Devolver respuesta estandarizada
     return nextRes;
   } catch (error: unknown) {
-    let message = "Error desconocido";
-    if (error instanceof Error) message = error.message;
-
-    return NextResponse.json({
-      data: null,
-      messages: [message],
-      state: "ERROR",
-    }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    return NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" }, 
+      { status: 500 }
+    );
   }
 }

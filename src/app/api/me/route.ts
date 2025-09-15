@@ -1,42 +1,63 @@
-// src/app/api/me/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
+import { fetchWithRefresh } from '@/lib/http/authInterceptor';
+import { UserDetailsResponse } from '@/types/response/user';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 type Authority = { authority: string };
 
+/**
+ * Obtiene la información del usuario autenticado
+ *
+ * Extrae el token de las cookies y el username y roles del token JWT, realiza la llamada 
+ * al backend para obtener los datos restantes del usuario autenticado, devuelve la respuesta
+ * estándar de tipo UserDetailsResponse.
+ * 
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
+ */
 export async function GET(request: NextRequest) {
+
+  // Obtenemos el token JWT desde las cookies
   const token = request.cookies.get("token")?.value;
 
+  // Si no existe el token, devolvemos un error 400
   if (!token) {
-    return NextResponse.json({ user: null }, { status: 401 });
+    return NextResponse.json({ 
+      data: null, 
+      messages: ["Token inválido o expirado"], 
+      state: "ERROR" 
+    }, { status: 400 });
   }
 
   try {
-    const response = await fetch(`${apiUrl}/users`, {
+    // Llamada al backend para obtener la información del usuario
+    const res = await fetch(`${apiUrl}/users`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
-    if (!response.ok) {
-      return NextResponse.json({ user: null }, { status: response.status });
-    }
+    const response: UserDetailsResponse = await res.json();
 
-    const data = await response.json();
-    console.log('data',data)
-
+    // Decodificamos el token para obtener roles y username
     const decoded = parseJwt(token);
 
     if (!decoded || !decoded.authorities) {
-      return NextResponse.json({ user: null }, { status: 401 });
+      return NextResponse.json({ 
+        data: null, 
+        messages: ["Token inválido o sin roles"], 
+        state: "ERROR" 
+      }, { status: 401 });
     }
 
+    // Parseamos las autoridades del token
     const rawAuthorities: Authority[] = typeof decoded.authorities === 'string'
       ? JSON.parse(decoded.authorities)
       : decoded.authorities;
 
+    // Mapeamos las autoridades a roles reconocidos por la aplicación
     const roles = rawAuthorities
       .map((a) => {
         switch (a.authority) {
@@ -50,27 +71,26 @@ export async function GET(request: NextRequest) {
       })
       .filter(Boolean);
 
-    // Armamos el user combinando backend + roles
+    // Armamos el objeto final del usuario combinando la info del backend y los roles del token
     const user = {
-      id: data.data.id,
-      profileImage: data.data.profileImage,
-      name: data.data.name,
-      lastname: data.data.lastname,
+      ...(response.data ?? {}),
       username: decoded.username,
-      email: data.data.email,
-      dni: data.data.dni,
-      phone: data.data.phone,
-      gender: data.data.gender,
-      status: data.data.status,
       roles
     };
 
-    return NextResponse.json({ user });
-  } catch {
+    // Retornamos la respuesta con la estructura consistente { data, messages, state }
+    return NextResponse.json({
+      data: user,
+      messages: response.messages?.[0],
+      state: "OK"
+    }, { status: res.status });
+
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
     return NextResponse.json(
-      { user: null, message: "Token inválido o error al obtener usuario" },
-      { status: 400 }
+      { data: null, messages: [message], state: "ERROR" }, 
+      { status: 500 }
     );
   }
 }
-

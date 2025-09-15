@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
+import { useState } from 'react';
+import { AlertDialog } from '@/components/ui/AlertDialog';
 
 const navItems = [
   { href: '/home', icon: Home, label: 'Inicio' },
@@ -14,16 +16,22 @@ const navItems = [
 
 export default function DesktopSidebar() {
   const pathname = usePathname();
-  const { user, loading, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  if (!user || loading) return null;
-
+  const handleLogout =  () => {
+    logout()
+    setIsDialogOpen(false)
+  }
 
   return (
     <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-dark-5 border-r border-gray-200 dark:border-gray-700 flex-col justify-between px-6 py-8 z-50">
       {/* Top section: logo y navegación */}
       <div>
-        <h1 className="text-xl font-semibold mb-10 flex items-center gap-1 justify-center"><Infinity size={40} />Carpool</h1>
+        <h1 className="text-2xl font-semibold mb-10 flex items-center gap-2 justify-start">
+          <span className='bg-gradient-to-bl from-primary-light via-primary/85 via-70% to-primary-dark rounded-lg p-1'><Infinity size={42} /></span>
+          Carpool
+        </h1>
         <nav className="flex flex-col gap-2">
           {navItems.map(({ href, icon: Icon, label }) => {
             const isActive = pathname.startsWith(href);
@@ -47,15 +55,25 @@ export default function DesktopSidebar() {
 
       {/* Bottom section: usuario y logout */}
       <div className="text-sm text-gray-600 flex flex-col gap-1">
-        <span className="font-medium px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user.username}</span>
+        <span className="font-medium px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user?.username}</span>
         <button
-          onClick={logout}
+          onClick={() => setIsDialogOpen(true)}
           className="text-red-500 hover:bg-red-100 dark:hover:bg-red-950 px-4 py-2 font-medium transition-colors text-left rounded-md cursor-pointer flex items-center gap-2"
         > 
           <LogOut size={14} />
           Cerrar sesión
         </button>
       </div>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleLogout} // tu función de logout
+        type="info"
+        title="Cerrar sesión"
+        description="¿Estás seguro de que querés cerrar sesión? Tendrás que volver a iniciar sesión para continuar usando la aplicación."
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+      />
     </aside>
   );
 }
