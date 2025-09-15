@@ -7,18 +7,18 @@ export function ProfileHeader() {
   const { user, prevImage } = useAuth();
 
   const imageToShow = prevImage || user?.profileImage;
+  console.log(imageToShow)
 
 
   return (
     <div className="flex flex-col items-center gap-2">
       {imageToShow ? (
-        <Image
+        <img
           src={imageToShow}
           alt="Foto de perfil"
           width={96}
           height={96}
           className="rounded-full object-cover"
-          priority
         />
       ) : (
         <div className="w-24 h-24 rounded-full bg-gray-1 flex items-center justify-center">
