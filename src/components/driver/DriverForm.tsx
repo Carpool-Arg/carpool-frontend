@@ -105,8 +105,10 @@ export function DriverForm() {
               control={control}
               render={({ field }) => (
                 <CityAutocomplete
+                  label="Localidad"
+                  placeholder="Selecciona tu localidad"
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(city) => field.onChange(city?.id ?? null)}
                   error={errors.cityId?.message}
                 />
               )}

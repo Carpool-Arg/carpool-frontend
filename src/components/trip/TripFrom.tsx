@@ -16,7 +16,9 @@ import { CityAutocomplete } from '../city/CityAutocomplete';
 import { Button } from '../ui/Button';
 import { VehicleSelector } from './VehicleSelector';
 import { TripStopForm } from './stops/TripStopsForm';
-import { TripStop } from '@/types/tripStop';
+import { TripStop, TripStopExtended } from '@/types/tripStop';
+import { TripRoutePreview } from './TripRoutePreview';
+
 
 const baggageOptions = [
   {
@@ -42,11 +44,14 @@ const baggageOptions = [
 ];
 
 export function TripForm() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [error, setError] = useState<string>('');
   const router = useRouter()
   const {user} = useAuth();
   const [tripStops, setTripStops] = useState<TripStop[]>([])
+
+  const [originName, setOriginName] = useState<string>('');
+  const [destinationName, setDestinationName] = useState<string>('');
 
   const { 
     register, 
@@ -62,11 +67,11 @@ export function TripForm() {
       startDateTime: '',
       originCityId: 0,
       destinationCityId: 0,
-      intermediateCity: '',
       availableSeat: 1,
       availableBaggage: '',
       seatPrice: 0,
-      idVehicle: 0
+      idVehicle: 0,
+      tripStops: []  
     }
   });
 
@@ -86,22 +91,95 @@ export function TripForm() {
   }, [selectedVehicle, setValue]);
 
 
-  const handleTripStopsSubmit = (stops: TripStop[]) =>{
-    setTripStops(stops)
-    console.log(stops)
-  }
+  const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
+    const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
+      ...stop,
+      order: index + 1,
+      start: false,
+      destination: false
+    }));
+    setTripStops(formattedStops);
+  };
+
+  // Dentro de TripForm
+  const buildTripRoute = (): TripStop[] => {
+    console.log('entra')
+    const originId = watch("originCityId");
+    const destinationId = watch("destinationCityId");
+
+    if (!originId || !destinationId) return [];
+
+    return [
+      {
+        cityId: originId,
+        cityName: originName || "Origen",
+        start: true,
+        destination: false,
+        order: 1,
+        observation: ""
+      },
+      ...tripStops.map((stop, index) => ({
+        ...stop,
+        start: false,
+        destination: false,
+        order: index + 2
+      })),
+      {
+        cityId: destinationId,
+        cityName: destinationName || "Destino",
+        start: false,
+        destination: true,
+        order: tripStops.length + 2,
+        observation: ""
+      }
+    ];
+  };
+
+
+
 
 
   const onSubmit = async (data: TripFormData) => {
+    const stops = tripStops || [];
+
+    const payloadTripStops = [
+      {
+        cityId: data.originCityId,
+        start: true,
+        destination: false,
+        order: 1,
+        observation: ''
+      },
+      ...stops.map((stop, index) => ({
+        cityId: stop.cityId,
+        start: false,
+        destination: false,
+        order: index + 2,
+        observation: stop.observation
+      })),
+      {
+        cityId: data.destinationCityId,
+        start: false,
+        destination: true,
+        order: stops.length + 2,
+        observation: ''
+      }
+    ];
+
     try {
-      const response = await newTrip(data)
+      const payload = {
+        ...data,
+        tripStops: payloadTripStops
+      };
+
+      const response = await newTrip(payload);
 
       if (response.state === "ERROR") {
-        setError(response.messages?.[0] || "Error al guardar el vehículo");
+        setError(response.messages?.[0] || "Error al guardar el viaje");
         return;
       }
 
-      router.push('/profile')
+      router.push('/profile');
     } catch (error) {
       setError("Error al crear el viaje");
     }
@@ -226,7 +304,10 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={(city) => field.onChange(city?.id)}
+                    onChange={(city) => {
+                      field.onChange(city?.id);
+                      setOriginName(city?.name || '');
+                    }}
                     error={errors.originCityId?.message}
                     label='Desde'
                     placeholder='Localidad origen'
@@ -243,7 +324,10 @@ export function TripForm() {
                 render={({ field }) => (
                   <CityAutocomplete
                     value={field.value}
-                    onChange={(city) => field.onChange(city?.id)}
+                    onChange={(city) => {
+                      field.onChange(city?.id);
+                      setDestinationName(city?.name || '');
+                    }}
                     error={errors.destinationCityId?.message}
                     label='Hasta'
                     placeholder='Localidad destino'
@@ -436,9 +520,48 @@ export function TripForm() {
         </div>
       )}
 
-      {step==5 &&(
-        <TripStopForm onSubmitTripStops={handleTripStopsSubmit}></TripStopForm>
+      {step === 5 && (
+        <TripStopForm
+          initialStops={tripStops} 
+          onSubmitTripStops={handleTripStopsSubmit}
+          onNext={() => setStep(6)} // por ejemplo, siguiente paso después de stops
+          onBack={() => setStep(4)} // volver al paso 4
+        />
       )}
+
+      {step === 6 && (
+        <div className="flex flex-col justify-between h-full items-center">
+          <div className="flex flex-col gap-4 w-full max-w-md mx-auto mt-8">
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              Recorrido del viaje
+            </h2>
+
+            <TripRoutePreview
+              tripStops={buildTripRoute()}
+            />
+          </div>
+
+          <div className="flex justify-center gap-7.5 mt-8">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setStep(5)}
+              className='px-15 py-2 text-sm font-inter font-medium'
+            >
+              Atrás
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Finalizar
+            </Button>
+          </div>
+        </div>
+      )}
+
+
       
     </form>
   );
