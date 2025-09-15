@@ -12,7 +12,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   return (
     <div className="flex flex-col h-screen">
       {showHeader && <AppHeader showBack />}
-      <main className="flex-1 overflow-auto p-8">{children}</main>
+      <main className="flex-1 overflow-auto px-8">{children}</main>
       <MobileNavbar />
     </div>
   );

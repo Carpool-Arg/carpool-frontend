@@ -88,7 +88,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-6 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full p-6">
       <div className="flex flex-col items-center text-center mb-2">
         <h1 className="font-outfit text-lg font-semibold">Inicia sesión en tu cuenta</h1>
         <p className="font-inter font-regular text-sm">Ingresa email y contraseña para iniciar sesión</p>
@@ -114,7 +114,7 @@ export function LoginForm() {
         />
       </div>
 
-      <Link href="/password-change/send-email" className="flex justify-start hover:underline cursor-pointer text-sm">
+      <Link href="/password-change/send-email" className="flex justify-start hover:underline cursor-pointer text-sm font-inter">
         ¿Olvidaste tu contraseña?
       </Link>
 
@@ -122,7 +122,7 @@ export function LoginForm() {
         variant="primary"
         type="submit"
         disabled={loading}
-        className="w-full mb-2"
+        className="w-full"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -133,6 +133,14 @@ export function LoginForm() {
           'Iniciar sesión'
         )}
       </Button>
+
+      <p className="flex justify-start items-center text-sm gap-1 font-inter">
+        ¿No tenes cuenta?
+        <Link href="/register" className="flex justify-start hover:underline cursor-pointer font-medium">
+         Registrate acá
+        </Link>
+      </p>
+      
 
       <div className="flex items-center gap-2 text-gray-500">
         <div className="flex-1 h-px bg-gray-4/50" />
