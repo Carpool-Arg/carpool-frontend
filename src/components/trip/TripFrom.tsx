@@ -18,33 +18,25 @@ import { VehicleSelector } from './VehicleSelector';
 import { TripStopForm } from './stops/TripStopsForm';
 import { TripStop, TripStopExtended } from '@/types/tripStop';
 import { TripRoutePreview } from './TripRoutePreview';
+import { TripDetail } from './detail/TripDetail';
 
 
-const baggageOptions = [
-  {
-    value: "LIVIANO",
-    type: "Liviano",
-    icon: BsBackpack,
-  },
-  {
-    value: "MEDIANO",
-    type: "Mediano",
-    icon: BiBriefcaseAlt,
-  },
-  {
-    value: "PESADO",
-    type: "Pesado",
-    icon: BsSuitcase,
-  },
-  {
-    value: "NO_EQUIPAJE",
-    type: "Sin equipaje",
-    icon: CircleX,
-  },
+interface BaggageOption {
+  value: string;
+  type: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+export const baggageOptions: BaggageOption[] = [
+  { value: "LIVIANO", type: "Liviano", icon: BsBackpack },
+  { value: "MEDIANO", type: "Mediano", icon: BiBriefcaseAlt },
+  { value: "PESADO", type: "Pesado", icon: BsSuitcase },
+  { value: "NO_EQUIPAJE", type: "Sin equipaje", icon: CircleX },
 ];
 
+
 export function TripForm() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
   const [error, setError] = useState<string>('');
   const router = useRouter()
   const {user} = useAuth();
@@ -524,8 +516,8 @@ export function TripForm() {
         <TripStopForm
           initialStops={tripStops} 
           onSubmitTripStops={handleTripStopsSubmit}
-          onNext={() => setStep(6)} // por ejemplo, siguiente paso después de stops
-          onBack={() => setStep(4)} // volver al paso 4
+          onNext={() => setStep(6)} 
+          onBack={() => setStep(4)} 
         />
       )}
 
@@ -533,12 +525,14 @@ export function TripForm() {
         <div className="flex flex-col justify-between h-full items-center">
           <div className="flex flex-col gap-4 w-full max-w-md mx-auto mt-8">
             <h2 className="text-2xl text-center font-semibold mb-6">
-              Recorrido del viaje
+              ¿Deseas confirmar el recorrido?
             </h2>
-
-            <TripRoutePreview
-              tripStops={buildTripRoute()}
-            />
+            <div className='items-center w-full'>
+              <TripRoutePreview
+                tripStops={buildTripRoute()}
+              />
+            </div>
+            
           </div>
 
           <div className="flex justify-center gap-7.5 mt-8">
@@ -551,14 +545,28 @@ export function TripForm() {
               Atrás
             </Button>
             <Button
-              type="submit"
+              type="button"
               variant="primary"
+              onClick={() => setStep(7)}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
-              Finalizar
+              Siguiente
             </Button>
           </div>
         </div>
+      )}
+
+      {step === 7 && (
+        <TripDetail
+          originName={originName}
+          destinationName={destinationName}
+          startDateTime={watch("startDateTime")}
+          availableSeat={watch("availableSeat")}
+          availableBaggage={watch("availableBaggage") || ""}
+          seatPrice={watch("seatPrice")}
+          vehicle={selectedVehicle!}
+        />
+
       )}
 
 
