@@ -260,35 +260,9 @@ export function TripForm() {
         // === PASO 2: Datos viaje ===
         <div className="flex flex-col justify-between h-full">
           <div className='space-y-5'>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-medium">Nuevo viaje</h2>
-              <button
-                type="button"
-                className="text-sm text-gray-5 underline"
-                onClick={() => setStep(1)}
-              >
-                Cambiar vehículo
-              </button>
-            </div>
-
-            {selectedVehicle && (
-              <div className='flex items-center p-3 mb-3 border rounded-lg border-gray-5/75 gap-4'>
-                <div className="w-10 h-10 relative flex-shrink-0">
-                  <Image
-                    src={`/${selectedVehicle.vehicleTypeName}.png`}
-                    alt="Car logo"
-                    fill
-                    style={{ objectFit: 'contain' }}
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{selectedVehicle.brand} {selectedVehicle.model}</p>
-                  <p className="text-xs text-dark-4 dark:text-gray-1 ">Patente {selectedVehicle.domain}</p>
-                  <p className="text-xs dark:text-gray-1">Asientos totales {selectedVehicle.availableSeats}</p>
-                </div>
-              </div>
-            )}
-
+            
+            <h2 className="text-xl font-medium">Nuevo viaje</h2>
+              
             <div className="md:col-span-2">
               <Controller
                 name="originCityId"
@@ -557,18 +531,36 @@ export function TripForm() {
       )}
 
       {step === 7 && (
-        <TripDetail
-          originName={originName}
-          destinationName={destinationName}
-          startDateTime={watch("startDateTime")}
-          availableSeat={watch("availableSeat")}
-          availableBaggage={watch("availableBaggage") || ""}
-          seatPrice={watch("seatPrice")}
-          vehicle={selectedVehicle!}
-        />
-
+        <div className='flex flex-col justify-between mb-8'>
+          <TripDetail
+            originName={originName}
+            destinationName={destinationName}
+            startDateTime={watch("startDateTime")}
+            availableSeat={watch("availableSeat")}
+            availableBaggage={watch("availableBaggage") || ""}
+            seatPrice={watch("seatPrice")}
+            vehicle={selectedVehicle!}
+          />
+          <div className="flex justify-center gap-7.5 mt-8">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setStep(5)}
+              className='px-15 py-2 text-sm font-inter font-medium'
+            >
+              Atrás
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => setStep(7)}
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Siguiente
+            </Button>
+          </div>
+        </div>
       )}
-
 
       
     </form>

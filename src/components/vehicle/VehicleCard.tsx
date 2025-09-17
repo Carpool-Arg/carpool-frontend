@@ -23,10 +23,10 @@ export function VehicleCard({ vehicle, onClick }: VehicleCardProps) {
           />
         </div>
         <div>
-          <p className="font-semibold leading-none">
+          <p className="font-semibold leading-5">
             {vehicle.brand}
           </p>
-          <p className="text-sm font-light leading-none">
+          <p className="text-sm font-light leading-5">
             {vehicle.model}
           </p>
         </div>
