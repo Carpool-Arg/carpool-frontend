@@ -5,7 +5,7 @@ import { useUserVehicles } from '@/hooks/useUserVehicles';
 import { TripFormData, tripSchema } from '@/schemas/trip/tripSchema';
 import { newTrip } from '@/services/tripService';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CircleSmall, CircleX, DollarSign, MapPin, UsersRound } from 'lucide-react';
+import { Circle, CircleSmall, CircleX, DollarSign, MapPin, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -19,6 +19,7 @@ import { TripStopForm } from './stops/TripStopsForm';
 import { TripStop, TripStopExtended } from '@/types/tripStop';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripDetail } from './detail/TripDetail';
+import { AlertDialog } from '../ui/AlertDialog';
 
 
 interface BaggageOption {
@@ -45,6 +46,11 @@ export function TripForm() {
   const [originName, setOriginName] = useState<string>('');
   const [destinationName, setDestinationName] = useState<string>('');
 
+  const [origin, setOrigin] = useState<TripStop | null>(null);
+  console.log('origin',origin)
+  const [destination, setDestination] = useState<TripStop | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { 
     register, 
     handleSubmit, 
@@ -57,8 +63,6 @@ export function TripForm() {
     mode: 'onChange',
     defaultValues: {
       startDateTime: '',
-      originCityId: 0,
-      destinationCityId: 0,
       availableSeat: 1,
       availableBaggage: '',
       seatPrice: 0,
@@ -93,17 +97,13 @@ export function TripForm() {
     setTripStops(formattedStops);
   };
 
-  // Dentro de TripForm
   const buildTripRoute = (): TripStop[] => {
-    console.log('entra')
-    const originId = watch("originCityId");
-    const destinationId = watch("destinationCityId");
 
-    if (!originId || !destinationId) return [];
+    if (!origin || !destination) return [];
 
     return [
       {
-        cityId: originId,
+        cityId: origin.cityId,
         cityName: originName || "Origen",
         start: true,
         destination: false,
@@ -117,8 +117,8 @@ export function TripForm() {
         order: index + 2
       })),
       {
-        cityId: destinationId,
-        cityName: destinationName || "Destino",
+        cityId: destination.cityId,
+        cityName: destinationName|| "Destino",
         start: false,
         destination: true,
         order: tripStops.length + 2,
@@ -127,35 +127,19 @@ export function TripForm() {
     ];
   };
 
-
-
-
-
   const onSubmit = async (data: TripFormData) => {
-    const stops = tripStops || [];
+    if (!origin || !destination) {
+      setError("Debes seleccionar origen y destino");
+      return;
+    }
 
-    const payloadTripStops = [
-      {
-        cityId: data.originCityId,
-        start: true,
-        destination: false,
-        order: 1,
-        observation: ''
-      },
-      ...stops.map((stop, index) => ({
-        cityId: stop.cityId,
-        start: false,
-        destination: false,
+    const payloadTripStops: TripStop[] = [
+      { ...origin, order: 1 },
+      ...tripStops.map((stop, index) => ({
+        ...stop,
         order: index + 2,
-        observation: stop.observation
       })),
-      {
-        cityId: data.destinationCityId,
-        start: false,
-        destination: true,
-        order: stops.length + 2,
-        observation: ''
-      }
+      { ...destination, order: tripStops.length + 2 }
     ];
 
     try {
@@ -163,7 +147,7 @@ export function TripForm() {
         ...data,
         tripStops: payloadTripStops
       };
-
+      console.log('data enviada', payload)
       const response = await newTrip(payload);
 
       if (response.state === "ERROR") {
@@ -176,6 +160,7 @@ export function TripForm() {
       setError("Error al crear el viaje");
     }
   };
+
 
   if (vehicles.length === 0 && !vehiclesLoading) {
     return (
@@ -264,42 +249,56 @@ export function TripForm() {
             <h2 className="text-xl font-medium">Nuevo viaje</h2>
               
             <div className="md:col-span-2">
-              <Controller
-                name="originCityId"
-                control={control}
-                render={({ field }) => (
-                  <CityAutocomplete
-                    value={field.value}
-                    onChange={(city) => {
-                      field.onChange(city?.id);
-                      setOriginName(city?.name || '');
-                    }}
-                    error={errors.originCityId?.message}
-                    label='Desde'
-                    placeholder='Localidad origen'
-                    icon={<CircleSmall size={18} />}
+              <CityAutocomplete
+                value={origin?.cityId ?? 0}
+                onChange={(city) => {
+                  const stop: TripStop = {
+                    cityId: city?.id ?? 0,
+                    start: true,
+                    destination: false,
+                    order: 1,
+                    observation: ""
+                  };
+                  setOrigin(stop);
+                  setOriginName(city?.name || "");
+                }}
+                error={errors.tripStops?.[0]?.cityId?.message}
+                label="Desde"
+                placeholder="Localidad origen"
+                icon={
+                  <Circle
+                    size={10}
+                    className="stroke-gray-5 fill-gray-5 dark:stroke-gray-1 dark:fill-gray-1"
                   />
-                )}
+                }
+                excludeIds={[destination?.cityId ?? 0]}
               />
             </div>
             
             <div className="md:col-span-2">
-              <Controller
-                name="destinationCityId"
-                control={control}
-                render={({ field }) => (
-                  <CityAutocomplete
-                    value={field.value}
-                    onChange={(city) => {
-                      field.onChange(city?.id);
-                      setDestinationName(city?.name || '');
-                    }}
-                    error={errors.destinationCityId?.message}
-                    label='Hasta'
-                    placeholder='Localidad destino'
-                    icon={<MapPin size={16} />}
+              <CityAutocomplete
+                value={destination?.cityId ?? 0}
+                onChange={(city) => {
+                  const stop: TripStop = {
+                    cityId: city?.id ?? 0,
+                    start: false,
+                    destination: true,
+                    order: 9999, // luego se corrige
+                    observation: ""
+                  };
+                  setDestination(stop);
+                  setDestinationName(city?.name || "");
+                }}
+                error={errors.tripStops?.[tripStops.length - 1]?.cityId?.message}
+                label="Hasta"
+                placeholder="Localidad destino"
+                icon={
+                  <Square 
+                    size={10}
+                    className="stroke-gray-5 fill-gray-5 dark:stroke-gray-1 dark:fill-gray-1"
                   />
-                )}
+                }
+                excludeIds={[origin?.cityId ?? 0]}
               />
             </div>
 
@@ -469,7 +468,7 @@ export function TripForm() {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setStep(2)}
+              onClick={() => setStep(7)}
               className='px-6 py-2 text-sm font-inter font-medium'
             >
               No
@@ -487,12 +486,37 @@ export function TripForm() {
       )}
 
       {step === 5 && (
-        <TripStopForm
-          initialStops={tripStops} 
-          onSubmitTripStops={handleTripStopsSubmit}
-          onNext={() => setStep(6)} 
-          onBack={() => setStep(4)} 
-        />
+        <div className="flex flex-col h-screen md:pb-8 justify-between">
+          {/* Contenido principal con scroll si es necesario */}
+          <div className="flex-1">
+            <TripStopForm
+              initialStops={tripStops} 
+              onSubmitTripStops={handleTripStopsSubmit}
+              origin={origin?.cityId}
+              destination={destination?.cityId}
+            />
+          </div>
+
+          {/* Botones siempre abajo */}
+          <div className="flex justify-center gap-7.5 mt-4 px-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setStep(4)}
+              className='px-15 py-2 text-sm font-inter font-medium'
+            >
+              Atrás
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setStep(6)}
+              variant="primary"
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Siguiente
+            </Button>
+          </div>
+        </div>
       )}
 
       {step === 6 && (
@@ -541,28 +565,36 @@ export function TripForm() {
             seatPrice={watch("seatPrice")}
             vehicle={selectedVehicle!}
           />
-          <div className="flex justify-center gap-7.5 mt-8">
+          <div className="flex justify-center gap-7.5 my-8">
             <Button 
               type="button" 
               variant="outline" 
               onClick={() => setStep(5)}
               className='px-15 py-2 text-sm font-inter font-medium'
             >
-              Atrás
+              Cancelar
             </Button>
             <Button
               type="button"
+              onClick={() => setIsDialogOpen(true)}
               variant="primary"
-              onClick={() => setStep(7)}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
-              Siguiente
+              Publicar viaje
             </Button>
           </div>
         </div>
       )}
-
-      
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleSubmit(onSubmit)} 
+        type="info"
+        title="¿Deseas publicar el viaje?"
+        description="Una vez publicado, otros usuarios podrán ver y solicitar unirse a este viaje."
+        confirmText="Publicar"
+        cancelText="Cancelar"
+      />
     </form>
   );
 }

@@ -10,7 +10,7 @@ interface ColumnProps{
 
 export const TripStopList = ({ tripStops, onDelete} :ColumnProps) => {
   return (
-    <div className='rounded-lg flex flex-col gap-3.5 w-full'>
+    <div className='rounded-lg flex flex-col gap-3.5 w-full p-2'>
         <SortableContext 
           items={tripStops} 
           strategy={verticalListSortingStrategy}

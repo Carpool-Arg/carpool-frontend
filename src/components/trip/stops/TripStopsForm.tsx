@@ -19,11 +19,11 @@ import { TripStopProps } from "./TripStop"
 type TripStopFormProps = {
   initialStops?: TripStop[];
   onSubmitTripStops: (tripStops: TripStopExtended[]) => void; 
-  onNext: () => void;     
-  onBack: () => void;    
+   origin?: number 
+   destination?: number 
 };
 
-export function TripStopForm({ initialStops=[],onSubmitTripStops, onBack, onNext }: TripStopFormProps){
+export function TripStopForm({ initialStops=[], origin, destination }: TripStopFormProps){
     const [tripStopsList, setTripStopsList] = useState<TripStopProps[]>(
     initialStops.map((stop, index) => ({
       id: index + 1, // le damos un id para DnD
@@ -35,7 +35,6 @@ export function TripStopForm({ initialStops=[],onSubmitTripStops, onBack, onNext
     const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
     const [observation, setObservation] = useState('')
     const [city, setCity] = useState<City>()
-
 
     const addTripStop = (title:string, cityId:number, observation:string) => {
         if (!cityId) {
@@ -88,19 +87,20 @@ export function TripStopForm({ initialStops=[],onSubmitTripStops, onBack, onNext
     
     return(
         <div className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto">
-            <div className="flex flex-col justify-center  w-full">
-                <h2 className="text-2xl text-center font-medium mb-10.5">
+            <div className="flex flex-col space-y-2 justify-center  w-full">
+                <h2 className="text-2xl text-center font-medium mb-7.5">
                     Ingresá tus paradas intermedias
                 </h2>
-                <div className="md:col-span-2">
-                    <CityAutocomplete
-                        value={city?.id ?? 0}
-                        onChange={c => setCity(c ? { id: c.id, name: c.name } : undefined)}
-                        label='Ingrese la localidad intermedia'
-                        placeholder='Seleccione la localidad'
-                        icon={<CircleSmall size={18} />}
-                    />
-                </div>
+                
+                <CityAutocomplete
+                    value={city?.id ?? 0}
+                    onChange={c => setCity(c ? { id: c.id, name: c.name } : undefined)}
+                    label='Ingrese la localidad intermedia'
+                    placeholder='Seleccione la localidad'
+                    icon={<CircleSmall size={18} />}
+                    excludeIds={[origin ?? 0,destination ?? 0] }
+                />
+                
 
                 <div className="md:col-span-2 mt-2 w-full">
                     <label className="text-sm font-medium font-inter">Ingrese una observación</label>
@@ -113,49 +113,30 @@ export function TripStopForm({ initialStops=[],onSubmitTripStops, onBack, onNext
                     />
                 </div>
 
-                <div className="w-full flex justify-end mt-4.5">
-                    <button type="button" className="bg-gray-2 rounded-full p-3"
+                <div className="w-full flex justify-center mt-4.5">
+                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer"
                         onClick={() => addTripStop(city?.name ?? "", city?.id ?? 0, observation)}
                     >
                         <Plus size={18}/>
                     </button>
                 </div>
-
-                <div className="flex flex-col items-start mt-2.5 h-full w-full">
-                    <h1 className="mb-5">Paradas</h1>
-                    <DndContext  sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCorners}
-                    >
-                        <TripStopList tripStops={tripStopsList} onDelete={handleDeleteTripStop}/>
-                    </DndContext>
-                </div>
-
-                <div className="flex justify-center gap-7.5 my-8">
-                    <Button 
-                        variant="outline" 
-                        className='px-15 py-2 text-sm font-inter font-medium'
-                        onClick={onBack}
-                    >
-                        Atrás
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="primary"
-                        className='px-12 py-2 text-sm font-inter font-medium'
-                        onClick={() => {
-                            onSubmitTripStops(tripStopsList.map((stop, index) => ({
-                              ...stop,
-                              order: index + 1,
-                              start: false,
-                              destination: false,
-                              cityName: stop.title
-                            })));
-                            onNext();
-                        }}
-                    >
-                        Siguiente
-                    </Button>
-
-                </div>
+                {tripStopsList.length > 0 && (
+                    <div className="flex flex-col items-start mt-2.5 w-full">
+                        <h1 className="mb-5">Paradas</h1>
+                        <div className="w-full max-h-60 overflow-y-auto">
+                        <DndContext
+                            sensors={sensors}
+                            onDragEnd={handleDragEnd}
+                            collisionDetection={closestCorners}
+                        >
+                            <TripStopList
+                            tripStops={tripStopsList}
+                            onDelete={handleDeleteTripStop}
+                            />
+                        </DndContext>
+                        </div>
+                    </div>
+                )}
             </div>
             {toast && (
                 <Toast

@@ -4,7 +4,7 @@ import { useState, useEffect, ReactNode } from "react";
 import { fetchCities, fetchCityById } from "@/services/cityService";
 import { CitiesResponse, CityResponse } from "@/types/response/city";
 import { City } from "@/types/city";
-import { Search } from "lucide-react"; 
+import { Search, X } from "lucide-react"; 
 import { capitalize, capitalizeWords } from "@/utils/string";
 
 interface CityAutocompleteProps {
@@ -14,6 +14,7 @@ interface CityAutocompleteProps {
   label: string;
   placeholder: string;
   icon?: ReactNode;
+  excludeIds?: number[];
 }
 
 export function CityAutocomplete({
@@ -23,12 +24,14 @@ export function CityAutocomplete({
   error,
   placeholder,
   icon,
+  excludeIds
 }: CityAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [cities, setCities] = useState<City[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [typing, setTyping] = useState(false);
 
   useEffect(() => {
     const loadCity = async () => {
@@ -60,12 +63,17 @@ export function CityAutocomplete({
       if (query.length >= 2) {
         try {
           const response: CitiesResponse = await fetchCities(query);
-          setCities(
-            (response?.data ?? []).map(c => ({
-              ...c,
-              name: capitalizeWords(c.name)
-            }))
-          );
+          let filteredCities = (response?.data ?? []).map(c => ({
+            ...c,
+            name: capitalizeWords(c.name)
+          }));
+
+          // Filtrar los IDs excluidos
+          if (excludeIds && excludeIds.length > 0) {
+            filteredCities = filteredCities.filter(c => !excludeIds.includes(c.id));
+          }
+
+          setCities(filteredCities);
           setShowDropdown(true);
         } catch (err) {
           console.error(err);
@@ -92,7 +100,7 @@ export function CityAutocomplete({
 
       <div className="relative">
         {icon && !loading &&  (
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 dark:text-gray-5 text-gray-2">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 dark:text-gray-5 text-gray-2">
             {icon}
           </span>
         )}
@@ -106,17 +114,33 @@ export function CityAutocomplete({
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setTyping(true); // ahora el usuario está escribiendo
+              if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
+            }}
             placeholder={placeholder}
-            className={`w-full p-2 border border-gray-5 dark:border-gray-2 rounded ${icon ? "pl-8" : ""} ${true ? "pr-8" : ""}`}
+            className={`w-full p-2 border border-gray-5 dark:border-gray-2 rounded ${icon || selected ? "pl-8" : ""} pr-8`}
           />
         )}
 
         {/* Ícono a la derecha */}
         {!loading && (
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-2 dark:text-gray-5">
-            <Search className="w-4 h-4" />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-2 dark:text-gray-5 cursor-pointer">
+            {query ? (
+              <X
+                className="w-4 h-4"
+                onClick={() => {
+                  setQuery("");
+                  setSelected(false);
+                  onChange(null);
+                }}
+              />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
           </span>
+
         )}
       </div>
 
