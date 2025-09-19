@@ -19,11 +19,13 @@ import { TripStopProps } from "./TripStop"
 type TripStopFormProps = {
   initialStops?: TripStop[];
   onSubmitTripStops: (tripStops: TripStopExtended[]) => void; 
-   origin?: number 
-   destination?: number 
+  origin?: number 
+  destination?: number
+  onBack: () => void
+  onNext: () => void
 };
 
-export function TripStopForm({ initialStops=[], origin, destination }: TripStopFormProps){
+export function TripStopForm({ initialStops=[], origin, destination,onSubmitTripStops, onBack, onNext }: TripStopFormProps){
     const [tripStopsList, setTripStopsList] = useState<TripStopProps[]>(
     initialStops.map((stop, index) => ({
       id: index + 1, // le damos un id para DnD
@@ -87,7 +89,7 @@ export function TripStopForm({ initialStops=[], origin, destination }: TripStopF
     
     return(
         <div className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto">
-            <div className="flex flex-col space-y-2 justify-center  w-full">
+            <div className="flex flex-col space-y-2 justify-center w-full">
                 <h2 className="text-2xl text-center font-medium mb-7.5">
                     Ingresá tus paradas intermedias
                 </h2>
@@ -114,7 +116,7 @@ export function TripStopForm({ initialStops=[], origin, destination }: TripStopF
                 </div>
 
                 <div className="w-full flex justify-center mt-4.5">
-                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer"
+                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer text-white dark:text-black hover:bg-gray-9"
                         onClick={() => addTripStop(city?.name ?? "", city?.id ?? 0, observation)}
                     >
                         <Plus size={18}/>
@@ -137,6 +139,33 @@ export function TripStopForm({ initialStops=[], origin, destination }: TripStopF
                         </div>
                     </div>
                 )}
+                <div className="flex justify-center gap-7.5 my-8">
+                    <Button 
+                        variant="outline" 
+                        className='px-15 py-2 text-sm font-inter font-medium'
+                        onClick={onBack}
+                    >
+                        Atrás
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="primary"
+                        className='px-12 py-2 text-sm font-inter font-medium'
+                        onClick={() => {
+                            onSubmitTripStops(tripStopsList.map((stop, index) => ({
+                              ...stop,
+                              order: index + 1,
+                              start: false,
+                              destination: false,
+                              cityName: stop.title
+                            })));
+                            onNext();
+                        }}
+                    >
+                        Siguiente
+                    </Button>
+
+                </div>
             </div>
             {toast && (
                 <Toast

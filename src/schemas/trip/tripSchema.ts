@@ -4,18 +4,26 @@ export const tripStopSchema = z.object({
   cityId: z
     .number({ invalid_type_error: "La ciudad es obligatoria" })
     .int()
-    .min(0, "La ciudad es obligatoria"), // ahora permite 0
+    .min(0, "La ciudad es obligatoria"), 
   start: z.boolean(),
   destination: z.boolean(),
   order: z.number().int().min(1),
-  observation: z.string().optional(),
+  observation: z
+    .string()
+    .nonempty("El punto de encuentro/destino es obligatorio"),
 });
 
 export const tripSchema = z.object({
-  startDateTime: z.string().nonempty("La fecha es obligatoria"),
+  startDateTime: z
+    .string()
+    .nonempty("La fecha es obligatoria")
+    .refine((value) => {
+      const now = new Date();
+      const date = new Date(value);
+      const minDate = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutos después
+      return date >= minDate;
+    }, "La fecha debe ser al menos 30 minutos después de la hora actual"),
 
-  // Eliminé originCityId y destinationCityId porque en tu JSON
-  // la info viene via tripStops.
 
   availableSeat: z
     .number({ invalid_type_error: "Los asientos deben ser un número" })

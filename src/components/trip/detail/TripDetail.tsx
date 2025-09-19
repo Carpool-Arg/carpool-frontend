@@ -33,7 +33,7 @@ export function TripDetail({
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
       <div className="w-full">
         <h2 className="text-2xl font-semibold text-center">Detalle del viaje</h2>
-        <Separator color="bg-gray-2"/>
+        <Separator color="bg-gray-6 dark:bg-gray-2"/>
       </div>
       
       <div className="w-full flex flex-col gap-3">
@@ -41,26 +41,26 @@ export function TripDetail({
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-center">
               <Circle size={12} fill="white" stroke="white" />
-              <div className="w-0.5 h-12 bg-gray-2 my-2"></div>
+              <div className="w-0.5 h-12 bg-gray-5 dark:bg-gray-2 my-2"></div>
               <Square size={12} fill="white" stroke="white" />
             </div>
             <div className="flex-1 space-y-6">
               <div >
-                <p className="text-sm font-light text-gray-6 leading-5 ">Origen</p>
+                <p className="text-sm font-light text-gray-2 dark:text-gray-6 leading-5 ">Origen</p>
                 <p className="font-medium">{originName}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-6 leading-5 ">Destino</p>
+                <p className="text-sm text-gray-2 dark:text-gray-6 leading-5 ">Destino</p>
                 <p className="font-medium">{destinationName}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-between p-4 rounded-lg bg-gray-8">
-          <p className="flex flex-col">
+        <div className="flex justify-between p-4 rounded-lg bg-gray-6 dark:bg-gray-8">
+          <p className="flex flex-col text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Horario de salida</span>
-            <span className="font-regular text-sm">
+            <span className="font-regular text-sm ">
               {new Date(startDateTime).toLocaleDateString('es-AR', {
                 day: 'numeric',    
                 month: 'long',     
@@ -69,19 +69,19 @@ export function TripDetail({
             </span>
             <span className="text-2xl font-bold">{new Date(startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} hs</span>
           </p>
-          <p className="flex flex-col items-start w-20">
+          <p className="flex flex-col items-start w-20 text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Precio</span> 
             <span className="text-2xl font-bold">${seatPrice}</span>
             <span className="font-regular text-sm">por pasajero</span>
           </p>
         </div>
 
-        <div className="flex justify-between p-4 rounded-lg bg-gray-8">
-          <div className="flex flex-col">
+        <div className="flex justify-between p-4 rounded-lg bg-gray-6 dark:bg-gray-8">
+          <div className="flex flex-col text-gray-7 dark:text-gray-1">
             <span className="font-medium mb-2 text-lg">Equipaje</span>
             <div className="flex items-center gap-2">
               {BaggageIcon && (
-                <div className="p-2 rounded-lg bg-gray-2">
+                <div className="p-2 rounded-lg bg-gray-11 dark:bg-gray-2">
                   <BaggageIcon className="w-7 h-7" />
                 </div>
               )}
@@ -89,21 +89,21 @@ export function TripDetail({
             </div>
           </div>
           
-          <div className="flex flex-col items-start w-20">
+          <div className="flex flex-col items-start w-20 text-gray-7 dark:text-gray-1">
             <span className="font-medium mb-2 text-lg">Asientos</span>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-gray-2">
+              <div className="p-2 rounded-lg bg-gray-11 dark:bg-gray-2">
                 <UsersRound size={28} />
               </div>
               <span className="text-2xl font-bold ">{availableSeat}</span>
             </div>
           </div>
         </div>
-        <div className="py-2 px-4 rounded-lg bg-gray-8">
+        <div className="py-2 px-4 rounded-lg bg-gray-6 dark:bg-gray-8 text-gray-7 dark:text-gray-1">
           <span className="font-medium text-lg">Vehículo</span> 
           <div className="flex justify-between items-center">
             <div className="flex py-2 gap-2 items-center">
-              <div className="p-1 rounded-lg bg-gray-2">
+              <div className="p-1 rounded-lg bg-gray-11 dark:bg-gray-2">
                 <div className="w-10 h-10 relative flex-shrink-0 ">
                   <Image
                     src={`/${vehicle.vehicleTypeName}.png`}

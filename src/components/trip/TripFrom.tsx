@@ -4,22 +4,22 @@ import { useAuth } from '@/contexts/authContext';
 import { useUserVehicles } from '@/hooks/useUserVehicles';
 import { TripFormData, tripSchema } from '@/schemas/trip/tripSchema';
 import { newTrip } from '@/services/tripService';
+import { TripStop, TripStopExtended } from '@/types/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Circle, CircleSmall, CircleX, DollarSign, MapPin, Square, UsersRound } from 'lucide-react';
+import { Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { BiBriefcaseAlt } from 'react-icons/bi';
 import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { CityAutocomplete } from '../city/CityAutocomplete';
-import { Button } from '../ui/Button';
-import { VehicleSelector } from './VehicleSelector';
-import { TripStopForm } from './stops/TripStopsForm';
-import { TripStop, TripStopExtended } from '@/types/tripStop';
-import { TripRoutePreview } from './TripRoutePreview';
-import { TripDetail } from './detail/TripDetail';
 import { AlertDialog } from '../ui/AlertDialog';
+import { Button } from '../ui/Button';
+import { TripRoutePreview } from './TripRoutePreview';
+import { VehicleSelector } from './VehicleSelector';
+import { TripDetail } from './detail/TripDetail';
+import { TripStopForm } from './stops/TripStopsForm';
 
 
 interface BaggageOption {
@@ -37,7 +37,7 @@ export const baggageOptions: BaggageOption[] = [
 
 
 export function TripForm() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
   const [error, setError] = useState<string>('');
   const router = useRouter()
   const {user} = useAuth();
@@ -50,6 +50,7 @@ export function TripForm() {
   console.log('origin',origin)
   const [destination, setDestination] = useState<TripStop | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 
   const { 
     register, 
@@ -108,7 +109,7 @@ export function TripForm() {
         start: true,
         destination: false,
         order: 1,
-        observation: ""
+        observation: origin.observation
       },
       ...tripStops.map((stop, index) => ({
         ...stop,
@@ -122,7 +123,7 @@ export function TripForm() {
         start: false,
         destination: true,
         order: tripStops.length + 2,
-        observation: ""
+        observation: destination.observation
       }
     ];
   };
@@ -135,10 +136,13 @@ export function TripForm() {
 
     const payloadTripStops: TripStop[] = [
       { ...origin, order: 1 },
-      ...tripStops.map((stop, index) => ({
-        ...stop,
-        order: index + 2,
-      })),
+        ...tripStops.map((stop, index) => ({
+          cityId: stop.cityId,
+          observation: stop.observation,
+          start: false,
+          destination: false,
+          order: index + 2,
+        })),
       { ...destination, order: tripStops.length + 2 }
     ];
 
@@ -147,7 +151,7 @@ export function TripForm() {
         ...data,
         tripStops: payloadTripStops
       };
-      console.log('data enviada', payload)
+      
       const response = await newTrip(payload);
 
       if (response.state === "ERROR") {
@@ -155,12 +159,11 @@ export function TripForm() {
         return;
       }
 
-      router.push('/profile');
+      setIsSuccessDialogOpen(true);
     } catch (error) {
       setError("Error al crear el viaje");
     }
   };
-
 
   if (vehicles.length === 0 && !vehiclesLoading) {
     return (
@@ -244,11 +247,11 @@ export function TripForm() {
       {step === 2 && (
         // === PASO 2: Datos viaje ===
         <div className="flex flex-col justify-between h-full">
-          <div className='space-y-5'>
+          <div className='space-y-3'>
             
             <h2 className="text-xl font-medium">Nuevo viaje</h2>
               
-            <div className="md:col-span-2">
+            <div className="">
               <CityAutocomplete
                 value={origin?.cityId ?? 0}
                 onChange={(city) => {
@@ -273,9 +276,18 @@ export function TripForm() {
                 }
                 excludeIds={[destination?.cityId ?? 0]}
               />
+              <input
+                type="text"
+                placeholder="Punto de encuentro (ej: Plaza principal)"
+                value={origin?.observation || ""}
+                onChange={(e) =>
+                  setOrigin(prev => prev ? { ...prev, observation: e.target.value } : null)
+                }
+                className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
+              />
             </div>
             
-            <div className="md:col-span-2">
+            <div className="">
               <CityAutocomplete
                 value={destination?.cityId ?? 0}
                 onChange={(city) => {
@@ -299,6 +311,15 @@ export function TripForm() {
                   />
                 }
                 excludeIds={[origin?.cityId ?? 0]}
+              />
+              <input
+                type="text"
+                placeholder="Punto de destino (ej: Terminal de buses)"
+                value={destination?.observation || ""}
+                onChange={(e) =>
+                  setDestination(prev => prev ? { ...prev, observation: e.target.value } : null)
+                }
+                className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
               />
             </div>
 
@@ -422,9 +443,6 @@ export function TripForm() {
               ))}
             </div>
           </div>
-         
-
-
 
           <div className="flex justify-center gap-7.5 mt-8">
             <Button 
@@ -439,7 +457,7 @@ export function TripForm() {
               type="button"
               variant="primary"
               onClick={() => setStep(4)}
-              disabled={!isValid}
+              disabled={!availableBaggage}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
               Siguiente
@@ -494,28 +512,11 @@ export function TripForm() {
               onSubmitTripStops={handleTripStopsSubmit}
               origin={origin?.cityId}
               destination={destination?.cityId}
+              onBack={()=>setStep(4)}
+              onNext={()=>setStep(6)}
             />
           </div>
 
-          {/* Botones siempre abajo */}
-          <div className="flex justify-center gap-7.5 mt-4 px-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setStep(4)}
-              className='px-15 py-2 text-sm font-inter font-medium'
-            >
-              Atrás
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setStep(6)}
-              variant="primary"
-              className='px-12 py-2 text-sm font-inter font-medium'
-            >
-              Siguiente
-            </Button>
-          </div>
         </div>
       )}
 
@@ -525,7 +526,7 @@ export function TripForm() {
             <h2 className="text-2xl text-center font-semibold mb-6">
               ¿Deseas confirmar el recorrido?
             </h2>
-            <div className='items-center w-full'>
+            <div className='items-center w-full bg-gray-6 dark:bg-gray-8 py-4 px-6 rounded-lg'>
               <TripRoutePreview
                 tripStops={buildTripRoute()}
               />
@@ -594,6 +595,23 @@ export function TripForm() {
         description="Una vez publicado, otros usuarios podrán ver y solicitar unirse a este viaje."
         confirmText="Publicar"
         cancelText="Cancelar"
+      />
+      <AlertDialog
+        isOpen={isSuccessDialogOpen}
+        onClose={() => setIsSuccessDialogOpen(false)}
+        secondaryButton={{
+          text: "Inicio",
+          onClick: () => {
+            setIsSuccessDialogOpen(false)
+            router.push('/home')
+          }
+        }}
+        onConfirm={()=>router.push('/profile')} 
+        type="success"
+        title="¡Listo! Tu viaje ha sido publicado"
+        description="Podrás ver y gestionar tus viajes en la sección 'Mis Viajes' 🚗"
+        confirmText="Mis viajes"
+        cancelText="Inicio"
       />
     </form>
   );

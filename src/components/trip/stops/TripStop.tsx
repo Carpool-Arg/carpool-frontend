@@ -18,7 +18,7 @@ export const TripStop = ({id,title}: TripStopProps) => {
         transform: CSS.Transform.toString(transform)
     }
     return (
-        <div ref={setNodeRef} {...attributes} {...listeners} style = {style} className='border border-gray-2 rounded-md shadow-lg w-full flex items-center px-2 py-1 justify-between gap-5 touch-none font-inter text-sm'>
+        <div ref={setNodeRef} {...attributes} {...listeners} style = {style} className=' border-gray-5 dark:border-gray-2 rounded-md w-full flex items-center px-2 py-1 justify-between gap-5 touch-none font-inter text-sm bg-gray-6'>
             {title}
             <span className='text-gray-5'> <Equal /> </span>
         </div>
