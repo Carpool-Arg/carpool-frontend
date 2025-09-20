@@ -1,6 +1,6 @@
 import Separator from "@/components/ui/Separator";
 import { baggageOptions } from "../TripFrom";
-import { Circle, CircleSmall, Square, UsersRound } from "lucide-react";
+import { Circle, CircleSmall, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { capitalizeWords } from "@/utils/string";
 
@@ -12,6 +12,7 @@ interface TripDetailProps {
   availableBaggage: string;
   seatPrice: number;
   vehicle: Vehicle;
+  onBack: () => void;
 }
 
 export function TripDetail({
@@ -22,6 +23,7 @@ export function TripDetail({
   availableBaggage,
   seatPrice,
   vehicle,
+  onBack
 }: TripDetailProps) {
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === availableBaggage
@@ -41,7 +43,8 @@ export function TripDetail({
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-center">
               <Circle size={12} fill="white" stroke="white" />
-              <div className="w-0.5 h-12 bg-gray-5 dark:bg-gray-2 my-2"></div>
+              <div className="w-0.5 h-12 bg-gray-5 dark:bg-gray-2 my-2">
+              </div>
               <Square size={12} fill="white" stroke="white" />
             </div>
             <div className="flex-1 space-y-6">
@@ -56,7 +59,13 @@ export function TripDetail({
             </div>
           </div>
         </div>
-
+        <div>
+          <button onClick={onBack} className="text-white text-sm flex items-center gap-1 border rounded-lg py-1.5 px-2 dark:border-gray-2">
+            <Plus size={14}/>
+            Añadir localidad intermedia
+          </button>
+        </div>
+        
         <div className="flex justify-between p-4 rounded-lg bg-gray-6 dark:bg-gray-8">
           <p className="flex flex-col text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Horario de salida</span>
@@ -119,7 +128,7 @@ export function TripDetail({
               </div>
             </div>
             
-            <p className="text-sm font-inter leading-3">{vehicle.domain}</p>
+            <p className="text-sm font-inter leading-3 w-20">{vehicle.domain}</p>
             
           </div>
         </div>   

@@ -3,17 +3,14 @@
 import { CityAutocomplete } from "@/components/city/CityAutocomplete"
 import { Button } from "@/components/ui/Button"
 import { Toast } from "@/components/ui/Toast"
-import { TripStopFormData, tripStopSchema } from "@/schemas/trip/tripStopSchema"
 import { City } from "@/types/city"
 import { TripStop, TripStopExtended } from "@/types/tripStop"
 import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { CircleSmall, Plus } from "lucide-react"
 import { useState } from "react"
-import { Controller, useForm } from "react-hook-form"
-import { TripStopList } from "./TripStopList"
 import { TripStopProps } from "./TripStop"
+import { TripStopList } from "./TripStopList"
 
 
 type TripStopFormProps = {
@@ -116,7 +113,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                 </div>
 
                 <div className="w-full flex justify-center mt-4.5">
-                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer text-white dark:text-black hover:bg-gray-9"
+                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer text-white dark:text-gray-6 hover:bg-gray-2/75"
                         onClick={() => addTripStop(city?.name ?? "", city?.id ?? 0, observation)}
                     >
                         <Plus size={18}/>
@@ -151,6 +148,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                         type="button"
                         variant="primary"
                         className='px-12 py-2 text-sm font-inter font-medium'
+                        disabled={tripStopsList.length === 0} 
                         onClick={() => {
                             onSubmitTripStops(tripStopsList.map((stop, index) => ({
                               ...stop,

@@ -46,9 +46,24 @@ export function TripForm() {
   const [originName, setOriginName] = useState<string>('');
   const [destinationName, setDestinationName] = useState<string>('');
 
-  const [origin, setOrigin] = useState<TripStop | null>(null);
-  console.log('origin',origin)
-  const [destination, setDestination] = useState<TripStop | null>(null);
+  const [origin, setOrigin] = useState<TripStop>({
+    cityId: 0,
+    cityName: "",
+    start: true,
+    destination: false,
+    order: 1,
+    observation: ""
+  })
+  const [destination, setDestination] = useState<TripStop>({
+    cityId: 0,
+    cityName: "",
+    start: false,
+    destination: true,
+    order: 1,
+    observation: ""
+  })
+
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 
@@ -80,10 +95,13 @@ export function TripForm() {
 
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
 
-
   useEffect(() => {
     if (selectedVehicle) {
-      setValue('availableSeat', selectedVehicle.availableSeats);
+      // si el usuario no cambió nada todavía, inicializo con el valor del vehículo
+      setValue("availableSeat", selectedVehicle.availableSeats, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
   }, [selectedVehicle, setValue]);
 
@@ -186,7 +204,7 @@ export function TripForm() {
         <h1 className='text-2xl font-semibold text-center leading-7 mt-8'>
           No tenes vehículos <br/> para realizar un viaje 
         </h1>
-        <p className='font-inter mt-8'>¿Deseas registrar uno?</p>
+        <p className='font-inter font-medium mt-8'>¿Deseas registrar uno?</p>
         <div className="flex justify-center gap-2 mt-8">
           <Button 
             type="button" 
@@ -255,14 +273,13 @@ export function TripForm() {
               <CityAutocomplete
                 value={origin?.cityId ?? 0}
                 onChange={(city) => {
-                  const stop: TripStop = {
+                  setOrigin(prev => ({
                     cityId: city?.id ?? 0,
                     start: true,
                     destination: false,
                     order: 1,
-                    observation: ""
-                  };
-                  setOrigin(stop);
+                    observation: prev?.observation || ''
+                  }));
                   setOriginName(city?.name || "");
                 }}
                 error={errors.tripStops?.[0]?.cityId?.message}
@@ -281,9 +298,10 @@ export function TripForm() {
                 placeholder="Punto de encuentro (ej: Plaza principal)"
                 value={origin?.observation || ""}
                 onChange={(e) =>
-                  setOrigin(prev => prev ? { ...prev, observation: e.target.value } : null)
+                  setOrigin( { ...origin, observation: e.target.value })
                 }
                 className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
+                
               />
             </div>
             
@@ -291,14 +309,13 @@ export function TripForm() {
               <CityAutocomplete
                 value={destination?.cityId ?? 0}
                 onChange={(city) => {
-                  const stop: TripStop = {
+                  setDestination(prev => ({
                     cityId: city?.id ?? 0,
                     start: false,
                     destination: true,
-                    order: 9999, // luego se corrige
-                    observation: ""
-                  };
-                  setDestination(stop);
+                    order: 9999,
+                    observation: prev?.observation || ''
+                  }));
                   setDestinationName(city?.name || "");
                 }}
                 error={errors.tripStops?.[tripStops.length - 1]?.cityId?.message}
@@ -317,9 +334,10 @@ export function TripForm() {
                 placeholder="Punto de destino (ej: Terminal de buses)"
                 value={destination?.observation || ""}
                 onChange={(e) =>
-                  setDestination(prev => prev ? { ...prev, observation: e.target.value } : null)
+                  setDestination({ ...destination, observation: e.target.value })
                 }
                 className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
+                
               />
             </div>
 
@@ -354,14 +372,21 @@ export function TripForm() {
                       required: "Debe indicar los asientos disponibles",
                       valueAsNumber: true,
                     })}
-                    className="w-full pl-10 pr-3 py-2 rounded border border-gray-5 dark:border-gray-2 placeholder-gray-5 "
+                    className="w-full pl-10 pr-3 py-2 rounded border border-gray-5 dark:border-gray-2 placeholder-gray-5"
                     placeholder="0"
                   />
+
                 </div>
 
-                {errors.availableSeat && (
-                  <p className="text-red-500 text-sm mt-1">{errors.availableSeat.message}</p>
-                )}
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.availableSeat
+                    ? errors.availableSeat.message
+                    : watch("availableSeat") > (selectedVehicle?.availableSeats ?? 0)
+                      ? `No puede superar los asientos del vehículo`
+                      : null
+                  }
+                </p>
+
               </div>
 
               {/* Precio por asiento */}
@@ -486,7 +511,7 @@ export function TripForm() {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setStep(7)}
+              onClick={() => setStep(6)}
               className='px-6 py-2 text-sm font-inter font-medium'
             >
               No
@@ -538,7 +563,7 @@ export function TripForm() {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setStep(5)}
+              onClick={() => setStep(tripStops.length > 0 ? 5 : 4)}
               className='px-15 py-2 text-sm font-inter font-medium'
             >
               Atrás
@@ -565,12 +590,13 @@ export function TripForm() {
             availableBaggage={watch("availableBaggage") || ""}
             seatPrice={watch("seatPrice")}
             vehicle={selectedVehicle!}
+            onBack={() => setStep(5)}
           />
           <div className="flex justify-center gap-7.5 my-8">
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setStep(5)}
+              onClick={() => router.push('/trip/new')}
               className='px-15 py-2 text-sm font-inter font-medium'
             >
               Cancelar
