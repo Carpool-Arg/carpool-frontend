@@ -10,7 +10,8 @@ export const tripStopSchema = z.object({
   order: z.number().int().min(1),
   observation: z
     .string()
-    .nonempty("El punto de encuentro/destino es obligatorio"),
+    .nonempty("El punto de encuentro/destino es obligatorio")
+    .max(100, "La observación no puede tener más de 100 caracteres"),
 });
 
 export const tripSchema = z.object({
@@ -34,7 +35,8 @@ export const tripSchema = z.object({
 
   seatPrice: z
     .number({ invalid_type_error: "El precio debe ser un número" })
-    .min(0, "El precio no puede ser negativo"),
+    .min(0, "El precio no puede ser negativo")
+    .max(99999, " El precio no puede ser mayor a $99999"),
 
   idVehicle: z
     .number({ invalid_type_error: "El ID del vehículo debe ser un número" })

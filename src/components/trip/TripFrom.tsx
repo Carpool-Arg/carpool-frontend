@@ -432,7 +432,9 @@ export function TripForm() {
               type="button"
               variant="primary"
               onClick={() => setStep(3)}
-              disabled={!isValid}
+              disabled={
+                !isValid || !origin.observation || !destination.observation
+              }
               className='px-12 py-2 text-sm font-inter font-medium'
             >
               Siguiente
