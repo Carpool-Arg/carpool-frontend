@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/authContext';
 import { useUserVehicles } from '@/hooks/useUserVehicles';
 import { TripFormData, tripSchema } from '@/schemas/trip/tripSchema';
-import { newTrip } from '@/services/tripService';
+import { newTrip, validateTripDateTime } from '@/services/tripService';
 import { TripStop, TripStopExtended } from '@/types/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
@@ -80,11 +80,13 @@ export function TripForm() {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 
   const { vehicles, loading: vehiclesLoading, error: vehiclesError } = useUserVehicles();
-
   const selectedVehicleId = watch('idVehicle');
+  const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
+  
   const availableBaggage = watch('availableBaggage');
 
-  const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
+  const [dateError, setDateError] = useState<string | null>(null);
+  const startDateTime = watch('startDateTime');
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -95,6 +97,29 @@ export function TripForm() {
       });
     }
   }, [selectedVehicle, setValue]);
+
+  
+  useEffect(() => {
+    if (!startDateTime || !selectedVehicleId) {
+      setDateError(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const response = await validateTripDateTime(startDateTime);
+        if (response.state === 'ERROR') {
+          setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
+        } else {
+          setDateError(null);
+        }
+      } catch (err) {
+        setDateError('Error validando la fecha y hora');
+      }
+    }, 500); // delay para no spamear el endpoint al tipear rápido
+
+    return () => clearTimeout(timeoutId);
+  }, [startDateTime, selectedVehicleId]);
 
   const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
     const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
@@ -175,7 +200,6 @@ export function TripForm() {
     };
 
     try {
-      console.log('data enivada', payload)
       const response = await newTrip(payload);
 
       if (response.state === "ERROR") {
@@ -377,6 +401,9 @@ export function TripForm() {
               />
               {errors.startDateTime && (
                 <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
+              )}
+              {dateError && (
+                <p className="text-red-500 text-sm mt-1">{dateError}</p>
               )}
             </div>
 

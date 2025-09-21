@@ -33,6 +33,7 @@ export function CityAutocomplete({
   const [loading, setLoading] = useState<boolean>(false);
   const [typing, setTyping] = useState(false);
 
+
   useEffect(() => {
     const loadCity = async () => {
       if (value && !selected) {
@@ -63,6 +64,8 @@ export function CityAutocomplete({
       if (query.length >= 2) {
         try {
           const response: CitiesResponse = await fetchCities(query);
+          console.log('response',response)
+          console.log('response',query)
           let filteredCities = (response?.data ?? []).map(c => ({
             ...c,
             name: capitalizeWords(c.name)

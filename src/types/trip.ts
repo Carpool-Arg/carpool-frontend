@@ -1,8 +1,8 @@
 export interface Trip{
-    startDateTime: '';
+    startDateTime: string;
     idVehicle: number;
     tripstops?: [];
     availableSeat: number;
-    availableBaggage: string;
+    availableBaggage?: string;
     seatPrice: number;
 }
