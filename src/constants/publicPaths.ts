@@ -1,5 +1,6 @@
 export const PUBLIC_PATHS = {
   pages: [
+    '/',
     '/login',
     '/register',
     '/email-verify',

@@ -10,6 +10,7 @@ import { registerVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 import { vehicleFormData } from "@/types/forms"
 import { useState } from "react"
+import { Alert } from "../ui/Alert"
 
 export function VehicleForm() {
   const [step, setStep] = useState(1)
@@ -61,6 +62,7 @@ export function VehicleForm() {
 
       if (response.state === "ERROR") {
         setError(response.messages?.[0] || "Error al guardar el vehículo");
+        console.log(response);
         return;
       }
 
@@ -101,6 +103,7 @@ export function VehicleForm() {
       {step === 2 && (
         <>
           <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
+          {error && <Alert message={error} />}
           <form onSubmit={step2Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
             {/* Marca y modelo */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -156,8 +159,6 @@ export function VehicleForm() {
               </Button>
             </div>
           </form>
-
-
         </>
       )}
     </div>

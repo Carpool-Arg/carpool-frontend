@@ -1,12 +1,11 @@
-import { LoginForm } from "@/components/auth/LoginForm";
-import { Button } from "@/components/ui/Button";
+import HomeButtons from "@/components/home/HomeButtons";
 import Image from "next/image";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Columna izquierda: Imagen + slogan + fondo */}
-      <div className="hidden md:flex fixed inset-y-0 left-0 w-1/2 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
+    <div className="min-h-screen flex">
+      {/* Panel lateral (solo desktop) */}
+      <div className="hidden md:flex fixed inset-y-0 left-0 w-2/5 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
         <div className="flex flex-col items-center text-center w-[200px]">
           <Image
             src="/carpool-wslogan.png"
@@ -21,32 +20,64 @@ export default function Page() {
           </h1>
         </div>
       </div>
-      <div className="w-full md:ml-[50%] md:w-1/2 flex items-center justify-center px-6 md:px-[156px] py-12 min-h-screen overflow-y-auto">
-        <div className="w-full max-w-lg">
-          {/* Logo solo en mobile */}
-          <div className="md:hidden mb-6 flex justify-center">
+
+      {/* Contenido principal */}
+      <div className="w-full md:ml-[40%] md:w-3/5 flex flex-col justify-around md:justify-center items-center min-h-screen md:px-[156px] md:py-12 gap-10">
+
+        {/* Logo mobile */}
+        <div className="flex justify-center md:hidden">
+          <Image
+            src="/logo-carpool.svg"
+            alt="Logo mobile"
+            width={200}
+            height={200}
+            priority
+            className="h-auto dark:invert"
+          />
+        </div>
+
+        {/* Imagen grande */}
+        <div className="hidden md:flex mb-6 justify-center w-full">
+          <div className="w-full max-w-[600px] flex justify-center">
             <Image
-              src="/logo-carpool.svg"
+              src="/home.svg"
               alt="Logo"
-              width={220}
-              height={50}
+              width={600}
+              height={400}
               priority
+              className="h-auto max-w-full"
             />
           </div>
-
-          <Button variant="primary">
-            Iniciar sesión
-          </Button>
-
-          <Button variant="primary">
-            Registrar cuenta
-          </Button>
-          
-          
         </div>
-        
+
+        <div className="flex justify-center md:hidden w-full">
+          <Image
+            src="/home.svg"
+            alt="Logo"
+            width={600}
+            height={400}
+            priority
+            className="h-auto max-w-full"
+          />
+        </div>
+
+        {/* Botones Desktop */}
+        <div className="hidden md:flex w-full justify-center">
+          <div className="flex flex-row items-center gap-6 w-full max-w-[600px] mt-18">
+            <HomeButtons mode="desktop" />
+          </div>
+        </div>
+
+        {/* Botones Mobile */}
+        <div className="flex md:hidden flex-col gap-6 w-full">
+          <div className="w-full max-w-md mx-auto mt-6">
+            <div className="flex flex-col gap-6">
+              <HomeButtons mode="mobile" />
+            </div>
+          </div>
+        </div>
+
       </div>
-      
     </div>
   );
 }

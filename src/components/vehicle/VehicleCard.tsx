@@ -16,7 +16,7 @@ export function VehicleCard({ vehicle, onClick }: VehicleCardProps) {
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 relative flex-shrink-0">
           <Image
-            src={`/${vehicle.vehicleTypeName}.png`}
+            src={`/${vehicle.vehicleTypeName.toLowerCase()}.png`}
             alt="Car logo"
             fill
             style={{ objectFit: 'contain' }}

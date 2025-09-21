@@ -32,6 +32,7 @@ export default function RegisterPage() {
               width={220}
               height={50}
               priority
+              className="dark:invert"
             />
           </div>
 

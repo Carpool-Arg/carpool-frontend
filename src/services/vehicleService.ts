@@ -81,7 +81,7 @@ export async function updateVehicle(id: number, data: vehicleFormData): Promise<
     });
 
     const response: VoidResponse = await res.json();
-
+    
     if (!res.ok) {
       throw new Error(response.messages?.[0] || "Error desconocido");
     }
