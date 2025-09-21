@@ -22,6 +22,7 @@ import { TripDetail } from './detail/TripDetail';
 import { TripStopForm } from './stops/TripStopsForm';
 
 
+
 interface BaggageOption {
   value: string;
   type: string;
@@ -42,10 +43,6 @@ export function TripForm() {
   const router = useRouter()
   const {user} = useAuth();
   const [tripStops, setTripStops] = useState<TripStop[]>([])
-
-  const [originName, setOriginName] = useState<string>('');
-  const [destinationName, setDestinationName] = useState<string>('');
-
   const [origin, setOrigin] = useState<TripStop>({
     cityId: 0,
     cityName: "",
@@ -54,6 +51,7 @@ export function TripForm() {
     order: 1,
     observation: ""
   })
+
   const [destination, setDestination] = useState<TripStop>({
     cityId: 0,
     cityName: "",
@@ -63,32 +61,25 @@ export function TripForm() {
     observation: ""
   })
 
-  
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
-
-  const { 
-    register, 
-    handleSubmit, 
-    control, 
-    formState: { errors , isValid}, 
-    setValue, 
-    watch 
-  } = useForm<TripFormData>({
+  const { handleSubmit, register, watch, setValue, trigger, formState: { errors , isValid},  }  = useForm<TripFormData>({
     resolver: zodResolver(tripSchema),
     mode: 'onChange',
     defaultValues: {
       startDateTime: '',
-      availableSeat: 1,
-      availableBaggage: '',
+      availableSeat: 0,
       seatPrice: 0,
-      idVehicle: 0,
-      tripStops: []  
+      originId: 0,
+      originObservation: '',
+      destinationId: 0,
+      destinationObservation: '',
+      tripStops: []
     }
-  });
+  })
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 
   const { vehicles, loading: vehiclesLoading, error: vehiclesError } = useUserVehicles();
-
 
   const selectedVehicleId = watch('idVehicle');
   const availableBaggage = watch('availableBaggage');
@@ -105,11 +96,10 @@ export function TripForm() {
     }
   }, [selectedVehicle, setValue]);
 
-
   const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
     const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
       ...stop,
-      order: index + 1,
+      order: index + 2,
       start: false,
       destination: false
     }));
@@ -123,7 +113,7 @@ export function TripForm() {
     return [
       {
         cityId: origin.cityId,
-        cityName: originName || "Origen",
+        cityName: origin.cityName || "Origen",
         start: true,
         destination: false,
         order: 1,
@@ -137,7 +127,7 @@ export function TripForm() {
       })),
       {
         cityId: destination.cityId,
-        cityName: destinationName|| "Destino",
+        cityName: destination.cityName || "Destino",
         start: false,
         destination: true,
         order: tripStops.length + 2,
@@ -152,24 +142,40 @@ export function TripForm() {
       return;
     }
 
-    const payloadTripStops: TripStop[] = [
-      { ...origin, order: 1 },
-        ...tripStops.map((stop, index) => ({
-          cityId: stop.cityId,
-          observation: stop.observation,
-          start: false,
-          destination: false,
-          order: index + 2,
-        })),
-      { ...destination, order: tripStops.length + 2 }
+    const tripStopsPayload = [
+      {
+        cityId: data.originId,
+        start: true,
+        destination: false,
+        order: 1,
+        observation: data.originObservation
+      },
+      ...((data.tripStops || []).map((stop, index) => ({
+        ...stop,
+        order: index + 2, // empezamos en 2 para que no choque con origen
+        start: false,
+        destination: false,
+      }))),
+      {
+        cityId: data.destinationId,
+        start: false,
+        destination: true,
+        order: (data.tripStops?.length || 0) + 2,
+        observation: data.destinationObservation
+      }
     ];
 
+    const payload = {
+      idVehicle: data.idVehicle,
+      startDateTime: data.startDateTime,
+      availableSeat: data.availableSeat,
+      seatPrice: data.seatPrice,
+      availableBaggage: data.availableBaggage,
+      tripStops: tripStopsPayload
+    };
+
     try {
-      const payload = {
-        ...data,
-        tripStops: payloadTripStops
-      };
-      
+      console.log('data enivada', payload)
       const response = await newTrip(payload);
 
       if (response.state === "ERROR") {
@@ -182,6 +188,7 @@ export function TripForm() {
       setError("Error al crear el viaje");
     }
   };
+
 
   if (vehicles.length === 0 && !vehiclesLoading) {
     return (
@@ -235,7 +242,7 @@ export function TripForm() {
         <div className='flex flex-col justify-between h-full'>
           <div>
             <div className='text-center mb-4'>
-              <h2 className="text-xl"><span className='font-semibold'>{user?.name}</span>, ¿con qué vehículo 
+              <h2 className="text-2xl"><span className='font-semibold'>{user?.name}</span>, ¿con qué vehículo 
                 deseas viajar hoy? 
               </h2>
             </div>
@@ -267,7 +274,7 @@ export function TripForm() {
         <div className="flex flex-col justify-between h-full">
           <div className='space-y-3'>
             
-            <h2 className="text-xl font-medium">Nuevo viaje</h2>
+            <h2 className="text-2xl font-medium">Nuevo viaje</h2>
               
             <div className="">
               <CityAutocomplete
@@ -278,11 +285,12 @@ export function TripForm() {
                     start: true,
                     destination: false,
                     order: 1,
-                    observation: prev?.observation || ''
+                    observation: prev?.observation || '',
+                    cityName: city?.name ?? ""
                   }));
-                  setOriginName(city?.name || "");
+                  setValue("originId", city?.id ?? 0, { shouldValidate: true });
                 }}
-                error={errors.tripStops?.[0]?.cityId?.message}
+                error={errors.originId?.message}
                 label="Desde"
                 placeholder="Localidad origen"
                 icon={
@@ -296,13 +304,21 @@ export function TripForm() {
               <input
                 type="text"
                 placeholder="Punto de encuentro (ej: Plaza principal)"
+                {...register(`originObservation`, {
+                  required: "La observación del origen es obligatoria",
+                })}
                 value={origin?.observation || ""}
-                onChange={(e) =>
-                  setOrigin( { ...origin, observation: e.target.value })
-                }
+                onChange={(e) => {
+                  setOrigin({ ...origin, observation: e.target.value });
+                  setValue("originObservation", e.target.value, { shouldValidate: true });
+                }}
                 className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
-                
               />
+              {errors.originObservation && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.originObservation.message}
+                </p>
+              )}
             </div>
             
             <div className="">
@@ -314,11 +330,12 @@ export function TripForm() {
                     start: false,
                     destination: true,
                     order: 9999,
-                    observation: prev?.observation || ''
+                    observation: prev?.observation || '',
+                    cityName: city?.name || ""
                   }));
-                  setDestinationName(city?.name || "");
+                  setValue("destinationId", city?.id ?? 0, { shouldValidate: true });
                 }}
-                error={errors.tripStops?.[tripStops.length - 1]?.cityId?.message}
+                error={errors.destinationId?.message}
                 label="Hasta"
                 placeholder="Localidad destino"
                 icon={
@@ -332,24 +349,34 @@ export function TripForm() {
               <input
                 type="text"
                 placeholder="Punto de destino (ej: Terminal de buses)"
+                {...register(`destinationObservation`, {
+                  required: "La observación del destino es obligatoria",
+                })}
                 value={destination?.observation || ""}
-                onChange={(e) =>
-                  setDestination({ ...destination, observation: e.target.value })
-                }
+                onChange={(e) => {
+                  setDestination({ ...destination, observation: e.target.value });
+                  setValue("destinationObservation", e.target.value, { shouldValidate: true });
+                }}
+  
                 className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
-                
               />
+               {errors.destinationObservation && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.destinationObservation.message}
+                </p>
+              )}
+
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium font-inter">Fecha y hora de salida</label>
               <input
                 type="datetime-local"
-                {...register('startDateTime', { required: 'La fecha y hora son obligatorias' })}
+               {...register('startDateTime')}
                 className="w-full p-2 rounded border border-gray-5 dark:border-gray-2"
               />
               {errors.startDateTime && (
-                <p className="text-xs text-red-500 mt-1">{errors.startDateTime.message}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
               )}
             </div>
 
@@ -377,7 +404,6 @@ export function TripForm() {
                   />
 
                 </div>
-
                 <p className="text-red-500 text-sm mt-1">
                   {errors.availableSeat
                     ? errors.availableSeat.message
@@ -386,7 +412,7 @@ export function TripForm() {
                       : null
                   }
                 </p>
-
+               
               </div>
 
               {/* Precio por asiento */}
@@ -432,10 +458,8 @@ export function TripForm() {
               type="button"
               variant="primary"
               onClick={() => setStep(3)}
-              disabled={
-                !isValid || !origin.observation || !destination.observation
-              }
               className='px-12 py-2 text-sm font-inter font-medium'
+              disabled={!isValid}
             >
               Siguiente
             </Button>
@@ -448,7 +472,7 @@ export function TripForm() {
         // === PASO 3: Seleccionar equipaje ===
         <div className='flex flex-col justify-between h-full items-center'>
           <div className='flex flex-col justify-center items-center'>
-            <h2 className="text-xl text-center font-medium mb-16 ">
+            <h2 className="text-2xl text-center font-medium mb-16 ">
               Seleccioná el equipaje que cargará cada pasajero
             </h2>
 
@@ -535,13 +559,25 @@ export function TripForm() {
           {/* Contenido principal con scroll si es necesario */}
           <div className="flex-1">
             <TripStopForm
-              initialStops={tripStops} 
-              onSubmitTripStops={handleTripStopsSubmit}
+              initialStops={watch("tripStops")}
+              onSubmitTripStops={(stops) => {
+                setValue("tripStops", stops, { shouldValidate: true });
+                handleTripStopsSubmit(stops); // tu lógica previa
+              }}
               origin={origin?.cityId}
               destination={destination?.cityId}
-              onBack={()=>setStep(4)}
-              onNext={()=>setStep(6)}
+              onBack={() => setStep(4)}
+              onNext={() => {
+                trigger().then((valid) => {
+                  if (valid) setStep(6);
+                });
+              }}
             />
+            {errors.tripStops && (
+              <p className="text-xs text-red-500 mt-2">
+                {errors.tripStops.message}
+              </p>
+            )}
           </div>
 
         </div>
@@ -585,8 +621,8 @@ export function TripForm() {
       {step === 7 && (
         <div className='flex flex-col justify-between mb-8'>
           <TripDetail
-            originName={originName}
-            destinationName={destinationName}
+            origin={origin?.cityName ?? "Origen"}
+            destination={destination.cityName ?? "Destino"}
             startDateTime={watch("startDateTime")}
             availableSeat={watch("availableSeat")}
             availableBaggage={watch("availableBaggage") || ""}

@@ -5,8 +5,8 @@ import Image from "next/image";
 import { capitalizeWords } from "@/utils/string";
 
 interface TripDetailProps {
-  originName: string;
-  destinationName: string;
+  origin: string;
+  destination: string;
   startDateTime: string;
   availableSeat: number;
   availableBaggage: string;
@@ -16,8 +16,8 @@ interface TripDetailProps {
 }
 
 export function TripDetail({
-  originName,
-  destinationName,
+  origin,
+  destination,
   startDateTime,
   availableSeat,
   availableBaggage,
@@ -50,17 +50,17 @@ export function TripDetail({
             <div className="flex-1 space-y-6">
               <div >
                 <p className="text-sm font-light text-gray-2 dark:text-gray-6 leading-5 ">Origen</p>
-                <p className="font-medium">{originName}</p>
+                <p className="font-medium">{origin}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-2 dark:text-gray-6 leading-5 ">Destino</p>
-                <p className="font-medium">{destinationName}</p>
+                <p className="font-medium">{destination}</p>
               </div>
             </div>
           </div>
         </div>
         <div>
-          <button onClick={onBack} className="text-white text-sm flex items-center gap-1 border rounded-lg py-1.5 px-2 dark:border-gray-2">
+          <button onClick={onBack} className="cursor-pointer text-white text-sm flex items-center gap-1 border rounded-lg py-1.5 px-2 border-gray-5 dark:border-gray-2 dark:hover:bg-gray-8">
             <Plus size={14}/>
             Añadir localidad intermedia
           </button>
@@ -113,7 +113,7 @@ export function TripDetail({
           <div className="flex justify-between items-center">
             <div className="flex py-2 gap-2 items-center">
               <div className="p-1 rounded-lg bg-gray-11 dark:bg-gray-2">
-                <div className="w-10 h-10 relative flex-shrink-0 ">
+                <div className="w-9 h-9 relative flex-shrink-0 ">
                   <Image
                     src={`/${vehicle.vehicleTypeName}.png`}
                     alt="Car logo"

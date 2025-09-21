@@ -90,10 +90,6 @@ export function RegisterForm() {
     return () => subscription.unsubscribe();
   }, [step1Form, usernameValidation, emailValidation]);
 
-  
-
-
-
   // Watch para campo de step2Form: dni
   useEffect(() => {
     const subscription = step2Form.watch((value, { name }) => {
@@ -109,7 +105,6 @@ export function RegisterForm() {
     });
     return () => subscription.unsubscribe();
   }, [step2Form, dniValidation]);
-
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;

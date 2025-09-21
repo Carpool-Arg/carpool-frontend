@@ -44,6 +44,28 @@ export const tripSchema = z.object({
     .min(0, "El ID del vehículo no puede ser negativo"),
 
   tripStops: z.array(tripStopSchema).optional(),
+
+  originId: z
+    .number({ invalid_type_error: "La ciudad de origen es obligatoria" })
+    .int()
+    .min(1, "Debe seleccionar una ciudad de origen"),
+
+  originObservation: z
+    .string()
+    .nonempty("La observación del origen es obligatoria")
+    .max(100, "La observación no puede tener más de 100 caracteres"),
+
+  destinationId: z
+    .number({ invalid_type_error: "La ciudad de destino es obligatoria" })
+    .int()
+    .min(1, "Debe seleccionar una ciudad de destino"),
+
+  destinationObservation: z
+    .string()
+    .nonempty("La observación del destino es obligatoria")
+    .max(100, "La observación no puede tener más de 100 caracteres"),
 });
 
 export type TripFormData = z.infer<typeof tripSchema>;
+export type TripStopFormData = z.infer<typeof tripStopSchema>;
+
