@@ -63,8 +63,15 @@ body {
   --color-gray-1: #F3F4F6;
   --color-gray-2: #363635;
   --color-gray-3: #BFC5CE;
-  --color-gray-4: #B8BFCC;
+  --color-gray-4: #D1D5DB;
   --color-gray-5: #6B7280;
+  --color-gray-6: #e5e5e5;
+  --color-gray-7: #212121;
+  --color-gray-8: #181818;
+  --color-gray-9: #7c7c7c;
+  --color-gray-10: #303030;
+  --color-gray-11: #c9c9c9;
+  
 
   /* Accents and messages */
   --color-warning: #D2AB20;   /* amarillo/dorado, útil para advertencias */
@@ -76,4 +83,16 @@ body {
 
 .grecaptcha-badge {
   visibility: hidden;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

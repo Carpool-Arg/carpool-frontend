@@ -11,6 +11,7 @@ type AlertDialogProps = {
   confirmText?: string
   cancelText?: string
   children?: ReactNode
+  secondaryButton?: { text: string; onClick: () => void }
 }
 
 export function AlertDialog({
@@ -23,6 +24,7 @@ export function AlertDialog({
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   children,
+  secondaryButton,
 }: AlertDialogProps) {
   if (!isOpen) return null
 
@@ -39,7 +41,7 @@ export function AlertDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
       <div className="bg-white dark:bg-dark-3 p-6 rounded-lg shadow-lg max-w-md w-full">
         <div className="flex items-center gap-2 mb-4">
           {iconMap[type]}
@@ -51,10 +53,10 @@ export function AlertDialog({
         {children && <div className="mb-4">{children}</div>}
         <div className="flex justify-end gap-2">
           <button
-            onClick={onClose}
+            onClick={secondaryButton ? secondaryButton.onClick : onClose}
             className="px-4 cursor-pointer py-2 rounded-md border border-gray-300 dark:border-gray-600"
           >
-            {cancelText}
+            {secondaryButton ? secondaryButton.text : cancelText}
           </button>
           <button
             onClick={() => {

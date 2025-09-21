@@ -9,6 +9,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   variant = 'primary',
   className,
+  disabled,
   ...props
 }) => {
   const baseClasses =
@@ -28,7 +29,10 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`${baseClasses} ${variants[variant]} ${className ?? ''}`}
+      className={`${baseClasses} ${variants[variant]} ${className ?? ''} ${
+        disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+      }`}
+      disabled={disabled}
       {...props}
     >
       {children}

@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
 import { Alert } from "../ui/Alert"
 import { useRouter } from "next/navigation"
 import { DriverData, driverSchema } from "@/schemas/auth/driverSchema"
 import { registerDriver } from "@/services/driverService"
+import { CityAutocomplete } from "../city/CityAutocomplete"
 
 export function DriverForm() {
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,7 @@ export function DriverForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<DriverData>({
     resolver: zodResolver(driverSchema),
@@ -28,7 +30,7 @@ export function DriverForm() {
       licenseExpirationDate: '',// formato ISO (YYYY-MM-DD)       
       addressStreet: '',
       addressNumber: '',
-      locality: '',
+      cityId: 0,
     }
   })
 
@@ -98,15 +100,19 @@ export function DriverForm() {
           
           {/* Localidad */}
           <div className="md:col-span-2">
-            
-            <Input
-              label="Localidad"
-              type="text"
-              autoComplete="locality"
-              className="md:col-span-2"
-              {...register('locality')}
-              error={errors.locality?.message}
-              />
+            <Controller
+              name="cityId"
+              control={control}
+              render={({ field }) => (
+                <CityAutocomplete
+                  label="Localidad"
+                  placeholder="Selecciona tu localidad"
+                  value={field.value}
+                  onChange={(city) => field.onChange(city?.id ?? null)}
+                  error={errors.cityId?.message}
+                />
+              )}
+            />
           </div>
 
           <div className="md:col-span-1">

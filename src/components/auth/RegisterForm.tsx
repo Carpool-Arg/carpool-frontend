@@ -72,7 +72,7 @@ export function RegisterForm() {
   const usernameValidation = useFieldValidator('username');
   const emailValidation = useFieldValidator('email');
   const dniValidation = useFieldValidator('dni');
-  const phoneValidation = useFieldValidator('phone')
+  //const phoneValidation = useFieldValidator('phone')
 
   //  observador del input, se activa cuando el value del input cambia
   // Watch para campos de step1Form: username y email
@@ -91,10 +91,6 @@ export function RegisterForm() {
     return () => subscription.unsubscribe();
   }, [step1Form, usernameValidation, emailValidation]);
 
-  
-
-
-
   // Watch para campo de step2Form: dni
   useEffect(() => {
     const subscription = step2Form.watch((value, { name }) => {
@@ -104,13 +100,12 @@ export function RegisterForm() {
         }
       }else if(name === "phone" && value.phone){
         if (!step2Form.formState.errors.phone){
-          phoneValidation.validate(value.phone)
+          //phoneValidation.validate(value.phone)
         }
       }
     });
     return () => subscription.unsubscribe();
-  }, [step2Form, dniValidation, phoneValidation]);
-
+  }, [step2Form, dniValidation]);
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
@@ -128,8 +123,8 @@ export function RegisterForm() {
 
   const validationsStep2Passed = () =>{
     return(
-      dniValidation.messageType === 'success' &&
-      phoneValidation.messageType === 'success' 
+      dniValidation.messageType === 'success' 
+      //phoneValidation.messageType === 'success' 
     );
   }
 
@@ -399,16 +394,17 @@ export function RegisterForm() {
               type="tel"
               {...step2Form.register('phone')}
               error={step2Form.formState.errors.phone?.message}
-              rightIcon={!step2Form.formState.errors.phone?.message ?getRightIcon(phoneValidation):undefined}
-              />
-
-            {(phoneValidation.message && !step2Form.formState.errors.phone?.message) && (
-              <p className={`text-xs font-inter mt-1 ${
-                phoneValidation.messageType === 'success' ? 'text-success' : 'text-error'
-              }`}>
-                {phoneValidation.message}
-              </p>
-            )}
+              //rightIcon={!step2Form.formState.errors.phone?.message ?getRightIcon(phoneValidation):undefined}
+            />
+            {/** 
+              {(phoneValidation.message && !step2Form.formState.errors.phone?.message) && (
+                <p className={`text-xs font-inter mt-1 ${
+                  phoneValidation.messageType === 'success' ? 'text-success' : 'text-error'
+                }`}>
+                  {phoneValidation.message}
+                </p>
+              )}
+            */}
           </div>
 
           <div>

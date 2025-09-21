@@ -2,18 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User } from 'lucide-react';
+import { Home, Search, Bell, User, CirclePlus, History } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 
 const navItems = [
-  { href: '/home', icon: Home, label: 'Inicio' },
-  { href: '/search', icon: Search, label: 'Buscar' },
-  { href: '/notifications', icon: Bell, label: 'Notificaciones' },
-  { href: '/profile', icon: User, label: 'Perfil' },
+  { href: '/home', icon: Home, label: 'Inicio', },
+  { href: '/search', icon: History, label: 'Buscar',  },
+  { href: '/trip/new', icon: CirclePlus, label: 'Perfil', size: 32 },
+  { href: '/notifications', icon: Bell, label: 'Notificaciones',  },
+  { href: '/profile', icon: User, label: 'Perfil',  },
 ];
 
 // Rutas en las que debe mostrarse el navbar (soporta rutas dinámicas con startsWith)
-const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle'];
+const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip'];
 
 export default function MobileNavbar() {
   const pathname = usePathname();
@@ -28,7 +29,7 @@ export default function MobileNavbar() {
   return (
     <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-4 dark:border-gray-2 md:hidden bg-dark-5">
       <ul className="flex justify-around items-center h-14">
-        {navItems.map(({ href, icon: Icon }) => {
+        {navItems.map(({ href, icon: Icon, size}) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <li key={href}>
@@ -38,7 +39,7 @@ export default function MobileNavbar() {
                   isActive ? 'text-white' : 'text-gray-4'
                 }`}
               >
-                <Icon className="h-5 w-5 mb-0.5" />
+                <Icon size={size} className=" mb-0.5" />
               </Link>
             </li>
           );
