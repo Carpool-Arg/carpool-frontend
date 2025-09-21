@@ -83,6 +83,17 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
         })
     )
 
+    const formatTripStop = (stops: TripStopProps[]) =>
+        stops.map((stop, index) => ({
+            ...stop,
+            order: index + 1,
+            start: false,
+            destination: false,
+            cityName: stop.title
+        }
+    ));
+
+
     
     return(
         <div className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto">
@@ -97,7 +108,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                     label='Ingrese la localidad intermedia'
                     placeholder='Seleccione la localidad'
                     icon={<CircleSmall size={18} />}
-                    excludeIds={[origin ?? 0,destination ?? 0] }
+                    excludeIds={[origin ?? 0, destination ?? 0, ...tripStopsList.map(stop => stop.cityId)] }
                 />
                 
 
@@ -140,7 +151,10 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                     <Button 
                         variant="outline" 
                         className='px-15 py-2 text-sm font-inter font-medium'
-                        onClick={onBack}
+                        onClick={() => {
+                            onSubmitTripStops(formatTripStop(tripStopsList));
+                            onBack();
+                        }}
                     >
                         Atrás
                     </Button>
@@ -150,13 +164,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                         className='px-12 py-2 text-sm font-inter font-medium'
                         disabled={tripStopsList.length === 0} 
                         onClick={() => {
-                            onSubmitTripStops(tripStopsList.map((stop, index) => ({
-                              ...stop,
-                              order: index + 1,
-                              start: false,
-                              destination: false,
-                              cityName: stop.title
-                            })));
+                            onSubmitTripStops(formatTripStop(tripStopsList));
                             onNext();
                         }}
                     >
