@@ -71,19 +71,19 @@ const onSubmit = async (name:string) => {
           🌍 Lat: {coords.lat}, Lon: {coords.lon}
         </p>
       )}
-<button
-  onClick={() => city && onSubmit(city)}
-  disabled={!city}
-  className="px-3 py-2 bg-blue-600 text-white rounded w-full disabled:opacity-50"
->
-  Obtener ciudad BD
-</button>
-
-
-        <p>
-          📍 <strong>{cityBd?.id}</strong>
-          📍 <strong>{cityBd?.name}</strong>
-        </p>
-    </div>
-  );
+    <button
+      onClick={() => city && onSubmit(city)}
+      disabled={!city}
+      className="px-3 py-2 bg-blue-600 text-white rounded w-full disabled:opacity-50"
+    >
+      Obtener ciudad BD
+    </button>
+            <p>
+              <strong>{cityBd?.id}</strong>
+            </p>
+            <p>
+              <strong>{cityBd?.name}</strong>
+            </p>
+        </div>
+      );
 }

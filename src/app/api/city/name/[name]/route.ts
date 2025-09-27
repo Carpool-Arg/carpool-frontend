@@ -5,9 +5,9 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
-  const name  = params.name;
+  const { name } = await context.params;
   try {
     const token = req.cookies.get('token')?.value;
 

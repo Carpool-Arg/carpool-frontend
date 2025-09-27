@@ -30,7 +30,7 @@ export async function fetchCityById(id: number): Promise<CityResponse> {
 }
 
 export async function fetchCityByName(name: string): Promise<CityResponse>{
-  const res = await fetch(`/api/city/${name}`,{
+  const res = await fetch(`/api/city/name/${name}`,{
     headers: {
       "Content-Type": "application/json",
     },
