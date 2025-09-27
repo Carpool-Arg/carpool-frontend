@@ -28,3 +28,17 @@ export async function fetchCityById(id: number): Promise<CityResponse> {
   const response: CityResponse = await res.json();
   return response; 
 }
+
+export async function fetchCityByName(name: string): Promise<CityResponse>{
+  const res = await fetch(`/api/city/${name}`,{
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: 'include'
+  });
+
+  if (!res.ok) throw new Error("Error la localidad");
+
+  const response: CityResponse = await res.json();
+  return response; 
+}
