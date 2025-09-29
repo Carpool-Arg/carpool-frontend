@@ -26,13 +26,15 @@ export default function DesktopSidebar() {
   }
 
   return (
-    <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-dark-5 border-r border-gray-200 dark:border-gray-700 flex-col justify-between px-6 py-8 z-50">
+    <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-dark-5 border-r border-gray-200 dark:border-gray-2 flex-col justify-between px-4 py-8 z-50">
       {/* Top section: logo y navegación */}
       <div>
-        <h1 className="text-2xl font-semibold mb-10 flex items-center gap-2 justify-start">
-          <span className='bg-gradient-to-bl from-primary-light via-primary/85 via-70% to-primary-dark rounded-lg p-1'><Infinity size={42} /></span>
-          Carpool
-        </h1>
+        
+          <h1 className="text-2xl font-semibold mb-10 flex items-center gap-3 justify-start px-2">
+            <span className='p-2 bg-gray-2 rounded-lg'><Infinity size={36} /></span>
+            Carpool
+          </h1>
+        
         <nav className="flex flex-col gap-2">
           {navItems.map(({ href, icon: Icon, label }) => {
             const isActive = pathname.startsWith(href);
@@ -40,10 +42,10 @@ export default function DesktopSidebar() {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 p-2 rounded-md text-sm transition-colors ${
                   isActive
-                    ? 'text-primary bg-gray-100 dark:bg-gray-800'
-                    : 'text-gray-600 hover:text-primary'
+                    ? 'text-gray-1 font-medium bg-gradient-to-r dark:from-gray-8 dark:via-gray-8 dark:to-dark-5'
+                    : 'text-gray-9 hover:text-gray-1 hover:dark:bg-gradient-to-r hover:dark:from-gray-8 hover:dark:via-gray-8 hover:dark:to-dark-5'
                 }`}
               >
                 <Icon size={20} />
@@ -55,8 +57,8 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Bottom section: usuario y logout */}
-      <div className="text-sm text-gray-600 flex flex-col gap-1">
-        <span className="font-medium px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user?.username}</span>
+      <div className="text-sm  flex flex-col gap-1">
+        <span className="font-medium text-gray-9 px-4 flex items-center gap-1"><UserCircle2 size={14}/>{user?.username}</span>
         <button
           onClick={() => setIsDialogOpen(true)}
           className="text-red-500 hover:bg-red-100 dark:hover:bg-red-950 px-4 py-2 font-medium transition-colors text-left rounded-md cursor-pointer flex items-center gap-2"

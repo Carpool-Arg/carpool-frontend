@@ -12,14 +12,14 @@ export function VehicleCardSkeleton() {
         {/* Texto placeholder */}
         <div className="flex flex-col gap-1">
           <div className="h-3 w-20 bg-gray-300 dark:bg-gray-2 rounded" />
-          <div className="h-3 w-16 bg-gray-200 dark:bg-gray-5/75 rounded" />
+          <div className="h-3 w-16 bg-gray-200 dark:bg-gray-2 rounded" />
         </div>
       </div>
 
       {/* Right: dominio y flecha */}
       <div className="flex items-center gap-2">
-        <div className="h-2 w-12 bg-gray-300 dark:bg-gray-5/75 rounded" />
-        <div className="w-3 h-3 bg-gray-300 dark:bg-gray-5/75 rounded" />
+        <div className="h-2 w-12 bg-gray-300 dark:bg-gray-2 rounded" />
+        <div className="w-3 h-3 bg-gray-300 dark:bg-gray-2 rounded" />
       </div>
     </div>
   );

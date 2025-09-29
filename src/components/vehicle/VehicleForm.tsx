@@ -152,7 +152,7 @@ export function VehicleForm() {
             </div>
 
             {/* Botones */}
-             <div className="flex gap-4">
+             <div className="flex gap-4 mt-2">
               <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>Volver</Button>
               <Button type="submit" variant="primary" className="w-full" disabled={loading}>
                 {loading ?  'Guardando...' :  'Guardar'}
