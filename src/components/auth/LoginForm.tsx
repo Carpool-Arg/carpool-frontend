@@ -88,7 +88,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full p-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full md:py-6">
       <div className="flex flex-col items-center text-center mb-2">
         <h1 className="font-outfit text-lg font-semibold">Inicia sesión en tu cuenta</h1>
         <p className="font-inter font-regular text-sm">Ingresa email y contraseña para iniciar sesión</p>

@@ -219,7 +219,7 @@ export function RegisterForm() {
   }
   
   return (
-    <div className="flex flex-col gap-4 p-6 w-full">
+    <div className="flex flex-col gap-4 md:py-6 w-full">
       <div className="flex flex-col items-center text-center mb-2">
         <h1 className="font-outfit text-lg font-semibold">Crear una cuenta</h1>
         {step === 1 && (
