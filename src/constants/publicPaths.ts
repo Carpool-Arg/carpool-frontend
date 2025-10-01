@@ -37,7 +37,8 @@ export const HEADER_PATHS = [
   '/settings/account/update-email',
   '/settings/account',
   '/settings/security',
-  '/settings'
+  '/settings',
+  '/home'
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
