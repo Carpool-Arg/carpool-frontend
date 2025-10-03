@@ -1,3 +1,4 @@
+import Feed from "@/components/feed/Feed";
 import { Clock, Search } from "lucide-react";
 
 
@@ -11,7 +12,7 @@ export default function HomePage() {
         </button>
         
       </div>
-      <div className="mt-4 flex items-center  justify-center w-full">
+      <div className="mt-4 flex items-center justify-center w-full">
         {/**
          * mock para visualizar viajes recientes
          */}
@@ -27,6 +28,10 @@ export default function HomePage() {
             </div>
         </div>
         
+      </div>
+
+      <div className="mt-4 flex items-center justify-center w-full">
+        <Feed/>
       </div>
     </main>
   );

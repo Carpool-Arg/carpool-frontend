@@ -1,4 +1,5 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
+import { FeedResponse } from "@/types/response/feed";
 import { VoidResponse } from "@/types/response/response";
 import { Trip } from "@/types/trip";
 
@@ -59,6 +60,25 @@ export const validateTripDateTime = async(startDateTime: string) =>{
     })
 
     const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export const getInitialFeed = async(cityId: number) => {
+  try {
+    const res = await fetchWithRefresh(`/api/trip/feed?cityId=${cityId}`)
+
+    const response:FeedResponse = await res.json()
 
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');
