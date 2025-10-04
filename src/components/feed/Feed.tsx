@@ -35,7 +35,6 @@ export default function Feed() {
     <div>
       {loading && "Detectando ciudad..."}
       {error && `Error: ${error}`}
-      {!loading && !error && `Ciudad actual: ${currentCity?.id || "No detectada"}`}
       <TripList cityId={currentCity?.id!}/>
     </div>
   )

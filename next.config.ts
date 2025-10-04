@@ -15,6 +15,11 @@ module.exports = withPWA({
         hostname: "carpool-media.5dce6dd8fd2b8c12742c81bbb251a9ca.r2.cloudflarestorage.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "carpool-app.5dce6dd8fd2b8c12742c81bbb251a9ca.r2.cloudflarestorage.com",
+        pathname: "/**",
+      }
     ],
   },
 })

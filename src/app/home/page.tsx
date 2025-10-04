@@ -6,7 +6,7 @@ export default function HomePage() {
   return (
     <main className="flex flex-col h-full">
       <div className="w-full flex items-center justify-center">
-        <button className="flex items-center justify-between w-lg bg-gray-10 p-2 rounded-2xl md:mt-4 text-start">
+        <button className="flex items-center justify-between w-md md:w-lg bg-gray-10 p-2 rounded-2xl md:mt-4 text-start">
           <span className="ml-2">¿Dónde viajamos hoy?</span>
           <Search/>
         </button>
