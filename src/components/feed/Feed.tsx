@@ -6,36 +6,59 @@ import { City } from "@/types/city";
 import { useEffect, useState } from "react"
 import TripList from "./TripList";
 
+import { getInitialFeed } from "@/services/tripService";
+import TripSkeleton from "./TripSkeleton";
+import { SearchData } from "@/types/response/trip";
+
 export default function Feed() {
-  const { city, loading, error, detectUserCity } = useGeocode();
-  const [currentCity, setCurrentCity] = useState<City | null>()
+  const { city, error, detectUserCity } = useGeocode();
+  const [currentCity, setCurrentCity] = useState<City | null>(null);
+  const [feed, setFeed] = useState<SearchData[] | null>(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-    detectUserCity(); // apenas se monta el componente detecta la ciudad
-  }, []);
+    const fetchData = async () => {
+      try {
+        // 1. Detectar ciudad
+        await detectUserCity();
 
-  useEffect(() => {
-    if (city) {
-      const fetchCityId = async () => {
-        try {
-          const response = await fetchCityByName(city)
-          
-          if (response.state === 'OK' ||response.data) {
-            setCurrentCity(response?.data)
+        if (!city) return;
+
+        // 2. Buscar cityId
+        const responseCity = await fetchCityByName(city);
+        if (responseCity.state === "OK" && responseCity.data) {
+          setCurrentCity(responseCity.data);
+
+          // 3. Buscar feed
+          const responseFeed = await getInitialFeed(responseCity.data.id);
+          if (responseFeed.state === "OK" && responseFeed.data) {
+            setFeed(responseFeed.data);
           }
-        } catch (err) {
-          console.error("Error trayendo ID de la ciudad:", err)
         }
+      } catch (err) {
+        console.error("Error cargando datos del feed:", err);
+      } finally {
+        if (city) setLoading(false);
       }
-      fetchCityId()
-    }
-  }, [city])
+    };
+
+    fetchData();
+  }, [city]);
+
+  if (loading) {
+    return (
+      <div className="w-full">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <TripSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {loading && "Detectando ciudad..."}
+    <div className="w-full">
       {error && `Error: ${error}`}
-      <TripList cityId={currentCity?.id!}/>
+      <TripList feed={feed!} currentCtiy={currentCity?.name!}/>
     </div>
-  )
+  );
 }

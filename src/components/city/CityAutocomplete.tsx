@@ -11,7 +11,7 @@ interface CityAutocompleteProps {
   value: number | null;
   onChange: (value: {id:number;name: string}  | null) => void;
   error?: string;
-  label: string;
+  label?: string;
   placeholder: string;
   icon?: ReactNode;
   excludeIds?: number[];
@@ -99,7 +99,7 @@ export function CityAutocomplete({
 
   return (
     <div className="relative w-full">
-      <label className="block mb-2 text-sm font-medium font-inter">{label}</label>
+      <label className="block text-sm font-medium font-inter">{label}</label>
 
       <div className="relative">
         {icon && !loading &&  (
@@ -123,7 +123,7 @@ export function CityAutocomplete({
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}
-            className={`w-full p-2 border border-gray-5 dark:border-gray-2 rounded ${icon || selected ? "pl-8" : ""} pr-8`}
+            className={`w-full p-2  rounded ${icon || selected ? "pl-8" : ""} pr-8 focus:outline-none focus:ring-0 focus:border-none`}
           />
         )}
 

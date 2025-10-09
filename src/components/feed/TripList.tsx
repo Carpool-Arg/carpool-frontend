@@ -1,45 +1,19 @@
-import { getInitialFeed } from "@/services/tripService";
-import { FeedData } from "@/types/response/feed";
-import { useEffect, useState } from "react";
+
 import Trip from "./Trip";
+import { SearchData } from "@/types/response/trip";
 
 interface TripListProps {
-  cityId: number;
+  feed: SearchData[]|[];
+  currentCtiy?: string;
 }
 
-export default function TripList({ cityId }: TripListProps) {
-  const [feed, setFeed] = useState<FeedData[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchFeed = async () => {
-    setLoading(true);
-    try {
-      const response = await getInitialFeed(cityId);
-      if (response.state === "OK" && response.data) {
-        setFeed(response.data);
-      }
-    } catch (error) {
-      console.error("Error al cargar viajes:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFeed();
-  }, [cityId]);
-
-  if (!feed && loading) {
-    return <div>Cargando viajes...</div>;
-  }
-
+export default function TripList({feed, currentCtiy}:TripListProps) {
   return (
-    <div>
-
+    <div className="">
       {feed && feed.length === 0 && <p>No hay viajes disponibles.</p>}
 
       {feed?.map((trip, index) => (
-        <Trip key={index} trip={trip} />
+        <Trip key={index} trip={trip} currentCity={currentCtiy!} />
       ))}
     </div>
   );

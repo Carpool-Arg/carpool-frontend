@@ -1,16 +1,13 @@
 import Feed from "@/components/feed/Feed";
+import SearchBar from "@/components/feed/SearchBar";
 import { Clock, Search } from "lucide-react";
 
 
 export default function HomePage() {
   return (
-    <main className="flex flex-col h-full">
+    <main className="max-w-lg mx-auto">
       <div className="w-full flex items-center justify-center">
-        <button className="flex items-center justify-between w-md md:w-lg bg-gray-10 p-2 rounded-2xl md:mt-4 text-start">
-          <span className="ml-2">¿Dónde viajamos hoy?</span>
-          <Search/>
-        </button>
-        
+        <SearchBar/>
       </div>
       <div className="mt-4 flex items-center justify-center w-full">
         {/**

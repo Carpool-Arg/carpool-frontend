@@ -1,25 +1,26 @@
-
 import { SearchResponse } from "@/types/response/trip";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
-    const { searchParams } = new URL(req.url);
-    const cityId = searchParams.get("cityId");
+    const body = await req.json();
 
-    if (!cityId) {
+    if (!body) {
       return NextResponse.json(
-        { data: null, messages:'CityId inválido', state: "ERROR" },
+        { data: null, messages:'Filtros inválidos', state: "ERROR" },
         { status: 400} 
       );
     }
    
-    const res = await fetch(`${apiUrl}/trip/feed?cityId=${Number(cityId)}`, {
-      headers: {
+    const res = await fetch(`${apiUrl}/trip/search`, {
+        method:'POST',
+        headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify(body)
     });
 
     const response: SearchResponse = await res.json();

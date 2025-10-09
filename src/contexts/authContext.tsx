@@ -86,31 +86,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let isMounted = true;
 
     const initializeAuth = async () => {
-      // Si estamos en una ruta pública, no verificar usuario
-      if (isPublicRoute) {
-        setInitialized(true);
-        setLoading(false);
-        return;
-      }
-
-      // Verificar si hay usuario autenticado
       const hasUser = await fetchUser();
-      
+
       if (isMounted) {
         setInitialized(true);
         setLoading(false);
-        // Si no hay usuario y estamos en ruta protegida, redirigir
+
         if (!hasUser && !isPublicRoute) {
           router.replace('/login');
         }
       }
-    };
+        };
 
-    initializeAuth();
+        initializeAuth();
 
-    return () => {
-      isMounted = false;
-    };
+        return () => {
+          isMounted = false;
+        };
   }, [isPublicRoute, fetchUser, router]);
 
 

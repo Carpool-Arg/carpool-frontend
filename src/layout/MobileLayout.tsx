@@ -9,7 +9,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
 
-  const logoHeaderPaths = ["/", "/home"];
+  const logoHeaderPaths = ["/", "/home","/search"];
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
   
   return (
