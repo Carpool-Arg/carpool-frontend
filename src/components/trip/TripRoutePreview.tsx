@@ -1,13 +1,15 @@
 import { TripStop } from "@/types/tripStop";
+import { formatDateTime, formatTime } from "@/utils/dateTime";
 import { capitalizeWords } from "@/utils/string";
 import { Circle, CircleSmall, Square } from "lucide-react";
 import { GoDotFill } from "react-icons/go";
 
 interface TripRoutePreviewProps {
   tripStops: TripStop[];
+  withTimes?: boolean;
 }
 
-export function TripRoutePreview({ tripStops }: TripRoutePreviewProps) {
+export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps) {
   return (
     <div className="w-full py-4">
       <div className="flex flex-col items-center space-y-0">
@@ -31,8 +33,14 @@ export function TripRoutePreview({ tripStops }: TripRoutePreviewProps) {
 
               {/* Contenido del stop */}
               <div className="ml-4 flex-1">
-                <h3 className={`font-medium leading-3 text-gray-900 dark:text-white ${!isFirst && !isLast ? 'text-md' : 'text-lg'}`}>
-                  {capitalizeWords(stop.cityName)}
+                
+                <h3 className={`font-medium leading-5 text-gray-900 dark:text-white ${!isFirst && !isLast ? 'text-md' : 'text-lg'}`}>
+                  {capitalizeWords(stop.cityName)} 
+                  {withTimes && stop.estimatedArrivalDateTime
+                    ? isFirst || isLast
+                      ? <span className="text-[16px]"> - {formatDateTime(stop.estimatedArrivalDateTime)}</span>
+                      : <span className="text-[16px]"> - {formatTime(stop.estimatedArrivalDateTime)}</span>
+                    : ""}
                 </h3>
                 {stop.observation && (
                   <p className="text-sm font-light text-gray-2 dark:text-gray-6 mt-1">
