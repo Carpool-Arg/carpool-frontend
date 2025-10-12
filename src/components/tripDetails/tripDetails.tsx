@@ -173,7 +173,7 @@ export default function TripDetails({ tripId }: TripDetailsProps) {
             <Button
               type="button"
               variant="primary"
-              className="px-12 py-2 text-sm font-inter font-medium"
+              className="px-12 py-2 mb-4 text-sm font-inter font-medium"
             >
               Reservar
             </Button>
