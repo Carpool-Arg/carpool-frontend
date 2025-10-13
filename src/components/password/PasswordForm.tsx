@@ -1,12 +1,12 @@
 'use client'
 
 import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/ux/Button";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/Input";
+import { Input } from "../ui/ux/Input";
 import { ResetPasswordData, resetPasswordSchema } from "@/schemas/password/passwordSchema";
 
 type PasswordFormdProps = {

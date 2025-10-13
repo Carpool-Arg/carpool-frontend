@@ -29,3 +29,9 @@ export function formatDate(dateString: string): string {
     year: "numeric",
   });
 }
+
+//saca tildes
+export const normalizeText = (text: string) =>
+  text
+    .normalize("NFD") // separa las tildes de las letras
+    .replace(/[\u0300-\u036f]/g, "") // elimina las tildes

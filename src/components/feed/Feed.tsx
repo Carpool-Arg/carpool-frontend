@@ -9,6 +9,7 @@ import TripList from "./TripList";
 import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";
 import { SearchData } from "@/types/response/trip";
+import { normalizeText } from "@/utils/string";
 
 export default function Feed() {
   const { city, error, detectUserCity } = useGeocode();
@@ -23,9 +24,10 @@ export default function Feed() {
         await detectUserCity();
 
         if (!city) return;
+        console.log(city)
 
         // 2. Buscar cityId
-        const responseCity = await fetchCityByName(city);
+        const responseCity = await fetchCityByName(normalizeText(city));
         if (responseCity.state === "OK" && responseCity.data) {
           setCurrentCity(responseCity.data);
 
@@ -58,7 +60,7 @@ export default function Feed() {
   return (
     <div className="w-full">
       {error && `Error: ${error}`}
-      <TripList feed={feed!} currentCtiy={currentCity?.name!}/>
+      <TripList feed={feed!} currentCity={currentCity?.name!}/>
     </div>
   );
 }

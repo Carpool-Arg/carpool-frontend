@@ -1,11 +1,13 @@
 
 import { ChevronRight, Circle, Info, Square, Star } from "lucide-react";
 import Image from "next/image";
-import Separator from "../ui/Separator";
+import Separator from "../ui/ux/Separator";
 import { capitalizeWords, formatTime } from "@/utils/string";
 import RouteLine from "./RouteLine";
 import { formatPrice } from "@/utils/number";
 import { SearchData } from "@/types/response/trip";
+import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
+
 
 interface TripCardProps {
   trip: SearchData;
@@ -36,7 +38,7 @@ export default function Trip({ trip, currentCity }: TripCardProps) {
 
 
   return (
-    <div  className={`trip-card mb-4 p-4 border border-gray-2 rounded shadow-sm transition-all duration-200 ${
+    <div  className={`trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200 ${
         isIntermediate
           ? "bg-gray-2/20"
           : "border-gray-2"
@@ -60,9 +62,11 @@ export default function Trip({ trip, currentCity }: TripCardProps) {
               {/* Fila de ciudades */}
               <div>
                 <p className="text-sm">{capitalizeWords(originStop.cityName)}</p>
+                <p className="text-xs text-gray-11">{capitalizeWords(originStop.observation)}</p>
               </div>
               <div>
-                <p className="text-sm">{capitalizeWords(trip.tripStops[trip.tripStops.length - 1].cityName)}</p>
+                <p className="text-sm">{capitalizeWords(destinationStop.cityName)}</p>
+                <p className="text-xs text-gray-11">{capitalizeWords(destinationStop.observation)}</p>
               </div>
             </div>
            
@@ -70,7 +74,12 @@ export default function Trip({ trip, currentCity }: TripCardProps) {
               {isActualOrigin ? 
                 <p className="text-xl font-semibold">${formatPrice(trip.seatPrice)}</p>
               : 
-                <p className="text-lg text-gray-11">$ a definir</p>}
+                <p className="text-lg text-gray-11">$ a definir</p>
+              }
+              <p className="flex items-center justify-end text-xl">
+                <span><MdOutlineAirlineSeatReclineNormal /></span>
+                {trip.availableSeat}
+              </p>
             </div>
           </div>
          

@@ -4,16 +4,16 @@ import {CompleteRegisterVehicleData, completeRegisterVehicleSchema } from "@/sch
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/Input"
+import { Input } from "@/components/ui/ux/Input"
 import { VehicleTypeList } from "./type/VehicleTypeList"
 import { deleteVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 
 import { vehicleFormData } from "@/types/forms"
-import { Button } from "../ui/Button"
+import { Button } from "../ui/ux/Button"
 import { CircleX, X } from "lucide-react"
-import { AlertDialog } from "../ui/AlertDialog"
-import { Alert } from "../ui/Alert"
+import { AlertDialog } from "../ui/ux/AlertDialog"
+import { Alert } from "../ui/ux/Alert"
 
 export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

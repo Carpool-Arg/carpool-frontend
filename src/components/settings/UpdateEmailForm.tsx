@@ -2,12 +2,12 @@
 'use client'
 
 import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/ux/Button";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter} from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/Input";
+import { Input } from "../ui/ux/Input";
 import { updateEmail, updatePassword } from "@/services/userService";
 import { emailSchema, UpdateEmailData, updateEmailSchema } from "@/schemas/email/emailSchema";
 

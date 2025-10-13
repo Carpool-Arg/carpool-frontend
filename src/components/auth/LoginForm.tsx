@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from "react"
-import { Button } from "../ui/Button"
-import { Input } from "../ui/Input"
+import { Button } from "../ui/ux/Button"
+import { Input } from "../ui/ux/Input"
 import { useForm } from "react-hook-form"
 import { LoginData, loginSchema } from "@/schemas/auth/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
-import Spinner from "../ui/Spinner"
+import Spinner from "../ui/ux/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
-import { Alert } from "../ui/Alert"
+import { Alert } from "../ui/ux/Alert"
 import Link from "next/link"
 
 

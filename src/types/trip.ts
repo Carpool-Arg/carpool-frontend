@@ -11,9 +11,10 @@ export interface TripFilters {
     originCityId: number;
     destinationCityId: number;
     userCityId?: number;
-    departureDate?: string;
+    departureDate?: string | null;
     minPrice?: number;
     maxPrice?: number;
     driverRating?: number;
+    orderByDriverRating?: boolean;
 }
 

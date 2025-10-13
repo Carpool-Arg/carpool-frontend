@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerUser } from "@/services/authService"
-import { Button } from "../ui/Button"
-import { Input } from "../ui/Input"
+import { Button } from "../ui/ux/Button"
+import { Input } from "../ui/ux/Input"
 import { useRouter } from "next/navigation"
 import { 
   registerStep1Schema, 
@@ -14,12 +14,12 @@ import {
   type RegisterStep2Data,
   type CompleteRegisterData
 } from "@/schemas/auth/registerSchema"
-import Spinner from "../ui/Spinner"
+import Spinner from "../ui/ux/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useAuth } from "@/contexts/authContext"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Check, X } from 'lucide-react'
-import { Alert } from "../ui/Alert"
+import { Alert } from "../ui/ux/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 import Link from "next/link"
 

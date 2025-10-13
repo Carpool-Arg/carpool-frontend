@@ -3,7 +3,7 @@
 import { X, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Separator from "../ui/Separator";
+import Separator from "../ui/ux/Separator";
 import { useRouter } from "next/navigation";
 import { deleteVehicle } from "@/services/vehicleService";
 

@@ -3,14 +3,14 @@ import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleSte
 import{ zodResolver } from "@hookform/resolvers/zod"
 
 import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/ux/Input"
+import { Button } from "@/components/ui/ux/Button"
 import { VehicleTypeList } from "./type/VehicleTypeList"
 import { registerVehicle, updateVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 import { vehicleFormData } from "@/types/forms"
 import { useState } from "react"
-import { Alert } from "../ui/Alert"
+import { Alert } from "../ui/ux/Alert"
 
 export function VehicleForm() {
   const [step, setStep] = useState(1)

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { CarFront, ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
 import { FaCarAlt } from 'react-icons/fa';
-import { AlertDialog } from '../ui/AlertDialog';
+import { AlertDialog } from '../ui/ux/AlertDialog';
 import { useState } from 'react';
 
 interface ProfileOptionsProps {

@@ -14,8 +14,9 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
 
-  const logoHeaderPaths = ["/", "/home", "/search"];
+  const logoHeaderPaths = [ "/home", "/search"];
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
+  console.log(isLogoHeader)
   
 
   return (

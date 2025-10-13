@@ -1,4 +1,4 @@
-import Separator from "@/components/ui/Separator";
+import Separator from "@/components/ui/ux/Separator";
 import { baggageOptions } from "../TripFrom";
 import { Circle, CircleSmall, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
