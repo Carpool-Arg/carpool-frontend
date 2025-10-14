@@ -20,6 +20,7 @@ export default function Results() {
   const departureDateParam = searchParams.get("departureDate");
 
   const [feed, setFeed] = useState<SearchData[]>([]);
+  console.log(feed)
   const [loading, setLoading] = useState(true);
   const [originCityName, setOriginCityName] = useState('');
   console.log(originCityName);

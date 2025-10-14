@@ -23,14 +23,14 @@ export default function DesktopSidebar() {
   const { user, logout } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setIsDialogOpen(false);
   };
 
   const userRoles = user?.roles || [];
 
-  // 🔥 Filtramos los ítems según el rol del usuario
+  // Filtramos los ítems según el rol del usuario
   const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
 
   return (

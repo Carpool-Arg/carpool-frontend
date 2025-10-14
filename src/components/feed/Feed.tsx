@@ -15,6 +15,7 @@ export default function Feed() {
   const { city, error, detectUserCity } = useGeocode();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
+  console.log(feed)
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {

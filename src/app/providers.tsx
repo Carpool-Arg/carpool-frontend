@@ -18,7 +18,7 @@ function GlobalLoadingOverlay() {
   const loadingRoutes = ['/login', '/register', '/complete-registration']; // solo donde querés el overlay
   const pathname = usePathname() || '';
 
-  const shouldShowSpinner = loadingRoutes.some(route => pathname.startsWith(route)) && (!initialized || loading);
+  const shouldShowSpinner = loadingRoutes.some(route => pathname.startsWith(route)) && ( loading);
 
   if (!shouldShowSpinner) return null;
 

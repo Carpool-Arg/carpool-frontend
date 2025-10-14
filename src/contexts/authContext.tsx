@@ -169,9 +169,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await logoutUser(); 
       if (res.state === "OK") { 
-        router.push('/login'); 
         setUser(null);
         setInitialized(false);
+        router.push('/login'); 
       } else {
         console.error('Logout failed', res.messages?.[0]);
         
@@ -179,6 +179,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error during logout:', error);
       // opcional: mostrar mensaje al usuario
+    
+    } finally {
+      // Siempre limpiar estado y redirigir
+      setUser(null);
+      setInitialized(false);
+      router.push('/login');
     }
   };
 
