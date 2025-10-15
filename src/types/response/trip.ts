@@ -9,8 +9,10 @@ export interface SearchData {
     }
     startDateTime: string // ISO string
     tripStops: {
+        cityId:null
         cityName: string
         observation: string
+        estimatedArrivalDateTime: string
     }[]
     availableSeat: number
     seatPrice: number

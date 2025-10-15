@@ -11,6 +11,7 @@ import Separator from "../ui/ux/Separator";
 import { capitalizeWords } from "@/utils/string";
 import { Circle, Square } from "lucide-react";
 import FilterBar from "./FilterBar";
+import CitySearch from "./CitySearch";
 
 export default function Results() {
   const searchParams = useSearchParams();
@@ -19,11 +20,14 @@ export default function Results() {
   const destination = searchParams.get("destination");
   const departureDateParam = searchParams.get("departureDate");
 
+  const [originCity, setOriginCity] = useState<number | null>(origin ? Number(origin) : null);
+  const [destinationCity, setDestinationCity] = useState<number | null>(destination ? Number(destination) : null);
+
   const [feed, setFeed] = useState<SearchData[]>([]);
-  console.log(feed)
+
   const [loading, setLoading] = useState(true);
   const [originCityName, setOriginCityName] = useState('');
-  console.log(originCityName);
+
   const [destinationCityName, setDestinationCityName] = useState('');
 
   // Estados de filtros
@@ -38,20 +42,18 @@ export default function Results() {
 
   // Función que dispara la búsqueda
   const fetchTrips = async () => {
-    if (!origin || !destination) return;
+    if (!originCity || !destinationCity) return;
 
     setLoading(true);
     try {
       const filters: any = {
-        originCityId: +origin,
-        destinationCityId: +destination,
+        originCityId: +originCity,
+        destinationCityId: +destinationCity,
       };
       if (departureDate) filters.departureDate = departureDate;
       if (minPrice) filters.minPrice = minPrice;
       if (maxPrice) filters.maxPrice = maxPrice;
       if (orderByDriverRating) filters.orderByDriverRating = orderByDriverRating;
-
-      console.log('Filtros enviados al backend:', filters);
 
       const res = await getTrips(filters);
       const responseOriginCity = await fetchCityById(Number(origin));
@@ -75,18 +77,20 @@ export default function Results() {
 
   // Cada vez que cambien filtros o ciudades, refetch
   useEffect(() => {
+    if (!originCity || !destinationCity) return;
     fetchTrips();
 
     const queryParams = new URLSearchParams();
-    if (origin) queryParams.append("origin", origin);
-    if (destination) queryParams.append("destination", destination);
+    queryParams.append("origin", originCity.toString());
+    queryParams.append("destination", destinationCity.toString());
     if (departureDate) queryParams.append("departureDate", departureDate);
     if (minPrice !== undefined) queryParams.append("minPrice", minPrice.toString());
     if (maxPrice !== undefined) queryParams.append("maxPrice", maxPrice.toString());
     if (orderByDriverRating) queryParams.append("orderByDriverRating", orderByDriverRating.toString());
 
     router.replace(`/search/results?${queryParams.toString()}`);
-  }, [origin, destination, departureDate, minPrice, maxPrice, orderByDriverRating]);
+  }, [originCity, destinationCity, departureDate, minPrice, maxPrice, orderByDriverRating]);
+
 
   const clearFilters = () => {
     // Reset estados
@@ -97,8 +101,8 @@ export default function Results() {
 
     // Actualizar URL solo con origin y destination
     const queryParams = new URLSearchParams();
-    if (origin) queryParams.append("origin", origin);
-    if (destination) queryParams.append("destination", destination);
+    if (originCity) queryParams.append("origin", originCity.toString());
+    if (destinationCity) queryParams.append("destination", destinationCity.toString());
 
     router.replace(`/search/results?${queryParams.toString()}`);
   };
@@ -106,7 +110,28 @@ export default function Results() {
 
   if (loading) {
     return (
-      <div className="w-full">
+      <div className="flex flex-col gap-4 w-full">
+        {/* Skeleton header de ciudades */}
+        <div className="border border-gray-2 rounded-2xl md:mt-4 p-2 flex items-center gap-3 px-3">
+          <div className="flex flex-col items-center">
+            <div className="h-2 w-2 bg-gray-2 rounded-full animate-pulse" />
+            <div className="w-0.5 h-4 bg-gray-2 my-1 animate-pulse" />
+            <div className="h-2 w-2 bg-gray-2 rounded-full animate-pulse" />
+          </div>
+          <div className="w-full space-y-1">
+            <div className="h-4 w-32 bg-gray-2 rounded animate-pulse" />
+            <div className="w-full border-b bg-gray-2/70 my-2 animate-pulse"></div>
+            <div className="h-4 w-40 bg-gray-2 rounded animate-pulse" />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 animate-pulse">
+          <div className="h-5 w-1/4 bg-gray-2 rounded-lg" />
+          <div className="h-5 w-1/6 bg-gray-2 rounded-lg" />
+          <div className="h-5 w-1/6 bg-gray-2 rounded-lg" />
+        </div>
+
+        {/* Skeleton de trips */}
         {Array.from({ length: 2 }).map((_, i) => (
           <TripSkeleton key={i} />
         ))}
@@ -114,21 +139,19 @@ export default function Results() {
     );
   }
 
+
   return (
     <div className="flex flex-col gap-4">
       {/* Info de ciudades */}
-      <div className="border border-gray-2 rounded-2xl md:mt-4 p-2 flex items-center gap-3 px-3">
-        <div className="flex flex-col items-center">
-          <Circle size={8} fill="white" stroke="white" />
-          <div className="w-0.5 h-4 bg-gray-5 my-1"></div>
-          <Square size={8} fill="white" stroke="white" />
-        </div>
-        <div className="w-full">
-          <h1>{capitalizeWords(originCityName)}</h1>
-          <Separator marginY="my-1" color="bg-gray-2"/>
-          <h2>{capitalizeWords(destinationCityName)}</h2>
-        </div>
+      <div className="md:mt-4">
+        <CitySearch
+          originCity={originCity}
+          destinationCity={destinationCity}
+          setOriginCity={setOriginCity}
+          setDestinationCity={setDestinationCity}
+        />
       </div>
+      
 
       {/* Filtros */}
       <FilterBar

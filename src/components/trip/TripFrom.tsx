@@ -324,6 +324,7 @@ export function TripForm() {
                   />
                 }
                 excludeIds={[destination?.cityId ?? 0]}
+                outline={true}
               />
               <input
                 type="text"
@@ -369,6 +370,7 @@ export function TripForm() {
                   />
                 }
                 excludeIds={[origin?.cityId ?? 0]}
+                outline={true}
               />
               <input
                 type="text"

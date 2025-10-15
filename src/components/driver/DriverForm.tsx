@@ -110,6 +110,7 @@ export function DriverForm() {
                   value={field.value}
                   onChange={(city) => field.onChange(city?.id ?? null)}
                   error={errors.cityId?.message}
+                  outline={true}
                 />
               )}
             />

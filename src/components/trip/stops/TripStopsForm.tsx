@@ -109,6 +109,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                     placeholder='Seleccione la localidad'
                     icon={<CircleSmall size={18} />}
                     excludeIds={[origin ?? 0, destination ?? 0, ...tripStopsList.map(stop => stop.cityId)] }
+                    outline={true}
                 />
                 
 

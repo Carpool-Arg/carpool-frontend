@@ -15,6 +15,7 @@ interface CityAutocompleteProps {
   placeholder: string;
   icon?: ReactNode;
   excludeIds?: number[];
+  outline?: boolean;
 }
 
 export function CityAutocomplete({
@@ -24,7 +25,8 @@ export function CityAutocomplete({
   error,
   placeholder,
   icon,
-  excludeIds
+  excludeIds,
+  outline,
 }: CityAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [cities, setCities] = useState<City[]>([]);
@@ -99,7 +101,7 @@ export function CityAutocomplete({
 
   return (
     <div className="relative w-full">
-      <label className="block text-sm font-medium font-inter">{label}</label>
+      <label className={`block text-sm font-medium font-inter ${label && 'mb'}`}>{label}</label>
 
       <div className="relative">
         {icon && !loading &&  (
@@ -109,7 +111,7 @@ export function CityAutocomplete({
         )}
 
         {loading ? (
-          <div className={`relative h-10 w-full rounded border border-gray-5 dark:border-gray-2   animate-pulse ${icon ? "pl-8" : ""}`}>
+          <div className={`relative h-10 w-full rounded ${outline && 'border border-gray-5 dark:border-gray-2'}  animate-pulse ${icon ? "pl-8" : ""}`}>
             {/* placeholder falso */}
             <div className="absolute top-1/2 -translate-y-1/2 h-3 w-24 rounded bg-gray-300 dark:bg-gray-2" />
           </div>
@@ -123,7 +125,9 @@ export function CityAutocomplete({
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}
-            className={`w-full p-2  rounded ${icon || selected ? "pl-8" : ""} pr-8 focus:outline-none focus:ring-0 focus:border-none`}
+            className={`w-full  rounded 
+              ${outline ? "border border-gray-2 p-2 " : "focus:outline-none focus:ring-0 focus:border-none px-2 py-1.5"} 
+              ${icon ? "pl-8" : "pl-2"} pr-8`}
           />
         )}
 

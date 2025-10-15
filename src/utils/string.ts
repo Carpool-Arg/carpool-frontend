@@ -35,3 +35,23 @@ export const normalizeText = (text: string) =>
   text
     .normalize("NFD") // separa las tildes de las letras
     .replace(/[\u0300-\u036f]/g, "") // elimina las tildes
+
+
+
+export function formatTimeRounded(dateString: string): string {
+  const date = new Date(dateString);
+
+  // Redondear minutos al múltiplo de 5 más cercano
+  const minutes = date.getMinutes();
+  const roundedMinutes = Math.ceil(minutes / 5) * 5;
+
+  date.setMinutes(roundedMinutes);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+
+  return date.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}

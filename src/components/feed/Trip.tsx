@@ -2,7 +2,7 @@
 import { ChevronRight, Circle, Info, Square, Star } from "lucide-react";
 import Image from "next/image";
 import Separator from "../ui/ux/Separator";
-import { capitalizeWords, formatTime } from "@/utils/string";
+import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
 import RouteLine from "./RouteLine";
 import { formatPrice } from "@/utils/number";
 import { SearchData } from "@/types/response/trip";
@@ -15,6 +15,7 @@ interface TripCardProps {
 }
 
 export default function Trip({ trip, currentCity }: TripCardProps) {
+  console.log(trip)
 
   const originIndex = trip.tripStops.findIndex(
     (stop) => stop.cityName.toLowerCase() === currentCity.toLowerCase()
@@ -50,13 +51,13 @@ export default function Trip({ trip, currentCity }: TripCardProps) {
               {/* Fila de horarios */}
               <div className="w-full">
                 <div className="flex items-center">
-                  <p>{formatTime(trip.startDateTime)}</p>
+                  <p>{formatTime(originStop.estimatedArrivalDateTime)}</p>
                   <RouteLine/>
                 </div>
                 
               </div>
               <div>
-                <p>{formatTime(trip.startDateTime)}</p>
+                <p>{formatTimeRounded(destinationStop.estimatedArrivalDateTime)}</p>
               </div>
 
               {/* Fila de ciudades */}

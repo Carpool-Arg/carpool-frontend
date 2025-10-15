@@ -12,7 +12,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Calendar } from "@/components/ui/calendar";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
 function formatShortDate(date: Date) {

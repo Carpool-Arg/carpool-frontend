@@ -24,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const [prevImage, setPrevImage] = useState<string | null>(null);
@@ -32,7 +33,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Rutas públicas donde no necesitamos autenticación
   const publicRoutes = [...PUBLIC_PATHS.pages];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some(route =>
+    route === '/' ? pathname === '/' : pathname.startsWith(route)
+  );
+
 
   // Función para obtener el usuario actual
   const fetchUser = useCallback(async (): Promise<boolean> => {
@@ -87,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const initializeAuth = async () => {
       const hasUser = await fetchUser();
+      
 
       if (isMounted) {
         setInitialized(true);
@@ -174,7 +179,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         router.push('/login'); 
       } else {
         console.error('Logout failed', res.messages?.[0]);
-        
+        setUser(null);
+        setInitialized(false);
+        router.push('/login');
       }
     } catch (error) {
       console.error('Error during logout:', error);
