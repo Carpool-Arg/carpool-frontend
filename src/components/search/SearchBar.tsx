@@ -1,19 +1,17 @@
 'use client';
 
-import { useState } from "react";
-import { CityAutocomplete } from "../city/CityAutocomplete";
-import Separator from "../ui/ux/Separator";
+import { Calendar1, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Calendar1, Circle, Plus, Square } from "lucide-react";
+import { useState } from "react";
 
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar";
 import CitySearch from "./CitySearch";
 
 export default function SearchBar() {
@@ -21,7 +19,7 @@ export default function SearchBar() {
   const [destinationCity, setDestinationCity] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [error, setError] = useState<string>(""); // <- nuevo estado de error
+  const [error, setError] = useState<string>(""); 
   const router = useRouter();
 
   const handleSearch = () => {

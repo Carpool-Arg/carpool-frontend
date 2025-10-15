@@ -15,7 +15,6 @@ export default function Feed() {
   const { city, error, detectUserCity } = useGeocode();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
-  console.log(feed)
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export default function Feed() {
         await detectUserCity();
 
         if (!city) return;
-        console.log(city)
 
         // 2. Buscar cityId
         const responseCity = await fetchCityByName(normalizeText(city));

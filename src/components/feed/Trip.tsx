@@ -15,7 +15,6 @@ interface TripCardProps {
 }
 
 export default function Trip({ trip, currentCity }: TripCardProps) {
-  console.log(trip)
 
   const originIndex = trip.tripStops.findIndex(
     (stop) => stop.cityName.toLowerCase() === currentCity.toLowerCase()

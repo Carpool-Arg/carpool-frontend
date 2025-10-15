@@ -96,9 +96,7 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         domain: values.domain,
         vehicleTypeId: values.vehicleTypeId,
       };
-
-      console.log('updateData', updateData)
-
+      
       const response = await updateVehicle(vehicle.id, updateData);
 
       if (response.state === "ERROR") {

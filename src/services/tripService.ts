@@ -16,7 +16,6 @@ export async function getTrips(filters: TripFilters): Promise<SearchResponse> {
     })
 
     const response: SearchResponse = await res.json()
-    console.log(response)
 
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');

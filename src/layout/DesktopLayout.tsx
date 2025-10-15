@@ -16,7 +16,6 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
 
   const logoHeaderPaths = [ "/home", "/search"];
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
-  console.log(isLogoHeader)
   
 
   return (

@@ -1,17 +1,14 @@
 'use client';
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getTrips } from "@/services/tripService";
 import TripList from "@/components/feed/TripList";
-import { SearchData } from "@/types/response/trip";
 import { fetchCityById } from "@/services/cityService";
+import { getTrips } from "@/services/tripService";
+import { SearchData } from "@/types/response/trip";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import TripSkeleton from "../feed/TripSkeleton";
-import Separator from "../ui/ux/Separator";
-import { capitalizeWords } from "@/utils/string";
-import { Circle, Square } from "lucide-react";
-import FilterBar from "./FilterBar";
 import CitySearch from "./CitySearch";
+import FilterBar from "./FilterBar";
 
 export default function Results() {
   const searchParams = useSearchParams();

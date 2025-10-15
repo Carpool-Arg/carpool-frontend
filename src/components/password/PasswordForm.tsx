@@ -53,7 +53,6 @@ export default function PasswordForm({
     try {
       const completeData = { ...data, token };
       const response = await onSubmit(completeData)
-      console.log('response',response)
 
       if(response.state === "ERROR" ){
         setStatus('error')

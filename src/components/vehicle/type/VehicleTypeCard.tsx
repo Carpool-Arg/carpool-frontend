@@ -8,7 +8,6 @@ interface VehicleTypeCardProps {
 }
 
 export function VehicleTypeCard({ vehicleType, selected, onSelect }: VehicleTypeCardProps) {
-  console.log(vehicleType.name)
   return (
     <div
       onClick={() => onSelect(vehicleType.id)}

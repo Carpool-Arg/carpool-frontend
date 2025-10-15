@@ -181,7 +181,6 @@ export default function ProfileDetails() {
       // Opcional: resetear selectedFile
       setSelectedFile(null);
 
-      console.log('Imagen de perfil eliminada correctamente');
     } catch (error: unknown) {
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;

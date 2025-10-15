@@ -62,7 +62,6 @@ export function VehicleForm() {
 
       if (response.state === "ERROR") {
         setError(response.messages?.[0] || "Error al guardar el vehículo");
-        console.log(response);
         return;
       }
 

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
 import { fetchCities, fetchCityById } from "@/services/cityService";
-import { CitiesResponse, CityResponse } from "@/types/response/city";
 import { City } from "@/types/city";
-import { Search, X } from "lucide-react"; 
-import { capitalize, capitalizeWords } from "@/utils/string";
+import { CitiesResponse } from "@/types/response/city";
+import { capitalizeWords } from "@/utils/string";
+import { Search, X } from "lucide-react";
+import { ReactNode, useEffect, useState } from "react";
 
 interface CityAutocompleteProps {
   value: number | null;
@@ -66,8 +66,6 @@ export function CityAutocomplete({
       if (query.length >= 2) {
         try {
           const response: CitiesResponse = await fetchCities(query);
-          console.log('response',response)
-          console.log('response',query)
           let filteredCities = (response?.data ?? []).map(c => ({
             ...c,
             name: capitalizeWords(c.name)
