@@ -16,6 +16,8 @@ interface CityAutocompleteProps {
   icon?: ReactNode;
   excludeIds?: number[];
   outline?: boolean;
+  onFocus?: ()=>void
+  onBlur?: ()=>void
 }
 
 export function CityAutocomplete({
@@ -27,6 +29,8 @@ export function CityAutocomplete({
   icon,
   excludeIds,
   outline,
+  onFocus,
+  onBlur
 }: CityAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [cities, setCities] = useState<City[]>([]);
@@ -99,7 +103,7 @@ export function CityAutocomplete({
 
   return (
     <div className="relative w-full">
-      <label className={`block text-sm font-medium font-inter ${label && 'mb'}`}>{label}</label>
+      <label className={`block text-sm font-medium font-inter ${label && 'mb-1'}`}>{label}</label>
 
       <div className="relative">
         {icon && !loading &&  (
@@ -126,6 +130,8 @@ export function CityAutocomplete({
             className={`w-full  rounded 
               ${outline ? "border border-gray-2 p-2 " : "focus:outline-none focus:ring-0 focus:border-none px-2 py-1.5"} 
               ${icon ? "pl-8" : "pl-2"} pr-8`}
+            onFocus={onFocus}  
+            onBlur={onBlur}
           />
         )}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { formatFullDate } from "@/utils/date";
+import { formatFullDate, formatISODate, parseLocalDate } from "@/utils/date";
 import Trip from "./Trip";
 import { SearchData } from "@/types/response/trip";
 
@@ -47,15 +47,17 @@ export default function TripList({ feed, currentCity }: TripListProps) {
   return (
     <div className="">
       {visibleTrips.map((trip, index) => {
-        const tripDate = trip.startDateTime.split("T")[0];
-        const showDateHeader = tripDate !== lastDate;
-        lastDate = tripDate;
+        const tripDate = parseLocalDate(trip.startDateTime.split("T")[0]);
+        const tripDateString = tripDate.toISOString().slice(0, 10); // yyyy-mm-dd
+
+        const showDateHeader = tripDateString !== lastDate;
+        lastDate = tripDateString;
 
         return (
           <div key={index}>
             {showDateHeader && (
               <h1 className="font-semibold mb-2 text-lg">
-                {formatFullDate(tripDate)}
+                {formatFullDate((tripDate))}
               </h1>
             )}
             <Trip trip={trip} currentCity={currentCity!} />

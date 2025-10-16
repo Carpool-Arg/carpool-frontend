@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar1, Plus } from "lucide-react";
+import { Calendar1, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -57,10 +57,10 @@ export default function SearchBar() {
         <div className="flex flex-col gap-2 ">
           <button
             onClick={handleSearch}
-            className={`bg-gray-2 p-2 rounded-full ${!originCity || !destinationCity ? "opacity-50 " : ""}`}
+            className={`bg-gray-2 hover:bg-gray-2 transition p-2 rounded-full ${!originCity || !destinationCity ? "opacity-50 " : ""}`}
             disabled={!originCity || !destinationCity} // <- botón deshabilitado
           >
-            <Plus size={16} />
+            <Search size={16} />
           </button>
 
           {/* Dialog calendario */}

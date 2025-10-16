@@ -14,20 +14,18 @@ export function formatDateLong(dateString: string) {
   }).format(date);
 }
 
-export function formatFullDate(dateString: string) {
-  const date = new Date(dateString);
-
+export function formatFullDate(date: Date) {
   const formatted = new Intl.DateTimeFormat("es-ES", {
     weekday: "long",
     day: "2-digit",
     month: "long",
-  }).format(date).replace(",", "");
+  })
+    .format(date)
+    .replace(",", "");
 
-  // Capitaliza día y mes
   return formatted
-    .split(" ") // separa por espacios
+    .split(" ")
     .map((word, index) => {
-      // Capitaliza la primera letra del primer y último elemento (día y mes)
       if (index === 0 || index === formatted.split(" ").length - 1) {
         return word.charAt(0).toUpperCase() + word.slice(1);
       }
@@ -36,3 +34,22 @@ export function formatFullDate(dateString: string) {
     .join(" ");
 }
 
+
+/**
+ * Convierte un string ISO (yyyy-mm-dd) en un Date ajustado a la zona horaria local
+ * evitando desfases por UTC.
+ */
+export function parseLocalDate(isoDate: string): Date {
+  const d = new Date(isoDate);
+  d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+  return d;
+}
+
+/**
+ * Devuelve un string ISO (yyyy-mm-dd) sin desfase horario, a partir de un Date.
+ */
+export function formatISODate(date: Date): string {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy.toISOString().slice(0, 10);
+}

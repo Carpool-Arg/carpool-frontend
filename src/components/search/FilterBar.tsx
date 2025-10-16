@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Slider } from "@/components/ui/slider";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { parseLocalDate } from "@/utils/date";
 
 function formatShortDate(date: Date) {
   return new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" })
@@ -38,8 +39,8 @@ interface FilterBarProps {
 export default function FilterBar({
   selectedDate,
   onDateChange,
-  minPrice = 0,
-  maxPrice = 10000,
+  minPrice,
+  maxPrice,
   onMinPriceChange,
   onMaxPriceChange,
   sortByRating = false,
@@ -47,14 +48,16 @@ export default function FilterBar({
   onClearFilters
 }: FilterBarProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [localMin, setLocalMin] = useState<number>(minPrice);
-  const [localMax, setLocalMax] = useState<number>(maxPrice);
+  const [localMin, setLocalMin] = useState<number>(minPrice ?? 0);
+  const [localMax, setLocalMax] = useState<number>(maxPrice ?? 15000);
   const [isPricePopoverOpen, setIsPricePopoverOpen] = useState(false);
+
+  const activePrice = (minPrice !== undefined && minPrice >= 0) || (maxPrice !== undefined && maxPrice !== 15000);
+
 
   const hasActiveFilters =
   !!selectedDate ||
-  (minPrice !== undefined && minPrice > 0) ||
-  (maxPrice !== undefined && maxPrice < 10000) ||
+  activePrice ||
   sortByRating;
 
   const handleMinChange = (value: number) => {
@@ -71,6 +74,7 @@ export default function FilterBar({
     onMinPriceChange && onMinPriceChange(localMin);
     onMaxPriceChange && onMaxPriceChange(localMax);
     setIsPricePopoverOpen(false);
+
   };
 
   return (
@@ -79,14 +83,14 @@ export default function FilterBar({
       <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <DialogTrigger asChild>
           <button
-            className={`flex items-center gap-1 px-3 py-1 border rounded-lg transition ${
+            className={`flex items-center gap-1 px-3 py-1 border rounded-lg hover:bg-gray-2 transition ${
               selectedDate ? "border-gray-6 bg-gray-8" : "border-gray-2"
             }`}
           >
             <Calendar1 size={14} />
             <span className="text-sm">
               {selectedDate
-                ? formatShortDate(new Date(selectedDate))
+                ? formatShortDate(parseLocalDate(selectedDate))
                 : "Seleccionar fecha"}
             </span>
           </button>
@@ -98,7 +102,7 @@ export default function FilterBar({
           </DialogHeader>
           <Calendar
             mode="single"
-            selected={selectedDate ? new Date(selectedDate) : undefined}
+            selected={selectedDate ? parseLocalDate(selectedDate) : undefined}
             onSelect={(date) => {
               if (date && onDateChange) {
                 const normalized = new Date(date);
@@ -120,7 +124,7 @@ export default function FilterBar({
       <Popover open={isPricePopoverOpen} onOpenChange={setIsPricePopoverOpen}>
         <PopoverTrigger asChild>
           <button
-            className={`flex items-center gap-1 px-3 py-1 border rounded-lg border-gray-2  hover:bg-gray-2 transition ${minPrice && maxPrice ?"border-gray-6 bg-gray-8" : "border-gray-2" }`}
+            className={`flex items-center gap-1 px-3 py-1 border rounded-lg border-gray-2  hover:bg-gray-2 transition ${activePrice ?"border-gray-6 bg-gray-8" : "border-gray-2" }`}
             onClick={() => setIsPricePopoverOpen(true)}
           >
             <DollarSign size={14} />
