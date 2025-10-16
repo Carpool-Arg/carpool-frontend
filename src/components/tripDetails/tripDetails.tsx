@@ -13,22 +13,23 @@ import { capitalizeWords } from "@/utils/string";
 import { Button } from "../ui/Button";
 import { TripDetailSkeleton } from "./TripDetailSkeleton";
 import { ErrorMessage } from "../ui/Error";
+import { formatPrice } from "@/utils/number";
+import { useParams } from "next/navigation";
 
-type TripDetailsProps = {
-  tripId: number;
-};
 
-export default function TripDetails({ tripId }: TripDetailsProps) {
+export default function TripDetails() {
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { user, prevImage } = useAuth();
+  const { id } = useParams();
 
   useEffect(() => {
     const loadTrip = async () => {
       try {
         setLoading(true);
-        const res = await getTripDetails(tripId);
+        if(!id) return
+        const res = await getTripDetails(Number(id));
         if (res.state === "ERROR") {
           setError(res.messages[0]);
         }
@@ -42,7 +43,7 @@ export default function TripDetails({ tripId }: TripDetailsProps) {
     };
 
     loadTrip();
-  }, [tripId]);
+  }, [id]);
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
@@ -72,7 +73,7 @@ export default function TripDetails({ tripId }: TripDetailsProps) {
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
               Disponibilidad
             </h2>
-            <span className="font-medium text-4xl">
+            <span className="font-medium text-[28px]">
             {trip.currentAvailableSeats}/{trip.availableSeat}
             </span>
           </div>
@@ -82,7 +83,7 @@ export default function TripDetails({ tripId }: TripDetailsProps) {
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
               Precio
             </h2>
-            <span className="font-medium text-4xl">${trip.seatPrice}</span>
+            <span className="font-medium text-[28px]">${formatPrice(trip.seatPrice)}</span>
           </div>
 
           {/* Recorrido */}

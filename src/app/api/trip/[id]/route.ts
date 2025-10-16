@@ -3,6 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * Recupera los detalles de un viaje específico.
+ * 
+ * Recibe el ID del viaje como parámetro de la ruta,
+ * realiza la llamada al backend para obtener los detalles del viaje,
+ * y devuelve la respuesta estándar de tipo `TripResponse`.
+ * 
+ * @param req {NextRequest} - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con los detalles del viaje
+ */
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
