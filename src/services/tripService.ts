@@ -78,14 +78,17 @@ export const validateTripDateTime = async(startDateTime: string) =>{
   }
 }
 
-export const getInitialFeed = async(cityId: number) => {
+export const getInitialFeed = async (cityId?: number) => {
   try {
-    const res = await fetchWithRefresh(`/api/trip/feed?cityId=${cityId}`)
+    const url = cityId
+      ? `/api/trip/feed?cityId=${cityId}`
+      : `/api/trip/feed`;
 
-    const response: SearchResponse = await res.json()
+    const res = await fetchWithRefresh(url);
+    const response: SearchResponse = await res.json();
 
     if (!res.ok) {
-      throw new Error(response.messages?.[0] || 'Error desconocido');
+      throw new Error(response.messages?.[0] || "Error desconocido");
     }
 
     return response;
@@ -95,4 +98,4 @@ export const getInitialFeed = async(cityId: number) => {
 
     return { data: null, messages: [message], state: "ERROR" };
   }
-}
+};

@@ -60,7 +60,8 @@ export default function TripList({ feed, currentCity }: TripListProps) {
                 {formatFullDate((tripDate))}
               </h1>
             )}
-            <Trip trip={trip} currentCity={currentCity!} />
+            <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} /> 
+             {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
           </div>
         );
       })}

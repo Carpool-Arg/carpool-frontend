@@ -36,6 +36,9 @@ export default function Results() {
   const [departureDate, setDepartureDate] = useState<string | undefined>(departureDateParam ?? undefined);
   const [minPrice, setMinPrice] = useState<number | undefined>(minPriceParam ? Number(minPriceParam) : undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(maxPriceParam ? Number(maxPriceParam) : undefined);
+  const maxSeatPrice = feed.length > 0 
+  ? Math.max(...feed.map(item => item.seatPrice))
+  : 10000;
   const [orderByDriverRating, setOrderByDriverRating] = useState(orderByRatingParam === "true");
 
   // --- Función para fetch ---
@@ -152,6 +155,7 @@ export default function Results() {
         }}
         minPrice={minPrice}
         maxPrice={maxPrice}
+        maxSeatPrice={maxSeatPrice}
         onMinPriceChange={setMinPrice}
         onMaxPriceChange={setMaxPrice}
         sortByRating={orderByDriverRating}

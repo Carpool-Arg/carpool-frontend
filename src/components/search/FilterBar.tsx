@@ -28,6 +28,7 @@ interface FilterBarProps {
 
   minPrice?: number;
   maxPrice?: number;
+  maxSeatPrice: number
   onMinPriceChange?: (value: number) => void;
   onMaxPriceChange?: (value: number) => void;
 
@@ -45,11 +46,13 @@ export default function FilterBar({
   onMaxPriceChange,
   sortByRating = false,
   setSortByRating,
-  onClearFilters
+  onClearFilters,
+  maxSeatPrice
 }: FilterBarProps) {
+  
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [localMin, setLocalMin] = useState<number>(minPrice ?? 0);
-  const [localMax, setLocalMax] = useState<number>(maxPrice ?? 15000);
+  const [localMax, setLocalMax] = useState<number>(maxPrice ?? maxSeatPrice);
   const [isPricePopoverOpen, setIsPricePopoverOpen] = useState(false);
 
   const activePrice = (minPrice !== undefined && minPrice >= 0) || (maxPrice !== undefined && maxPrice !== 15000);
@@ -66,8 +69,14 @@ export default function FilterBar({
   };
 
   const handleMaxChange = (value: number) => {
-    const val = Math.max(value, localMin); // no puede ser menor al min
-    setLocalMax(val);
+    setLocalMax(value); // permitir siempre la edición
+  };
+
+  const handleMaxBlur = () => {
+    // validar solo al salir del input
+    if (localMax < localMin) {
+      setLocalMax(maxSeatPrice);
+    }
   };
 
   const handleApplyPrice = () => {
@@ -141,13 +150,14 @@ export default function FilterBar({
 
           <Slider
             min={0}
-            max={10000}
+            max={maxSeatPrice}
             step={100}
             value={[localMin, localMax]}
             onValueChange={(val) => {
               handleMinChange(val[0]);
               handleMaxChange(val[1]);
             }}
+            
           />
 
           <div className="flex justify-between gap-2 mt-3">
@@ -167,6 +177,7 @@ export default function FilterBar({
                 value={localMax}
                 onChange={(e) => handleMaxChange(parseInt(e.target.value, 10) || 0)}
                 className="text-sm"
+                onBlur={handleMaxBlur}
               />
             </div>
           </div>

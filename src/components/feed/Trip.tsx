@@ -32,9 +32,9 @@ export default function Trip({ trip, currentCity }: TripCardProps) {
   const isActualOrigin =
     currentCity.toLowerCase() === tripOriginCity.toLowerCase();
 
-  const isRealOrigin = currentCity.toLowerCase() === tripOriginCity.toLowerCase();
-  const isDestination = currentCity.toLowerCase() === destinationStop.cityName.toLowerCase();
-  const isIntermediate = !isRealOrigin && !isDestination
+  const isRealOrigin = originStop.destination === false && originStop.start===true
+  const isDestination = originStop.destination === true && originStop.start===false
+  const isIntermediate = originStop.destination === false && originStop.start===false
 
 
   return (
