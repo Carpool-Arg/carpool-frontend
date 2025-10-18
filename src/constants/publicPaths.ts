@@ -26,6 +26,7 @@ export const PUBLIC_PATHS = {
 
 export const HEADER_PATHS = [
   '/search',
+  '/trip/details',
   '/trip/new',
   '/trip',
   '/vehicle/edit',
@@ -44,6 +45,7 @@ export const HEADER_PATHS = [
 
 export const HEADER_TITLES: Record<string, string> = {
   '/trip/new': 'Publicar viaje',
+  '/trip/details': 'Mis viajes',
   '/vehicle/edit': 'Editar Vehículo',
   '/vehicle/new': 'Registrar Vehículo',
   '/vehicle': 'Vehículos',

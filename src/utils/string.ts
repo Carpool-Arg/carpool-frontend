@@ -2,9 +2,10 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-export function capitalizeWords(str: string) {
+export function capitalizeWords(str?: string) {
+  if (!str) return ""; // devuelve string vacío si viene undefined
   return str
-    .split(' ')
+    .split(" ")
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
@@ -54,4 +55,6 @@ export function formatTimeRounded(dateString: string): string {
     minute: "2-digit",
     hour12: false,
   });
+}
+    .join(" ");
 }

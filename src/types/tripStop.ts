@@ -5,6 +5,7 @@ export interface TripStop{
     start: boolean;
     destination: boolean;
     observation: string;
+    estimatedArrivalDateTime?: string;
 }
 
 export type TripStopExtended = TripStop & {

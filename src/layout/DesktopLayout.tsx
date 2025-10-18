@@ -9,7 +9,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const allowedPaths = [
     '/home', '/search', '/notifications', '/profile', 
-    '/register-driver', '/settings','/vehicle', '/vehicle/new', '/trip/new'
+    '/register-driver', '/settings','/vehicle', '/vehicle/new', '/trip/new','/trip/details'
   ];
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));

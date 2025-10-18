@@ -54,6 +54,27 @@ export async function newTrip(data: Trip): Promise<VoidResponse> {
   }
 }
 
+export async function getTripDetails(tripId: number): Promise<TripResponse>{
+  try{
+    const res = await fetch(`/api/trip/${tripId}`,{
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+
+   const response: TripResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
 
 export const validateTripDateTime = async(startDateTime: string) =>{
   try {
