@@ -21,7 +21,6 @@ export function VehicleList() {
   const fetchVehicle = async () => {
     setLoading(true)
     const result = await getVehicles();
-    console.log('result',result)
     if (result.state === "OK" && result.data) {
       setVehicles(result.data);
     } else {

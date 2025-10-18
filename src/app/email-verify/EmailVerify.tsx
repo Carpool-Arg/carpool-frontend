@@ -1,7 +1,7 @@
 'use client'
 import MailForm from "@/components/mail/MailForm";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/ux/Button";
+import { Input } from "@/components/ui/ux/Input";
 import { Mail, Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

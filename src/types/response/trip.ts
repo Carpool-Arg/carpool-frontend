@@ -16,3 +16,24 @@ export interface TripDetailsData{
 }
 
 export type TripResponse = BaseResponse<TripDetailsData>
+  
+export interface SearchData {
+    driverInfo: {
+        fullName: string
+        profileImageUrl: string
+        rating: number
+    }
+    startDateTime: string // ISO string
+    tripStops: {
+        cityName: string
+        observation: string
+        estimatedArrivalDateTime: string
+        destination: boolean
+        start: boolean
+    }[]
+    availableSeat: number
+    seatPrice: number
+    tripId:number
+}
+
+export type SearchResponse = BaseResponse<SearchData[]>

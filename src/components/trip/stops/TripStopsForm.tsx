@@ -1,8 +1,8 @@
 'use client'
 
 import { CityAutocomplete } from "@/components/city/CityAutocomplete"
-import { Button } from "@/components/ui/Button"
-import { Toast } from "@/components/ui/Toast"
+import { Button } from "@/components/ui/ux/Button"
+import { Toast } from "@/components/ui/ux/Toast"
 import { City } from "@/types/city"
 import { TripStop, TripStopExtended } from "@/types/tripStop"
 import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core"
@@ -109,6 +109,7 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                     placeholder='Seleccione la localidad'
                     icon={<CircleSmall size={18} />}
                     excludeIds={[origin ?? 0, destination ?? 0, ...tripStopsList.map(stop => stop.cityId)] }
+                    outline={true}
                 />
                 
 

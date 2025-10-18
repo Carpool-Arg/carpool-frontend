@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
 import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
 import { ProfileOptions } from '@/components/profile/ProfileOptions';
-import { Alert } from '@/components/ui/Alert';
+import { Alert } from '@/components/ui/ux/Alert';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {

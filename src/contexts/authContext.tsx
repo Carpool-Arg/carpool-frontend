@@ -24,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const [prevImage, setPrevImage] = useState<string | null>(null);
@@ -32,7 +33,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Rutas públicas donde no necesitamos autenticación
   const publicRoutes = [...PUBLIC_PATHS.pages];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some(route =>
+    route === '/' ? pathname === '/' : pathname.startsWith(route)
+  );
+
 
   // Función para obtener el usuario actual
   const fetchUser = useCallback(async (): Promise<boolean> => {
@@ -86,31 +90,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let isMounted = true;
 
     const initializeAuth = async () => {
-      // Si estamos en una ruta pública, no verificar usuario
-      if (isPublicRoute) {
-        setInitialized(true);
-        setLoading(false);
-        return;
-      }
-
-      // Verificar si hay usuario autenticado
       const hasUser = await fetchUser();
       
+
       if (isMounted) {
         setInitialized(true);
         setLoading(false);
-        // Si no hay usuario y estamos en ruta protegida, redirigir
+
         if (!hasUser && !isPublicRoute) {
           router.replace('/login');
         }
       }
-    };
+        };
 
-    initializeAuth();
+        initializeAuth();
 
-    return () => {
-      isMounted = false;
-    };
+        return () => {
+          isMounted = false;
+        };
   }, [isPublicRoute, fetchUser, router]);
 
 
@@ -177,16 +174,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await logoutUser(); 
       if (res.state === "OK") { 
-        router.push('/login'); 
         setUser(null);
         setInitialized(false);
+        router.push('/login'); 
       } else {
         console.error('Logout failed', res.messages?.[0]);
-        
+        setUser(null);
+        setInitialized(false);
+        router.push('/login');
       }
     } catch (error) {
       console.error('Error during logout:', error);
       // opcional: mostrar mensaje al usuario
+    
+    } finally {
+      // Siempre limpiar estado y redirigir
+      setUser(null);
+      setInitialized(false);
+      router.push('/login');
     }
   };
 

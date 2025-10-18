@@ -7,8 +7,6 @@ export function ProfileHeader() {
   const { user, prevImage } = useAuth();
 
   const imageToShow = prevImage || user?.profileImage;
-  console.log(imageToShow)
-
 
   return (
     <div className="flex flex-col items-center gap-2">

@@ -8,10 +8,15 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
+
+  const logoHeaderPaths = ["/", "/home","/search"];
+  const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
   
   return (
     <div className="flex flex-col h-screen">
-      {showHeader && <AppHeader showBack />}
+      {showHeader && (
+        <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
+      )}
       <main className="flex-1 overflow-auto pt-8 pr-8 pl-8 pb-[5.5rem]">
         {children}
       </main>

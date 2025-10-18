@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input'; 
+import { Button } from '@/components/ui/ux/Button';
+import { Input } from '@/components/ui/ux/Input'; 
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { deleteUserFile, uploadUserFile } from '@/services/mediaService';
@@ -181,7 +181,6 @@ export default function ProfileDetails() {
       // Opcional: resetear selectedFile
       setSelectedFile(null);
 
-      console.log('Imagen de perfil eliminada correctamente');
     } catch (error: unknown) {
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;

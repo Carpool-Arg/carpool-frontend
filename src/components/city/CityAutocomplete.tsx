@@ -1,20 +1,23 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
 import { fetchCities, fetchCityById } from "@/services/cityService";
-import { CitiesResponse, CityResponse } from "@/types/response/city";
 import { City } from "@/types/city";
-import { Search, X } from "lucide-react"; 
-import { capitalize, capitalizeWords } from "@/utils/string";
+import { CitiesResponse } from "@/types/response/city";
+import { capitalizeWords } from "@/utils/string";
+import { Search, X } from "lucide-react";
+import { ReactNode, useEffect, useState } from "react";
 
 interface CityAutocompleteProps {
   value: number | null;
   onChange: (value: {id:number;name: string}  | null) => void;
   error?: string;
-  label: string;
+  label?: string;
   placeholder: string;
   icon?: ReactNode;
   excludeIds?: number[];
+  outline?: boolean;
+  onFocus?: ()=>void
+  onBlur?: ()=>void
 }
 
 export function CityAutocomplete({
@@ -24,7 +27,10 @@ export function CityAutocomplete({
   error,
   placeholder,
   icon,
-  excludeIds
+  excludeIds,
+  outline,
+  onFocus,
+  onBlur
 }: CityAutocompleteProps) {
   const [query, setQuery] = useState("");
   const [cities, setCities] = useState<City[]>([]);
@@ -64,8 +70,6 @@ export function CityAutocomplete({
       if (query.length >= 2) {
         try {
           const response: CitiesResponse = await fetchCities(query);
-          console.log('response',response)
-          console.log('response',query)
           let filteredCities = (response?.data ?? []).map(c => ({
             ...c,
             name: capitalizeWords(c.name)
@@ -99,7 +103,7 @@ export function CityAutocomplete({
 
   return (
     <div className="relative w-full">
-      <label className="block mb-2 text-sm font-medium font-inter">{label}</label>
+      <label className={`block text-sm font-medium font-inter ${label && 'mb-1'}`}>{label}</label>
 
       <div className="relative">
         {icon && !loading &&  (
@@ -109,7 +113,7 @@ export function CityAutocomplete({
         )}
 
         {loading ? (
-          <div className={`relative h-10 w-full rounded border border-gray-5 dark:border-gray-2   animate-pulse ${icon ? "pl-8" : ""}`}>
+          <div className={`relative h-10 w-full rounded ${outline && 'border border-gray-5 dark:border-gray-2'}  animate-pulse ${icon ? "pl-8" : ""}`}>
             {/* placeholder falso */}
             <div className="absolute top-1/2 -translate-y-1/2 h-3 w-24 rounded bg-gray-300 dark:bg-gray-2" />
           </div>
@@ -123,7 +127,11 @@ export function CityAutocomplete({
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}
-            className={`w-full p-2 border border-gray-5 dark:border-gray-2 rounded ${icon || selected ? "pl-8" : ""} pr-8`}
+            className={`w-full  rounded 
+              ${outline ? "border border-gray-2 p-2 " : "focus:outline-none focus:ring-0 focus:border-none px-2 py-1.5"} 
+              ${icon ? "pl-8" : "pl-2"} pr-8`}
+            onFocus={onFocus}  
+            onBlur={onBlur}
           />
         )}
 

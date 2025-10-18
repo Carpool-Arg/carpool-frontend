@@ -14,8 +14,8 @@ import { useForm } from 'react-hook-form';
 import { BiBriefcaseAlt } from 'react-icons/bi';
 import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { CityAutocomplete } from '../city/CityAutocomplete';
-import { AlertDialog } from '../ui/AlertDialog';
-import { Button } from '../ui/Button';
+import { AlertDialog } from '../ui/ux/AlertDialog';
+import { Button } from '../ui/ux/Button';
 import { TripRoutePreview } from './TripRoutePreview';
 import { VehicleSelector } from './VehicleSelector';
 import { TripDetail } from './detail/TripDetail';
@@ -324,6 +324,7 @@ export function TripForm() {
                   />
                 }
                 excludeIds={[destination?.cityId ?? 0]}
+                outline={true}
               />
               <input
                 type="text"
@@ -369,6 +370,7 @@ export function TripForm() {
                   />
                 }
                 excludeIds={[origin?.cityId ?? 0]}
+                outline={true}
               />
               <input
                 type="text"

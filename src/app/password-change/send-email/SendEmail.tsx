@@ -1,6 +1,6 @@
 'use client'
 import MailForm from "@/components/mail/MailForm";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/ux/Button";
 import { sendChangePasswordEmail } from "@/services/emailService";
 import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";

@@ -5,7 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { AuthProvider, useAuth } from '@/contexts/authContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { usePathname } from 'next/navigation';
-import Spinner from '@/components/ui/Spinner';
+import Spinner from '@/components/ui/ux/Spinner';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 interface AppProvidersProps {
@@ -18,7 +18,7 @@ function GlobalLoadingOverlay() {
   const loadingRoutes = ['/login', '/register', '/complete-registration']; // solo donde querés el overlay
   const pathname = usePathname() || '';
 
-  const shouldShowSpinner = loadingRoutes.some(route => pathname.startsWith(route)) && (!initialized || loading);
+  const shouldShowSpinner = loadingRoutes.some(route => pathname.startsWith(route)) && ( loading);
 
   if (!shouldShowSpinner) return null;
 

@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Button } from "../ui/Button"
+import { Button } from "../ui/ux/Button"
 import { Clock, Mail, XCircle } from "lucide-react"
-import { Input } from "../ui/Input"
+import { Input } from "../ui/ux/Input"
 
 
 type MailFormProps = {

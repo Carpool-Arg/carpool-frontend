@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerUser } from "@/services/authService"
-import { Button } from "../ui/Button"
-import { Input } from "../ui/Input"
+import { Button } from "../ui/ux/Button"
+import { Input } from "../ui/ux/Input"
 import { useRouter } from "next/navigation"
 import { 
   registerStep1Schema, 
@@ -14,12 +14,12 @@ import {
   type RegisterStep2Data,
   type CompleteRegisterData
 } from "@/schemas/auth/registerSchema"
-import Spinner from "../ui/Spinner"
+import Spinner from "../ui/ux/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useAuth } from "@/contexts/authContext"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Check, X } from 'lucide-react'
-import { Alert } from "../ui/Alert"
+import { Alert } from "../ui/ux/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 import Link from "next/link"
 
@@ -72,7 +72,7 @@ export function RegisterForm() {
   const usernameValidation = useFieldValidator('username');
   const emailValidation = useFieldValidator('email');
   const dniValidation = useFieldValidator('dni');
-  //const phoneValidation = useFieldValidator('phone')
+  const phoneValidation = useFieldValidator('phone')
 
   //  observador del input, se activa cuando el value del input cambia
   // Watch para campos de step1Form: username y email
@@ -100,12 +100,12 @@ export function RegisterForm() {
         }
       }else if(name === "phone" && value.phone){
         if (!step2Form.formState.errors.phone){
-          //phoneValidation.validate(value.phone)
+          phoneValidation.validate(value.phone)
         }
       }
     });
     return () => subscription.unsubscribe();
-  }, [step2Form, dniValidation]);
+  }, [step2Form, dniValidation,phoneValidation]);
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
@@ -394,17 +394,16 @@ export function RegisterForm() {
               type="tel"
               {...step2Form.register('phone')}
               error={step2Form.formState.errors.phone?.message}
-              //rightIcon={!step2Form.formState.errors.phone?.message ?getRightIcon(phoneValidation):undefined}
+              rightIcon={!step2Form.formState.errors.phone?.message ?getRightIcon(phoneValidation):undefined}
             />
-            {/** 
-              {(phoneValidation.message && !step2Form.formState.errors.phone?.message) && (
-                <p className={`text-xs font-inter mt-1 ${
-                  phoneValidation.messageType === 'success' ? 'text-success' : 'text-error'
-                }`}>
-                  {phoneValidation.message}
-                </p>
-              )}
-            */}
+            {(phoneValidation.message && !step2Form.formState.errors.phone?.message) && (
+              <p className={`text-xs font-inter mt-1 ${
+                phoneValidation.messageType === 'success' ? 'text-success' : 'text-error'
+              }`}>
+                {phoneValidation.message}
+              </p>
+            )}
+            
           </div>
 
           <div>

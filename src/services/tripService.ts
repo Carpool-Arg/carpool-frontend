@@ -1,17 +1,21 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
+
 import { VoidResponse } from "@/types/response/response";
-import { TripResponse } from "@/types/response/trip";
-import { Trip } from "@/types/trip";
+import { SearchResponse } from "@/types/response/trip";
+import { Trip, TripFilters } from "@/types/trip";
 
 
-export async function getTrips(data: Trip): Promise<VoidResponse> {
+
+export async function getTrips(filters: TripFilters): Promise<SearchResponse> {
   try {
-    const res = await fetch('/api/trip',{
+    const res = await fetch('/api/trip/search',{
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
+      credentials: 'include',
+      body: JSON.stringify(filters)
     })
 
-    const response: VoidResponse = await res.json()
+    const response: SearchResponse = await res.json()
 
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');
@@ -94,3 +98,25 @@ export const validateTripDateTime = async(startDateTime: string) =>{
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
+
+export const getInitialFeed = async (cityId?: number) => {
+  try {
+    const url = cityId
+      ? `/api/trip/feed?cityId=${cityId}`
+      : `/api/trip/feed`;
+
+    const res = await fetchWithRefresh(url);
+    const response: SearchResponse = await res.json();
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || "Error desconocido");
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+};
