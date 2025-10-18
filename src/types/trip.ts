@@ -1,10 +1,18 @@
 export interface Trip{
     startDateTime: string;
     idVehicle: number;
-    tripstops?: [];
+    tripstops?: TripStop[];
     availableSeat: number;
     availableBaggage?: string;
     seatPrice: number;
+}
+
+export interface TripStop{
+    cityName: string;
+    observation: string;
+    start: boolean;
+    destination: boolean;
+    estimatedArrivalDateTime: string;
 }
 
 export interface TripFilters {
@@ -17,4 +25,5 @@ export interface TripFilters {
     driverRating?: number;
     orderByDriverRating?: boolean;
 }
+
 

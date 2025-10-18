@@ -4,13 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { formatFullDate, formatISODate, parseLocalDate } from "@/utils/date";
 import Trip from "./Trip";
 import { SearchData } from "@/types/response/trip";
+import { City } from "@/types/city";
 
 interface TripListProps {
   feed: SearchData[] | [];
   currentCity?: string;
+  originSearch?: City | null;
+  destinationSearch?: City | null;
 }
 
-export default function TripList({ feed, currentCity }: TripListProps) {
+export default function TripList({ feed, currentCity, originSearch, destinationSearch }: TripListProps) {
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
@@ -60,7 +63,7 @@ export default function TripList({ feed, currentCity }: TripListProps) {
                 {formatFullDate((tripDate))}
               </h1>
             )}
-            <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} /> 
+            <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} originSearch={originSearch} destinationSearch={destinationSearch}/> 
              {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
           </div>
         );

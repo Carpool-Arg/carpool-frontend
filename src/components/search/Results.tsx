@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import TripSkeleton from "../feed/TripSkeleton";
 import CitySearch from "./CitySearch";
 import FilterBar from "./FilterBar";
+import { City } from "@/types/city";
 
 export default function Results() {
   const searchParams = useSearchParams();
@@ -24,13 +25,14 @@ export default function Results() {
   const orderByRatingParam = searchParams.get("orderByDriverRating");
 
   // Ciudades seleccionadas
-  const [originCity, setOriginCity] = useState<number | null>(originParam ? Number(originParam) : null);
-  const [destinationCity, setDestinationCity] = useState<number | null>(destinationParam ? Number(destinationParam) : null);
+  const [originCityId, setOriginCityId] = useState<number | null>(originParam ? Number(originParam) : null);
+  const [destinationCityId, setDestinationCityId] = useState<number | null>(destinationParam ? Number(destinationParam) : null);
 
   // Feed
   const [feed, setFeed] = useState<SearchData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [originCityName, setOriginCityName] = useState('');
+  const [originCity, setOriginCity] = useState<City | null>();
+  const [destinationCity, setDestinationCity] = useState<City | null>();
 
   // Filtros
   const [departureDate, setDepartureDate] = useState<string | undefined>(departureDateParam ?? undefined);
@@ -43,13 +45,13 @@ export default function Results() {
 
   // --- Función para fetch ---
   const fetchTrips = async () => {
-    if (!originCity || !destinationCity) return;
+    if (!originCityId || !destinationCityId) return;
 
     setLoading(true);
     try {
       const filters: TripFilters = {
-        originCityId: originCity,
-        destinationCityId: destinationCity,
+        originCityId: originCityId,
+        destinationCityId: destinationCityId,
       };
       if (departureDate) filters.departureDate = departureDate;
       if (minPrice !== undefined) filters.minPrice = minPrice;
@@ -57,9 +59,11 @@ export default function Results() {
       if (orderByDriverRating) filters.orderByDriverRating = orderByDriverRating;
 
       const res = await getTrips(filters);
-      const responseOriginCity = await fetchCityById(originCity);
+      const responseOriginCity = await fetchCityById(originCityId);
+      const responseDestinationCity = await fetchCityById(destinationCityId);
 
-      setOriginCityName(responseOriginCity.data?.name || '');
+      setOriginCity(responseOriginCity.data);
+      setDestinationCity(responseDestinationCity.data);
 
       if (res.state === "OK" && res.data) {
         setFeed(res.data);
@@ -76,20 +80,20 @@ export default function Results() {
 
   // --- Cada vez que cambien filtros o ciudades ---
   useEffect(() => {
-    if (!originCity || !destinationCity) return;
+    if (!originCityId || !destinationCityId) return;
 
     fetchTrips();
 
     const queryParams = new URLSearchParams();
-    queryParams.set("origin", originCity.toString());
-    queryParams.set("destination", destinationCity.toString());
+    queryParams.set("origin", originCityId.toString());
+    queryParams.set("destination", destinationCityId.toString());
     if (departureDate) queryParams.set("departureDate", departureDate);
     if (minPrice !== undefined) queryParams.set("minPrice", minPrice.toString());
     if (maxPrice !== undefined) queryParams.set("maxPrice", maxPrice.toString());
     if (orderByDriverRating) queryParams.set("orderByDriverRating", orderByDriverRating.toString());
 
     router.replace(`/search/results?${queryParams.toString()}`);
-  }, [originCity, destinationCity, departureDate, minPrice, maxPrice, orderByDriverRating, router]);
+  }, [originCityId, destinationCityId, departureDate, minPrice, maxPrice, orderByDriverRating, router]);
 
   // --- Limpiar filtros ---
   const clearFilters = () => {
@@ -99,8 +103,8 @@ export default function Results() {
     setOrderByDriverRating(false);
 
     const queryParams = new URLSearchParams();
-    if (originCity) queryParams.set("origin", originCity.toString());
-    if (destinationCity) queryParams.set("destination", destinationCity.toString());
+    if (originCityId) queryParams.set("origin", originCityId.toString());
+    if (destinationCityId) queryParams.set("destination", destinationCityId.toString());
 
     router.replace(`/search/results?${queryParams.toString()}`);
   };
@@ -139,10 +143,10 @@ export default function Results() {
     <div className="flex flex-col gap-4">
       <div className="md:mt-4 flex items-center gap-2">
         <CitySearch
-          originCity={originCity}
-          destinationCity={destinationCity}
-          setOriginCity={setOriginCity}
-          setDestinationCity={setDestinationCity}
+          originCity={originCityId}
+          destinationCity={destinationCityId}
+          setOriginCity={setOriginCityId}
+          setDestinationCity={setDestinationCityId}
         />
       </div>
 
@@ -163,7 +167,7 @@ export default function Results() {
         onClearFilters={clearFilters}
       />
 
-      <TripList feed={feed} currentCity={originCityName} />
+      <TripList feed={feed}  originSearch={originCity} destinationSearch={destinationCity}/>
     </div>
   );
 }
