@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { formatFullDate, formatISODate, parseLocalDate } from "@/utils/date";
-import Trip from "./Trip";
-import { SearchData } from "@/types/response/trip";
 import { City } from "@/types/city";
+import { SearchData } from "@/types/response/trip";
+import { formatFullDate, parseLocalDate } from "@/utils/date";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import Trip from "./Trip";
 
 interface TripListProps {
   feed: SearchData[] | [];
@@ -63,7 +64,9 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
                 {formatFullDate((tripDate))}
               </h1>
             )}
-            <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} originSearch={originSearch} destinationSearch={destinationSearch}/> 
+            <Link href={`/trip/details/${trip.tripId}`} className="block">
+              <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} originSearch={originSearch} destinationSearch={destinationSearch}/> 
+            </Link>
              {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
           </div>
         );

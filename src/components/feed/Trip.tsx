@@ -1,13 +1,13 @@
 
-import { ChevronRight, Circle, Info, Square, Star } from "lucide-react";
-import Image from "next/image";
-import Separator from "../ui/ux/Separator";
-import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
-import RouteLine from "./RouteLine";
-import { formatPrice } from "@/utils/number";
-import { SearchData } from "@/types/response/trip";
-import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
 import { City } from "@/types/city";
+import { SearchData } from "@/types/response/trip";
+import { formatPrice } from "@/utils/number";
+import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
+import { ChevronRight, Info, Star } from "lucide-react";
+import Image from "next/image";
+import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
+import Separator from "../ui/ux/Separator";
+import RouteLine from "./RouteLine";
 
 
 interface TripCardProps {
@@ -18,6 +18,7 @@ interface TripCardProps {
 }
 
 export default function Trip({ trip, currentCity, originSearch, destinationSearch }: TripCardProps) {
+
   //Origen del viaje
   const originStop = trip.tripStops.find(stop => stop.start === true && stop.destination === false);
   
@@ -68,13 +69,13 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
               {/* Fila de horarios */}
               <div className="w-full">
                 <div className="flex items-center">
-                  <p>{formatTime(originStop?.estimatedArrivalDateTime ?? '')}</p>
+                  <p>{formatTime(originSearchStop?.estimatedArrivalDateTime ?? '')}</p>
                   <RouteLine/>
                 </div>
                 
               </div>
               <div>
-                <p>{formatTimeRounded(destinationStop?.estimatedArrivalDateTime ?? '')}</p>
+                <p>{formatTimeRounded(destinationSearchStop?.estimatedArrivalDateTime ?? '')}</p>
               </div>
 
               {/* Fila de ciudades */}
@@ -168,7 +169,9 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
             </p>
           </div>
         </div>
+       
         <ChevronRight size={20} strokeWidth={1}/>
+
       </div>
       
     </div>

@@ -17,6 +17,7 @@ export interface SearchData {
     }[]
     availableSeat: number
     seatPrice: number
+    tripId:number
 }
 
 export type SearchResponse = BaseResponse<SearchData[]>
