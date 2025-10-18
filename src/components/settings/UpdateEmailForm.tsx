@@ -29,7 +29,7 @@ export default function UpdateEmailForm(){
 
         try {
             await updateEmail(data);
-            router.push("/settings");
+            router.push("/email-change?email="+data.email);
         } catch (error: unknown) {
             let message = "Error desconocido";
             if (error instanceof Error) message = error.message;
