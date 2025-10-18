@@ -37,7 +37,7 @@ export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps
                 </div>
 
               {/* Contenido del stop */}
-              <div className="ml-4 flex-1 max-w-[300px] pb-2">
+              <div className="ml-4 flex-1 max-w-[250px] md:max-w-[300px] xl:max-w-[350px] pb-2">
                 
                 <h3 className={`font-medium leading-5 text-gray-900 dark:text-white ${!isFirst && !isLast ? 'text-md' : 'text-lg'}`}>
                   {capitalizeWords(stop.cityName)} 
@@ -48,7 +48,7 @@ export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps
                     : ""}
                 </h3>
                 {stop.observation && (
-                  <p className="text-sm font-light text-gray-2 dark:text-gray-6 mt-1 break-words max-w-[300px]">
+                  <p className="text-sm font-light text-gray-2 dark:text-gray-6 mt-1 break-words max-w-full">
                     {capitalizeWords(stop.observation)}
                   </p>
                 )}
