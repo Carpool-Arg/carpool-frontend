@@ -28,7 +28,9 @@ export default function DesktopSidebar() {
     setIsDialogOpen(false);
   };
 
-  const userRoles = user?.roles || [];
+  const userRoles = user?.roles || ['user'];
+  
+  
 
   // Filtramos los ítems según el rol del usuario
   const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));

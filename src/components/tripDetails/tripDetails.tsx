@@ -3,18 +3,18 @@
 import { TripDetailsData } from "@/types/response/trip";
 import { useEffect, useState } from "react";
 import { getTripDetails } from "@/services/tripService";
-import Separator from "../ui/Separator";
 import { baggageOptions } from "../trip/TripFrom";
 import { useAuth } from "@/contexts/authContext";
 import { TripRoutePreview } from "../trip/TripRoutePreview";
 import { Rating } from "react-simple-star-rating";
 import Image from "next/image";
 import { capitalizeWords } from "@/utils/string";
-import { Button } from "../ui/Button";
 import { TripDetailSkeleton } from "./TripDetailSkeleton";
 import { ErrorMessage } from "../ui/Error";
 import { formatPrice } from "@/utils/number";
 import { useParams } from "next/navigation";
+import { Button } from "../ui/ux/Button";
+import Separator from "../ui/ux/Separator";
 
 
 export default function TripDetails() {

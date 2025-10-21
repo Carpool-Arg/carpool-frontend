@@ -56,5 +56,4 @@ export function formatTimeRounded(dateString: string): string {
     hour12: false,
   });
 }
-    .join(" ");
-}
+
