@@ -176,7 +176,7 @@ export default function TripDetails() {
               variant="primary"
               className="px-12 py-2 mb-4 text-sm font-inter font-medium"
             >
-              Reservar
+              Solicitar reservar
             </Button>
           </div>
         </div>
