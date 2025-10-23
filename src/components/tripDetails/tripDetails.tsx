@@ -58,40 +58,34 @@ export default function TripDetails() {
   if (trip) {
     return (
       <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen">
-        {/* Título */}
-        <div className="w-full">
-          <h2 className="text-2xl font-semibold text-center">Detalles del viaje</h2>
-          <Separator color="bg-gray-6 dark:bg-gray-2" />
-        </div>
-
         {/* Contenedor en grid */}
         <div
-          className="w-full h-full mt-4 grid grid-cols-9 auto-rows-auto gap-2"
+          className="w-full h-full grid grid-cols-9 gap-2"
         >
           {/* Disponibilidad */}
-          <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
+          <div className="col-span-5 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
               Disponibilidad
             </h2>
-            <span className="font-medium text-[28px]">
+            <span className="font-medium text-2xl">
             {trip.currentAvailableSeats}/{trip.availableSeat}
             </span>
           </div>
 
           {/* Precio */}
-          <div className="col-span-4 col-start-6 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
+          <div className="col-span-4 col-start-6 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
               Precio
             </h2>
-            <span className="font-medium text-[28px]">${formatPrice(trip.seatPrice)}</span>
+            <span className="font-medium text-2xl"><b>${formatPrice(trip.seatPrice)}</b></span>
           </div>
 
           {/* Recorrido */}
-          <div className="col-span-9 row-span-4 row-start-3 bg-gray-6 dark:bg-gray-8 rounded-xl flex flex-col">
+          <div className="col-span-9 bg-gray-6 dark:bg-gray-8 rounded-xl flex flex-col">
             <h2 className="text-gray-7 mt-3 ml-3 dark:text-gray-1 font-medium text-xl">
               Recorrido
             </h2>
-            <div className="ml-3 mt-2 items-center">
+            <div className="ml-3 mt-2 items-center h-full">
               <TripRoutePreview
                 tripStops={trip.tripStops.sort((a, b) => a.order - b.order)}
                 withTimes = {true}
@@ -100,15 +94,15 @@ export default function TripDetails() {
           </div>
 
           {/* Datos del conductor */}
-          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3">
+          <div className="col-span-9 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Datos del conductor
             </h2>
-            <div className="flex gap-5 items-center">
+            <div className="flex gap-5 items-center h-full">
               <img
                 src={trip.driverInfo.profileImageUrl || '/default-profile.png'}
                 alt="Foto de perfil"
-                className="w-15 h-15 rounded-full object-cover"
+                className="w-12 h-12 rounded-full object-cover"
               />
               <div className="text-gray-7 dark:text-gray-1 flex flex-col">
                 <span className="font-medium">{trip.driverInfo.fullName}</span>
@@ -129,16 +123,16 @@ export default function TripDetails() {
           </div>
 
           {/* Datos del vehículo */}
-          <div className="col-span-6 row-span-2 row-start-9 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center p-2">
-            <h2 className="text-gray-7 self-start dark:text-gray-1 font-medium text-xl mb-2">
+          <div className="col-span-6 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center p-2">
+            <h2 className="text-gray-7 self-start dark:text-gray-1 font-medium text-xl mb-2 ">
               Datos del vehículo
             </h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 h-full">
               <Image
                 src={`/${trip.vehicle.vehicleTypeName.toLowerCase()}.png`}
                 alt="Car logo"
-                width={75}
-                height={75}
+                width={60}
+                height={60}
                 className="ml-3"
               />
               <div className="flex flex-col">
@@ -153,11 +147,11 @@ export default function TripDetails() {
           </div>
 
           {/* Equipaje */}
-          <div className="col-span-3 col-start-7 row-span-2 row-start-9 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center items-center p-2">
+          <div className="col-span-3 col-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center items-center p-2">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Equipaje
             </h2>
-            <div className="flex flex-col items-center text-gray-7 dark:text-gray-1">
+            <div className="flex flex-col items-center text-gray-7 dark:text-gray-1 h-full justify-center">
               <div className="flex gap-2">
                 {BaggageIcon && (
                   <div className="rounded-lg">
@@ -170,7 +164,7 @@ export default function TripDetails() {
           </div>
 
           {/* Botón reservar */}
-          <div className="col-span-9 row-span-1 row-start-11 flex justify-center items-center mt-4">
+          <div className="col-span-9 flex justify-center items-center mt-4">
             <Button
               type="button"
               variant="primary"

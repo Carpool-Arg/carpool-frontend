@@ -3,6 +3,7 @@ import { baggageOptions } from "../TripFrom";
 import { Circle, CircleSmall, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { capitalizeWords } from "@/utils/string";
+import { formatPrice } from "@/utils/number";
 
 interface TripDetailProps {
   origin: string;
@@ -80,7 +81,7 @@ export function TripDetail({
           </p>
           <p className="flex flex-col items-start w-20 text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Precio</span> 
-            <span className="text-2xl font-bold">${seatPrice}</span>
+            <span className="text-2xl font-bold">${formatPrice(seatPrice)}</span>
             <span className="font-regular text-sm">por pasajero</span>
           </p>
         </div>

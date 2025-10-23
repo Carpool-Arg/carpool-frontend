@@ -37,10 +37,10 @@ export const AppHeader = ({ showBack, rightAction, variant }: AppHeaderProps) =>
           <ChevronLeft size={16}/>
         </button>
       ) : (
-        <div className="w-6" /> // espacio para alinear
+        <div className="w-4" /> // espacio para alinear
       )}
 
-      <h1 className=" font-semibold text-gray-900 dark:text-white">{title}</h1>
+      <h1 className=" font-semibold text-gray-900 dark:text-white mr-4">{title}</h1>
 
       <div>{rightAction}</div>
     </div>
