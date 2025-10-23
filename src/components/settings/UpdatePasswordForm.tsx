@@ -24,7 +24,6 @@ export default function UpdatePasswordForm(){
     const handleSubmit = async (data: ChangePasswordData) => {
         setStatus("loading");
         setMessage(null);
-
         try {
             await updatePassword(data);
             router.push("/settings");

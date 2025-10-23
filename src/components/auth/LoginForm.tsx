@@ -148,16 +148,16 @@ export function LoginForm() {
         <div className="flex-1 h-px bg-gray-4/50" />
       </div>
       
-      
-      
       <GoogleLogin
         onSuccess={onGoogleSuccess}
         onError={onGoogleError}
         text="continue_with"
-        shape="rectangular"
+        shape="pill"
         size="large"
         width="100%"
       />
+
+      
      
 
       <p className="w-full text-center text-sm text-gray-4 font-inter">
