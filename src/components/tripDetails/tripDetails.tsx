@@ -25,8 +25,8 @@ export default function TripDetails() {
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, prevImage } = useAuth();
   const { id } = useParams();
+
 
   useEffect(() => {
     const loadTrip = async () => {

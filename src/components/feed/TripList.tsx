@@ -24,7 +24,10 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
-  
+
+  console.log('originSearch',originSearch)
+  console.log('destinationSearch',destinationSearch)
+
 
   const handleTripClick = (tripId: number) => {
     // 1. Crear el objeto de contexto con los IDs de la búsqueda
