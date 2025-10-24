@@ -6,6 +6,7 @@ import { formatFullDate, parseLocalDate } from "@/utils/date";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Trip from "./Trip";
+import { useRouter } from "next/navigation";
 
 interface TripListProps {
   feed: SearchData[] | [];
@@ -14,13 +15,30 @@ interface TripListProps {
   destinationSearch?: City | null;
 }
 
+const SEARCH_CONTEXT_KEY = 'carpool_search_context';
+const LOAD_SIZE = 5; // Tamaño de lote inicial y de carga
+
 export default function TripList({ feed, currentCity, originSearch, destinationSearch }: TripListProps) {
+  const router = useRouter();
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
+  
 
-  let lastDate = "";
+  const handleTripClick = (tripId: number) => {
+    // 1. Crear el objeto de contexto con los IDs de la búsqueda
+    const searchContext = {
+      originId: originSearch?.id, 
+      destinationId: destinationSearch?.id,
+    };
+
+    // 2. Guardar el contexto en sessionStorage
+    sessionStorage.setItem(SEARCH_CONTEXT_KEY, JSON.stringify(searchContext));
+
+    // 3. Navegar a la página de detalles
+    router.push(`/trip/details/${tripId}`);
+  };
 
   // --- Observer para detectar el scroll ---
   useEffect(() => {
@@ -29,7 +47,7 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
         const target = entries[0];
         if (target.isIntersecting) {
           // Cargar 5 más cuando el sentinela sea visible
-          setVisibleCount((prev) => Math.min(prev + 1, feed.length));
+          setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, feed.length));
         }
       },
       {
@@ -47,7 +65,7 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
 
   // --- Lista visible según el contador ---
   const visibleTrips = feed.slice(0, visibleCount);
-
+  let lastDate = "";
   return (
     <div className="">
       {visibleTrips.map((trip, index) => {
@@ -64,9 +82,17 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
                 {formatFullDate((tripDate))}
               </h1>
             )}
-            <Link href={`/trip/details/${trip.tripId}`} className="block">
-              <Trip trip={trip} currentCity={currentCity ?? 'Villa Maria'} originSearch={originSearch} destinationSearch={destinationSearch}/> 
-            </Link>
+            <div 
+                onClick={() => handleTripClick(trip.tripId)} 
+                className="cursor-pointer block" // Añadir cursor-pointer para mejor UX
+            >
+              <Trip 
+                trip={trip} 
+                currentCity={currentCity ?? 'Villa Maria'} 
+                originSearch={originSearch} 
+                destinationSearch={destinationSearch}
+              /> 
+            </div>
              {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
           </div>
         );

@@ -15,9 +15,13 @@ import { formatPrice } from "@/utils/number";
 import { useParams } from "next/navigation";
 import { Button } from "../ui/ux/Button";
 import Separator from "../ui/ux/Separator";
+import BookingModal from "../reservation/ReservationModal";
 
+const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
 export default function TripDetails() {
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [searchContext, setSearchContext] = useState<{ originId?: number; destinationId?: number } | null>(null);
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +46,20 @@ export default function TripDetails() {
       }
     };
 
-    loadTrip();
+    // 2. Lógica para cargar el contexto de búsqueda del cliente
+    const loadSearchContext = () => {
+      const storedContext = sessionStorage.getItem(SEARCH_CONTEXT_KEY);
+      if (storedContext) {
+        setSearchContext(JSON.parse(storedContext));
+        // Opcional: limpiar la sesión si ya no se necesita
+        // sessionStorage.removeItem(SEARCH_CONTEXT_KEY);
+      }
+    };
+
+    if (id) {
+      loadTrip();
+      loadSearchContext(); 
+    }
   }, [id]);
 
   const selectedBaggage = baggageOptions.find(
@@ -50,7 +67,9 @@ export default function TripDetails() {
   );
 
   const BaggageIcon = selectedBaggage?.icon;
-  const imageToShow = prevImage || user?.profileImage;
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   if (loading) return TripDetailSkeleton();
   if (error) return <ErrorMessage message={error} />;
@@ -175,11 +194,21 @@ export default function TripDetails() {
               type="button"
               variant="primary"
               className="px-12 py-2 mb-4 text-sm font-inter font-medium"
+              onClick={handleOpenModal}
             >
               Solicitar reservar
             </Button>
           </div>
         </div>
+
+        <BookingModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          trip={trip}
+          // 👈 Pasamos el contexto de búsqueda para la precarga
+          initialOriginId={searchContext?.originId} 
+          initialDestinationId={searchContext?.destinationId} 
+        />
       </div>
     );
   }
