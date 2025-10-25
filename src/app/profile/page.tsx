@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
 import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
 import { ProfileOptions } from '@/components/profile/ProfileOptions';
@@ -8,8 +7,7 @@ import { Alert } from '@/components/ui/ux/Alert';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
-  const [role, setRole] = useState<'pasajero' | 'conductor'>('pasajero');
+  const { user, logout, profileViewRole, setProfileViewRole } = useAuth();
   const router = useRouter();
 
   if (!user) return null;
@@ -22,9 +20,9 @@ export default function ProfilePage() {
 
   return (
     <>
-      <RoleSwithcer role={role} onChange={setRole} />
+      <RoleSwithcer role={profileViewRole} onChange={setProfileViewRole} />
 
-      {role === 'conductor' && !isDriver ? (
+      {profileViewRole === 'conductor' && !isDriver ? (
         <div className="mt-6 space-y-3">
           <Alert type="info" message="Aún no estás registrado como conductor.">
             <button
@@ -37,7 +35,7 @@ export default function ProfilePage() {
         </div>
       ) : (
         <ProfileOptions
-          role={role === 'conductor' ? 'driver' : 'passenger'}
+          role={profileViewRole === 'conductor' ? 'driver' : 'passenger'}
           logout={logout}
         />
       )}
