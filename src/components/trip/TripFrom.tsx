@@ -700,7 +700,7 @@ export function TripForm() {
           }
         }}
         onConfirm={()=>router.push('/profile')} 
-        type="success"
+        type="info"
         title="¡Listo! Tu viaje ha sido publicado"
         description="Podrás ver y gestionar tus viajes en la sección 'Mis Viajes'."
         confirmText="Mis viajes"

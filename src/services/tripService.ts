@@ -1,7 +1,7 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
 
 import { VoidResponse } from "@/types/response/response";
-import { SearchResponse } from "@/types/response/trip";
+import { SearchResponse, TripResponse, VerifyCreatorResponse } from "@/types/response/trip";
 import { Trip, TripFilters } from "@/types/trip";
 
 
@@ -75,6 +75,26 @@ export async function getTripDetails(tripId: number): Promise<TripResponse>{
   }
 }
 
+export async function verifyIfUserIsCreator(tripId: number): Promise<VerifyCreatorResponse>{
+  try{
+    const res = await fetch(`/api/trip/verify-creator/${tripId}`,{
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+
+   const response: VerifyCreatorResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
 
 export const validateTripDateTime = async(startDateTime: string) =>{
   try {

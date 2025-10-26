@@ -9,6 +9,9 @@ import { updateUser } from '@/services/userService';
 import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { Toast } from '../ui/ux/Toast';
+import { useRef } from 'react'; 
+
 
 /**
  * Interfaz para representar los campos editables del usuario en el formulario.
@@ -47,11 +50,12 @@ const genders = [
  * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
  */
 export default function ProfileDetails() {
-  const { user, fetchUser, setPrevImage } = useAuth();
+  const { user, fetchUser, setPrevImage, prevImage } = useAuth();
   const router = useRouter();
 
   const [genderLabel, setGenderLabel] = useState<string>("");
 
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [editableUser, setEditableUser] = useState<EditableUser>({
@@ -67,12 +71,14 @@ export default function ProfileDetails() {
     });
   
   const [isChanged, setIsChanged] = useState(false);
-
+  const prevImageBackupRef = useRef<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   useEffect(() => {
     return () => {
-      if (selectedFile) URL.revokeObjectURL(selectedFile.name);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
-  }, [selectedFile]);
+  }, [previewUrl]);
+
 
 
   useEffect(() => {
@@ -101,9 +107,12 @@ export default function ProfileDetails() {
     const changed =
       editableUser.email !== (user.email ?? '') ||
       editableUser.gender !== (user.gender ?? '') ||
-      editableUser.phone !== (user.phone ?? '') 
-    setIsChanged(changed);
-  }, [editableUser, user]);
+      editableUser.phone !== (user.phone ?? '') ||
+      selectedFile !== null || 
+      (editableUser.profileImage && !user.profileImage); 
+
+    setIsChanged(changed ? true : false);
+  }, [editableUser, user, selectedFile]);
 
   const handleChange = (field: keyof typeof editableUser, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
@@ -113,9 +122,6 @@ export default function ProfileDetails() {
     try {
       if (!user) return;
 
-      if (selectedFile) {
-        await uploadUserFile(user.id!, selectedFile);
-      }
 
       const genderValue: ProfileData['gender'] = 
         genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
@@ -128,9 +134,17 @@ export default function ProfileDetails() {
       });
 
       if (response.state === 'ERROR') {
-        console.error(response.messages[0]);
+        setToast({ message: response.messages?.[0] ?? 'Error al guardar el perfil', type: 'error' });
+
+        setPrevImage(prevImageBackupRef.current ?? null);
         return;
       }
+      prevImageBackupRef.current = null;
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      setSelectedFile(null);
 
       await fetchUser();
       router.push('/profile');
@@ -145,17 +159,48 @@ export default function ProfileDetails() {
   const handleEditPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const maxSize = 2 * 1024 * 1024;
+
+    if (!validTypes.includes(file.type)) {
+      setToast({ message: 'Formato no válido.', type: 'error' });
+      return;
+    }
+
+    if (file.size > maxSize) {
+          setToast({ message: 'La imagen es demasiado pesada. Máx. 2 MB.', type: 'error' });
+      return;
+    }
+
+    if (file.type.startsWith('video/')) {
+      setToast({ message: 'No se permiten videos.', type: 'error' });
+      return;
+    }
+
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl); // limpia si ya había una preview
+    }
+
     setSelectedFile(file);
 
-    // preview para el header
-    const previewUrl = URL.createObjectURL(file);
-    setPrevImage(previewUrl);
+    // crear nueva URL de preview
+    const newPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(newPreviewUrl);
+
+    // guardar la imagen anterior (por si hay que restaurar)
+    prevImageBackupRef.current = prevImage ?? user?.profileImage ?? null;
+
+    // mostrar preview temporal en el header
+    setPrevImage(newPreviewUrl);
+
   };
 
   const handleDeletePhoto = async () => {
     if (!user) return;
 
     try {
+      prevImageBackupRef.current = prevImage ?? user.profileImage ?? null;
       await deleteUserFile(user.id!)
 
       const genderValue: ProfileData['gender'] = 
@@ -168,7 +213,9 @@ export default function ProfileDetails() {
       });
 
       if (response.state === 'ERROR') {
-        console.error(response.messages[0]);
+        setToast({ message: response.messages?.[0] ?? 'Error al quitar la foto', type: 'error' });
+        setPrevImage(prevImageBackupRef.current ?? null); 
+        prevImageBackupRef.current = null;
         return;
       }
 
@@ -309,6 +356,14 @@ export default function ProfileDetails() {
           Guardar cambios
         </button>
       </form>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

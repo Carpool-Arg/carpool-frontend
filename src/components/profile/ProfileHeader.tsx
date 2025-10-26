@@ -16,7 +16,7 @@ export function ProfileHeader() {
           alt="Foto de perfil"
           width={96}
           height={96}
-          className="rounded-full object-cover"
+          className="rounded-full object-cover w-32 h-32"
         />
       ) : (
         <div className="w-24 h-24 rounded-full bg-gray-1 flex items-center justify-center">

@@ -2,7 +2,7 @@
 
 import { TripDetailsData } from "@/types/response/trip";
 import { useEffect, useState } from "react";
-import { getTripDetails } from "@/services/tripService";
+import { getTripDetails, verifyIfUserIsCreator } from "@/services/tripService";
 import { baggageOptions } from "../trip/TripFrom";
 import { useAuth } from "@/contexts/authContext";
 import { TripRoutePreview } from "../trip/TripRoutePreview";
@@ -14,14 +14,12 @@ import { ErrorMessage } from "../ui/Error";
 import { formatPrice } from "@/utils/number";
 import { useParams } from "next/navigation";
 import { Button } from "../ui/ux/Button";
-import Separator from "../ui/ux/Separator";
 
 
 export default function TripDetails() {
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, prevImage } = useAuth();
   const { id } = useParams();
 
   useEffect(() => {
@@ -29,11 +27,19 @@ export default function TripDetails() {
       try {
         setLoading(true);
         if(!id) return
-        const res = await getTripDetails(Number(id));
-        if (res.state === "ERROR") {
-          setError(res.messages[0]);
+        
+        const creatorRes = await verifyIfUserIsCreator(Number(id));
+
+        if (creatorRes.data) {
+          setError("No puedes ver los detalles de este viaje.");
+          return;
+        }else{
+          const res = await getTripDetails(Number(id));
+          if (res.state === "ERROR") {
+            setError(res.messages[0]);
+          }
+          setTrip(res.data);
         }
-        setTrip(res.data);
       } catch (err: any) {
         setError(err.message);
         console.error(err);
@@ -50,14 +56,13 @@ export default function TripDetails() {
   );
 
   const BaggageIcon = selectedBaggage?.icon;
-  const imageToShow = prevImage || user?.profileImage;
 
   if (loading) return TripDetailSkeleton();
   if (error) return <ErrorMessage message={error} />;
 
   if (trip) {
     return (
-      <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen mt-2">
         {/* Contenedor en grid */}
         <div
           className="w-full h-full grid grid-cols-9 gap-2"
@@ -85,7 +90,7 @@ export default function TripDetails() {
             <h2 className="text-gray-7 mt-3 ml-3 dark:text-gray-1 font-medium text-xl">
               Recorrido
             </h2>
-            <div className="ml-3 mt-2 items-center h-full">
+            <div className="ml-3 mt-2 flex items-center justify-center h-full">
               <TripRoutePreview
                 tripStops={trip.tripStops.sort((a, b) => a.order - b.order)}
                 withTimes = {true}

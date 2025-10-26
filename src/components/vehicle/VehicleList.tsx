@@ -63,6 +63,12 @@ export function VehicleList() {
         Array.from({ length: Math.max(vehicles.length, 3) }).map((_, idx) => (
           <VehicleCardSkeleton key={idx} />
         ))
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
+      ) : vehicles.length === 0 ? (
+        <p className="text-center">
+          Todavía no tenés vehículos registrados.
+        </p>
       ) : (
         vehicles.map((vehicle) => (
           <VehicleCard

@@ -16,6 +16,8 @@ export interface TripDetailsData{
 }
 
 export type TripResponse = BaseResponse<TripDetailsData>
+
+export type VerifyCreatorResponse = BaseResponse<{ isCreator: boolean }>
   
 export interface SearchData {
     driverInfo: {

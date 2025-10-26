@@ -327,9 +327,8 @@ export function RegisterForm() {
 
           <p className="w-full text-center text-sm text-gray-4 font-inter">
             Al hacer clic en continuar, aceptás nuestros
-            <a href="/files/terminos_y_condiciones.pdf" download className="mx-1 text-dark-2 dark:text-gray-1 font-medium">Términos de Servicio</a>
-            y
-            <a href="/privacy" className="text-dark-2 dark:text-gray-1 font-medium ml-1">Política de Privacidad</a>.
+            <a href="/files/terminos_y_condiciones.pdf" download className="mx-1 text-dark-2 dark:text-gray-1 font-medium underline">Términos de Servicio
+            y Política de Privacidad.</a>
           </p>
         </form>
       )}
