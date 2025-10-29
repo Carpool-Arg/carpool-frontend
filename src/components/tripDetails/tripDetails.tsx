@@ -15,7 +15,10 @@ import { formatPrice } from "@/utils/number";
 import { useParams } from "next/navigation";
 import { Button } from "../ui/ux/Button";
 import Separator from "../ui/ux/Separator";
-import BookingModal from "../reservation/ReservationModal";
+import ReservationModal from "../reservation/ReservationModal";
+import { Reservation } from "@/types/reservation";
+import { newReservation } from "@/services/reservationService";
+import { AlertDialog } from "../ui/ux/AlertDialog";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -27,6 +30,11 @@ export default function TripDetails() {
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
 
+  const [alertData, setAlertData] = useState<{
+    type: "success" | "error" | null;
+    title?: string;
+    description?: string;
+  } | null>(null);
 
   useEffect(() => {
     const loadTrip = async () => {
@@ -61,6 +69,34 @@ export default function TripDetails() {
       loadSearchContext(); 
     }
   }, [id]);
+
+  const handleReservationSubmit = async (payload: Reservation) => {
+    try {
+      const result = await newReservation(payload);
+      console.log(result)
+      if (result?.state === "OK") {
+        // éxito
+        setAlertData({
+          type: "success",
+          title: "¡Reserva creada con éxito!",
+          description: "El conductor recibirá tu solicitud en breve.",
+        });
+        setIsModalOpen(false);
+      } else {
+        // error de backend
+        setAlertData({
+          type: "error",
+          title: "Error al crear la reserva",
+          description: result?.messages?.[0] ?? "Ocurrió un error inesperado.",
+        });
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error al crear la reserva:", error);
+      alert("Ocurrió un error al crear la reserva. Revisa la consola.");
+    }
+  };
+
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
@@ -201,14 +237,25 @@ export default function TripDetails() {
           </div>
         </div>
 
-        <BookingModal
+        <ReservationModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           trip={trip}
-          // 👈 Pasamos el contexto de búsqueda para la precarga
           initialOriginId={searchContext?.originId} 
           initialDestinationId={searchContext?.destinationId} 
+          onSubmit={handleReservationSubmit}
         />
+
+        {alertData && (
+          <AlertDialog
+            isOpen={!!alertData}
+            onClose={() => setAlertData(null)}
+            type={alertData.type === "success" ? "success" : "error"}
+            title={alertData.title}
+            description={alertData.description}
+            confirmText="Aceptar"
+          />
+        )}
       </div>
     );
   }

@@ -23,8 +23,6 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
-
   console.log('originSearch',originSearch)
   console.log('destinationSearch',destinationSearch)
 
@@ -65,6 +63,8 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
       if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
   }, [feed.length]);
+
+  //if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
 
   // --- Lista visible según el contador ---
   const visibleTrips = feed.slice(0, visibleCount);

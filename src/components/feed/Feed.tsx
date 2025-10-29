@@ -16,7 +16,7 @@ export default function Feed() {
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
-
+  console.log('feed',feed)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -68,7 +68,7 @@ export default function Feed() {
   }
   return (
     <div className="w-full">
-      <TripList feed={feed!} currentCity={currentCity?.name}/>
+      <TripList feed={feed ?? []} currentCity={currentCity?.name}/>
     </div>
   );
 }
