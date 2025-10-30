@@ -10,13 +10,31 @@ import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";
 import { SearchData } from "@/types/response/trip";
 import { normalizeText } from "@/utils/string";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Feed() {
   const { city, detectUserCity } = useGeocode();
+  const { isTokenRegistered, registerNotifications } = useNotifications();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
-  console.log('feed',feed)
+
+  useEffect(() => {
+    const initNotifications = async () => {
+      // Solo ejecutar si no está registrado y no se ha intentado antes
+      if (!isTokenRegistered ) {
+        try {
+          await registerNotifications();
+          console.log('✅ Notificaciones registradas exitosamente');
+        } catch (error) {
+          console.warn('⚠️ No se pudieron registrar las notificaciones:', error);
+        }
+      }
+    };
+
+    initNotifications();
+  }, [isTokenRegistered, registerNotifications]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
