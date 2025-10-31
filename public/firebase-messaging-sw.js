@@ -5,14 +5,23 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 // Inicializar Firebase en el Service Worker
-// ⚠️ IMPORTANTE: Reemplaza estos valores con los de tu proyecto Firebase
+
 const firebaseConfig = {
-  apiKey: 'AIzaSyCjk0C-SPasb8ffO4BxCvDrf8huw1g1U-U',
-  authDomain: 'carpool-app-2025.firebaseapp.com',
-  projectId: 'carpool-app-2025',
-  storageBucket: 'carpool-app-2025.firebasestorage.app',
-  messagingSenderId: '1065960729977',
-  appId: '1:1065960729977:web:eaf3eace7f098206b953a8',
+
+  apiKey: "AIzaSyCjk0C-SPasb8ffO4BxCvDrf8huw1g1U-U",
+
+  authDomain: "carpool-app-2025.firebaseapp.com",
+
+  projectId: "carpool-app-2025",
+
+  storageBucket: "carpool-app-2025.firebasestorage.app",
+
+  messagingSenderId: "1065960729977",
+
+  appId: "1:1065960729977:web:eaf3eace7f098206b953a8",
+
+  measurementId: "G-RT4MT19BY7"
+
 };
 
 try {
