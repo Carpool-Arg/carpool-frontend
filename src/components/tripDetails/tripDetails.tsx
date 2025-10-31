@@ -12,7 +12,7 @@ import { capitalizeWords } from "@/utils/string";
 import { TripDetailSkeleton } from "./TripDetailSkeleton";
 import { ErrorMessage } from "../ui/Error";
 import { formatPrice } from "@/utils/number";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "../ui/ux/Button";
 import Separator from "../ui/ux/Separator";
 import ReservationModal from "../reservation/ReservationModal";
@@ -29,6 +29,8 @@ export default function TripDetails() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
+
+  const router = useRouter();
 
   const [alertData, setAlertData] = useState<{
     type: "success" | "error" | null;
@@ -73,7 +75,6 @@ export default function TripDetails() {
   const handleReservationSubmit = async (payload: Reservation) => {
     try {
       const result = await newReservation(payload);
-      console.log(result)
       if (result?.state === "OK") {
         // éxito
         setAlertData({
@@ -254,6 +255,7 @@ export default function TripDetails() {
             title={alertData.title}
             description={alertData.description}
             confirmText="Aceptar"
+            onConfirm={()=>router.back()}
           />
         )}
       </div>

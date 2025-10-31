@@ -1,4 +1,3 @@
-// hooks/useNotifications.ts
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -28,29 +27,27 @@ export function useNotifications(): UseNotificationsReturn {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/firebase-messaging-sw.js')
-        .then((registration) => {
-          console.log('Service Worker registrado:', registration);
-        })
-        .catch((error) => {
-          console.error('Error al registrar Service Worker:', error);
-        });
     }
 
     // Escuchar mensajes en primer plano
     onMessageListener()
-      .then((payload: any) => {
-        console.log('Notificación recibida:', payload);
-        
-        // Mostrar notificación local si la app está en primer plano
-        if (Notification.permission === 'granted') {
-          new Notification(payload.notification?.title || 'Nueva notificación', {
-            body: payload.notification?.body || '',
-            icon: payload.notification?.icon || '/icon-192x192.png',
-            data: payload.data,
-          });
-        }
-      })
-      .catch((err) => console.log('Error al escuchar mensajes:', err));
+    .then((payload: any) => {
+      const notif = payload.notification;
+
+      // Si no hay contenido de notificación, no mostrar nada
+      if (!notif || (!notif.title && !notif.body)) return;
+
+
+      if (Notification.permission === 'granted') {
+        new Notification(notif.title, {
+          body: notif.body,
+          icon: notif.icon || '/icons/icon-192.png',
+          data: payload.data,
+        });
+      }
+    })
+    .catch((err) => console.error('Error al escuchar mensajes:', err));
+
 
     // Verificar si ya está registrado (guardado en localStorage)
     const storedToken = localStorage.getItem('fcm_token_registered');
@@ -62,7 +59,7 @@ export function useNotifications(): UseNotificationsReturn {
   const registerNotifications = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const token = await getFCMToken();
       
@@ -85,7 +82,6 @@ export function useNotifications(): UseNotificationsReturn {
       });
 
       if (response.ok) {
-        console.log('Token registrado exitosamente');
         setIsTokenRegistered(true);
         setPermission('granted');
         localStorage.setItem('fcm_token_registered', token);

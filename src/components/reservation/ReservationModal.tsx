@@ -1,9 +1,13 @@
-// components/trip-details/ReservationModal.tsx
 "use client";
 
+import { Reservation } from "@/types/reservation";
 import { TripDetailsData } from "@/types/response/trip";
-import { useState, useEffect } from "react";
+import { TripStop } from "@/types/tripStop";
+import { formatPrice } from "@/utils/number";
 import { capitalize, capitalizeWords } from "@/utils/string";
+import { Circle, Square, TriangleAlert } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -11,15 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
-import { newReservation } from "@/services/reservationService";
-import { TripStop } from "@/types/tripStop";
-import { AlertCircle, Circle, Square, TriangleAlert } from "lucide-react";
-import { formatPrice } from "@/utils/number";
-import Separator from "../ui/ux/Separator";
 import { Button } from "../ui/ux/Button";
-import { Reservation } from "@/types/reservation";
+import Separator from "../ui/ux/Separator";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -38,16 +36,12 @@ export default function ReservationModal({
   initialDestinationId,
   onSubmit
 }: ReservationModalProps) {
-  // --- 1. Estado del Formulario ---
   const [selectedOrigin, setSelectedOrigin] = useState<TripStop | undefined>(undefined);
   const [selectedDestination, setSelectedDestination] = useState< TripStop | undefined>(undefined);
-  console.log(selectedOrigin, selectedDestination)
-  const [hasBaggage, setHasBaggage] = useState(false);
-  const [seats, setSeats] = useState(1);
+  const [hasBaggage, setHasBaggage] = useState<boolean>(false);
 
-  console.log(initialOriginId, initialDestinationId)
 
-  // --- 2. Lógica de Precarga ---
+  // Precarga de ciudades buscadas
   useEffect(() => {
     if (isOpen && trip.tripStops?.length > 0) {
       const preselectOrigin = trip.tripStops.find(
@@ -56,9 +50,6 @@ export default function ReservationModal({
       const preselectDestination = trip.tripStops.find(
         (stop) => stop.cityId === initialDestinationId
       );
-
-      console.log('preselectOrigin', preselectOrigin)
-      console.log('preselectDestination', preselectDestination)
 
       if (preselectOrigin) {
         setSelectedOrigin(preselectOrigin);
@@ -78,22 +69,18 @@ export default function ReservationModal({
     }
   }, [isOpen, trip.tripStops, initialOriginId, initialDestinationId]);
 
-  if (!isOpen) return null;
-
-  const totalCost = trip.seatPrice * seats;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
       trip: trip.id,
       startCity: selectedOrigin?.cityId ?? 0,
       destinationCity: selectedDestination?.cityId ?? 0,
-      seats,
       baggage: hasBaggage,
     };
     onSubmit(payload);
   };
 
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
@@ -196,7 +183,7 @@ export default function ReservationModal({
           
           <div className="mb-4">
             <div className="flex items-center space-x-2 mb-3">
-              <Label htmlFor="luggage-switch" className="text-sm font-medium font-inter">
+              <Label htmlFor="luggage-switch" className="font-medium ">
                 ¿Llevas equipaje?
               </Label>
               <Switch 
@@ -216,14 +203,26 @@ export default function ReservationModal({
             
           </div>
 
-          <div className="flex items-end justify-between font-inter">
-            <h2 className="font-medium">Precio <span className="text-sm">(por pasajero)</span></h2>
-            <p className="text-2xl font-outfit font-semibold">${formatPrice(trip.seatPrice)}</p>
+          <div className="flex items-end justify-between gap-2">
+            <h2 className="font-medium whitespace-nowrap font-outfit">
+              Precio <span className="text-sm">(por pasajero)</span>
+            </h2>
+            
+            {/* Línea flexible */}
+
+            <Separator marginY="my-2" color="bg-gray-2"/>
+            
+            
+            <p className="text-2xl font-outfit font-semibold">
+              ${formatPrice(trip.seatPrice)}
+            </p>
           </div>
-          <Separator marginY="my-2" color="bg-gray-2"/>
+
+          
+
 
           {/* Botones de Acción */}
-          <div className="flex justify-end space-x-3 mt-4">
+          <div className="flex justify-end space-x-3 mt-6">
             <Button
               type="button"
               variant="outline"
@@ -237,7 +236,7 @@ export default function ReservationModal({
               type="submit"
               variant="primary"
               className="disabled:opacity-50"
-              disabled={!selectedOrigin?.cityId || !selectedDestination?.cityId || seats === 0}
+              disabled={!selectedOrigin?.cityId || !selectedDestination?.cityId}
             >
               Reservar
             </Button>

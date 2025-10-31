@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Trip from "./Trip";
 import { useRouter } from "next/navigation";
+import { MapPin, MapPinOff } from "lucide-react";
 
 interface TripListProps {
   feed: SearchData[] | [];
@@ -22,10 +23,6 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
   const router = useRouter();
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  console.log('originSearch',originSearch)
-  console.log('destinationSearch',destinationSearch)
-
 
   const handleTripClick = (tripId: number) => {
     // 1. Crear el objeto de contexto con los IDs de la búsqueda
@@ -64,7 +61,22 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
     };
   }, [feed.length]);
 
-  //if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
+  if (feed.length === 0) {
+    return (
+      <div className="flex items-center justify-center p-4 gap-4 ">
+        <div className="bg-dark-1 rounded-lg p-3">
+          <MapPinOff size={32} />
+        </div>
+        <div className="border border-gray-6 h-12"></div>
+        <div >
+          <p className="text-lg font-medium leading-tight">No hay viajes disponibles</p>
+          <p className="text-sm text-gray-9 font-inter" >
+            Intenta ajustar tus filtros o volver más tarde.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // --- Lista visible según el contador ---
   const visibleTrips = feed.slice(0, visibleCount);

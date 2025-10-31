@@ -14,7 +14,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
 // Inicializar Firebase solo una vez
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
@@ -23,10 +22,7 @@ export const getFCMToken = async (): Promise<string | null> => {
   try {
     // Verificar si el navegador soporta notificaciones
     const messagingSupported = await isSupported();
-    if (!messagingSupported) {
-      console.log('Este navegador no soporta notificaciones push');
-      return null;
-    }
+    if (!messagingSupported) return null;
 
     const messaging = getMessaging(app);
     
@@ -39,10 +35,8 @@ export const getFCMToken = async (): Promise<string | null> => {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
       });
       
-      console.log('Token FCM obtenido:', token);
       return token;
     } else {
-      console.log('Permiso de notificaciones denegado');
       return null;
     }
   } catch (error) {
@@ -58,7 +52,6 @@ export const onMessageListener = () =>
       if (supported) {
         const messaging = getMessaging(app);
         onMessage(messaging, (payload) => {
-          console.log('Mensaje recibido en primer plano:', payload);
           resolve(payload);
         });
       }

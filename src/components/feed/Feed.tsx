@@ -25,9 +25,8 @@ export default function Feed() {
       if (!isTokenRegistered ) {
         try {
           await registerNotifications();
-          console.log('✅ Notificaciones registradas exitosamente');
         } catch (error) {
-          console.warn('⚠️ No se pudieron registrar las notificaciones:', error);
+          console.warn('No se pudieron registrar las notificaciones:', error);
         }
       }
     };
@@ -84,6 +83,8 @@ export default function Feed() {
       </div>
     );
   }
+
+
   return (
     <div className="w-full">
       <TripList feed={feed ?? []} currentCity={currentCity?.name}/>
