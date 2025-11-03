@@ -14,32 +14,34 @@ import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Feed() {
   const { city, detectUserCity } = useGeocode();
-  const { isTokenRegistered, registerNotifications } = useNotifications();
+  const { isTokenRegistered, registerNotifications, requestPermission } = useNotifications();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const initNotifications = async () => {
-      // Solo ejecutar si no está registrado y no se ha intentado antes
-      if (!isTokenRegistered ) {
-        try {
-          await registerNotifications();
-        } catch (error) {
-          console.warn('No se pudieron registrar las notificaciones:', error);
+      if (typeof window === "undefined" || !("Notification" in window)) return;
+      try {
+        console.log(Notification.permission)
+        // Pedir permiso usando el hook
+        if (Notification.permission === 'default') {
+          await requestPermission();
         }
+      } catch (error) {
+        console.warn('No se pudieron registrar las notificaciones:', error);
       }
     };
 
     initNotifications();
-  }, [isTokenRegistered, registerNotifications]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         await detectUserCity();
 
-        // Esperar hasta 2 segundos para que city se actualice (opcional)
+        // Esperar hasta 2 segundos para que city se actualice
         const timeout = Date.now() + 2000;
         while (!city && Date.now() < timeout) {
           await new Promise((r) => setTimeout(r, 100));
@@ -56,7 +58,7 @@ export default function Feed() {
             responseFeed = await getInitialFeed(responseCity.data.id);
           }
         } else {
-          // Si no hay city => pedir feed sin parámetro (el backend decidirá la ciudad)
+          // Si no hay city pedir feed sin parámetro (el backend decide la ciudad)
           responseFeed = await getInitialFeed();
         }
 

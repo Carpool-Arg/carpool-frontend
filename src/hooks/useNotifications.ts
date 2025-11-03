@@ -4,25 +4,20 @@ import { useEffect, useState, useCallback } from 'react';
 import { getFCMToken, onMessageListener } from '../lib/firebase/firebase';
 
 interface UseNotificationsReturn {
-  permission: NotificationPermission;
   isTokenRegistered: boolean;
   isLoading: boolean;
   registerNotifications: () => Promise<void>;
+  requestPermission: () => Promise<NotificationPermission>;
   error: string | null;
 }
 
 export function useNotifications(): UseNotificationsReturn {
-  const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isTokenRegistered, setIsTokenRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Verificar permiso inicial
-    if ('Notification' in window) {
-      setPermission(Notification.permission);
-    }
-
+    
     // Registrar el service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -62,7 +57,7 @@ export function useNotifications(): UseNotificationsReturn {
     
     try {
       const token = await getFCMToken();
-      
+      console.log('token',token)
       if (!token) {
         setError('No se pudo obtener el token. Verifica los permisos.');
         setIsLoading(false);
@@ -81,15 +76,12 @@ export function useNotifications(): UseNotificationsReturn {
         credentials: 'include',
       });
 
-      if (response.ok) {
-        setIsTokenRegistered(true);
-        setPermission('granted');
-        localStorage.setItem('fcm_token_registered', token);
-      } else {
+      console.log('response',response)
+      if (!response.ok) {
         const errorText = await response.text();
         setError(`Error al registrar token: ${errorText}`);
         console.error('Error al registrar token:', errorText);
-      }
+      } 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
       setError(`Error al registrar notificaciones: ${errorMessage}`);
@@ -99,8 +91,23 @@ export function useNotifications(): UseNotificationsReturn {
     }
   }, []);
 
+
+  const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
+    if (!('Notification' in window)) {
+      console.warn('Las notificaciones no son compatibles con este navegador.');
+      return 'denied';
+    }
+
+    const result = await Notification.requestPermission();
+    if (result === 'granted') {
+      await registerNotifications();
+    }
+    
+    return result;
+  }, [registerNotifications]);
+
   return {
-    permission,
+    requestPermission,
     isTokenRegistered,
     isLoading,
     registerNotifications,
