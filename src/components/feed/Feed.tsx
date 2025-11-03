@@ -12,6 +12,8 @@ import { SearchData } from "@/types/response/trip";
 import { normalizeText } from "@/utils/string";
 import { useNotifications } from "@/hooks/useNotifications";
 
+let initialized = false;
+
 export default function Feed() {
   const { city, detectUserCity } = useGeocode();
   const { requestPermission } = useNotifications();
@@ -19,10 +21,9 @@ export default function Feed() {
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
 
-  const [initialized, setInitialized] = useState(false);
-
   useEffect(() => {
     if (initialized) return;
+    initialized = true;
     const initNotifications = async () => {
       if (typeof window === "undefined" || !("Notification" in window)) return;
       try {
@@ -30,7 +31,7 @@ export default function Feed() {
         if (Notification.permission === 'default') {
           await requestPermission();
         }
-        setInitialized(true);
+
       } catch (error) {
         console.warn('No se pudieron registrar las notificaciones:', error);
       }
