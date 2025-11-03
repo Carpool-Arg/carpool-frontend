@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { getFCMToken, onMessageListener } from '../lib/firebase/firebase';
 
 interface UseNotificationsReturn {
-  isTokenRegistered: boolean;
   isLoading: boolean;
   registerNotifications: () => Promise<void>;
   requestPermission: () => Promise<NotificationPermission>;
@@ -12,12 +11,10 @@ interface UseNotificationsReturn {
 }
 
 export function useNotifications(): UseNotificationsReturn {
-  const [isTokenRegistered, setIsTokenRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    
     // Registrar el service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -43,21 +40,16 @@ export function useNotifications(): UseNotificationsReturn {
     })
     .catch((err) => console.error('Error al escuchar mensajes:', err));
 
-
-    // Verificar si ya está registrado (guardado en localStorage)
-    const storedToken = localStorage.getItem('fcm_token_registered');
-    if (storedToken) {
-      setIsTokenRegistered(true);
-    }
   }, []);
 
   const registerNotifications = useCallback(async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
     setIsLoading(true);
     setError(null);
     
     try {
       const token = await getFCMToken();
-      console.log('token',token)
+
       if (!token) {
         setError('No se pudo obtener el token. Verifica los permisos.');
         setIsLoading(false);
@@ -76,7 +68,6 @@ export function useNotifications(): UseNotificationsReturn {
         credentials: 'include',
       });
 
-      console.log('response',response)
       if (!response.ok) {
         const errorText = await response.text();
         setError(`Error al registrar token: ${errorText}`);
@@ -108,7 +99,6 @@ export function useNotifications(): UseNotificationsReturn {
 
   return {
     requestPermission,
-    isTokenRegistered,
     isLoading,
     registerNotifications,
     error,

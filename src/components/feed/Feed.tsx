@@ -14,27 +14,29 @@ import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Feed() {
   const { city, detectUserCity } = useGeocode();
-  const { isTokenRegistered, registerNotifications, requestPermission } = useNotifications();
+  const { requestPermission } = useNotifications();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
 
+  const [initialized, setInitialized] = useState(false);
+
   useEffect(() => {
+    if (initialized) return;
     const initNotifications = async () => {
       if (typeof window === "undefined" || !("Notification" in window)) return;
       try {
-        console.log(Notification.permission)
         // Pedir permiso usando el hook
         if (Notification.permission === 'default') {
           await requestPermission();
         }
+        setInitialized(true);
       } catch (error) {
         console.warn('No se pudieron registrar las notificaciones:', error);
       }
     };
-
     initNotifications();
-  }, []);
+  }, [initialized]);
 
   useEffect(() => {
     const fetchData = async () => {
