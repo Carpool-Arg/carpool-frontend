@@ -105,11 +105,11 @@ export default function ReservationModal({
 
                 {trip.tripStops?.length > 0 && (
                   <Select
-                    key={`origin-${selectedOrigin?.tripStopId ?? "none"}`}
-                    value={selectedOrigin ? String(selectedOrigin.tripStopId) : ""}
+                    key={`origin-${selectedOrigin?.cityId ?? "none"}`}
+                    value={selectedOrigin ? String(selectedOrigin.cityId) : ""}
                     onValueChange={(value) => {
                       const selected = trip.tripStops.find(
-                        (stop) => stop.tripStopId === Number(value)
+                        (stop) => stop.cityId === Number(value)
                       );
                       setSelectedOrigin(selected || undefined);
                     }}
@@ -120,7 +120,7 @@ export default function ReservationModal({
                     </SelectTrigger>
                     <SelectContent>
                       {trip.tripStops.map((stop) => (
-                        <SelectItem key={stop.order} value={String(stop.tripStopId)}>
+                        <SelectItem key={stop.order} value={String(stop.cityId)}>
                           {capitalizeWords(stop.cityName)}
                         </SelectItem>
                       ))}
@@ -137,11 +137,11 @@ export default function ReservationModal({
                 </label>
                 {trip.tripStops?.length > 0 && (
                   <Select
-                    key={`destination-${selectedDestination?.tripStopId ?? "none"}`}
-                    value={selectedDestination ? String(selectedDestination.tripStopId) : ""}
+                    key={`destination-${selectedDestination?.cityId ?? "none"}`}
+                    value={selectedDestination ? String(selectedDestination.cityId) : ""}
                     onValueChange={(value) => {
                       const selected = trip.tripStops.find(
-                        (stop) => stop.tripStopId === Number(value)
+                        (stop) => stop.cityId === Number(value)
                       );
                       setSelectedDestination(selected || undefined);
                     }}
@@ -166,9 +166,9 @@ export default function ReservationModal({
                         })
                         .map((stop) => (
                           <SelectItem
-                            key={stop.tripStopId}
-                            value={String(stop.tripStopId)}
-                            disabled={stop.tripStopId === selectedOrigin?.tripStopId}
+                            key={stop.order}
+                            value={String(stop.cityId)}
+                            disabled={stop.cityId === selectedOrigin?.cityId}
                           >
                             {capitalizeWords(stop.cityName)}
                           </SelectItem>
