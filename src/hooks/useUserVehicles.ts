@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/authContext';
 import { getVehicles } from '@/services/vehicleService';
+import { Vehicle } from '@/types/vehicle';
 
 export function useUserVehicles() {
   const { user, loading: authLoading } = useAuth();
@@ -17,8 +18,13 @@ export function useUserVehicles() {
       try {
         const data = await getVehicles(); // pasamos el id del usuario
         setVehicles(data.data??[]);
-      } catch (err) {
-        setError('Error al cargar los vehículos');
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Ocurrió un error inesperado.");
+        }
+        console.error(error);
       } finally {
         setLoading(false);
       }

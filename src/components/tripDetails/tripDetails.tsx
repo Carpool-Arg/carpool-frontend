@@ -4,7 +4,6 @@ import { TripDetailsData } from "@/types/response/trip";
 import { useEffect, useState } from "react";
 import { getTripDetails } from "@/services/tripService";
 import { baggageOptions } from "../trip/TripFrom";
-import { useAuth } from "@/contexts/authContext";
 import { TripRoutePreview } from "../trip/TripRoutePreview";
 import { Rating } from "react-simple-star-rating";
 import Image from "next/image";
@@ -13,15 +12,14 @@ import { TripDetailSkeleton } from "./TripDetailSkeleton";
 import { ErrorMessage } from "../ui/Error";
 import { formatPrice } from "@/utils/number";
 import { useParams } from "next/navigation";
-import { Button } from "../ui/ux/Button";
-import Separator from "../ui/ux/Separator";
+import { Button } from "../ux/Button";
+import Separator from "../ux/Separator";
 
 
 export default function TripDetails() {
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, prevImage } = useAuth();
   const { id } = useParams();
 
   useEffect(() => {
@@ -34,9 +32,13 @@ export default function TripDetails() {
           setError(res.messages[0]);
         }
         setTrip(res.data);
-      } catch (err: any) {
-        setError(err.message);
-        console.error(err);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Ocurrió un error inesperado.");
+        }
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -50,7 +52,6 @@ export default function TripDetails() {
   );
 
   const BaggageIcon = selectedBaggage?.icon;
-  const imageToShow = prevImage || user?.profileImage;
 
   if (loading) return TripDetailSkeleton();
   if (error) return <ErrorMessage message={error} />;
@@ -105,9 +106,11 @@ export default function TripDetails() {
               Datos del conductor
             </h2>
             <div className="flex gap-5 items-center">
-              <img
-                src={trip.driverInfo.profileImageUrl || '/default-profile.png'}
+              <Image
+                src={trip.driverInfo.profileImageUrl || "/default-profile.png"}
                 alt="Foto de perfil"
+                width={60} // o el tamaño real que querés renderizar
+                height={60}
                 className="w-15 h-15 rounded-full object-cover"
               />
               <div className="text-gray-7 dark:text-gray-1 flex flex-col">

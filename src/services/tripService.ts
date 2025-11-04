@@ -1,7 +1,7 @@
 import { fetchWithRefresh } from "@/lib/http/authInterceptor";
 
 import { VoidResponse } from "@/types/response/response";
-import { SearchResponse } from "@/types/response/trip";
+import { SearchResponse, TripResponse } from "@/types/response/trip";
 import { Trip, TripFilters } from "@/types/trip";
 
 

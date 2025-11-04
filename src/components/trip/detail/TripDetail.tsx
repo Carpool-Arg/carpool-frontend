@@ -1,8 +1,9 @@
-import Separator from "@/components/ui/ux/Separator";
-import { baggageOptions } from "../TripFrom";
-import { Circle, CircleSmall, Plus, Square, UsersRound } from "lucide-react";
-import Image from "next/image";
+import Separator from "@/components/ux/Separator";
 import { capitalizeWords } from "@/utils/string";
+import { Circle, Plus, Square, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { baggageOptions } from "../TripFrom";
+import { Vehicle } from "@/types/vehicle";
 
 interface TripDetailProps {
   origin: string;

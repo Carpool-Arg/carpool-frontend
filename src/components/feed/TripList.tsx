@@ -18,8 +18,6 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  if (!feed || feed.length === 0) return <p>No hay viajes disponibles.</p>;
-
   let lastDate = "";
 
   // --- Observer para detectar el scroll ---
@@ -38,10 +36,12 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
       }
     );
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    const currentRef = loaderRef.current;
+
+    if (currentRef) observer.observe(currentRef);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentRef) observer.unobserve(currentRef);
     };
   }, [feed.length]);
 

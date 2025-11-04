@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/ux/Button';
-import { Input } from '@/components/ui/ux/Input'; 
+import { Button } from '@/components/ux/Button';
+import { Input } from '@/components/ux/Input'; 
 import { useAuth } from '@/contexts/authContext';
 import { ProfileData } from '@/schemas/profile/profileSchema';
 import { deleteUserFile, uploadUserFile } from '@/services/mediaService';

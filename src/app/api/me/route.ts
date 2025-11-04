@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
-import { fetchWithRefresh } from '@/lib/http/authInterceptor';
 import { UserDetailsResponse } from '@/types/response/user';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;

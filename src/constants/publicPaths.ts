@@ -60,7 +60,7 @@ export const HEADER_TITLES: Record<string, string> = {
 };
 
 export const getMatchingHeaderPath = (pathname: string) => {
-  return HEADER_PATHS
-    .sort((a, b) => b.length - a.length) // rutas más específicas primero
+  return [...HEADER_PATHS]
+    .sort((a, b) => b.length - a.length)
     .find(route => pathname.startsWith(route));
 };

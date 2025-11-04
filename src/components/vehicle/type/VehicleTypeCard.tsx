@@ -1,3 +1,4 @@
+import { VehicleType } from "@/types/vehicleType";
 import Image from "next/image";
 
 

@@ -1,19 +1,20 @@
 'use client'
 
 import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
-import { Button } from "../ui/ux/Button";
+import { Button } from "../ux/Button";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/ux/Input";
+import { Input } from "../ux/Input";
 import { ResetPasswordData, resetPasswordSchema } from "@/schemas/password/passwordSchema";
+import { VoidResponse } from "@/types/response/response";
 
 type PasswordFormdProps = {
   title: string;
   successTitle: string;
   successMessage: string;
-  onSubmit: (data: ResetPasswordData & { token: string }) => Promise<any>;
+  onSubmit: (data: ResetPasswordData & { token: string }) => Promise<VoidResponse>;
 }
 
 export default function PasswordForm({

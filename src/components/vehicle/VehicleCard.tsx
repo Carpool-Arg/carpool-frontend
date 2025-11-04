@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
+import { Vehicle } from "@/types/vehicle";
 
 interface VehicleCardProps {
   vehicle: Vehicle;

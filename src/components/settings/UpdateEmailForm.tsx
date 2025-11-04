@@ -1,20 +1,16 @@
 
 'use client'
 
-import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
-import { Button } from "../ui/ux/Button";
-import { useState } from "react";
+import { UpdateEmailData, updateEmailSchema } from "@/schemas/email/emailSchema";
+import { updateEmail } from "@/services/userService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/ux/Input";
-import { updateEmail, updatePassword } from "@/services/userService";
-import { emailSchema, UpdateEmailData, updateEmailSchema } from "@/schemas/email/emailSchema";
+import { Button } from "../ux/Button";
+import { Input } from "../ux/Input";
 
 
 export default function UpdateEmailForm(){
-    const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-    const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
 
     const emailForm = useForm<UpdateEmailData>({
@@ -24,17 +20,13 @@ export default function UpdateEmailForm(){
     });
 
     const handleSubmit = async (data: UpdateEmailData) => {
-        setStatus("loading");
-        setMessage(null);
-
         try {
             await updateEmail(data);
             router.push("/email-change?email="+data.email);
         } catch (error: unknown) {
             let message = "Error desconocido";
             if (error instanceof Error) message = error.message;
-            setStatus("error");
-            setMessage(message || "Ocurrió un problema.");
+            console.error(message)
         }
     };
 

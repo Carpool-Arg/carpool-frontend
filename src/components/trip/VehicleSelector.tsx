@@ -1,6 +1,7 @@
 import { useUserVehicles } from "@/hooks/useUserVehicles";
 import { VehicleCard } from "../vehicle/VehicleCard";
 import { VehicleCardSkeleton } from "../vehicle/VehicleSkeleton";
+import { Vehicle } from "@/types/vehicle";
 
 
 export function VehicleSelector({ 

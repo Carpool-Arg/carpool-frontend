@@ -6,7 +6,7 @@ import { getTrips } from "@/services/tripService";
 import { SearchData } from "@/types/response/trip";
 import { TripFilters } from "@/types/trip";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TripSkeleton from "../feed/TripSkeleton";
 import CitySearch from "./CitySearch";
 import FilterBar from "./FilterBar";
@@ -43,15 +43,14 @@ export default function Results() {
   : 10000;
   const [orderByDriverRating, setOrderByDriverRating] = useState(orderByRatingParam === "true");
 
-  // --- Función para fetch ---
-  const fetchTrips = async () => {
+  const fetchTrips = useCallback(async () => {
     if (!originCityId || !destinationCityId) return;
 
     setLoading(true);
     try {
       const filters: TripFilters = {
-        originCityId: originCityId,
-        destinationCityId: destinationCityId,
+        originCityId,
+        destinationCityId,
       };
       if (departureDate) filters.departureDate = departureDate;
       if (minPrice !== undefined) filters.minPrice = minPrice;
@@ -71,12 +70,19 @@ export default function Results() {
         setFeed([]);
       }
     } catch (error) {
-      console.error('Error fetching feed:', error);
+      console.error("Error fetching feed:", error);
       setFeed([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    originCityId,
+    destinationCityId,
+    departureDate,
+    minPrice,
+    maxPrice,
+    orderByDriverRating,
+  ]);
 
   // --- Cada vez que cambien filtros o ciudades ---
   useEffect(() => {
@@ -93,7 +99,7 @@ export default function Results() {
     if (orderByDriverRating) queryParams.set("orderByDriverRating", orderByDriverRating.toString());
 
     router.replace(`/search/results?${queryParams.toString()}`);
-  }, [originCityId, destinationCityId, departureDate, minPrice, maxPrice, orderByDriverRating, router]);
+  }, [originCityId, destinationCityId, departureDate, minPrice, maxPrice, orderByDriverRating, router,fetchTrips]);
 
   // --- Limpiar filtros ---
   const clearFilters = () => {
@@ -109,7 +115,6 @@ export default function Results() {
     router.replace(`/search/results?${queryParams.toString()}`);
   };
 
-  // --- Skeleton loading ---
   if (loading) {
     return (
       <div className="flex flex-col gap-4 w-full">

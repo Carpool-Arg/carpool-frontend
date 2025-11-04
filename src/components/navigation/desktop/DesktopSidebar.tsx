@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut, PlusCircle } from 'lucide-react';
+import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut, PlusCircle, LucideIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 import { useState } from 'react';
-import { AlertDialog } from '@/components/ui/ux/AlertDialog';
+import { AlertDialog } from '@/components/ux/AlertDialog';
 
 type Role = 'user' | 'driver' | null;
 
-const navItems: { href: string; icon: any; label: string; role: Role }[] = [
+const navItems: { href: string; icon: LucideIcon; label: string; role: Role }[] = [
   { href: '/home', icon: Home, label: 'Inicio', role: 'user' },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user' },
   { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje', role: 'driver' },

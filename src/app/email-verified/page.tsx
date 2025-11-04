@@ -1,6 +1,11 @@
 
-import EmailVerifiedPage from './EmailVerified';
+import { Suspense } from "react";
+import EmailVerifiedPage from "./EmailVerified";
 
 export default function Page() {
-  return <EmailVerifiedPage  />;
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <EmailVerifiedPage />
+    </Suspense>
+  );
 }

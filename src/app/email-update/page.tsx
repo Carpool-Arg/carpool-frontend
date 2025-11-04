@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import EmailUpdatePage from "./EmailUpdate";
 
 export default function EmailUpdate() {
     return(
-        <div>
+        <Suspense fallback={<div>Cargando...</div>}>
             <EmailUpdatePage/>
-        </div>
+        </Suspense>
         
     ) 
 }

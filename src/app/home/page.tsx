@@ -1,6 +1,6 @@
 import Feed from "@/components/feed/Feed";
 import SearchBar from "@/components/feed/SearchBar";
-import { Clock, Search } from "lucide-react";
+import { Clock } from "lucide-react";
 
 
 export default function HomePage() {

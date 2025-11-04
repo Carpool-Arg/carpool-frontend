@@ -1,5 +1,5 @@
 'use client'
-import { Button } from "@/components/ui/ux/Button";
+import { Button } from "@/components/ux/Button";
 import { useRouter } from "next/navigation";
 
 export default function HomeButtons({ mode = "desktop" }) {

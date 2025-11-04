@@ -1,18 +1,15 @@
 'use client'
 
 import { ChangePasswordData, changePasswordSchema } from "@/schemas/password/passwordSchema";
-import { Button } from "../ui/ux/Button";
-import { useState } from "react";
+import { Button } from "../ux/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter} from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/ux/Input";
+import { Input } from "../ux/Input";
 import { updatePassword } from "@/services/userService";
 
 
 export default function UpdatePasswordForm(){
-    const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-    const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
 
     const passwordsForm = useForm<ChangePasswordData>({
@@ -22,16 +19,13 @@ export default function UpdatePasswordForm(){
     });
 
     const handleSubmit = async (data: ChangePasswordData) => {
-        setStatus("loading");
-        setMessage(null);
         try {
             await updatePassword(data);
             router.push("/settings");
         } catch (error: unknown) {
             let message = "Error desconocido";
             if (error instanceof Error) message = error.message;
-            setStatus("error");
-            setMessage(message || "Ocurrió un problema.");
+            console.error(message)
         }
     };
 

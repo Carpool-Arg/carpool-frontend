@@ -1,4 +1,4 @@
-import { PUT } from "@/app/api/users/update-profile/route";
+
 import { UpdateEmailData } from "@/schemas/email/emailSchema";
 import { ChangePasswordData, ResetPasswordData } from "@/schemas/password/passwordSchema";
 import { ProfileData } from "@/schemas/profile/profileSchema";

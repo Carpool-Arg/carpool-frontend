@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Button } from "../ui/ux/Button"
+import { Button } from "../ux/Button"
 import { Clock, Mail, XCircle } from "lucide-react"
-import { Input } from "../ui/ux/Input"
+import { Input } from "../ux/Input"
 
 
 type MailFormProps = {
@@ -61,8 +61,9 @@ export default function MailForm({
             return prev - 1
           })
         }, 1000)
-      } catch (err) {
+      } catch (error: unknown) {
         setError('Hubo un problema al reenviar el correo.')
+        console.error(error)
       } finally {
         setLoading(false)
       }

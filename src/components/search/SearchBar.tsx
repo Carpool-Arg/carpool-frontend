@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar1, Plus, Search } from "lucide-react";
+import { Calendar1, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

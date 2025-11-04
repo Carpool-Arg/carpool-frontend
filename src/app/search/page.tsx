@@ -1,9 +1,6 @@
 import SearchBar from "@/components/search/SearchBar";
-import { Calendar, Plus } from "lucide-react";
 
 export default function SearchPage() {
-
-
   return (
     <main className="max-w-lg mx-auto">
       <h1 className="text-xl md:mt-8">Planificá tu recorrido</h1>

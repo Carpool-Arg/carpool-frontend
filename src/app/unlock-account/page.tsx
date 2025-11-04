@@ -1,15 +1,11 @@
-'use client'
+import { Suspense } from "react";
+import UnlockAccountPage from "./UnlockAccount";
 
-import PasswordForm from "@/components/password/PasswordForm";
-import { unlockAccount } from "@/services/userService";
 
-export default function PasswordChangePage(){
+export default function Page(){
     return (
-        <PasswordForm
-            title="Recuperá tu cuenta"
-            successTitle="¡Cuenta recuperada correctamente!"
-            successMessage="Se actualizó tu contraseña, puedes volver a intentar iniciar sesión"
-            onSubmit={unlockAccount}
-        />
+         <Suspense fallback={<div>Cargando...</div>}>
+            <UnlockAccountPage/>
+        </Suspense>
     );
 }
