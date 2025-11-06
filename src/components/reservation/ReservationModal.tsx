@@ -40,6 +40,7 @@ export default function ReservationModal({
   const [selectedDestination, setSelectedDestination] = useState< TripStop | undefined>(undefined);
   const [hasBaggage, setHasBaggage] = useState<boolean>(false);
 
+  const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
 
   // Precarga de ciudades buscadas
   useEffect(() => {
@@ -119,7 +120,9 @@ export default function ReservationModal({
                       <SelectValue placeholder="Selecciona tu Origen" />
                     </SelectTrigger>
                     <SelectContent>
-                      {trip.tripStops.map((stop) => (
+                      {trip.tripStops
+                      .filter((stop) => !stop.destination)
+                      .map((stop) => (
                         <SelectItem key={stop.order} value={String(stop.cityId)}>
                           {capitalizeWords(stop.cityName)}
                         </SelectItem>
@@ -196,7 +199,10 @@ export default function ReservationModal({
             {hasBaggage && (
               <div className="flex items-center gap-1 bg-gray-8 p-2 rounded-lg">
                 <TriangleAlert size={14}/>
-                <p className="text-sm font-inter">Recuerda que el equipaje para este viaje debe ser <span className="font-medium">{capitalize(trip.availableBaggage)}</span>.</p>
+                <p className="text-sm font-inter">Recuerda que el límite de equipaje para este viaje es 
+                  <span className="font-medium"> {capitalize(trip.availableBaggage)}</span>
+                  .
+                  </p>
               </div>
             )}
             
@@ -208,16 +214,19 @@ export default function ReservationModal({
               Precio <span className="text-sm">(por pasajero)</span>
             </h2>
             
-            {/* Línea flexible */}
-
-            <Separator marginY="my-2" color="bg-gray-2"/>
             
+            {isIntermediate ? (
+              <p className="text-2xl font-outfit font-semibold">
+                $ <span className="text-xl">a definir</span>
+              </p>
+            ) : (
+              <p className="text-2xl font-outfit font-semibold">
+                ${formatPrice(trip.seatPrice)}
+              </p>
+            )}
             
-            <p className="text-2xl font-outfit font-semibold">
-              ${formatPrice(trip.seatPrice)}
-            </p>
           </div>
-
+          <Separator color="bg-gray-2" marginY="my-1"/>
           
 
 
