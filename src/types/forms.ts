@@ -21,4 +21,16 @@ export interface CompleteRegistrationFormData {
   lastname: string;
   dni: string;
   phone: string;
+  gender: string;
+  birthDate:string;
+}
+
+export interface vehicleFormData {
+  domain?: string;
+  brand: string;
+  model: string;
+  year: number;
+  color: string;
+  availableSeats: number;
+  vehicleTypeId: number;
 }

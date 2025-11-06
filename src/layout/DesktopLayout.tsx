@@ -2,22 +2,40 @@
 
 import DesktopSidebar from "@/components/navigation/desktop/DesktopSidebar";
 import { AppHeader } from "@/components/navigation/mobile/AppHeader";
+import { HEADER_PATHS } from "@/constants/publicPaths";
 import { usePathname } from "next/navigation";
 
 export default function DesktopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/register-driver'];
+  const allowedPaths = [
+    '/home', '/search', '/notifications', '/profile', 
+    '/register-driver', '/settings','/vehicle', '/vehicle/new', '/trip/new','/trip/details'
+  ];
   const shouldShowSidebar = allowedPaths.some((path) => pathname.startsWith(path));
+  const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
 
-  // Definí en qué rutas querés que aparezca el header
-  const showHeader = [ '/profile/details', '/settings'].includes(pathname);
+  const logoHeaderPaths = [ "/home", "/search"];
+  const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
+  
+
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       {shouldShowSidebar && <DesktopSidebar />}
-      <main className={`${shouldShowSidebar ? 'ml-64' : ''} flex-1`}>
-        {showHeader && <AppHeader showBack />}
+
+    <main
+      className={`${shouldShowSidebar ? 'ml-64' : ''} flex-1`}
+      style={{
+        height: showHeader ? 'calc(100vh - 2.5rem)' : '100vh', // h-10 = 2.5rem
+      }}
+    >
+      {showHeader && (
+        <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
+      )}
+      <div className="h-full overflow-auto">
         {children}
-      </main>
+      </div>
+    </main>
+
     </div>
   );
 }

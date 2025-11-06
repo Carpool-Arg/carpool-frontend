@@ -1,5 +1,6 @@
 // schemas/registerSchema.ts
 import { z } from 'zod'
+import { passwordSchema } from '../password/passwordSchema'
 
 // Esquema base para el paso 1 (sin refine)
 const registerStep1BaseSchema = z.object({
@@ -15,11 +16,8 @@ const registerStep1BaseSchema = z.object({
     .min(1, 'El email es obligatorio')
     .max(75, 'El email de usuario no puede tener más de 75 caracteres'),
   
-  password: z
-    .string()
-    .min(6, 'La contraseña debe tener al menos 6 caracteres')
-    .max(255, 'La contraseña no puede tener más de 255 caracteres')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
+  // Reutilizamos el schema para las contraseñas creado en otro schema
+  password: passwordSchema,
   
   confirmPassword: z
     .string()
@@ -54,6 +52,21 @@ export const registerStep2Schema = z.object({
     .min(7, 'El DNI debe tener al menos 7 dígitos')
     .max(50, 'El DNI no puede tener más de 50 dígitos')
     .regex(/^\d+$/, 'El DNI solo puede contener números'),
+    
+  birthDate: z
+    .string()
+    .refine((date) => {
+      const parsed = Date.parse(date);
+      if (isNaN(parsed)) return false;
+      const birth = new Date(parsed);
+      const today = new Date();
+      const age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      const dayDiff = today.getDate() - birth.getDate();
+      return age > 18 || (age === 18 && (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)));
+    }, {
+      message: 'Debes ser mayor de 18 años',
+    }),
   
   phone: z
     .string()
@@ -61,7 +74,7 @@ export const registerStep2Schema = z.object({
     .max(25, 'El teléfono no puede tener más de 25 dígitos')
     .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.'),
   
-  gender: z.enum(['Masculino', 'Femenino', 'No especificado']).optional(),
+  gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
 })
 
 // Esquema completo para el registro (usando el esquema base sin refine)

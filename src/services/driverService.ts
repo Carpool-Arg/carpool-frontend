@@ -1,11 +1,17 @@
 import { DriverData } from "@/schemas/auth/driverSchema";
 import { DriverResponse } from "@/types/response/driver";
 
-export async function registerDriver( data: DriverData): Promise<{
-  success:boolean;
-  data?:DriverResponse;
-  message?: string}
-> {
+/**
+ * Registra un usuario como conductor (driver).
+ * 
+ * Envía los datos del conductor al endpoint correspondiente y devuelve 
+ * la respuesta estándar `DriverResponse`. En caso de error de red o
+ * excepción, retorna un `DriverResponse` con `data` en `null` y `state` como "ERROR".
+ *
+ * @param {DriverData} data - Datos del conductor
+ * @returns {Promise<DriverResponse>} - Respuesta del backend
+ */
+export async function registerDriver( data: DriverData): Promise<DriverResponse> {
   try {
     const body = { ...data};
 
@@ -16,19 +22,17 @@ export async function registerDriver( data: DriverData): Promise<{
       credentials: 'include', 
     });
 
-    if (!res.ok){
-      throw new Error('Datos inválidos')
-    }
-
     const response: DriverResponse = await res.json();
 
-    return {success: true, data: response}
+    if (!res.ok){
+      throw new Error(response.messages?.[0])
+    }
+
+    return response;
   } catch (error: unknown) {
     let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
 
-    if (error instanceof Error) {
-      message = error.message;
-    }
-    return {success: false, message: message}
+    return { data: null, messages: [message], state: "ERROR" };
   }
 }

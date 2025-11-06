@@ -22,7 +22,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Columna derecha con scroll (ajustada para que no se superponga con la izquierda fija) */}
-      <div className="w-full md:ml-[50%] md:w-1/2 flex items-center justify-center px-6 md:px-[156px] py-12 min-h-screen overflow-y-auto">
+      <div className="w-full md:ml-[50%] md:w-1/2 flex items-center justify-center md:px-[156px] py-12 min-h-screen overflow-y-auto">
         <div className="w-full max-w-lg">
           {/* Logo solo en mobile */}
           <div className="md:hidden mb-6 flex justify-center">
@@ -32,6 +32,7 @@ export default function RegisterPage() {
               width={220}
               height={50}
               priority
+              className="dark:invert"
             />
           </div>
 

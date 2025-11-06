@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
 import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
-import { RoleOptions } from '@/components/profile/RoleOptions';
-import { Alert } from '@/components/ui/Alert';
+import { ProfileOptions } from '@/components/profile/ProfileOptions';
+import { Alert } from '@/components/ux/Alert';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
@@ -36,7 +36,7 @@ export default function ProfilePage() {
           </Alert>
         </div>
       ) : (
-        <RoleOptions
+        <ProfileOptions
           role={role === 'conductor' ? 'driver' : 'passenger'}
           logout={logout}
         />

@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  id: number | null;
   username: string;
   name: string;
   lastname: string;
@@ -9,5 +9,6 @@ export interface User {
   phone: string;
   status?: string;
   profileImage?: string;
-  roles: Array<'user' | 'driver'>;
+  roles: Array<'user' | 'driver' | null>;
+  birthDate: string
 }

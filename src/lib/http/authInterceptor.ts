@@ -31,7 +31,7 @@ class TokenManager {
 
   private async performRefresh(): Promise<string | null> {
     try {
-      const refresh = await fetch('/api/refresh', {
+      const refresh = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include', // lee refreshToken de cookie
       });
@@ -42,7 +42,6 @@ class TokenManager {
       }
 
       const data = await refresh.json();
-      console.log('data desde el interceptor',data)
       // Suponemos que el backend devuelve { accessToken, refreshToken }
       return data.data?.accessToken;
     } catch (error) {

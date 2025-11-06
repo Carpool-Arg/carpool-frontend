@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from "react"
-import { Button } from "../ui/Button"
-import { Input } from "../ui/Input"
+import { Button } from "../ux/Button"
+import { Input } from "../ux/Input"
 import { useForm } from "react-hook-form"
 import { LoginData, loginSchema } from "@/schemas/auth/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
-import Spinner from "../ui/Spinner"
+import Spinner from "../ux/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
-import { Alert } from "../ui/Alert"
+import { Alert } from "../ux/Alert"
 import Link from "next/link"
 
 
@@ -31,6 +31,7 @@ export function LoginForm() {
       password: ''
     }
   })
+  
 
   const onSubmit = async (data: LoginData) => {
     setError(null);
@@ -87,7 +88,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-6 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full md:py-6">
       <div className="flex flex-col items-center text-center mb-2">
         <h1 className="font-outfit text-lg font-semibold">Inicia sesión en tu cuenta</h1>
         <p className="font-inter font-regular text-sm">Ingresa email y contraseña para iniciar sesión</p>
@@ -113,7 +114,7 @@ export function LoginForm() {
         />
       </div>
 
-      <Link href="/send-change-password-email" className="flex justify-start hover:underline cursor-pointer">
+      <Link href="/password-change/send-email" className="flex justify-start hover:underline cursor-pointer text-sm font-inter">
         ¿Olvidaste tu contraseña?
       </Link>
 
@@ -121,7 +122,7 @@ export function LoginForm() {
         variant="primary"
         type="submit"
         disabled={loading}
-        className="w-full mb-2"
+        className="w-full"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -133,22 +134,30 @@ export function LoginForm() {
         )}
       </Button>
 
+      <p className="flex justify-start items-center text-sm gap-1 font-inter">
+        ¿No tenes cuenta?
+        <Link href="/register" className="flex justify-start hover:underline cursor-pointer font-medium">
+         Registrate acá
+        </Link>
+      </p>
+      
+
       <div className="flex items-center gap-2 text-gray-500">
         <div className="flex-1 h-px bg-gray-4/50" />
         <span className="text-sm font-inter">o</span>
         <div className="flex-1 h-px bg-gray-4/50" />
       </div>
       
-      
-      
       <GoogleLogin
         onSuccess={onGoogleSuccess}
         onError={onGoogleError}
         text="continue_with"
-        shape="rectangular"
+        shape="pill"
         size="large"
         width="100%"
       />
+
+      
      
 
       <p className="w-full text-center text-sm text-gray-4 font-inter">

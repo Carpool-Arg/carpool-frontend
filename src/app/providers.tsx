@@ -5,7 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { AuthProvider, useAuth } from '@/contexts/authContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { usePathname } from 'next/navigation';
-import Spinner from '@/components/ui/Spinner';
+import Spinner from '@/components/ux/Spinner';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 interface AppProvidersProps {
@@ -13,26 +13,22 @@ interface AppProvidersProps {
 }
 
 function GlobalLoadingOverlay() {
-  const { loading, initialized } = useAuth();
-  const pathname = usePathname();
+  const { loading } = useAuth();
 
-  // Rutas públicas donde no necesitamos mostrar loader
-  const publicRoutes = ['/login', '/register', '/complete-profile'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const loadingRoutes = ['/login', '/register', '/complete-registration']; // solo donde querés el overlay
+  const pathname = usePathname() || '';
 
-  // Solo mostrar spinner durante la inicialización en rutas protegidas
-  // o durante operaciones de login/logout
-  const shouldShowSpinner = (!initialized && !isPublicRoute) || loading;
+  const shouldShowSpinner = loadingRoutes.some(route => pathname.startsWith(route)) && ( loading);
 
   if (!shouldShowSpinner) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/75">
-      <Spinner/>
+      <Spinner />
       <span>Cargando...</span>
     </div>
   );
-}
+  }
 
 export function AppProviders({ children }: AppProvidersProps) {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;

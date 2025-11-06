@@ -1,3 +1,4 @@
+import { VoidResponse } from "@/types/response/response";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -6,44 +7,41 @@ export async function POST(req: NextRequest){
     try{
         const body = await req.json();
         const token = body.token;
+
         if (!token) {
-            return new NextResponse(
-                JSON.stringify({ message: "Falta el parámetro 'token'" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            )
+            return NextResponse.json(
+                { data: null, messages:'Token inválido', state: "ERROR" },
+                { status: 400} 
+            );
         }
 
-        const response = await fetch(`${apiUrl}/password-change`,{
+        const res = await fetch(`${apiUrl}/password-change`,{
             method: "POST",
             headers:{"Content-Type": "application/json"},
             body: JSON.stringify(body),
         })
 
-        const data = await response.json();
+        const response: VoidResponse = await res.json();
 
-        if(!response.ok || data.state !=='OK'){
+        if (!res.ok || response.state === "ERROR") {
+            const messages =
+                response.messages?.length > 0
+                ? response.messages
+                : ["Error desconocido"];
             return NextResponse.json(
-                {
-                    success:false,
-                    message: data.messages?.[0] || 'Error al cambiar la contraseña',
-                },
-                {status: response.status}
-            )
+                { data: null, messages, state: "ERROR" },
+                { status: res.ok ? 200 : res.status } 
+            );
         }
 
-        return new NextResponse(JSON.stringify(data),{
-            status: response.status,
-            headers: {"Content-Type":"application/json"}
-        })
+        return NextResponse.json(response, { status: res.status });
     } catch (error: unknown) {
-        let message = "Error desconocido";
-        if (error instanceof Error) message = error.message;
-        return new NextResponse(
-        JSON.stringify({ message: "Error en la API de password change", detail: message }),
-        {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        }
+        // Manejo de errores inesperados
+        const message = error instanceof Error ? error.message : "Error desconocido";
+        const errorRes = NextResponse.json(
+            { data: null, messages: [message], state: "ERROR" },
+            { status: 500 }
         );
+        return errorRes;
     }
 }
