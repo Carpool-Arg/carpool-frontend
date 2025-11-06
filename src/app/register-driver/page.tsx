@@ -1,11 +1,6 @@
 import { DriverForm } from "@/components/driver/DriverForm";
-import { ChevronLeft } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 
 export default function RegisterDriverPage() {
-
-
   return (
     <main className="p-8 flex justify-center h-screen">
         <div className="flex flex-col items-start w-full max-w-lg space-y-6">

@@ -1,15 +1,11 @@
-'use client'
+import { Suspense } from "react";
+import PasswordChangePage from "./PasswordChange";
 
-import PasswordForm from "@/components/password/PasswordForm";
-import { resetPassword } from "@/services/userService";
+export default function page() {
+    return (
+        <Suspense fallback={<div>Cargando...</div>}>
+            <PasswordChangePage />
+        </Suspense>
+    );
 
-export default function PasswordChangePage(){
-    return(
-        <PasswordForm
-            title="Cambiá tu contraseña"
-            successTitle="¡Contraseña actualizada!"
-            successMessage="Se actualizó tu contraseña, puedes volver a intentar iniciar sesión"
-            onSubmit={resetPassword} 
-        />
-    )
 }

@@ -1,11 +1,10 @@
 "use client";
 
-import { X, Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Separator from "../ui/ux/Separator";
-import { useRouter } from "next/navigation";
-import { deleteVehicle } from "@/services/vehicleService";
+import Separator from "../ux/Separator";
+import { Vehicle } from "@/types/vehicle";
 
 interface Props {
   vehicle: Vehicle;

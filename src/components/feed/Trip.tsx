@@ -6,7 +6,7 @@ import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
 import { ChevronRight, Info, Star } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
-import Separator from "../ui/ux/Separator";
+import Separator from "../ux/Separator";
 import RouteLine from "./RouteLine";
 
 

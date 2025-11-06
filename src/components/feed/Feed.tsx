@@ -76,7 +76,7 @@ export default function Feed() {
     };
 
     fetchData();
-  }, [city]);
+  }, [city, detectUserCity]);
 
 
   if (loading) {

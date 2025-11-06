@@ -14,7 +14,8 @@ export default function EmailChangePage() {
             await updateEmail({email: email || "" });
         } catch (error: unknown) {
             let message = "Error desconocido";
-            if (error instanceof Error) message = error.message;        
+            if (error instanceof Error) message = error.message;
+            console.error("Error al reenviar correo:", message);        
         }
     };
 

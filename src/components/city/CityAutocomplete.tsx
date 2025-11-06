@@ -37,7 +37,7 @@ export function CityAutocomplete({
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [typing, setTyping] = useState(false);
+
 
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export function CityAutocomplete({
       }
     };
     loadCity();
-  }, [value]);
+  }, [value,selected]);
 
   useEffect(() => {
     if (selected) {
@@ -92,7 +92,7 @@ export function CityAutocomplete({
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, excludeIds, selected]);
 
   const handleSelect = (city: City) => {
     setQuery(city.name);
@@ -123,7 +123,6 @@ export function CityAutocomplete({
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              setTyping(true); // ahora el usuario está escribiendo
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}

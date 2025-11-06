@@ -1,6 +1,6 @@
+import { useAuth } from '@/contexts/authContext';
 import { User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/authContext';
 
 
 export function ProfileHeader() {
@@ -11,13 +11,13 @@ export function ProfileHeader() {
   return (
     <div className="flex flex-col items-center gap-2">
       {imageToShow ? (
-        <img
-          src={imageToShow}
-          alt="Foto de perfil"
-          width={96}
-          height={96}
-          className="rounded-full object-cover"
-        />
+          <Image
+            src={imageToShow}
+            alt="Foto de perfil"
+            width={96}
+            height={96}
+            className="rounded-full object-cover"
+          />
       ) : (
         <div className="w-24 h-24 rounded-full bg-gray-1 flex items-center justify-center">
           <UserIcon className="w-12 h-12 text-gray-2/50" />

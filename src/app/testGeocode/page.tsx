@@ -1,15 +1,12 @@
 "use client";
-import { useState } from "react";
 import { useGeocode } from "@/hooks/useGeocode";
 import { fetchCityByName } from "@/services/cityService";
-import { useAuth } from "@/contexts/authContext";
-import { CityResponse } from "@/types/response/city";
 import { City } from "@/types/city";
+import { useState } from "react";
 
 export default function LocationWidget() {
   const { city, coords, loading, error, detectUserCity, getCoordsFromCity } = useGeocode();
   const [input, setInput] = useState("");
-  const {fetchUser} = useAuth();
   const [cityBd, setCityBd] = useState<City>();
 
   const handleSearch = () => {
@@ -21,13 +18,11 @@ export default function LocationWidget() {
 
 const onSubmit = async (name:string) => {
   try {
-    console.log("Buscando ciudad en BD:", name)
     const response = await fetchCityByName(name)
-    console.log("Respuesta BD:", response)
     if (response.state === "ERROR") {
       return
     }
-    let data = response?.data
+    const data = response?.data
     if(data){
       setCityBd(data)
     }

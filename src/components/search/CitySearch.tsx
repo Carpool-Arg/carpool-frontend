@@ -2,7 +2,7 @@
 
 import { CityAutocomplete } from "../city/CityAutocomplete";
 import { Circle, Square } from "lucide-react"; 
-import Separator from "../ui/ux/Separator";
+import Separator from "../ux/Separator";
 import { useState } from "react";
 
 interface CitySearchProps {

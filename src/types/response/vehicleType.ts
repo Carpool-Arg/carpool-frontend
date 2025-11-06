@@ -1,3 +1,4 @@
+import { VehicleType } from "../vehicleType";
 import { BaseResponse } from "./response";
 
 

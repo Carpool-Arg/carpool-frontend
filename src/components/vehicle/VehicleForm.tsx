@@ -3,14 +3,14 @@ import {RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleSte
 import{ zodResolver } from "@hookform/resolvers/zod"
 
 import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/ux/Input"
-import { Button } from "@/components/ui/ux/Button"
+import { Input } from "@/components/ux/Input"
+import { Button } from "@/components/ux/Button"
 import { VehicleTypeList } from "./type/VehicleTypeList"
-import { registerVehicle, updateVehicle } from "@/services/vehicleService"
+import { registerVehicle } from "@/services/vehicleService"
 import { useRouter } from "next/navigation"
 import { vehicleFormData } from "@/types/forms"
 import { useState } from "react"
-import { Alert } from "../ui/ux/Alert"
+import { Alert } from "../ux/Alert"
 
 export function VehicleForm() {
   const [step, setStep] = useState(1)
@@ -67,7 +67,12 @@ export function VehicleForm() {
 
       router.push("/vehicle");
     } catch (error: unknown) {
-      setError("Error al guardar el vehículo");
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
     }

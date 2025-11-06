@@ -1,8 +1,7 @@
 import { TripStop } from "@/types/tripStop";
 import { formatDateTime, formatTime } from "@/utils/dateTime";
 import { capitalizeWords } from "@/utils/string";
-import { Circle, CircleSmall, Square } from "lucide-react";
-import { GoDotFill } from "react-icons/go";
+import { Circle, Square } from "lucide-react";
 
 interface TripRoutePreviewProps {
   tripStops: TripStop[];

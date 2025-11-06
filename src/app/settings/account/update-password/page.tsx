@@ -1,5 +1,4 @@
 import UpdatePasswordForm from "@/components/settings/UpdatePasswordForm";
-import { SecurityOptions } from "@/components/settings/SecurityOptions";
 
 
 export default function UpdatePasswordPage() {

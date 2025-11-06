@@ -1,8 +1,8 @@
 'use client'
 
 import { CityAutocomplete } from "@/components/city/CityAutocomplete"
-import { Button } from "@/components/ui/ux/Button"
-import { Toast } from "@/components/ui/ux/Toast"
+import { Button } from "@/components/ux/Button"
+import { Toast } from "@/components/ux/Toast"
 import { City } from "@/types/city"
 import { TripStop, TripStopExtended } from "@/types/tripStop"
 import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core"

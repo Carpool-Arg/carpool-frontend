@@ -1,19 +1,20 @@
 'use client'
 
-import {CompleteRegisterVehicleData, completeRegisterVehicleSchema } from "@/schemas/vehicle/vehicleSchema"
+import { Input } from "@/components/ux/Input"
+import { CompleteRegisterVehicleData, completeRegisterVehicleSchema } from "@/schemas/vehicle/vehicleSchema"
+import { deleteVehicle, updateVehicle } from "@/services/vehicleService"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/ux/Input"
 import { VehicleTypeList } from "./type/VehicleTypeList"
-import { deleteVehicle, updateVehicle } from "@/services/vehicleService"
-import { useRouter } from "next/navigation"
 
 import { vehicleFormData } from "@/types/forms"
-import { Button } from "../ui/ux/Button"
-import { CircleX, X } from "lucide-react"
-import { AlertDialog } from "../ui/ux/AlertDialog"
-import { Alert } from "../ui/ux/Alert"
+import { CircleX } from "lucide-react"
+import { Alert } from "../ux/Alert"
+import { AlertDialog } from "../ux/AlertDialog"
+import { Button } from "../ux/Button"
+import { Vehicle } from "@/types/vehicle"
 
 export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -107,8 +108,13 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
       // Actualizar los valores iniciales después de guardar exitosamente
       setInitialValues(values);
       router.push("/vehicle");
-    } catch (err) {
-      setError("Error al actualizar el vehículo");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -124,8 +130,13 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
       } else {
         setError(response.messages?.[0] || "Error al eliminar el vehículo");
       }
-    } catch (err) {
-      setError("Error al eliminar el vehículo");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
       setIsDialogOpen(false);

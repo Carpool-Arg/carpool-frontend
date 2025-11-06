@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/ux/Button";
+import { Button } from "@/components/ux/Button";
 
 export default function EmailVerifiedPage() {
   const searchParams = useSearchParams();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Star, DollarSign, Calendar1, BrushCleaning } from "lucide-react";
 import {
   Dialog,
@@ -12,8 +12,9 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
+
 import { parseLocalDate } from "@/utils/date";
+import { Input } from "../ui/Input";
 
 function formatShortDate(date: Date) {
   return new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" })
@@ -80,8 +81,8 @@ export default function FilterBar({
   };
 
   const handleApplyPrice = () => {
-    onMinPriceChange && onMinPriceChange(localMin);
-    onMaxPriceChange && onMaxPriceChange(localMax);
+    if (onMinPriceChange) onMinPriceChange(localMin);
+    if (onMaxPriceChange) onMaxPriceChange(localMax);
     setIsPricePopoverOpen(false);
 
   };

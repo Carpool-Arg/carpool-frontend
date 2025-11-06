@@ -1,4 +1,3 @@
-import { ResetPasswordData } from "@/schemas/password/passwordSchema";
 import { VoidResponse } from "@/types/response/response";
 
 export async function sendChangePasswordEmail(email: string): Promise<VoidResponse> {

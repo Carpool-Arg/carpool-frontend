@@ -7,5 +7,5 @@ export default async function Page({
 }) {
   const params = await searchParams
   const email = typeof params?.email === 'string' ? params.email : ''
-  return <CompleteProfilePage email={email} />
+  return <CompleteProfilePage queryEmail={email} />
 }

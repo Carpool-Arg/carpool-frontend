@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { VehicleTypeCard } from "./VehicleTypeCard";
 import { getVehicleTypes } from "@/services/vehicleTypeService";
 import { VehicleTypeCardSkeleton } from "./VehicleTypeSkeleton";
+import { Alert } from "@/components/ux/Alert";
+import { VehicleType } from "@/types/vehicleType";
 
 interface VehicleTypeListProps {
   selectedId: number | null;
@@ -45,6 +47,11 @@ export function VehicleTypeList({ selectedId, onSelect }: VehicleTypeListProps) 
                 onSelect={onSelect}
               />
             ))}
+        {error && (
+          <div className="mb-4">
+            <Alert type="error" message={error} />
+          </div>
+        )}
       </div>
   );
 }

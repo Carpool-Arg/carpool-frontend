@@ -14,12 +14,13 @@ import { useForm } from 'react-hook-form';
 import { BiBriefcaseAlt } from 'react-icons/bi';
 import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { CityAutocomplete } from '../city/CityAutocomplete';
-import { AlertDialog } from '../ui/ux/AlertDialog';
-import { Button } from '../ui/ux/Button';
+import { AlertDialog } from '../ux/AlertDialog';
+import { Button } from '../ux/Button';
 import { TripRoutePreview } from './TripRoutePreview';
 import { VehicleSelector } from './VehicleSelector';
 import { TripDetail } from './detail/TripDetail';
 import { TripStopForm } from './stops/TripStopsForm';
+import { Alert } from '../ux/Alert';
 
 
 
@@ -113,8 +114,9 @@ export function TripForm() {
         } else {
           setDateError(null);
         }
-      } catch (err) {
+      } catch (error) {
         setDateError('Error validando la fecha y hora');
+        console.error(error);
       }
     }, 500); // delay para no spamear el endpoint al tipear rápido
 
@@ -210,6 +212,7 @@ export function TripForm() {
       setIsSuccessDialogOpen(true);
     } catch (error) {
       setError("Error al crear el viaje");
+      console.error(error)
     }
   };
 
@@ -677,6 +680,11 @@ export function TripForm() {
               Publicar viaje
             </Button>
           </div>
+        </div>
+      )}
+      {error && (
+        <div className="mb-4">
+          <Alert type="error" message={error} />
         </div>
       )}
       <AlertDialog

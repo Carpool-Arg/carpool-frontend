@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from "react"
-import { Button } from "../ui/ux/Button"
-import { Input } from "../ui/ux/Input"
+import { Button } from "../ux/Button"
+import { Input } from "../ux/Input"
 import { useForm } from "react-hook-form"
 import { LoginData, loginSchema } from "@/schemas/auth/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
-import Spinner from "../ui/ux/Spinner"
+import Spinner from "../ux/Spinner"
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
-import { Alert } from "../ui/ux/Alert"
+import { Alert } from "../ux/Alert"
 import Link from "next/link"
 
 
@@ -148,16 +148,16 @@ export function LoginForm() {
         <div className="flex-1 h-px bg-gray-4/50" />
       </div>
       
-      
-      
       <GoogleLogin
         onSuccess={onGoogleSuccess}
         onError={onGoogleError}
         text="continue_with"
-        shape="rectangular"
+        shape="pill"
         size="large"
         width="100%"
       />
+
+      
      
 
       <p className="w-full text-center text-sm text-gray-4 font-inter">

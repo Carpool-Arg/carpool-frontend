@@ -1,4 +1,4 @@
-type Vehicle = {
+export interface Vehicle  {
   id: number;
   domain: string;
   brand: string;

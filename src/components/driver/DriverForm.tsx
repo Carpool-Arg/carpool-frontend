@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from "react"
-import { Button } from "../ui/ux/Button"
-import { Input } from "../ui/ux/Input"
+import { Button } from "../ux/Button"
+import { Input } from "../ux/Input"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
-import { Alert } from "../ui/ux/Alert"
+import { Alert } from "../ux/Alert"
 import { useRouter } from "next/navigation"
 import { DriverData, driverSchema } from "@/schemas/auth/driverSchema"
 import { registerDriver } from "@/services/driverService"

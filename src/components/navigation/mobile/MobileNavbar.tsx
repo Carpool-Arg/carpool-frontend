@@ -1,9 +1,9 @@
 'use client';
 
+import { useAuth } from '@/contexts/authContext';
+import { Bell, CirclePlus, History, Home, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User, CirclePlus, History } from 'lucide-react';
-import { useAuth } from '@/contexts/authContext';
 
 const navItems = [
   { href: '/home', icon: Home, label: 'Inicio', },

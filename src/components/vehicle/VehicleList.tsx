@@ -6,6 +6,8 @@ import useIsMobile from "@/hooks/useIsMobile";
 import { VehicleActionsModal } from "./VehicleActionsModal";
 import { useRouter } from "next/navigation";
 import { VehicleCardSkeleton } from "./VehicleSkeleton";
+import { Alert } from "../ux/Alert";
+import { Vehicle } from "@/types/vehicle";
 
 export function VehicleList() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -82,7 +84,11 @@ export function VehicleList() {
           onEdit={handleEdit}
         />
       )}
-      
+      {error && (
+        <div className="mb-4">
+          <Alert type="error" message={error} />
+        </div>
+      )}
     </div>
   );
 }

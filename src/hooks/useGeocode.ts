@@ -27,8 +27,13 @@ export function useGeocode() {
 
       setCity(name);
       setCoords({ lat, lon });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -46,8 +51,13 @@ export function useGeocode() {
       const { lat, lon } = data[0];
       setCoords({ lat: parseFloat(lat), lon: parseFloat(lon) });
       setCity(cityName);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocurrió un error inesperado.");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
     }

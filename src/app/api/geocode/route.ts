@@ -33,7 +33,15 @@ export async function GET(req: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
+    );
+    errorRes.cookies.delete('token');
+    errorRes.cookies.delete('refreshToken');
+    return errorRes;
   }
 }

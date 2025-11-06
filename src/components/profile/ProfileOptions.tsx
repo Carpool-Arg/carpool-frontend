@@ -1,9 +1,9 @@
 'use client'
+import { ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
 import Link from 'next/link';
-import { CarFront, ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
-import { FaCarAlt } from 'react-icons/fa';
-import { AlertDialog } from '../ui/ux/AlertDialog';
 import { useState } from 'react';
+import { FaCarAlt } from 'react-icons/fa';
+import { AlertDialog } from '../ux/AlertDialog';
 
 interface ProfileOptionsProps {
   role: 'driver' | 'passenger';

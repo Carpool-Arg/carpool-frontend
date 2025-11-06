@@ -1,4 +1,4 @@
-import { CitiesResponse, CityResponse } from "@/types/response/city";
+import { CitiesResponse } from "@/types/response/city";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
