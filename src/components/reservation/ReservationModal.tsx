@@ -16,8 +16,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Switch } from "../ui/switch";
-import { Button } from "../ui/ux/Button";
-import Separator from "../ui/ux/Separator";
+import { Button } from "../ux/Button";
+import Separator from "../ux/Separator";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -39,7 +39,8 @@ export default function ReservationModal({
   const [selectedOrigin, setSelectedOrigin] = useState<TripStop | undefined>(undefined);
   const [selectedDestination, setSelectedDestination] = useState< TripStop | undefined>(undefined);
   const [hasBaggage, setHasBaggage] = useState<boolean>(false);
-
+  
+  // Flag para saber si el viaje es entre paradas intermedias
   const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
 
   // Precarga de ciudades buscadas
@@ -183,7 +184,8 @@ export default function ReservationModal({
               </div>
             </div>
           </div>
-          
+
+          {/* 3. Equipaje */}
           <div className="mb-4">
             <div className="flex items-center space-x-2 mb-3">
               <Label htmlFor="luggage-switch" className="font-medium ">
@@ -205,10 +207,9 @@ export default function ReservationModal({
                   </p>
               </div>
             )}
-            
-            
           </div>
 
+          {/* 4. Precio de la reserva */}
           <div className="flex items-end justify-between gap-2">
             <h2 className="font-medium whitespace-nowrap font-outfit">
               Precio <span className="text-sm">(por pasajero)</span>

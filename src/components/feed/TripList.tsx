@@ -3,11 +3,10 @@
 import { City } from "@/types/city";
 import { SearchData } from "@/types/response/trip";
 import { formatFullDate, parseLocalDate } from "@/utils/date";
-import Link from "next/link";
+import { MapPinOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Trip from "./Trip";
-import { useRouter } from "next/navigation";
-import { MapPin, MapPinOff } from "lucide-react";
 
 interface TripListProps {
   feed: SearchData[] | [];

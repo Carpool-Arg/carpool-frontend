@@ -59,13 +59,11 @@ export default function TripDetails() {
       }
     };
 
-    // 2. Lógica para cargar el contexto de búsqueda del cliente
+    // Cargar el contexto de búsqueda del cliente
     const loadSearchContext = () => {
       const storedContext = sessionStorage.getItem(SEARCH_CONTEXT_KEY);
       if (storedContext) {
         setSearchContext(JSON.parse(storedContext));
-        // Opcional: limpiar la sesión si ya no se necesita
-        // sessionStorage.removeItem(SEARCH_CONTEXT_KEY);
       }
     };
 

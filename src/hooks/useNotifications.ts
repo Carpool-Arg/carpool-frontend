@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getFCMToken, onMessageListener } from '../lib/firebase/firebase';
+import { MessagePayload } from 'firebase/messaging';
 
 interface UseNotificationsReturn {
   isLoading: boolean;
@@ -23,20 +24,19 @@ export function useNotifications(): UseNotificationsReturn {
 
     // Escuchar mensajes en primer plano
     onMessageListener()
-    .then((payload: any) => {
+    .then((payload: MessagePayload) => {
       const notif = payload.notification;
 
       // Si no hay contenido de notificación, no mostrar nada
       if (!notif || (!notif.title && !notif.body)) return;
 
 
-      if (Notification.permission === 'granted') {
-        new Notification(notif.title, {
-          body: notif.body,
-          icon: notif.icon || '/icons/icon-192.png',
-          data: payload.data,
-        });
-      }
+      new Notification(notif.title ?? 'Notificación', {
+        body: notif.body ?? '',
+        icon: notif.icon || '/icons/icon-192.png',
+        data: payload.data,
+      });
+
     })
     .catch((err) => console.error('Error al escuchar mensajes:', err));
 
@@ -73,10 +73,10 @@ export function useNotifications(): UseNotificationsReturn {
         setError(`Error al registrar token: ${errorText}`);
         console.error('Error al registrar token:', errorText);
       } 
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+    } catch (error:unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       setError(`Error al registrar notificaciones: ${errorMessage}`);
-      console.error('Error:', err);
+      console.error('Error:', error);
     } finally {
       setIsLoading(false);
     }

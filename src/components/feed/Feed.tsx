@@ -37,7 +37,7 @@ export default function Feed() {
       }
     };
     initNotifications();
-  }, [initialized]);
+  }, [initialized,requestPermission]);
 
   useEffect(() => {
     const fetchData = async () => {
