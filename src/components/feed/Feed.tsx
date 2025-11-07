@@ -40,43 +40,32 @@ export default function Feed() {
   }, [initialized,requestPermission]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Solo se ejecuta una vez al montar
+    detectUserCity();
+  }, [detectUserCity]);
+
+  useEffect(() => {
+    if (!city) return; // Espera a que city esté disponible
+
+    const fetchFeed = async () => {
       try {
-        await detectUserCity();
-
-        // Esperar hasta 2 segundos para que city se actualice
-        const timeout = Date.now() + 2000;
-        while (!city && Date.now() < timeout) {
-          await new Promise((r) => setTimeout(r, 100));
-        }
-
-        let responseFeed;
-
-        if (city) {
-          // Buscar el ID de la ciudad detectada
-          const responseCity = await fetchCityByName(normalizeText(city));
-
-          if (responseCity.state === "OK" && responseCity.data) {
-            setCurrentCity(responseCity.data);
-            responseFeed = await getInitialFeed(responseCity.data.id);
+        const responseCity = await fetchCityByName(normalizeText(city));
+        if (responseCity.state === "OK" && responseCity.data) {
+          setCurrentCity(responseCity.data);
+          const responseFeed = await getInitialFeed(responseCity.data.id);
+          if (responseFeed.state === "OK" && responseFeed.data) {
+            setFeed(responseFeed.data);
           }
-        } else {
-          // Si no hay city pedir feed sin parámetro (el backend decide la ciudad)
-          responseFeed = await getInitialFeed();
-        }
-
-        if (responseFeed?.state === "OK" && responseFeed.data) {
-          setFeed(responseFeed.data);
         }
       } catch (err) {
-        console.error("Error cargando datos del feed:", err);
+        console.error("Error cargando feed:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [city, detectUserCity]);
+    fetchFeed();
+  }, [city]);
 
 
   if (loading) {

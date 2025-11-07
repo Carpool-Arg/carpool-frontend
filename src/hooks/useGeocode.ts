@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface Coordinates {
   lat: number;
@@ -65,7 +65,7 @@ export function useGeocode() {
 
   // Usar geolocalización del navegador
   // Debemos darle permisos al navegador para acceder a nuestra localizacion
-  const detectUserCity = () => {
+  const detectUserCity = useCallback(() => {
     if (!navigator.geolocation) {
       setError("La geolocalización no está soportada en este navegador");
       return;
@@ -76,7 +76,7 @@ export function useGeocode() {
       },
       () => setError("No se pudo obtener tu ubicación")
     );
-  };
+  }, []);
 
   return {
     city,

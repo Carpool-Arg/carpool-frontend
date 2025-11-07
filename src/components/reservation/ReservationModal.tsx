@@ -39,7 +39,7 @@ export default function ReservationModal({
   const [selectedOrigin, setSelectedOrigin] = useState<TripStop | undefined>(undefined);
   const [selectedDestination, setSelectedDestination] = useState< TripStop | undefined>(undefined);
   const [hasBaggage, setHasBaggage] = useState<boolean>(false);
-  
+
   // Flag para saber si el viaje es entre paradas intermedias
   const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
 
@@ -195,6 +195,7 @@ export default function ReservationModal({
                 id="luggage-switch" 
                 checked={hasBaggage} 
                 onCheckedChange={setHasBaggage} 
+                disabled={trip.availableBaggage === 'NO_EQUIPAJE'}
               />
               
             </div>
@@ -207,7 +208,14 @@ export default function ReservationModal({
                   </p>
               </div>
             )}
+            {trip.availableBaggage === 'NO_EQUIPAJE' && (
+              <div className="flex items-center gap-1 bg-gray-8 p-2 rounded-lg">
+                <TriangleAlert size={14}/>
+                <p className="text-sm font-inter">En este viaje no se permite equipaje.</p>
+              </div>
+            )}
           </div>
+
 
           {/* 4. Precio de la reserva */}
           <div className="flex items-end justify-between gap-2">
