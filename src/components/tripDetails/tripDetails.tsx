@@ -28,7 +28,6 @@ export default function TripDetails() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
-
   const router = useRouter();
 
   const [alertData, setAlertData] = useState<{
@@ -235,8 +234,9 @@ export default function TripDetails() {
               variant="primary"
               className="px-12 py-2 mb-4 text-sm font-inter font-medium"
               onClick={handleOpenModal}
+              disabled={trip.currentAvailableSeats <= 0}
             >
-              Solicitar reservar
+              {trip.currentAvailableSeats > 0 ? 'Solicitar reserva' : 'Reservas no disponibles'}
             </Button>
           </div>
         </div>

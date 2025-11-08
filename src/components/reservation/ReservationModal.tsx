@@ -114,6 +114,9 @@ export default function ReservationModal({
                         (stop) => stop.cityId === Number(value)
                       );
                       setSelectedOrigin(selected || undefined);
+                      if (selected && selectedDestination && selectedDestination.order <= selected.order) {
+                        setSelectedDestination(undefined);
+                      }
                     }}
                     required
                   >
@@ -142,12 +145,13 @@ export default function ReservationModal({
                 {trip.tripStops?.length > 0 && (
                   <Select
                     key={`destination-${selectedDestination?.cityId ?? "none"}`}
-                    value={selectedDestination ? String(selectedDestination.cityId) : ""}
+                    value={selectedDestination ? String(selectedDestination.cityId) : undefined}
                     onValueChange={(value) => {
                       const selected = trip.tripStops.find(
                         (stop) => stop.cityId === Number(value)
                       );
                       setSelectedDestination(selected || undefined);
+                      
                     }}
                     required
                   >
@@ -254,7 +258,7 @@ export default function ReservationModal({
               type="submit"
               variant="primary"
               className="disabled:opacity-50"
-              disabled={!selectedOrigin?.cityId || !selectedDestination?.cityId}
+              disabled={selectedDestination?.cityId === undefined}
             >
               Reservar
             </Button>
