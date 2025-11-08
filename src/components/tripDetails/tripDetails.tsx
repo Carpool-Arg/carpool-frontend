@@ -11,16 +11,30 @@ import { capitalizeWords } from "@/utils/string";
 import { TripDetailSkeleton } from "./TripDetailSkeleton";
 import { ErrorMessage } from "../ui/Error";
 import { formatPrice } from "@/utils/number";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import ReservationModal from "../reservation/ReservationModal";
+import { Reservation } from "@/types/reservation";
+import { newReservation } from "@/services/reservationService";
+import { AlertDialog } from "../ux/AlertDialog";
 import { Button } from "../ux/Button";
 import Separator from "../ux/Separator";
 
+const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
 export default function TripDetails() {
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [searchContext, setSearchContext] = useState<{ originId?: number; destinationId?: number } | null>(null);
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
+  const router = useRouter();
+
+  const [alertData, setAlertData] = useState<{
+    type: "success" | "error" | null;
+    title?: string;
+    description?: string;
+  } | null>(null);
 
   useEffect(() => {
     const loadTrip = async () => {
@@ -44,14 +58,55 @@ export default function TripDetails() {
       }
     };
 
-    loadTrip();
+    // Cargar el contexto de búsqueda del cliente
+    const loadSearchContext = () => {
+      const storedContext = sessionStorage.getItem(SEARCH_CONTEXT_KEY);
+      if (storedContext) {
+        setSearchContext(JSON.parse(storedContext));
+      }
+    };
+
+    if (id) {
+      loadTrip();
+      loadSearchContext(); 
+    }
   }, [id]);
+
+  const handleReservationSubmit = async (payload: Reservation) => {
+    try {
+      const result = await newReservation(payload);
+      if (result?.state === "OK") {
+        // éxito
+        setAlertData({
+          type: "success",
+          title: "¡Reserva creada con éxito!",
+          description: "El conductor recibirá tu solicitud en breve.",
+        });
+        setIsModalOpen(false);
+      } else {
+        // error de backend
+        setAlertData({
+          type: "error",
+          title: "Error al crear la reserva",
+          description: result?.messages?.[0] ?? "Ocurrió un error inesperado.",
+        });
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error al crear la reserva:", error);
+      alert("Ocurrió un error al crear la reserva. Revisa la consola.");
+    }
+  };
+
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
   );
 
   const BaggageIcon = selectedBaggage?.icon;
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   if (loading) return TripDetailSkeleton();
   if (error) return <ErrorMessage message={error} />;
@@ -178,11 +233,34 @@ export default function TripDetails() {
               type="button"
               variant="primary"
               className="px-12 py-2 mb-4 text-sm font-inter font-medium"
+              onClick={handleOpenModal}
+              disabled={trip.currentAvailableSeats <= 0}
             >
-              Reservar
+              {trip.currentAvailableSeats > 0 ? 'Solicitar reserva' : 'Reservas no disponibles'}
             </Button>
           </div>
         </div>
+
+        <ReservationModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          trip={trip}
+          initialOriginId={searchContext?.originId} 
+          initialDestinationId={searchContext?.destinationId} 
+          onSubmit={handleReservationSubmit}
+        />
+
+        {alertData && (
+          <AlertDialog
+            isOpen={!!alertData}
+            onClose={() => setAlertData(null)}
+            type={alertData.type === "success" ? "success" : "error"}
+            title={alertData.title}
+            description={alertData.description}
+            confirmText="Aceptar"
+            onConfirm={()=>router.back()}
+          />
+        )}
       </div>
     );
   }
