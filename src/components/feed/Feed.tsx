@@ -10,51 +10,62 @@ import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";
 import { SearchData } from "@/types/response/trip";
 import { normalizeText } from "@/utils/string";
+import { useNotifications } from "@/hooks/useNotifications";
+
+let initialized = false;
 
 export default function Feed() {
   const { city, detectUserCity } = useGeocode();
+  const { requestPermission } = useNotifications();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (initialized) return;
+    initialized = true;
+    const initNotifications = async () => {
+      if (typeof window === "undefined" || !("Notification" in window)) return;
       try {
-        await detectUserCity();
-
-        // Esperar hasta 2 segundos para que city se actualice (opcional)
-        const timeout = Date.now() + 2000;
-        while (!city && Date.now() < timeout) {
-          await new Promise((r) => setTimeout(r, 100));
+        // Pedir permiso usando el hook
+        if (Notification.permission === 'default') {
+          await requestPermission();
         }
 
-        let responseFeed;
+      } catch (error) {
+        console.warn('No se pudieron registrar las notificaciones:', error);
+      }
+    };
+    initNotifications();
+  }, [initialized,requestPermission]);
 
-        if (city) {
-          // Buscar el ID de la ciudad detectada
-          const responseCity = await fetchCityByName(normalizeText(city));
+  useEffect(() => {
+    // Solo se ejecuta una vez al montar
+    detectUserCity();
+  }, [detectUserCity]);
 
-          if (responseCity.state === "OK" && responseCity.data) {
-            setCurrentCity(responseCity.data);
-            responseFeed = await getInitialFeed(responseCity.data.id);
+  useEffect(() => {
+    if (!city) return; // Espera a que city esté disponible
+
+    const fetchFeed = async () => {
+      try {
+        const responseCity = await fetchCityByName(normalizeText(city));
+        if (responseCity.state === "OK" && responseCity.data) {
+          setCurrentCity(responseCity.data);
+          const responseFeed = await getInitialFeed(responseCity.data.id);
+          if (responseFeed.state === "OK" && responseFeed.data) {
+            setFeed(responseFeed.data);
           }
-        } else {
-          // Si no hay city => pedir feed sin parámetro (el backend decidirá la ciudad)
-          responseFeed = await getInitialFeed();
-        }
-
-        if (responseFeed?.state === "OK" && responseFeed.data) {
-          setFeed(responseFeed.data);
         }
       } catch (err) {
-        console.error("Error cargando datos del feed:", err);
+        console.error("Error cargando feed:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [city, detectUserCity]);
+    fetchFeed();
+  }, [city]);
 
 
   if (loading) {
@@ -66,9 +77,11 @@ export default function Feed() {
       </div>
     );
   }
+
+
   return (
     <div className="w-full">
-      <TripList feed={feed!} currentCity={currentCity?.name}/>
+      <TripList feed={feed ?? []} currentCity={currentCity?.name}/>
     </div>
   );
 }

@@ -56,7 +56,7 @@ export async function newTrip(data: Trip): Promise<VoidResponse> {
 
 export async function getTripDetails(tripId: number): Promise<TripResponse>{
   try{
-    const res = await fetch(`/api/trip/${tripId}`,{
+    const res = await fetchWithRefresh(`/api/trip/${tripId}`,{
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     })
