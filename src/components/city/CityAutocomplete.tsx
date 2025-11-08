@@ -62,37 +62,35 @@ export function CityAutocomplete({
   }, [value,selected]);
 
   useEffect(() => {
-    if (selected) {
-      setSelected(false); 
+    // Evitar ejecutar búsqueda si se seleccionó una ciudad o el query está vacío
+    if (selected || query.length < 2) {
+      setCities([]);
+      setShowDropdown(false);
       return;
     }
+
     const timeout = setTimeout(async () => {
-      if (query.length >= 2) {
-        try {
-          const response: CitiesResponse = await fetchCities(query);
-          let filteredCities = (response?.data ?? []).map(c => ({
-            ...c,
-            name: capitalizeWords(c.name)
-          }));
+      try {
+        const response: CitiesResponse = await fetchCities(query);
+        let filteredCities = (response?.data ?? []).map(c => ({
+          ...c,
+          name: capitalizeWords(c.name),
+        }));
 
-          // Filtrar los IDs excluidos
-          if (excludeIds && excludeIds.length > 0) {
-            filteredCities = filteredCities.filter(c => !excludeIds.includes(c.id));
-          }
-
-          setCities(filteredCities);
-          setShowDropdown(true);
-        } catch (err) {
-          console.error(err);
+        if (excludeIds && excludeIds.length > 0) {
+          filteredCities = filteredCities.filter(c => !excludeIds.includes(c.id));
         }
-      } else {
-        setCities([]);
-        setShowDropdown(false);
+
+        setCities(filteredCities);
+        setShowDropdown(true);
+      } catch (err) {
+        console.error(err);
       }
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [query, excludeIds, selected]);
+  }, [query, selected]);
+
 
   const handleSelect = (city: City) => {
     setQuery(city.name);
