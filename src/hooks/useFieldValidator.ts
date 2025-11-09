@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import debounce from "lodash.debounce";
 import type { DebouncedFunc } from 'lodash'; 
-// Obtenemos la URL base de la API desde las variables de entorno
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Tipos permitidos para los campos que se pueden validar
 type FieldType = 'username' | 'email' | 'dni' | 'phone';
