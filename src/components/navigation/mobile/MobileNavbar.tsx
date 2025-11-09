@@ -1,16 +1,23 @@
 'use client';
 
 import { useAuth } from '@/contexts/authContext';
-import { Bell, CirclePlus, History, Home, User } from 'lucide-react';
+import { CirclePlus, History, Home, LucideIcon, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Role } from '../desktop/DesktopSidebar';
 
-const navItems = [
-  { href: '/home', icon: Home, label: 'Inicio', },
-  { href: '/search', icon: History, label: 'Buscar',  },
-  { href: '/trip/new', icon: CirclePlus, label: 'Perfil', size: 32 },
-  { href: '/notifications', icon: Bell, label: 'Notificaciones',  },
-  { href: '/profile', icon: User, label: 'Perfil',  },
+const navItems: { 
+  href: string; 
+  icon: LucideIcon; 
+  label: string; 
+  role: Role; 
+  size: number; 
+}[] = [
+  { href: '/home', icon: Home, label: 'Inicio', role: 'user', size: 22 },
+  { href: '/search', icon: Search, label: 'Buscar', role: 'user', size: 22 },
+  { href: '/trip/new', icon: CirclePlus, label: 'Publicar viaje', role: 'driver', size: 22 },
+  { href: '/history', icon: History, label: 'Historial', role: 'user', size: 22 },
+  { href: '/profile', icon: User, label: 'Perfil', role: 'user', size: 22 },
 ];
 
 // Rutas en las que debe mostrarse el navbar (soporta rutas dinámicas con startsWith)
@@ -22,14 +29,19 @@ export default function MobileNavbar() {
 
   if (loading || !user) return null;
 
+  const userRoles = user?.roles || ['user'];
+  
+  // Filtramos los ítems según el rol del usuario
+  const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
+
   // Mostrar solo si la ruta empieza con una ruta permitida
   const shouldShowNavbar = allowedPaths.some((path) => pathname.startsWith(path));
   if (!shouldShowNavbar) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-6 dark:border-gray-2 md:hidden bg-white dark:bg-dark-5">
-      <ul className="flex justify-around items-center h-14">
-        {navItems.map(({ href, icon: Icon, size}) => {
+      <ul className="flex justify-around items-center h-12">
+        {filteredNavItems.map(({ href, icon: Icon, size,}) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <li key={href}>

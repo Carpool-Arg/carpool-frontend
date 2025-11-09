@@ -1,4 +1,3 @@
-import Separator from "@/components/ux/Separator";
 import { capitalizeWords } from "@/utils/string";
 import { Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
@@ -34,9 +33,8 @@ export function TripDetail({
   
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
-      <div className="w-full">
-        <h2 className="text-2xl font-semibold text-center">Detalle del viaje</h2>
-        <Separator color="bg-gray-6 dark:bg-gray-2"/>
+      <div className="w-full mb-4">
+        <h2 className="text-xl font-semibold text-start">Detalle del viaje</h2>
       </div>
       
       <div className="w-full flex flex-col gap-3">
