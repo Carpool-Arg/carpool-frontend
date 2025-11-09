@@ -29,7 +29,7 @@ export function useFieldValidator(field: FieldType) {
 
     setChecking(true);
     try {
-      const res = await fetch(`${apiUrl}/users/validate-${field}?${field}=${value}`);
+      const res = await fetch(`/api/users/validate-${field}?${field}=${value}`);
       const data = await res.json();
 
       if (res.ok && data.state === "OK") {
