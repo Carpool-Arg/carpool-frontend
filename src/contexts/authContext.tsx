@@ -14,7 +14,6 @@ interface AuthContextType {
   login: (data: LoginFormData & { recaptchaToken?: string }) => Promise<void>;
   logout: () => void;
   authGoogle: (idToken: string) => Promise<void>;
-  initialized: boolean;
   fetchUser: () => Promise<boolean>;
   prevImage: string | null;
   setPrevImage: (value: string | null) => void;
@@ -26,7 +25,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -86,7 +84,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Inicializar autenticación solo una vez
   useEffect(() => {
-    if (initialized) return; 
     let isMounted = true;
 
     const initializeAuth = async () => {
@@ -94,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
 
       if (isMounted) {
-        setInitialized(true);
         setLoading(false);
 
         if (!hasUser && !isPublicRoute) {
@@ -108,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return () => {
           isMounted = false;
         };
-  }, [isPublicRoute, fetchUser, router, initialized]);
+  }, [isPublicRoute, fetchUser, router]);
 
 
   const login = async (data: LoginFormData & { recaptchaToken?: string }) => {
@@ -175,12 +171,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await logoutUser(); 
       if (res.state === "OK") { 
         setUser(null);
-        setInitialized(false);
         router.push('/login'); 
       } else {
         console.error('Logout failed', res.messages?.[0]);
         setUser(null);
-        setInitialized(false);
         router.push('/login');
       }
     } catch (error) {
@@ -190,7 +184,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       // Siempre limpiar estado y redirigir
       setUser(null);
-      setInitialized(false);
       router.push('/login');
     }
   };
@@ -201,7 +194,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     logout,
     authGoogle,
-    initialized,
     fetchUser,
     prevImage,
     setPrevImage
