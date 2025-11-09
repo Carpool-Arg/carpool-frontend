@@ -4,11 +4,6 @@ import { NextRequest } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-interface RouteParams {
-  params: {
-    path: string[]
-  }
-}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const { path } = await context.params; 
