@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Bell, User, Infinity, UserCircle2, LogOut, PlusCircle, LucideIcon } from 'lucide-react';
+import { Home, Search , User, Infinity, UserCircle2, LogOut, PlusCircle, LucideIcon, History } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 import { useState } from 'react';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 
-type Role = 'user' | 'driver' | null;
+export type Role = 'user' | 'driver' | null;
 
 const navItems: { href: string; icon: LucideIcon; label: string; role: Role }[] = [
   { href: '/home', icon: Home, label: 'Inicio', role: 'user' },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user' },
   { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje', role: 'driver' },
-  { href: '/notifications', icon: Bell, label: 'Notificaciones', role: 'user' },
+  { href: '/history', icon: History, label: 'Historial', role: 'user' },
   { href: '/profile', icon: User, label: 'Perfil', role: 'user' },
 ];
 
@@ -30,8 +30,6 @@ export default function DesktopSidebar() {
 
   const userRoles = user?.roles || ['user'];
   
-  
-
   // Filtramos los ítems según el rol del usuario
   const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
 

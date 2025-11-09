@@ -263,7 +263,7 @@ export function TripForm() {
 
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto md:py-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-start gap-4  h-screen w-full max-w-md mx-auto md:py-8">
       {step === 1 && (
         // === PASO 1: Seleccionar vehículo ===
         <div className='flex flex-col justify-between h-full'>
@@ -651,7 +651,7 @@ export function TripForm() {
       )}
 
       {step === 7 && (
-        <div className='flex flex-col justify-between mb-8'>
+        <div className='flex flex-col justify-between mb-8 '>
           <TripDetail
             origin={origin?.cityName ?? "Origen"}
             destination={destination.cityName ?? "Destino"}
@@ -662,12 +662,12 @@ export function TripForm() {
             vehicle={selectedVehicle!}
             onBack={() => setStep(5)}
           />
-          <div className="flex justify-center gap-7.5 my-8">
+          <div className="flex justify-center gap-7.5 my-8 mb-8">
             <Button 
               type="button" 
               variant="outline" 
               onClick={() => router.push('/trip/new')}
-              className='px-15 py-2 text-sm font-inter font-medium'
+              className='px-12 py-2 text-sm font-inter font-medium'
             >
               Cancelar
             </Button>
@@ -677,7 +677,7 @@ export function TripForm() {
               variant="primary"
               className='px-12 py-2 text-sm font-inter font-medium'
             >
-              Publicar viaje
+              Publicar
             </Button>
           </div>
         </div>

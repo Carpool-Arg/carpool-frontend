@@ -9,7 +9,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
   const showHeader = HEADER_PATHS.some(route => pathname.startsWith(route));
 
-  const logoHeaderPaths = ["/", "/home","/search"];
+  const logoHeaderPaths = ["/home","/search"];
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
   
   return (
@@ -17,7 +17,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       {showHeader && (
         <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
       )}
-      <main className="flex-1 overflow-auto pt-8 pr-8 pl-8 pb-[5.5rem]">
+      <main className="flex-1 overflow-auto pt-8 pr-8 pl-8 pb-[80px]">
         {children}
       </main>
       <MobileNavbar />

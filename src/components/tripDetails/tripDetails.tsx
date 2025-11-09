@@ -17,7 +17,6 @@ import { Reservation } from "@/types/reservation";
 import { newReservation } from "@/services/reservationService";
 import { AlertDialog } from "../ux/AlertDialog";
 import { Button } from "../ux/Button";
-import Separator from "../ux/Separator";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -113,16 +112,11 @@ export default function TripDetails() {
 
   if (trip) {
     return (
-      <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen">
-        {/* Título */}
-        <div className="w-full">
-          <h2 className="text-2xl font-semibold text-center">Detalles del viaje</h2>
-          <Separator color="bg-gray-6 dark:bg-gray-2" />
-        </div>
+      <div className="flex flex-col items-center w-full max-w-md mx-auto">
 
         {/* Contenedor en grid */}
         <div
-          className="w-full h-full mt-4 grid grid-cols-9 auto-rows-auto gap-2"
+          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4"
         >
           {/* Disponibilidad */}
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
@@ -232,7 +226,7 @@ export default function TripDetails() {
             <Button
               type="button"
               variant="primary"
-              className="px-12 py-2 mb-4 text-sm font-inter font-medium"
+              className="px-12 py-2 text-sm font-inter font-medium md:mb-4"
               onClick={handleOpenModal}
               disabled={trip.currentAvailableSeats <= 0}
             >

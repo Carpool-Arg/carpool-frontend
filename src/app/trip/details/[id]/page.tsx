@@ -2,7 +2,7 @@ import TripDetails from "@/components/tripDetails/tripDetails";
 
 export default function TripDetailsPage(){
     return(
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col">
             <TripDetails/>
         </div>
     )
