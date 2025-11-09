@@ -1,4 +1,3 @@
-import Separator from "@/components/ux/Separator";
 import { capitalizeWords } from "@/utils/string";
 import { Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
