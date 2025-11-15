@@ -1,0 +1,50 @@
+import { fetchWithRefresh } from "@/lib/http/authInterceptor";
+import { CityResponse } from "@/types/response/city";
+import { NextRequest, NextResponse } from "next/server";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+export async function GET(req: NextRequest) {
+  try {
+    //Obtener token de cookies
+    const token = req.cookies.get('token')?.value;
+
+    //Obtener lat y lng desde los query params
+    const { searchParams } = new URL(req.url);
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+
+    if (!lat || !lng) {
+      return NextResponse.json(
+        {
+          data: null,
+          messages: ["lat y lng son obligatorios"],
+          state: "ERROR",
+        },
+        { status: 400 }
+      );
+    }
+
+    // 
+    const res = await fetchWithRefresh(
+      `${apiUrl}/city/coordinates?lat=${lat}&lng=${lng}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const response: CityResponse = await res.json();
+
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
+    );
+    return errorRes;
+  }
+}

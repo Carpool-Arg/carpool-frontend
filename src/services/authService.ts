@@ -28,6 +28,7 @@ export const loginUser = async (data: LoginFormData & { recaptchaToken?: string 
     });
 
     const response: LoginResponse = await res.json();
+
     return response;
   } catch (error: unknown) {
     let message = "Error desconocido";
