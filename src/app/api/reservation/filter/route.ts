@@ -8,16 +8,16 @@ export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
     const { searchParams } = new URL(req.url);
+    const idTrip = searchParams.get("idTrip");
     const idStartCity = searchParams.get("idStartCity");
     const idDestinationCity = searchParams.get("idDestinationCity");
     const baggage = searchParams.get("baggage");
     const nameState = searchParams.get("nameState");
-
+    // &nameState=${nameState}
    
-    const res = await fetch(`${apiUrl}/reservation/filter?idStartCity=${idStartCity}&idDestinationCity=${idDestinationCity}&baggage=${baggage}&nameState=${nameState}`, {
+    const res = await fetch(`${apiUrl}/reservation/filter?idTrip=${idTrip}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`
       },
     });
 

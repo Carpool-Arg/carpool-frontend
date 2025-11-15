@@ -5,11 +5,12 @@ import { ReservationResponseDTO } from "@/types/response/reservationResponseDTO"
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import TripSkeleton from "../feed/TripSkeleton";
+import TripReservationList from "./TripReservationList";
 
 export default function TripReservations() {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null);
-  const [TripReservations, setTripReservations] = useState<ReservationResponseDTO | null>(null); 
+  const [tripReservations, setTripReservations] = useState<ReservationResponseDTO | null>(null); 
   const { id } = useParams();
 
   useEffect(() => {
@@ -19,10 +20,7 @@ export default function TripReservations() {
         setLoading(true);
         const responseTripReservations = await getReservations({
           idTrip: Number(id),
-          idDestinationCity: null,
-          idStartCity: null,
-          baggage: null,
-          nameState: null 
+          nameState: 'PENDING'
         })
 
         if(responseTripReservations.state == "ERROR"){
@@ -51,7 +49,9 @@ export default function TripReservations() {
       );
   }
   
-  return <div className="w-full">
-    
-  </div>
+  return( 
+    <div className="w-full">
+      <TripReservationList tripReservations={tripReservations!}/>
+    </div>
+  )
 }

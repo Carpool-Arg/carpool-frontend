@@ -6,4 +6,5 @@ export interface ReservationDTO{
     baggage: boolean;
     nameUser: string;
     lastNameUser: string;
+    urlImage: string;
 }

@@ -44,11 +44,11 @@ export async function getReservations(data: ReeservationRequestDTO): Promise<Res
     const url = `/api/reservation/filter?${params.toString()}`;
 
     const res = await fetchWithRefresh(url, {
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     });
 
     const response: ReservationResponse = await res.json();
+    console.log(response)
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');
     }

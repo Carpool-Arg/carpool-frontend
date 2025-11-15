@@ -68,7 +68,7 @@ export default function TripReservationList({tripReservations}: TripReservationL
                       className="cursor-pointer block" // Añadir cursor-pointer para mejor UX
                   >
                       <Reservation 
-                          {...reservation} 
+                        reservation={reservation} 
                       /> 
                   </div>
                       {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
