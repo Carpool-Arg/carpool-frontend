@@ -1,7 +1,7 @@
 export interface ReeservationRequestDTO {
     idTrip: number;
-    idStartCity: number;
-    idDestinationCity: number;
-    baggage: boolean;
-    nameState: string;
+    idStartCity: number | null;
+    idDestinationCity: number | null;
+    baggage: boolean | null;
+    nameState: string | null;
 }

@@ -2,7 +2,9 @@ import { fetchWithRefresh } from "@/lib/http/authInterceptor";
 
 import { VoidResponse } from "@/types/response/response";
 import { SearchResponse, TripResponse } from "@/types/response/trip";
+import { TripDriverResponse } from "@/types/response/tripDriverResponseDTO";
 import { Trip, TripFilters } from "@/types/trip";
+import { ca } from "date-fns/locale";
 
 
 
@@ -120,3 +122,24 @@ export const getInitialFeed = async (cityId?: number) => {
     return { data: null, messages: [message], state: "ERROR" };
   }
 };
+
+
+export const getMyTrips = async () => {
+  try {
+    const res = await fetchWithRefresh('/api/trip', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+    const response: TripDriverResponse = await res.json();
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    
+    return response;
+  }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  } 
+}

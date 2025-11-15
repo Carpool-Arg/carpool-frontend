@@ -29,6 +29,7 @@ export const HEADER_PATHS = [
   '/trip/details',
   '/trip/new',
   '/trip',
+  '/reservations',
   '/vehicle/edit',
   '/vehicle/new',
   '/vehicle',
