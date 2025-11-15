@@ -1,15 +1,12 @@
 'use client'
 
 import { useGeocode } from "@/hooks/useGeocode"
-import { fetchCityByName } from "@/services/cityService";
 import { City } from "@/types/city";
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import TripList from "./TripList";
-
 import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";
 import { SearchData } from "@/types/response/trip";
-import { normalizeText } from "@/utils/string";
 import { useNotifications } from "@/hooks/useNotifications";
 
 let initialized = false;
@@ -20,6 +17,10 @@ export default function Feed() {
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
+
+
+  const feedFetchRef = useRef(false);
+  const detectCityRef = useRef(false);
 
   useEffect(() => {
     if (initialized) return;
@@ -40,22 +41,23 @@ export default function Feed() {
   }, [initialized,requestPermission]);
 
   useEffect(() => {
-    // Solo se ejecuta una vez al montar
+    if (detectCityRef.current) return;
+    detectCityRef.current = true; // Marca como ejecutado
     detectUserCity();
-  }, [detectUserCity]);
+  }, []);
 
   useEffect(() => {
     if (!city) return; // Espera a que city esté disponible
+    if (feedFetchRef.current) return;
+
+    feedFetchRef.current = true; // Marca como ejecutado
 
     const fetchFeed = async () => {
       try {
-        const responseCity = await fetchCityByName(normalizeText(city));
-        if (responseCity.state === "OK" && responseCity.data) {
-          setCurrentCity(responseCity.data);
-          const responseFeed = await getInitialFeed(responseCity.data.id);
-          if (responseFeed.state === "OK" && responseFeed.data) {
-            setFeed(responseFeed.data);
-          }
+        setCurrentCity(city);
+        const responseFeed = await getInitialFeed(city.id);
+        if (responseFeed.state === "OK" && responseFeed.data) {
+          setFeed(responseFeed.data);
         }
       } catch (err) {
         console.error("Error cargando feed:", err);
