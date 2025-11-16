@@ -59,14 +59,14 @@ export default function TripReservationList({tripReservations}: TripReservationL
                 type: "success",
                 title: "¡Reserva aceptada con éxito!",
                 description: "Se le notificará al pasajero.",
-                onConfirm: () => router.refresh(),
+                onConfirm: () => window.location.reload(),
             });
         }else{
             setAlertData({
                 type: "error",
                 title: "Hubo un problema",
                 description: result.messages[0],
-                onConfirm: () => router.refresh(),
+                onConfirm: () => window.location.reload(),
             });
         }
     } catch (error) {
@@ -74,7 +74,7 @@ export default function TripReservationList({tripReservations}: TripReservationL
             type: "error",
             title: "Hubo un problema",
             description: "No se pudo aceptar la reserva.",
-            onConfirm: () => router.refresh(),
+            onConfirm: () => window.location.reload(),
         });
         console.error("Error al aceptar la reserva", error);
     }
@@ -84,13 +84,13 @@ export default function TripReservationList({tripReservations}: TripReservationL
         try {
             const result = await updateReservation({idReservation, reject: true });
             if (result?.state === 'OK') {
-                router.refresh()
+              window.location.reload();
             }else{
                 setAlertData({
                     type: "error",
                     title: "Hubo un problema",
                     description: result.messages[0],
-                    onConfirm: () => router.refresh(),
+                    onConfirm: () => window.location.reload(),
                 });
             }
         } catch (error) {
@@ -98,7 +98,7 @@ export default function TripReservationList({tripReservations}: TripReservationL
                 type: "error",
                 title: "Hubo un problema",
                 description: "No se pudo aceptar la reserva.",
-                onConfirm: () => router.refresh(),
+                onConfirm: () => window.location.reload(),
             });
             console.error("Error al rechazar la reserva", error);
         }
