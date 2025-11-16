@@ -25,10 +25,12 @@ export const PUBLIC_PATHS = {
 } as const;
 
 export const HEADER_PATHS = [
+  '/reservations/', 
   '/search',
   '/trip/details',
   '/trip/new',
   '/trip',
+  '/reservations',
   '/vehicle/edit',
   '/vehicle/new',
   '/vehicle',
@@ -52,6 +54,8 @@ export const HEADER_TITLES: Record<string, string> = {
   '/profile/details': 'Perfil',
   '/profile': 'Perfil de usuario',
   '/register-driver': 'Registrar conductor',
+  '/reservations/':'Reservas del viaje', 
+  '/reservations':'Viajes',
   '/settings/account/update-password': 'Contraseña',
   '/settings/account/update-email': 'Correo electrónico',
   '/settings/account': 'Cuenta',

@@ -53,3 +53,12 @@ export function formatISODate(date: Date): string {
   copy.setHours(0, 0, 0, 0);
   return copy.toISOString().slice(0, 10);
 }
+
+export function formatISOToShortDate(isoDate: string): string {
+  const date = parseLocalDate(isoDate); // usa tu método existente para evitar desfase
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(date);
+}
