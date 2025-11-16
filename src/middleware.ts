@@ -1,210 +1,124 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isTokenExpired, parseJwt } from "./utils/jwt";
 import { PUBLIC_PATHS } from "./constants/publicPaths";
-import { DRIVER_PATHS } from "./constants/protectedPaths";
+import { parseJwt, isTokenExpired } from "./utils/jwt";
+import {verifyTokenWithServer} from './services/authService'
+
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const publicPaths = [...PUBLIC_PATHS.pages, ...PUBLIC_PATHS.api];
 
-  if (publicPaths.some(path => pathname.startsWith(path))) {
+  //IGNORAR TODAS LAS API ROUTES DEL FRONTEND
+  if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.get('token')?.value;
-  const refreshToken = req.cookies.get('refreshToken')?.value;
-  
-  // Si no hay token, redirigir inmediatamente
-  if (!token) {
-    return redirectToLogin(req, pathname);
+
+  //RUTAS PÚBLICAS
+  const isPublicPage = PUBLIC_PATHS.pages.some((p) =>
+    p === "/" ? pathname === "/" : pathname.startsWith(p)
+  );
+
+  if (isPublicPage) {
+    return NextResponse.next();
   }
 
-  // Verificar si el token está expirado SOLO basándose en el JWT
+
+  //TOKEN
+  const token = req.cookies.get("token")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
+
+  if (!token) {
+    return redirectToLogin(req);
+  }
+
+
+  //EXPIRACIÓN
   if (isTokenExpired(token)) {
-    // Si hay refresh token, intentar renovar
     if (refreshToken) {
-      try {
-        const newTokens = await refreshAccessToken(refreshToken);
-        if (newTokens) {
-          const response = NextResponse.next();
-          setTokenCookies(response, newTokens);
-          return response;
-        }
-      } catch (error) {
-        console.error('Error refreshing token:', error);
+      const newTokens = await refreshAccessToken(refreshToken);
+      if (newTokens) {
+        const response = NextResponse.next();
+        setTokenCookies(response, newTokens);
+        return response;
       }
     }
-    
-    // Si no se pudo renovar, redirigir a login
-    return redirectToLogin(req, pathname);
+    return redirectToLogin(req);
   }
 
-  //Validar permiso en la request que estamos haciendo
-  try {
-    //Obtener el payload del token
-    const payload = parseJwt(token);
-
-    if (!payload) {
-      return redirectToLogin(req, pathname);
-    }
-
-    //Verificar si el rol del usuario es de chofer
-    const isDriver = (payload.authorities as string)?.includes("ROLE_DRIVER");
-
-    //Obtenre las rutas que requieren el rol de chofer
-    const requiresDriver = DRIVER_PATHS.some(path => pathname.startsWith(path));
-
-    //Si la ruta requiere el rol de chofer y no lo tiene, redireccionarlo al home
-    if (requiresDriver && !isDriver) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/home"; 
-      return NextResponse.redirect(url);
-    }
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return redirectToLogin(req, pathname);
+  const isValid = await verifyTokenWithServer(token);
+  if (!isValid) {
+    return redirectToLogin(req);
   }
 
-  // Si el token no está expirado, verificar cache de validación
-  const tokenValidUntilStr = req.cookies.get('tokenValidUntil')?.value;
-  const now = Date.now();
+  //ROLES
+  const payload = parseJwt(token);
+  if (!payload) return redirectToLogin(req);
 
-  // Si tenemos cache válido, continuar sin más verificaciones
-  if (tokenValidUntilStr && Number(tokenValidUntilStr) > now) {
-    return NextResponse.next();
-  }
-
-  // Solo verificar con el servidor si no hay cache o expiró
-  try {
-    const isValid = await verifyTokenWithServer(token);
-    
-    if (isValid) {
-      const response = NextResponse.next();
-      // Cachear la validación por 5 minutos
-      const nextCheck = now + 5 * 60 * 1000;
-      response.cookies.set('tokenValidUntil', nextCheck.toString(), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-        maxAge: 300,
-      });
-      return response;
-    }
-  } catch (error) {
-    console.error('Error verificando token:', error);
-  }
-
-  // Si llegamos aquí, el token no es válido
-  return redirectToLogin(req, pathname);
+  return NextResponse.next();
 }
 
-// Función auxiliar para redireccionar a login
-function redirectToLogin(req: NextRequest, pathname: string) {
-  if (pathname.startsWith('/api')) {
-    return new NextResponse(
-      JSON.stringify({ message: 'No autorizado' }),
-      {
-        status: 401,
-        headers: { 'content-type': 'application/json' },
-      }
-    );
-  }
+//HELPERS
+
+function redirectToLogin(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = '/login';
+  url.pathname = "/login";
   return NextResponse.redirect(url);
 }
 
-// Función auxiliar para renovar el token
 async function refreshAccessToken(refreshToken: string) {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/auth/refresh`, {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Bearer ${refreshToken}`,
-        'Content-Type': 'application/json'
-      },
+    const res = await fetch(`${apiUrl}/auth/refresh`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${refreshToken}` },
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken || refreshToken // usar el nuevo o mantener el actual
-      };
-    }
-  } catch (error) {
-    console.error('Error en refresh token:', error);
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    return {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken ?? refreshToken,
+    };
+  } catch {
+    return null;
   }
-  
-  return null;
 }
 
-// Función auxiliar para verificar token con servidor
-async function verifyTokenWithServer(token: string): Promise<boolean> {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/auth/verify-token`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data.state === 'OK';
-    }
-  } catch (error) {
-    console.error('Error verificando token:', error);
-  }
-  
-  return false;
-}
-
-// Función auxiliar para establecer cookies de tokens
-function setTokenCookies(response: NextResponse, tokens: { accessToken: string; refreshToken?: string }) {
+function setTokenCookies(
+  response: NextResponse,
+  tokens: { accessToken: string; refreshToken?: string }
+) {
   const { accessToken, refreshToken } = tokens;
-  
-  // Decodificar el token para obtener expiry
+
   const decoded = JSON.parse(
-    Buffer.from(accessToken.split('.')[1], 'base64').toString()
+    Buffer.from(accessToken.split(".")[1], "base64").toString()
   );
   const maxAge = decoded.exp - decoded.iat;
 
-  response.cookies.set('token', accessToken, {
+  response.cookies.set("token", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
     maxAge,
   });
 
   if (refreshToken) {
-    response.cookies.set('refreshToken', refreshToken, {
+    response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 días
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
   }
-
-  // Actualizar cache de validación
-  const nextCheck = Date.now() + 5 * 60 * 1000;
-  response.cookies.set('tokenValidUntil', nextCheck.toString(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
-    maxAge: 300,
-  });
 }
 
+//MATCHER
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/me|icons|manifest.webmanifest).*)'
+    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.webmanifest).*)",
   ],
 };
