@@ -6,7 +6,7 @@ import { getUserFile } from '@/services/mediaService';
 import { LoginFormData } from '@/types/forms';
 import { User } from '@/types/user';
 import { useRouter, usePathname } from 'next/navigation';
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 interface AuthContextType {
   user: User | null;
@@ -23,18 +23,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  const hasRun = useRef(false);
 
   // Rutas públicas donde no necesitamos autenticación
   const publicRoutes = [...PUBLIC_PATHS.pages];
   const isPublicRoute = publicRoutes.some(route =>
     route === '/' ? pathname === '/' : pathname.startsWith(route)
   );
-
 
   // Función para obtener el usuario actual
   const fetchUser = useCallback(async (): Promise<boolean> => {
@@ -47,28 +47,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.ok) {
         const response = await res.json();
         if (response.data) {
-          let profileImage = response.data.profileImage;
-          try {
-            const imgUrl = await getUserFile(response.data.id); 
-            if (imgUrl) {
-              profileImage = imgUrl.data;
-            }
-          } catch (err) {
-            console.warn("No se pudo cargar la imagen:", err);
-          }
           setUser({ 
             username: response.data.username,
-            profileImage,
             roles: response.data.roles,
-            id: response.data.id,
-            name: response.data.name,
-            lastname: response.data.lastname,
-            email: response.data.email,
-            dni: response.data.dni,
-            phone: response.data.phone,
-            gender: response.data.gender,
-            status: response.data.status,
-            birthDate: response.data.birthDate,
+            id: null,
+            name: null,
+            lastname: null,
+            email: null,
+            dni: null,
+            phone: null,
+            gender: null,
+            status: null,
+            birthDate: null,
            });
           return true;
         }
@@ -82,31 +72,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Inicializar autenticación solo una vez
+  
+  // Función para obtener los demas datos del usuario
+  const fetchFullUser = useCallback(async () => {
+    try {
+      const res = await fetch("/api/users", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const response = await res.json();
+
+      if (response.state !== "OK") return;
+
+      setUser(prev => {
+        if (!prev) return response.data; // si no había usuario básico, lo reemplazás
+        return {
+          ...prev,        // username + roles
+          ...response.data, // id + email + etc desde backend
+        };
+      });
+
+    } catch (err) {
+      console.error("Error cargando datos completos:", err);
+    }
+  }, []);
+
   useEffect(() => {
-    let isMounted = true;
+    if (!user) return;
+    if (user.id) return;
 
-    const initializeAuth = async () => {
-      const hasUser = await fetchUser();
-      
+    fetchFullUser();
+  }, [user, fetchFullUser]);
 
-      if (isMounted) {
-        setLoading(false);
+  // Función para obtener la imagen del usuario
+  useEffect(() => {
+    if (!user?.id) return;
 
-        if (!hasUser && !isPublicRoute) {
-          router.replace('/login');
+    const loadImage = async () => {
+      try {
+        const imgUrl = await getUserFile(user.id ?? 0);
+        if (imgUrl?.data) {
+          setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
         }
+      } catch (err) {
+        console.warn("No se pudo cargar la imagen:", err);
       }
-        };
+    };
 
-        initializeAuth();
+    loadImage();
+  }, [user?.id]);
 
-        return () => {
-          isMounted = false;
-        };
-  }, [isPublicRoute, fetchUser, router]);
+  // Inicializar autenticación
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (hasRun.current) return;
+      hasRun.current = true;
 
+      const hasUser = await fetchUser();
+      setLoading(false);
+      if (!hasUser && !isPublicRoute) {
+        router.replace('/login');
+      }
+    };
 
+    initializeAuth();
+  }, []);
+  
   const login = async (data: LoginFormData & { recaptchaToken?: string }) => {
     setLoading(true);
     try {

@@ -1,14 +1,14 @@
 export interface User {
   id: number | null;
   username: string;
-  name: string;
-  lastname: string;
-  dni: string;
-  email: string;
-  gender: string;
-  phone: string;
-  status?: string;
-  profileImage?: string;
+  name: string| null;
+  lastname: string| null;
+  dni: string| null;
+  email: string| null;
+  gender: string| null;
+  phone: string| null;
+  status?: string| null;
+  profileImage?: string| null;
   roles: Array<'user' | 'driver' | null>;
-  birthDate: string
+  birthDate: string| null
 }
