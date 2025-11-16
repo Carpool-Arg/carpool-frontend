@@ -42,3 +42,12 @@ export async function fetchCityByName(name: string): Promise<CityResponse>{
   const response: CityResponse = await res.json();
   return response; 
 }
+
+export async function getCityByCoordinates(lat: number, lng: number) {
+  const res = await fetch(`/api/city?lat=${lat}&lng=${lng}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return res.json();
+}
