@@ -21,7 +21,7 @@ const navItems: {
 ];
 
 // Rutas en las que debe mostrarse el navbar (soporta rutas dinámicas con startsWith)
-const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip'];
+const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip','/reservations/','/reservations'];
 
 export default function MobileNavbar() {
   const pathname = usePathname();

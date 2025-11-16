@@ -3,6 +3,7 @@ import { Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { baggageOptions } from "../TripFrom";
 import { Vehicle } from "@/types/vehicle";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 
 interface TripDetailProps {
   origin: string;
@@ -114,8 +115,8 @@ export function TripDetail({
               <div className="p-1 rounded-lg bg-gray-11 dark:bg-gray-2">
                 <div className="w-9 h-9 relative flex-shrink-0 ">
                   <Image
-                    src={`/${vehicle.vehicleTypeName}.png`}
-                    alt="Car logo"
+                    src={`${R2_PUBLIC_PREFIX}/${(vehicle.vehicleTypeName).toLowerCase()}.png`}
+                    alt={`Imagen Tipo Vehiculo ${(vehicle.vehicleTypeName).toLowerCase()}`}
                     fill
                     style={{ objectFit: 'contain' }}
                   />
