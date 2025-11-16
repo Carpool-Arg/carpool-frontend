@@ -143,3 +143,29 @@ export async function logoutUser(): Promise<VoidResponse> {
   }
 }
 
+/**
+ * Valida la firma del token con el backend.
+ *
+ * @returns {Promise<VoidResponse>} - Respuesta estándar.
+ */
+export async function verifyTokenWithServer(token: string): Promise<boolean> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${apiUrl}/auth/verify-token`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.state === 'OK';
+    }
+  } catch (error) {
+    console.error('Error verificando token:', error);
+  }
+  
+  return false;
+}
+

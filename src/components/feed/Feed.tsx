@@ -8,19 +8,21 @@ import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";
 import { SearchData } from "@/types/response/trip";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuth } from "@/contexts/authContext";
 
 let initialized = false;
 
 export default function Feed() {
-  const { city, detectUserCity } = useGeocode();
+  const {user} = useAuth()
+  const { city,detectUserCity } = useGeocode();
   const { requestPermission } = useNotifications();
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
 
-
+  console.log('feed',feed)
   const feedFetchRef = useRef(false);
-  const detectCityRef = useRef(false);
+
 
   useEffect(() => {
     if (initialized) return;
@@ -41,10 +43,9 @@ export default function Feed() {
   }, [initialized,requestPermission]);
 
   useEffect(() => {
-    if (detectCityRef.current) return;
-    detectCityRef.current = true; // Marca como ejecutado
+    if(!user) return;
     detectUserCity();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!city) return; // Espera a que city esté disponible

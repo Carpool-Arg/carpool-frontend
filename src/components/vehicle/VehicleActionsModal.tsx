@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Separator from "../ux/Separator";
 import { Vehicle } from "@/types/vehicle";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 
 interface Props {
   vehicle: Vehicle;
@@ -57,8 +58,8 @@ export function VehicleActionsModal({ vehicle, isOpen, onClose, onConfirmDelete,
         {/* Info vehículo */}
         <div className="flex items-center gap-4 mb-4">
           <Image
-            src={`/${vehicle.vehicleTypeName.toLowerCase()}.png`}
-            alt="Car logo"
+            src={`${R2_PUBLIC_PREFIX}/${(vehicle.vehicleTypeName).toLowerCase()}.png`}
+            alt={`Imagen Tipo Vehiculo ${(vehicle.vehicleTypeName).toLowerCase()}`}
             width={56}
             height={56}
           />

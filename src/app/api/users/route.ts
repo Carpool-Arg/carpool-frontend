@@ -1,7 +1,52 @@
 import { VoidResponse } from "@/types/response/response";
+import { UserDetailsResponse } from "@/types/response/user";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+/**
+ * Obtiene los datos del usuario en sesion
+ * 
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
+ */
+export async function GET(req: NextRequest) {
+  // Obtenemos el token JWT desde las cookies
+  const token = req.cookies.get("token")?.value;
+
+  // Si no existe el token, devolvemos un error 400
+  if (!token) {
+    return NextResponse.json({ 
+      data: null, 
+      messages: ["Token inválido o expirado"], 
+      state: "ERROR" 
+    }, { status: 400 });
+  }
+
+  try {
+  
+    // Llamar al backend
+    const res = await fetch(`${apiUrl}/users`, {
+      method: "GET",
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    const response: UserDetailsResponse = await res.json();
+
+    // Devolver respuesta estandarizada
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    return NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" }, 
+      { status: 500 }
+    );
+  }
+}
+
 
 /**
  * Registra a un usuario

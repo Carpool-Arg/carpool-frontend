@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
-import { UserDetailsResponse } from '@/types/response/user';
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 type Authority = { authority: string };
 
@@ -31,14 +28,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Llamada al backend para obtener la información del usuario
-    const res = await fetch(`${apiUrl}/users`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    const response: UserDetailsResponse = await res.json();
 
     // Decodificamos el token para obtener roles y username
     const decoded = parseJwt(token);
@@ -72,7 +61,6 @@ export async function GET(request: NextRequest) {
 
     // Armamos el objeto final del usuario combinando la info del backend y los roles del token
     const user = {
-      ...(response.data ?? {}),
       username: decoded.username,
       roles
     };
@@ -80,9 +68,9 @@ export async function GET(request: NextRequest) {
     // Retornamos la respuesta con la estructura consistente { data, messages, state }
     return NextResponse.json({
       data: user,
-      messages: response.messages?.[0],
+      messages: ["Datos obtenidos correctamente"],
       state: "OK"
-    }, { status: res.status });
+    }, { status: 200 });
 
   } catch (error: unknown) {
     // Manejo de errores inesperados

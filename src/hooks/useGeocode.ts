@@ -25,29 +25,34 @@ export function useGeocode() {
   const getCityFromCoords = useCallback(async (lat: number, lon: number) => {
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetch(`/api/city/coordinates?lat=${lat}&lng=${lon}`, {
         method: "GET",
         credentials: "include",
       });
+
       const data = await res.json();
 
-      if (data.error) throw new Error(data.error);
-
-      if(!res.ok){
-        setCity(FALLBACK_CITY)
-        console.log('fallback')
-        return;   
+      if (!res.ok || data.error) {
+        console.log("fallback");
+        setCity(FALLBACK_CITY);
+        setCoords({ lat, lon });
+        return FALLBACK_CITY; 
       }
 
-      setCity(data.data)
+      setCity(data.data);
       setCoords({ lat, lon });
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error inesperado.");
+
+      return data.data; 
+     }catch(error: unknown){
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
+      return { data: null, messages: [message], state: "ERROR" };
     } finally {
       setLoading(false);
     }
-  }, []);  
+  }, []);
 
   // Este metodo nos devuelve las coordenadas de la ciudad segun su nombre
   const getCoordsFromCity = async (cityName: string) => {
