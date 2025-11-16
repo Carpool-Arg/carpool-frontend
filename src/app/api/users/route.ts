@@ -1,5 +1,5 @@
 import { VoidResponse } from "@/types/response/response";
-import { UserDetailsData, UserDetailsResponse } from "@/types/response/user";
+import { UserDetailsResponse } from "@/types/response/user";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;

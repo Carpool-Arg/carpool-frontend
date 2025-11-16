@@ -3,7 +3,6 @@
 import { updateReservation } from "@/services/reservationService";
 import { ReservationDTO } from "@/types/reservationDTO";
 import { TicketX } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AlertDialog } from "../ux/AlertDialog";
 import Reservation from "./Reservation";
@@ -18,14 +17,12 @@ export default function TripReservationList({tripReservations}: TripReservationL
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-    const router = useRouter();
-
-    const [alertData, setAlertData] = useState<{
-        type: "success" | "error" | "info" | null;
-        title?: string;
-        description?: string;
-        onConfirm?: () => void;
-    } | null>(null);
+  const [alertData, setAlertData] = useState<{
+      type: "success" | "error" | "info" | null;
+      title?: string;
+      description?: string;
+      onConfirm?: () => void;
+  } | null>(null);
 
     useEffect(() => {
       const observer = new IntersectionObserver(

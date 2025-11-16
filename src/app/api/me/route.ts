@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseJwt } from "@/utils/jwt";
-import { UserDetailsResponse } from '@/types/response/user';
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 type Authority = { authority: string };
 

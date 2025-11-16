@@ -2,7 +2,7 @@
 
 import { useGeocode } from "@/hooks/useGeocode"
 import { City } from "@/types/city";
-import { useActionState, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import TripList from "./TripList";
 import { getInitialFeed } from "@/services/tripService";
 import TripSkeleton from "./TripSkeleton";

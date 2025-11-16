@@ -45,9 +45,10 @@ export function useGeocode() {
       setCoords({ lat, lon });
 
       return data.data; 
-    } catch (error: any) {
-      setError(error.message ?? "Ocurrió un error inesperado.");
-      return null; // 🔥 también devolvés algo en caso de error
+     }catch(error: unknown){
+      let message = "Error desconocido";
+      if (error instanceof Error) message = error.message;
+      return { data: null, messages: [message], state: "ERROR" };
     } finally {
       setLoading(false);
     }
