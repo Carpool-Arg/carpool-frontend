@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PUBLIC_PATHS } from "./constants/publicPaths";
-import { DRIVER_PATHS } from "./constants/protectedPaths";
 import { parseJwt, isTokenExpired } from "./utils/jwt";
+import {verifyTokenWithServer} from './services/authService'
+
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // ============================
-  // 1. IGNORAR TODAS LAS API ROUTES DEL FRONTEND
-  // ============================
+
+  //IGNORAR TODAS LAS API ROUTES DEL FRONTEND
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  // ============================
-  // 2. RUTAS PÚBLICAS
-  // ============================
+
+  //RUTAS PÚBLICAS
   const isPublicPage = PUBLIC_PATHS.pages.some((p) =>
     p === "/" ? pathname === "/" : pathname.startsWith(p)
   );
@@ -24,9 +23,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ============================
-  // 3. TOKEN
-  // ============================
+
+  //TOKEN
   const token = req.cookies.get("token")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
 
@@ -34,9 +32,8 @@ export async function middleware(req: NextRequest) {
     return redirectToLogin(req);
   }
 
-  // ============================
-  // 4. EXPIRACIÓN
-  // ============================
+
+  //EXPIRACIÓN
   if (isTokenExpired(token)) {
     if (refreshToken) {
       const newTokens = await refreshAccessToken(refreshToken);
@@ -49,18 +46,19 @@ export async function middleware(req: NextRequest) {
     return redirectToLogin(req);
   }
 
-  // ============================
-  // 5. ROLES
-  // ============================
+  const isValid = await verifyTokenWithServer(token);
+  if (!isValid) {
+    return redirectToLogin(req);
+  }
+
+  //ROLES
   const payload = parseJwt(token);
   if (!payload) return redirectToLogin(req);
 
   return NextResponse.next();
 }
 
-// ============================
-// HELPERS
-// ============================
+//HELPERS
 
 function redirectToLogin(req: NextRequest) {
   const url = req.nextUrl.clone();
@@ -118,9 +116,7 @@ function setTokenCookies(
   }
 }
 
-// ============================
-// MATCHER
-// ============================
+//MATCHER
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|icons|manifest.webmanifest).*)",

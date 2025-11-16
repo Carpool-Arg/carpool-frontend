@@ -6,7 +6,7 @@ import { getUserFile } from '@/services/mediaService';
 import { LoginFormData } from '@/types/forms';
 import { User } from '@/types/user';
 import { useRouter, usePathname } from 'next/navigation';
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 interface AuthContextType {
   user: User | null;
@@ -27,6 +27,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  const hasRun = useRef(false);
 
   // Rutas públicas donde no necesitamos autenticación
   const publicRoutes = [...PUBLIC_PATHS.pages];
@@ -123,11 +125,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Inicializar autenticación
   useEffect(() => {
-    let hasRun = false;
-
     const initializeAuth = async () => {
-      if (hasRun) return;
-      hasRun = true;
+      if (hasRun.current) return;
+      hasRun.current = true;
 
       const hasUser = await fetchUser();
       setLoading(false);
