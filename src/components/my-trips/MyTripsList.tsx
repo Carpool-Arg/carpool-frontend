@@ -1,13 +1,13 @@
 'use client'
 
-import { TripDriverResponseDTO } from "@/types/response/tripDriverResponseDTO";
+import { TripDriverDTO } from "@/types/tripDriverDTO";
 import { MapPinOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import MyTrip from "./MyTrip";
 
 interface MyTripListProps{
-    myTrips: TripDriverResponseDTO;
+    myTrips: TripDriverDTO[] | [];
 }
 
 const LOAD_SIZE = 5; 
@@ -27,7 +27,7 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
             const target = entries[0];
             if (target.isIntersecting) {
                 // Cargar 5 más cuando el sentinela sea visible
-                setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, myTrips.trips.length));
+                setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, myTrips.length));
             }
             },
             {
@@ -43,9 +43,9 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
         return () => {
             if (currentRef) observer.unobserve(currentRef);
         };
-    }, [myTrips.trips.length]);
+    }, [myTrips.length]);
 
-    if (myTrips.trips.length === 0) {
+    if (myTrips.length === 0) {
         return (
             <div className="flex items-center justify-center p-4 gap-4 ">
                 <div className="bg-dark-1 rounded-lg p-3">
@@ -59,7 +59,7 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
         );
     }
 
-    const visibleTrips = myTrips.trips.slice(0, visibleCount);
+    const visibleTrips = myTrips.slice(0, visibleCount);
 
     return (
         <div>
@@ -73,7 +73,7 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
                         className="cursor-pointer block" // Añadir cursor-pointer para mejor UX
                     >
                         <MyTrip 
-                            {...trip} 
+                            trip={trip} 
                         /> 
                     </div>
                         {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
@@ -82,7 +82,7 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
                 })}
         
                 {/* Loader o indicador al final */}
-                {visibleCount < myTrips.trips.length && (
+                {visibleCount < myTrips.length && (
                 <div ref={loaderRef} className="py-4 text-center text-sm text-muted-foreground">
                     Cargando más viajes...
                 </div>

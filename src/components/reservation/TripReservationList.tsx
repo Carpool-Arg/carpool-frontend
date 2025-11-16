@@ -1,12 +1,15 @@
 'use client'
 
-import { ReservationResponseDTO } from "@/types/response/reservationResponseDTO";
-import { MapPinOff } from "lucide-react";
+import { updateReservation } from "@/services/reservationService";
+import { ReservationDTO } from "@/types/reservationDTO";
+import { TicketX } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { AlertDialog } from "../ux/AlertDialog";
 import Reservation from "./Reservation";
 
 interface TripReservationListProps{
-  tripReservations: ReservationResponseDTO;
+  tripReservations: ReservationDTO[] | [];
 }
 
 const LOAD_SIZE = 5;
@@ -15,13 +18,22 @@ export default function TripReservationList({tripReservations}: TripReservationL
   const [visibleCount, setVisibleCount] = useState(1);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+    const router = useRouter();
+
+    const [alertData, setAlertData] = useState<{
+        type: "success" | "error" | "info" | null;
+        title?: string;
+        description?: string;
+        onConfirm?: () => void;
+    } | null>(null);
+
+    useEffect(() => {
       const observer = new IntersectionObserver(
           (entries) => {
           const target = entries[0];
           if (target.isIntersecting) {
               // Cargar 5 más cuando el sentinela sea visible
-              setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, tripReservations.reservation.length));
+              setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, tripReservations.length));
           }
           },
           {
@@ -37,13 +49,85 @@ export default function TripReservationList({tripReservations}: TripReservationL
       return () => {
           if (currentRef) observer.unobserve(currentRef);
       };
-  }, [tripReservations.reservation.length]);
+    }, [tripReservations.length]);
 
-  if (tripReservations.reservation.length === 0) {
+  const handleAcceptReservation = async (idReservation: number) =>{
+    try {
+        const result = await updateReservation({ idReservation, reject: false });
+        if (result?.state === 'OK') {
+            setAlertData({
+                type: "success",
+                title: "¡Reserva aceptada con éxito!",
+                description: "Se le notificará al pasajero.",
+                onConfirm: () => router.refresh(),
+            });
+        }else{
+            setAlertData({
+                type: "error",
+                title: "Hubo un problema",
+                description: result.messages[0],
+                onConfirm: () => router.refresh(),
+            });
+        }
+    } catch (error) {
+        setAlertData({
+            type: "error",
+            title: "Hubo un problema",
+            description: "No se pudo aceptar la reserva.",
+            onConfirm: () => router.refresh(),
+        });
+        console.error("Error al aceptar la reserva", error);
+    }
+  }
+
+    const handleRejectReservation = async (idReservation: number) => {
+        try {
+            const result = await updateReservation({idReservation, reject: true });
+            if (result?.state === 'OK') {
+                router.refresh()
+            }else{
+                setAlertData({
+                    type: "error",
+                    title: "Hubo un problema",
+                    description: result.messages[0],
+                    onConfirm: () => router.refresh(),
+                });
+            }
+        } catch (error) {
+            setAlertData({
+                type: "error",
+                title: "Hubo un problema",
+                description: "No se pudo aceptar la reserva.",
+                onConfirm: () => router.refresh(),
+            });
+            console.error("Error al rechazar la reserva", error);
+        }
+    }
+
+  const handleConfirm = (scope: 'ACCEPT'|'REJECT',idReservation: number)=>{
+    if(scope==="ACCEPT"){
+        setAlertData({
+            type: "info",
+            title: "Aceptar Reserva",
+            description: "¿Estás seguro de que deseas aceptar esta reserva?",
+            onConfirm: () => handleAcceptReservation(idReservation),
+        });
+    }
+    if(scope === 'REJECT'){
+        setAlertData({
+            type: "info",
+            title: "Rechazar Reserva",
+            description: "¿Estás seguro de que deseas rechazar esta reserva?",
+            onConfirm: () => handleRejectReservation(idReservation),
+        });
+    }
+  }
+
+  if (tripReservations.length === 0) {
     return (
         <div className="flex items-center justify-center p-4 gap-4 ">
             <div className="bg-dark-1 rounded-lg p-3">
-                <MapPinOff size={32} />
+                <TicketX size={32} />
             </div>
             <div className="border border-gray-6 h-12"></div>
             <div>
@@ -53,7 +137,7 @@ export default function TripReservationList({tripReservations}: TripReservationL
     );
   }
 
-  const visibleReservations = tripReservations.reservation.slice(0, visibleCount);
+  const visibleReservations = tripReservations.slice(0, visibleCount);
 
 
   return (
@@ -68,7 +152,9 @@ export default function TripReservationList({tripReservations}: TripReservationL
                       className="cursor-pointer block" // Añadir cursor-pointer para mejor UX
                   >
                       <Reservation 
-                        reservation={reservation} 
+                        reservation={reservation}
+                        onAccept = {() => handleConfirm('ACCEPT',reservation.id)}
+                        onReject={()=>handleConfirm("REJECT", reservation.id)} 
                       /> 
                   </div>
                       {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
@@ -77,11 +163,23 @@ export default function TripReservationList({tripReservations}: TripReservationL
               })}
       
               {/* Loader o indicador al final */}
-              {visibleCount < tripReservations.reservation.length && (
+              {visibleCount < tripReservations.length && (
               <div ref={loaderRef} className="py-4 text-center text-sm text-muted-foreground">
                   Cargando más reservas...
               </div>
           )}
+
+            {alertData && (
+                <AlertDialog
+                    isOpen={!!alertData}
+                    onClose={() => setAlertData(null)}
+                    type={alertData.type ?? 'info'}
+                    title={alertData.title}
+                    description={alertData.description}
+                    confirmText="Aceptar"
+                    onConfirm={alertData.onConfirm}
+                />
+            )}
       </div>
   )
 }

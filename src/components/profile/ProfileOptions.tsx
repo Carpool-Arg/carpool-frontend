@@ -1,5 +1,5 @@
 'use client'
-import { ChevronRight, Flag, Headset, History, Info, LogOut, Settings, UserRoundPen } from 'lucide-react';
+import { ChevronRight, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaCarAlt } from 'react-icons/fa';
@@ -51,6 +51,18 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
               <ChevronRight size={18} />
             </Link>
           )}
+
+          <Link
+            href={`${isDriver ? '/reservations' : '/reservations/p'}`}
+            className={linkClasses}
+          >
+            <div className="flex items-center gap-2">   
+              <Tickets size={18}/>
+              <span>Solicitudes de reserva</span>
+            </div>
+            
+            <ChevronRight size={18} />
+          </Link>
 
           <Link
             href={`/trips/${isDriver ? 'driver' : 'passenger'}`}

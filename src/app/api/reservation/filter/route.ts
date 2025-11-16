@@ -8,14 +8,25 @@ export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
     const { searchParams } = new URL(req.url);
-    const idTrip = searchParams.get("idTrip");
-    const idStartCity = searchParams.get("idStartCity");
-    const idDestinationCity = searchParams.get("idDestinationCity");
-    const baggage = searchParams.get("baggage");
-    const nameState = searchParams.get("nameState");
-    // &nameState=${nameState}
+    const paramsObject = {
+      idTrip: searchParams.get("idTrip"),
+      idStartCity: searchParams.get("idStartCity"),
+      idDestinationCity: searchParams.get("idDestinationCity"),
+      baggage: searchParams.get("baggage"),
+      nameState: searchParams.get("nameState"),
+    };
+
+    const params = new URLSearchParams();
+
+    Object.entries(paramsObject).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        params.append(key, value);
+      }
+    });
+
+  const url = `${apiUrl}/reservation/filter?${params.toString()}`;
    
-    const res = await fetch(`${apiUrl}/reservation/filter?idTrip=${idTrip}`, {
+    const res = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

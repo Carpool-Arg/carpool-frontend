@@ -4,7 +4,6 @@ import { VoidResponse } from "@/types/response/response";
 import { SearchResponse, TripResponse } from "@/types/response/trip";
 import { TripDriverResponse } from "@/types/response/tripDriverResponseDTO";
 import { Trip, TripFilters } from "@/types/trip";
-import { ca } from "date-fns/locale";
 
 
 
