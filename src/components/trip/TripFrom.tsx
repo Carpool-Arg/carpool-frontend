@@ -682,7 +682,7 @@ export function TripForm() {
               className='px-12 py-2 text-sm font-inter font-medium'
             > 
               {isProcessing ? (
-                <div className='px-6 py-0.5'>
+                <div className='px-5 py-0.5'>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
                 </div>
               ) : (
