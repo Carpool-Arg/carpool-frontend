@@ -3,9 +3,8 @@ import { City } from "@/types/city";
 import { SearchData } from "@/types/response/trip";
 import { formatPrice } from "@/utils/number";
 import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
-import { ChevronRight, Info, Star } from "lucide-react";
+import { ChevronRight, Info, Star, UserRound } from "lucide-react";
 import Image from "next/image";
-import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
 import Separator from "../ux/Separator";
 import RouteLine from "./RouteLine";
 
@@ -111,9 +110,9 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
               : 
                 <p className="text-lg text-gray-11">$ a definir</p>
               }
-              <p className="flex items-center justify-end text-xl">
-                <span><MdOutlineAirlineSeatReclineNormal /></span>
+              <p className="flex items-center gap-1 justify-end text-xl">
                 {trip.availableSeat}
+                <span><UserRound size={20}/></span>
               </p>
             </div>
           </div>

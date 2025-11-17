@@ -1,4 +1,5 @@
 import HomeButtons from "@/components/home/HomeButtons";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import Image from "next/image";
 
 export default function Page() {
@@ -8,7 +9,7 @@ export default function Page() {
       <div className="hidden md:flex fixed inset-y-0 left-0 w-2/5 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
         <div className="flex flex-col items-center text-center w-[200px]">
           <Image
-            src="/carpool-wslogan.png"
+            src={`${R2_PUBLIC_PREFIX}/carpool-wslogan.png`}
             alt="Imagen de login"
             width={200}
             height={200}
@@ -27,12 +28,12 @@ export default function Page() {
         {/* Logo mobile */}
         <div className="flex justify-center md:hidden">
           <Image
-            src="/logo-carpool.svg"
+            src={`${R2_PUBLIC_PREFIX}/logo-carpool.png`}
             alt="Logo mobile"
             width={200}
             height={200}
             priority
-            className="h-auto dark:invert"
+            className="h-auto"
           />
         </div>
 
@@ -40,7 +41,7 @@ export default function Page() {
         <div className="hidden md:flex mb-6 justify-center w-full">
           <div className="w-full max-w-[600px] flex justify-center">
             <Image
-              src="/home.svg"
+              src={`${R2_PUBLIC_PREFIX}/home.svg`}
               alt="Logo"
               width={600}
               height={400}
@@ -52,7 +53,7 @@ export default function Page() {
 
         <div className="flex justify-center md:hidden w-full">
           <Image
-            src="/home.svg"
+            src={`${R2_PUBLIC_PREFIX}/home.svg`}
             alt="Logo"
             width={600}
             height={400}

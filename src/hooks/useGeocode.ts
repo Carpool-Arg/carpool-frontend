@@ -35,7 +35,6 @@ export function useGeocode() {
       const data = await res.json();
 
       if (!res.ok || data.error) {
-        console.log("fallback");
         setCity(FALLBACK_CITY);
         setCoords({ lat, lon });
         return FALLBACK_CITY; 
@@ -84,15 +83,30 @@ export function useGeocode() {
     if (detectCityRef.current) return;
     detectCityRef.current = true;
 
+    // Si no existe geolocalización → fallback inmediato
     if (!navigator.geolocation) {
-      setError("La geolocalización no está soportada en este navegador");
+      setError("La geolocalización no está soportada");
+      setCity(FALLBACK_CITY);
       return;
     }
+
+    // Timeout manual (muy importante)
+    const timeoutId = setTimeout(() => {
+      console.warn("Timeout esperando permiso, usando fallback");
+      setCity(FALLBACK_CITY);
+    }, 4000);
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        clearTimeout(timeoutId);
         getCityFromCoords(pos.coords.latitude, pos.coords.longitude);
       },
-      () => setError("No se pudo obtener tu ubicación")
+      () => {
+        clearTimeout(timeoutId);
+        setError("No se pudo obtener tu ubicación");
+        setCity(FALLBACK_CITY);
+      },
+      { timeout: 3000 }
     );
   }, [getCityFromCoords]);
 

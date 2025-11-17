@@ -1,4 +1,5 @@
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import Image from "next/image";
 
 export default function RegisterPage() {
@@ -8,7 +9,7 @@ export default function RegisterPage() {
       <div className="hidden md:flex fixed inset-y-0 left-0 w-1/2 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
         <div className="flex flex-col items-center text-center w-[200px]">
           <Image
-            src="/carpool-wslogan.png"
+            src={`${R2_PUBLIC_PREFIX}/carpool-wslogan.png`}
             alt="Imagen de login"
             width={200}
             height={200}
@@ -27,12 +28,12 @@ export default function RegisterPage() {
           {/* Logo solo en mobile */}
           <div className="md:hidden mb-6 flex justify-center">
             <Image
-              src="/logo-carpool.svg"
-              alt="Logo"
+              src={`${R2_PUBLIC_PREFIX}/logo-carpool.png`}
+              alt="Logo de carpool."
               width={220}
               height={50}
               priority
-              className="dark:invert"
+              className="dark:invert-0 invert"
             />
           </div>
 
