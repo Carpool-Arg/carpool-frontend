@@ -48,7 +48,7 @@ export async function getReservations(data: ReeservationRequestDTO): Promise<Res
     });
 
     const response: ReservationResponse = await res.json();
-    console.log(response)
+    
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');
     }

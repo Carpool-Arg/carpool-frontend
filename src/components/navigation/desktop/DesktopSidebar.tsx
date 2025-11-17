@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search , User, Infinity, UserCircle2, LogOut, PlusCircle, LucideIcon, History, UserRound } from 'lucide-react';
+import { Home, Search , User, LogOut, PlusCircle, LucideIcon, History, UserRound } from 'lucide-react';
 import { useAuth } from '@/contexts/authContext';
 import { useState } from 'react';
 import { AlertDialog } from '@/components/ux/AlertDialog';

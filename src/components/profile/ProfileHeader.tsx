@@ -1,6 +1,5 @@
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 import { useAuth } from '@/contexts/authContext';
-import { User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
 
 

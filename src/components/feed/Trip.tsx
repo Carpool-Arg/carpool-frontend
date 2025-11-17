@@ -5,7 +5,6 @@ import { formatPrice } from "@/utils/number";
 import { capitalizeWords, formatTime, formatTimeRounded } from "@/utils/string";
 import { ChevronRight, Info, Star, UserRound } from "lucide-react";
 import Image from "next/image";
-import { MdOutlineAirlineSeatReclineNormal } from "react-icons/md";
 import Separator from "../ux/Separator";
 import RouteLine from "./RouteLine";
 
