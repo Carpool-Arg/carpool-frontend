@@ -15,7 +15,9 @@ const LOAD_SIZE = 5;
 
 export default function TripReservationList({tripReservations}: TripReservationListProps) {
   const [visibleCount, setVisibleCount] = useState(1);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const loaderRef = useRef<HTMLDivElement | null>(null);    
+  const [loadingAcceptId, setLoadingAcceptId] = useState<number | null>(null);
+    const [loadingRejectId, setLoadingRejectId] = useState<number | null>(null);
 
   const [alertData, setAlertData] = useState<{
       type: "success" | "error" | "info" | null;
@@ -49,6 +51,7 @@ export default function TripReservationList({tripReservations}: TripReservationL
     }, [tripReservations.length]);
 
   const handleAcceptReservation = async (idReservation: number) =>{
+    setLoadingAcceptId(idReservation);
     try {
         const result = await updateReservation({ idReservation, reject: false });
         if (result?.state === 'OK') {
@@ -74,10 +77,13 @@ export default function TripReservationList({tripReservations}: TripReservationL
             onConfirm: () => window.location.reload(),
         });
         console.error("Error al aceptar la reserva", error);
+    }finally{
+        setLoadingAcceptId(null);
     }
   }
 
     const handleRejectReservation = async (idReservation: number) => {
+        setLoadingRejectId(idReservation);
         try {
             const result = await updateReservation({idReservation, reject: true });
             if (result?.state === 'OK') {
@@ -98,6 +104,8 @@ export default function TripReservationList({tripReservations}: TripReservationL
                 onConfirm: () => window.location.reload(),
             });
             console.error("Error al rechazar la reserva", error);
+        }finally{
+            setLoadingRejectId(null);
         }
     }
 
@@ -152,6 +160,8 @@ export default function TripReservationList({tripReservations}: TripReservationL
                         reservation={reservation}
                         onAccept = {() => handleConfirm('ACCEPT',reservation.id)}
                         onReject={()=>handleConfirm("REJECT", reservation.id)} 
+                        isAccepting={loadingAcceptId === reservation.id}
+                        isRejecting={loadingRejectId === reservation.id}
                       /> 
                   </div>
                       {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}

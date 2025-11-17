@@ -30,6 +30,9 @@ export default function TripDetails() {
   const { id } = useParams();
   const router = useRouter();
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
+
   const [alertData, setAlertData] = useState<{
     type: "success" | "error" | null;
     title?: string;
@@ -73,9 +76,11 @@ export default function TripDetails() {
   }, [id]);
 
   const handleReservationSubmit = async (payload: Reservation) => {
+    setIsProcessing(true);
     try {
       const result = await newReservation(payload);
       if (result?.state === "OK") {
+        setIsProcessing(false);
         // éxito
         setAlertData({
           type: "success",
@@ -106,6 +111,7 @@ export default function TripDetails() {
   const BaggageIcon = selectedBaggage?.icon;
 
   const handleOpenModal = () => setIsModalOpen(true);
+
   const handleCloseModal = () => setIsModalOpen(false);
 
   if (loading) return TripDetailSkeleton();
@@ -229,9 +235,15 @@ export default function TripDetails() {
               variant="primary"
               className="px-12 py-2 text-sm font-inter font-medium md:mb-4"
               onClick={handleOpenModal}
-              disabled={trip.currentAvailableSeats <= 0}
+              disabled={trip.currentAvailableSeats <= 0 || isProcessing}
             >
-              {trip.currentAvailableSeats > 0 ? 'Solicitar reserva' : 'Reservas no disponibles'}
+              {isProcessing ? (
+                <div className="px-6 py-0.5">
+                  <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                </div>
+              ) : (
+                trip.currentAvailableSeats > 0 ? "Solicitar reserva" : "Reservas no disponibles"
+              )}
             </Button>
           </div>
         </div>

@@ -62,6 +62,8 @@ export function TripForm() {
     observation: ""
   })
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const { handleSubmit, register, watch, setValue, trigger, formState: { errors , isValid},  }  = useForm<TripFormData>({
     resolver: zodResolver(tripSchema),
     mode: 'onChange',
@@ -168,6 +170,7 @@ export function TripForm() {
       setError("Debes seleccionar origen y destino");
       return;
     }
+    setIsProcessing(true);
 
     const tripStopsPayload = [
       {
@@ -208,7 +211,7 @@ export function TripForm() {
         setError(response.messages?.[0] || "Error al guardar el viaje");
         return;
       }
-
+      setIsProcessing(false);
       setIsSuccessDialogOpen(true);
     } catch (error) {
       setError("Error al crear el viaje");
@@ -677,8 +680,14 @@ export function TripForm() {
               onClick={() => setIsDialogOpen(true)}
               variant="primary"
               className='px-12 py-2 text-sm font-inter font-medium'
-            >
-              Publicar
+            > 
+              {isProcessing ? (
+                <div className='px-6 py-0.5'>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                </div>
+              ) : (
+                <span>Publicar</span>
+              )}
             </Button>
           </div>
         </div>

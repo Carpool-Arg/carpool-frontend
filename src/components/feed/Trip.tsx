@@ -108,7 +108,7 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
               {isActualOrigin ? 
                 <p className="text-xl font-semibold">${formatPrice(trip.seatPrice)}</p>
               : 
-                <p className="text-lg text-gray-11">$ a definir</p>
+                <p className="text-sm text-gray-11">$ a definir</p>
               }
               <p className="flex items-center gap-1 justify-end text-xl">
                 {trip.availableSeat}

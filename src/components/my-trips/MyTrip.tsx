@@ -59,7 +59,7 @@ export default function MyTrip({trip}: MyTripProps) {
                     />
                     <div className="w-full">
                         <div className="leading-none text-sm">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 <p className="font-semibold">{capitalizeWords(trip.vehicle.brand)} </p>
                                 <p className="">{capitalizeWords(trip.vehicle.model)}</p>
                             </div>
