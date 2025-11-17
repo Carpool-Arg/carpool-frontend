@@ -35,9 +35,9 @@ export default function MyTrip({trip}: MyTripProps) {
                     </div>
                 </div>
 
-                <div>
-                    <p className="text-xl font-semibold">${formatPrice(trip.seatPrice)}</p>
-                    <p className="flex items-center justify-end text-xl gap-1">
+                <div className="ml-4">
+                    <p className="text-lg font-semibold">${formatPrice(trip.seatPrice)}</p>
+                    <p className="flex items-center justify-end text-lg gap-1">
                     {trip.currentAvailableSeats}
                     <span><UserRound size={20}/></span>
                     </p>
@@ -48,35 +48,33 @@ export default function MyTrip({trip}: MyTripProps) {
             <Separator color="bg-gray-2" marginY="my-4"/>
 
                   
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-8">
-                    <div className="flex items-center gap-4">
+            <div className="flex flex-col w-full">
+                <div className="flex items-center gap-4">
                     <Image
                         src={`${R2_PUBLIC_PREFIX}/${(trip.vehicle.vehicleTypeName).toLowerCase()}.png`}
                         alt={`Imagen Tipo Vehiculo ${(trip.vehicle.vehicleTypeName).toLowerCase()}`}
-                        width={50}
-                        height={50}
+                        width={40}
+                        height={40}
                         className="rounded-full object-cover"
                     />
-                        <div className="leading-none">
-                            <p className="font-semibold">{capitalizeWords(trip.vehicle.brand)}</p>
-                            <p className="font-semibold">{capitalizeWords(trip.vehicle.model)}</p>
-                            <p className="text-sm">{trip.vehicle.domain}</p>
-
+                    <div className="w-full">
+                        <div className="leading-none text-sm">
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold">{capitalizeWords(trip.vehicle.brand)} </p>
+                                <p className="">{capitalizeWords(trip.vehicle.model)}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between w-full">
+                            <p className="text-xs">{trip.vehicle.domain}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="flex items-center gap-1 text-xs">
+                                    {formatISOToShortDate(trip.startDateTime)}
+                                </p>
+                                <ChevronRight size={20} strokeWidth={1}/>
+                            </div>      
                         </div>
                     </div>
-                    
-                    <div className="border-l border-gray-2 px-4">
-                        <p
-                        className="flex items-center gap-1"
-                        >
-                        {formatISOToShortDate(trip.startDateTime)}
-                        </p>
-                    </div>
-                </div>
-            
-                <ChevronRight size={20} strokeWidth={1}/>
-
+                 </div>
             </div>
         </div>
     )

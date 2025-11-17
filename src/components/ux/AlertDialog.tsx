@@ -29,15 +29,15 @@ export function AlertDialog({
   if (!isOpen) return null
 
   const iconMap = {
-    error: <AlertCircle className="text-red-500 w-6 h-6" />,
-    success: <CheckCircle className="text-green-500 w-6 h-6" />,
-    info: <Info className="text-blue-500 w-6 h-6" />,
+    error: <AlertCircle className="text-error w-6 h-6" />,
+    success: <CheckCircle className="text-success w-6 h-6" />,
+    info: <Info className="text-gray-11 w-6 h-6" />,
   }
 
   const confirmButtonStyle = {
-    error: "bg-red-500 hover:bg-red-600 text-white",
-    success: "bg-green-500 hover:bg-green-600 text-white",
-    info: "bg-blue-500 hover:bg-blue-600 text-white",
+    error: "bg-white hover:bg-gray-6 text-gray-8",
+    success: "bg-white hover:bg-gray-6 text-gray-8",
+    info: "bg-white hover:bg-gray-6 text-gray-8",
   }
 
   return (
@@ -54,7 +54,7 @@ export function AlertDialog({
         <div className="flex justify-end gap-2">
           <button
             onClick={secondaryButton ? secondaryButton.onClick : onClose}
-            className="px-4 cursor-pointer py-2 rounded-md border border-gray-300 dark:border-gray-600"
+            className="px-4 cursor-pointer py-2 rounded-md border border-gray-300 dark:border-gray-5"
           >
             {secondaryButton ? secondaryButton.text : cancelText}
           </button>
