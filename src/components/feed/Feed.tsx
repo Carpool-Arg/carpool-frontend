@@ -19,10 +19,7 @@ export default function Feed() {
   const [currentCity, setCurrentCity] = useState<City | null>(null);
   const [feed, setFeed] = useState<SearchData[] | null>(null);
   const [loading, setLoading] = useState(true); 
-
-  console.log('feed',feed)
   const feedFetchRef = useRef(false);
-
 
   useEffect(() => {
     if (initialized) return;

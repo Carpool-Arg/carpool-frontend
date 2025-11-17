@@ -24,8 +24,8 @@ export default function Reservation({ reservation,onAccept, onReject }: Reservat
                     <Image
                         src={reservation.urlImage}
                         alt={"Foto de perfil del pasajero"}
-                        width={30}
-                        height={30}
+                        width={40}
+                        height={40}
                         className="rounded-full object-cover border"
                     />
 
@@ -39,11 +39,11 @@ export default function Reservation({ reservation,onAccept, onReject }: Reservat
                         </p>
                     </div>
                 </div>
-                <p>{formatISOToShortDate(reservation.createdAt)}</p>
+                <p className=" text-sm">{formatISOToShortDate(reservation.createdAt)}</p>
             </div>
 
 
-            <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center justify-between mt-1">
                 <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col items-center">
 
@@ -60,25 +60,23 @@ export default function Reservation({ reservation,onAccept, onReject }: Reservat
                 <div className="flex flex-col items-center">
                     {reservation.baggage ? (
                         <>
-                        <span className="text-4xl p-2 rounded-full bg-gray-8">
-                            <MdOutlineBackpack />
-                        </span>
-                        <p>Con equipaje</p>
+                            <span className="text-3xl p-2 rounded-full bg-gray-8">
+                                <MdOutlineBackpack />
+                            </span>
+                            <p>Con equipaje</p>
                         </>
                     ) : (
                         <>
-                        <span className="text-4xl p-2 rounded-full bg-gray-8">
-                            <MdOutlineNoBackpack />
-                        </span>
-                        <p>Sin equipaje</p>
+                            <span className="text-3xl p-2 rounded-full bg-gray-8">
+                                <MdOutlineNoBackpack />
+                            </span>
+                            <p>Sin equipaje</p>
                         </>
                     )}
                 </div>
             </div>
-
+            
             <Separator color="bg-gray-2" marginY="my-2" />
-
-
             <div className="flex items-center gap-6 justify-end">
                 <Button variant="outline" onClick={() => onReject()}>Rechazar</Button>
                 <Button variant="primary"  className="px-5" onClick={() => onAccept()}>Aceptar</Button>
