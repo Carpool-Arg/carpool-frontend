@@ -22,6 +22,7 @@ import { Check, X } from 'lucide-react'
 import { Alert } from "../ux/Alert"
 import { useFieldValidator } from "@/hooks/useFieldValidator";
 import Link from "next/link"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 const genders = [
   { label: "Masculino", value: "MALE" },
@@ -325,11 +326,11 @@ export function RegisterForm() {
           />
           
 
-          <p className="w-full text-center text-sm text-gray-500 font-inter">
+          <p className="w-full text-center text-sm text-gray-500 font-inter dark:text-gray-3">
             Al hacer clic en continuar, aceptás nuestros
-            <a href="/terms" className="mx-1 text-dark-2 font-medium">Términos de Servicio</a>
+            <a href="/terms" className="mx-1 text-dark-2 font-medium dark:text-gray-6">Términos de Servicio</a>
             y
-            <a href="/privacy" className="text-dark-2 font-medium ml-1">Política de Privacidad</a>.
+            <a href="/privacy" className="text-dark-2 font-medium ml-1 dark:text-gray-6">Política de Privacidad</a>.
           </p>
         </form>
       )}
@@ -407,26 +408,44 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <label htmlFor="gender" className="block mb-1 font-medium text-sm font-outfit">Género</label>
-            <select
-              id="gender"
-              {...step2Form.register('gender', { required: "El género es obligatorio" })}
-              className={`w-full rounded-md border px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5 ${
-                step2Form.formState.errors.gender ? 'border-error' : ''
-              }`}
-              defaultValue=""
+            <label
+              htmlFor="gender"
+              className="block mb-1 font-medium text-sm font-outfit"
             >
-              <option value="" disabled >Seleccioná un género</option>
-              {genders.map((gender) => (
-                <option key={gender.value} value={gender.value}>
-                  {gender.label}
-                </option>
-              ))}
-            </select>
+              Género
+            </label>
+
+            <Select
+              onValueChange={(value) =>
+                step2Form.setValue("gender", value as "MALE" | "FEMALE" | "UNSPECIFIED")
+              }
+              defaultValue={step2Form.getValues("gender")}
+            >
+              <SelectTrigger
+                id="gender"
+                className={`w-full font-outfit dark:bg-dark-5 ${
+                  step2Form.formState.errors.gender ? "border-error" : ""
+                }`}
+              >
+                <SelectValue placeholder="Seleccioná un género" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {genders.map((gender) => (
+                  <SelectItem key={gender.value} value={gender.value}>
+                    {gender.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             {step2Form.formState.errors.gender && (
-              <p className="text-error text-xs mt-1">{step2Form.formState.errors.gender.message}</p>
+              <p className="text-error text-xs mt-1">
+                {step2Form.formState.errors.gender.message}
+              </p>
             )}
           </div>
+
 
           <div className="flex gap-4">
             <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>

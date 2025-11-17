@@ -1,5 +1,6 @@
 'use client'
 
+import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 import { getMatchingHeaderPath, HEADER_TITLES } from '@/constants/publicPaths';
 import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
@@ -21,7 +22,7 @@ export const AppHeader = ({ showBack, rightAction, variant }: AppHeaderProps) =>
       return (
         <header className="flex items-center justify-center h-10 bg-white dark:bg-dark-5 border-b border-gray-6 dark:border-gray-2">
           <Image
-            src="/logo-carpool.png"
+            src={`${R2_PUBLIC_PREFIX}/logo-carpool.png`}
             alt="Header"
             width={105}
             height={24}

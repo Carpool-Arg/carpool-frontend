@@ -403,6 +403,7 @@ export function TripForm() {
                 type="datetime-local"
                {...register('startDateTime')}
                 className="w-full p-2 rounded border border-gray-5 dark:border-gray-2"
+                step="60"
               />
               {errors.startDateTime && (
                 <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>

@@ -7,7 +7,6 @@ import {verifyTokenWithServer} from './services/authService'
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-
   //IGNORAR TODAS LAS API ROUTES DEL FRONTEND
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
@@ -22,7 +21,6 @@ export async function middleware(req: NextRequest) {
   if (isPublicPage) {
     return NextResponse.next();
   }
-
 
   //TOKEN
   const token = req.cookies.get("token")?.value;
