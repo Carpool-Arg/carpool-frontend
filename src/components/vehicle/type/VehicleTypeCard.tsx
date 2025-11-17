@@ -1,3 +1,4 @@
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { VehicleType } from "@/types/vehicleType";
 import Image from "next/image";
 
@@ -19,7 +20,7 @@ export function VehicleTypeCard({ vehicleType, selected, onSelect }: VehicleType
         
         <div className="w-10 h-10 relative flex-shrink-0">
           <Image
-            src={`/${vehicleType.name.toLowerCase()}.png`}
+            src={`${R2_PUBLIC_PREFIX}/${vehicleType.name.toLowerCase()}.png`}
             alt="Vehicle logo"
             fill
             style={{ objectFit: "contain" }}

@@ -17,6 +17,7 @@ import { Reservation } from "@/types/reservation";
 import { newReservation } from "@/services/reservationService";
 import { AlertDialog } from "../ux/AlertDialog";
 import { Button } from "../ux/Button";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -187,7 +188,7 @@ export default function TripDetails() {
             </h2>
             <div className="flex items-center gap-2">
               <Image
-                src={`/${trip.vehicle.vehicleTypeName.toLowerCase()}.png`}
+                src={`${R2_PUBLIC_PREFIX}/${trip.vehicle.vehicleTypeName.toLowerCase()}.png`}
                 alt="Car logo"
                 width={75}
                 height={75}
