@@ -11,10 +11,12 @@ export interface ReservationProps {
     reservation: ReservationDTO;
     onAccept: ()=>void
     onReject: ()=>void
+    isAccepting?: boolean;
+    isRejecting?: boolean;
 }
 
 
-export default function Reservation({ reservation,onAccept, onReject }: ReservationProps) {
+export default function Reservation({ reservation,onAccept, onReject, isAccepting,isRejecting}: ReservationProps) {
     return (
         <div className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200">
 
@@ -78,8 +80,24 @@ export default function Reservation({ reservation,onAccept, onReject }: Reservat
             
             <Separator color="bg-gray-2" marginY="my-2" />
             <div className="flex items-center gap-6 justify-end">
-                <Button variant="outline" onClick={() => onReject()}>Rechazar</Button>
-                <Button variant="primary"  className="px-5" onClick={() => onAccept()}>Aceptar</Button>
+                <Button variant="outline" onClick={onReject}>
+                    {isRejecting ? (
+                        <div className="px-5 py-0.5">
+                            <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
+                        </div> 
+                    ) : (
+                        "Rechazar"
+                    )}
+                </Button>
+                <Button variant="primary"  className="px-5" onClick={onAccept}>
+                    {isAccepting ? (
+                        <div className="px-5 py-0.5">
+                            <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                        </div>  
+                    ) : (
+                        "Aceptar"
+                    )}
+                </Button>
             </div>
         
         </div>

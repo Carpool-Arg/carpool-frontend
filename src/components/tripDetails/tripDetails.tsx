@@ -17,6 +17,7 @@ import { Reservation } from "@/types/reservation";
 import { newReservation } from "@/services/reservationService";
 import { AlertDialog } from "../ux/AlertDialog";
 import { Button } from "../ux/Button";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -28,6 +29,9 @@ export default function TripDetails() {
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
   const router = useRouter();
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
 
   const [alertData, setAlertData] = useState<{
     type: "success" | "error" | null;
@@ -72,9 +76,11 @@ export default function TripDetails() {
   }, [id]);
 
   const handleReservationSubmit = async (payload: Reservation) => {
+    setIsProcessing(true);
     try {
       const result = await newReservation(payload);
       if (result?.state === "OK") {
+        setIsProcessing(false);
         // éxito
         setAlertData({
           type: "success",
@@ -105,6 +111,7 @@ export default function TripDetails() {
   const BaggageIcon = selectedBaggage?.icon;
 
   const handleOpenModal = () => setIsModalOpen(true);
+
   const handleCloseModal = () => setIsModalOpen(false);
 
   if (loading) return TripDetailSkeleton();
@@ -187,7 +194,7 @@ export default function TripDetails() {
             </h2>
             <div className="flex items-center gap-2">
               <Image
-                src={`/${trip.vehicle.vehicleTypeName.toLowerCase()}.png`}
+                src={`${R2_PUBLIC_PREFIX}/${trip.vehicle.vehicleTypeName.toLowerCase()}.png`}
                 alt="Car logo"
                 width={75}
                 height={75}
@@ -228,9 +235,15 @@ export default function TripDetails() {
               variant="primary"
               className="px-12 py-2 text-sm font-inter font-medium md:mb-4"
               onClick={handleOpenModal}
-              disabled={trip.currentAvailableSeats <= 0}
+              disabled={trip.currentAvailableSeats <= 0 || isProcessing}
             >
-              {trip.currentAvailableSeats > 0 ? 'Solicitar reserva' : 'Reservas no disponibles'}
+              {isProcessing ? (
+                <div className="px-6 py-0.5">
+                  <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                </div>
+              ) : (
+                trip.currentAvailableSeats > 0 ? "Solicitar reserva" : "Reservas no disponibles"
+              )}
             </Button>
           </div>
         </div>
