@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
-import { RoleSwithcer } from '@/components/profile/RoleSwitcher';
-import { ProfileOptions } from '@/components/profile/ProfileOptions';
+import { RoleSwithcer } from '@/modules/profile/components/RoleSwitcher';
+import { ProfileOptions } from '@/modules/profile/components/ProfileOptions';
 import { Alert } from '@/components/ux/Alert';
 import { useRouter } from 'next/navigation';
 

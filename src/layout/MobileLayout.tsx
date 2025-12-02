@@ -1,7 +1,8 @@
 'use client';
-import { AppHeader } from '@/components/navigation/mobile/AppHeader';
-import MobileNavbar from '@/components/navigation/mobile/MobileNavbar';
-import {  HEADER_PATHS } from '@/constants/publicPaths';
+
+import {  HEADER_PATHS } from '@/constants/headerPaths';
+import { AppHeader } from '@/widgets/AppHeader';
+import MobileNavbar from '@/widgets/mobile/MobileNavbar';
 import { usePathname } from 'next/navigation';
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
