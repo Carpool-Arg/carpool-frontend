@@ -1,14 +1,12 @@
 'use client'
 
 import { getReservations } from "@/services/reservation/reservationService";
-
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import TripReservationList from "./TripReservationList";
 import { BiError } from "react-icons/bi";
 import TripSkeleton from "@/modules/feed/components/TripSkeleton";
-import { ReservationResponse, ReservationResponseDTO } from "../../create/types/dto/reservationResponseDTO";
+import { ReservationResponseDTO } from "../../create/types/dto/reservationResponseDTO";
 
 
 export default function TripReservations() {

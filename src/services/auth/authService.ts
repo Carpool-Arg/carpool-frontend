@@ -1,7 +1,6 @@
 import { CompleteRegistrationData } from "@/modules/auth/schemas/completeRegistrationSchema";
 import { LoginData } from "@/modules/auth/schemas/loginSchema";
 import { RegisterData } from "@/modules/auth/schemas/registerSchema";
-import { CompleteRegData, CompleteRegResponse } from "@/modules/auth/types/dto/completeRegResponseDTO";
 import { GoogleLoginResponse } from "@/modules/auth/types/dto/googleAuthResponseDTO";
 import { LoginResponse } from "@/modules/auth/types/dto/loginResponseDTO";
 import { VoidResponse } from "@/shared/types/response";

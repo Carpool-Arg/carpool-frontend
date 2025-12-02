@@ -32,7 +32,6 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch
   } = useForm<CompleteRegistrationData>({
     resolver: zodResolver(completeRegistrationSchema),
     mode: 'onChange',

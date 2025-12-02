@@ -3,7 +3,7 @@ import { BaseResponse } from "@/shared/types/response";
 import { TripDriverDTO } from "../tripDriver";
 
 
-interface TripDriverResponseDTO {
+export interface TripDriverResponseDTO {
     trips: TripDriverDTO[];
 }
 

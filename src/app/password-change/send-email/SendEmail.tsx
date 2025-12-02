@@ -1,5 +1,6 @@
 'use client'
-import MailForm from "@/components/mail/MailForm";
+
+import MailForm from "@/modules/mail/components/MailForm";
 import { sendChangePasswordEmail } from "@/services/email/emailService";
 
 export default function SendChangePasswordEmailPage() {
