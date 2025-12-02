@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/authContext';
 import { newTrip, validateTripDateTime } from '@/services/trip/tripService';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
+import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -559,39 +559,62 @@ export function TripForm() {
       )}
 
       {step === 4 && (
-        <div className='flex flex-col justify-between h-full items-center'>
-          <div className='flex flex-col items-center gap-8 justify-center h-full'>
-            <Image src={"/map-pin-2.svg"} 
-              alt='Imagen MapPin' 
+        <div className="flex flex-col h-full">
+          
+          {/* Parte superior (centrada) */}
+          <div className="flex flex-col items-center gap-8 justify-center flex-1">
+            <Image 
+              src="/map-pin-2.svg"
+              alt="Imagen MapPin"
               width={121}
               height={0}
               priority
-              className='h-auto'
-              />
+              className="h-auto"
+            />
             <h1 className="text-2xl text-center font-semibold">
               ¿Deseas sumar paradas intermedias?
             </h1>
           </div>
-          <div className="flex justify-center gap-7.5">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setStep(6)}
-              className='px-6 py-2 text-sm font-inter font-medium'
+
+          {/* Botones abajo del todo */}
+          <div className="flex flex-col items-center gap-6 mb-6">
+            <div className="flex justify-center gap-7.5">
+              <Button 
+                type="button"
+                variant="outline"
+                onClick={() => setStep(6)}
+                className="px-6 py-2 text-sm font-inter font-medium"
+              >
+                No
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => setStep(5)}
+                className="px-6 py-2 text-sm font-inter font-medium"
+              >
+                Sí
+              </Button>
+            </div>
+
+            {/* Volver */}
+            <button 
+              onClick={() => setStep(3)}
+              className="flex items-center gap-1 hover:gap-1.5
+                        transition-all duration-200 text-sm
+                        hover:scale-105 hover:text-[15px] hover:text-gray-6 cursor-pointer border-b border-gray-9 px-2 py-1 rounded-lg"
             >
-              No
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => setStep(5)}
-              className='px-6 py-2 text-sm font-inter font-medium'
-            >
-              Si
-            </Button>
+              <ChevronLeftCircle size={16}/>
+              Volver a los datos del viaje
+            </button>
+
+
+
           </div>
+
         </div>
       )}
+
 
       {step === 5 && (
         <div className="flex flex-col h-screen md:pb-8 justify-between">
