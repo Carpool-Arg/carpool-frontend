@@ -1,17 +1,18 @@
 'use client'
 
 import { PUBLIC_PATHS } from '@/constants/publicPaths';
-import { loginUser, authWithGoogle, logoutUser } from '@/services/authService';
-import { getUserFile } from '@/services/mediaService';
-import { LoginFormData } from '@/types/forms';
-import { User } from '@/types/user';
+import { User } from '@/models/user';
+import { LoginData } from '@/modules/auth/schemas/loginSchema';
+import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
+import { getUserFile } from '@/services/media/mediaService';
+
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (data: LoginFormData & { recaptchaToken?: string }) => Promise<void>;
+  login: (data: LoginData & { recaptchaToken?: string }) => Promise<void>;
   logout: () => void;
   authGoogle: (idToken: string) => Promise<void>;
   fetchUser: () => Promise<boolean>;
@@ -139,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
   
-  const login = async (data: LoginFormData & { recaptchaToken?: string }) => {
+  const login = async (data: LoginData & { recaptchaToken?: string }) => {
     setLoading(true);
     try {
       const result = await loginUser(data);

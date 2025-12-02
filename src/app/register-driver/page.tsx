@@ -1,4 +1,4 @@
-import { DriverForm } from "@/components/driver/DriverForm";
+import { DriverForm } from "@/modules/driver/components/DriverForm";
 
 export default function RegisterDriverPage() {
   return (

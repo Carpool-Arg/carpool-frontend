@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PUBLIC_PATHS } from "./constants/publicPaths";
-import { parseJwt, isTokenExpired } from "./utils/jwt";
-import {verifyTokenWithServer} from './services/authService'
+import {verifyTokenWithServer} from './services/auth/authService'
+import { isTokenExpired, parseJwt } from "./shared/utils/jwt";
 
 
 export async function middleware(req: NextRequest) {
