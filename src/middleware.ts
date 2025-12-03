@@ -22,6 +22,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith('/files')) return NextResponse.next();
+
+
   //TOKEN
   const token = req.cookies.get("token")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;

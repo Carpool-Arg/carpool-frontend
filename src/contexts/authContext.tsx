@@ -18,6 +18,8 @@ interface AuthContextType {
   fetchUser: () => Promise<boolean>;
   prevImage: string | null;
   setPrevImage: (value: string | null) => void;
+  profileViewRole: 'pasajero' | 'conductor';
+  setProfileViewRole: (role: 'pasajero' | 'conductor') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const [profileViewRole, setProfileViewRole] = useState<'pasajero' | 'conductor'>('pasajero');
 
   const hasRun = useRef(false);
 
@@ -229,7 +232,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     authGoogle,
     fetchUser,
     prevImage,
-    setPrevImage
+    setPrevImage,
+    profileViewRole,
+    setProfileViewRole
   };
 
   return (

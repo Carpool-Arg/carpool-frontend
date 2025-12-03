@@ -1,7 +1,7 @@
 import { Trip, TripFilters } from "@/models/trip";
 import { TripDriverResponse } from "@/modules/driver-trips/types/dto/tripDriverResponseDTO";
 import { SearchTripResponse } from "@/modules/search/types/dto/searchTripResponseDTO";
-import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
+import { TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
 
@@ -96,6 +96,24 @@ export const validateTripDateTime = async(startDateTime: string) =>{
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
 
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function verifyIfUserIsCreator(tripId: number): Promise<VerifyCreatorResponse>{
+  try{
+    const res = await fetch(`/api/trip/verify-creator/${tripId}`,{
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+   const response: VerifyCreatorResponse = await res.json()
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
