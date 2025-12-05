@@ -60,6 +60,7 @@ export default function PasswordForm({
     } catch (error: unknown) {
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;
+      console.error(message)
       setStatus("error");
     }
   };
