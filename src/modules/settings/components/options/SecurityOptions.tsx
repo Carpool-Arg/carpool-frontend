@@ -11,27 +11,27 @@ export function SecurityOptions() {
 
     return(
         <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl">
-            <Link href="/settings/security/two-factor-auth" className={linkClasses}>
+            <Link href="/settings" className={linkClasses}>
                 <span>Autenticación en 2 pasos</span>
                 <ChevronRight size={18} />
             </Link>
 
-            <Link href="/settings/security/active-sessions" className={linkClasses}>
+            <Link href="/settings" className={linkClasses}>
                 <span>Sesiones activas</span>
                 <ChevronRight size={18} />
             </Link>
 
-            <Link href="/settings/security/login-activity" className={linkClasses}>
+            <Link href="/settings" className={linkClasses}>
                 <span>Actividad de inicio de sesión</span>
                 <ChevronRight size={18} />
             </Link>
 
-            <Link href="/settings/security/security-questions" className={linkClasses}>
+            <Link href="/settings" className={linkClasses}>
                 <span>Preguntas de seguridad</span>
                 <ChevronRight size={18} />
             </Link>
 
-            <Link href="/settings/security/data-download" className={linkClasses}>
+            <Link href="/settings" className={linkClasses}>
                 <span>Descargar mis datos</span>
                 <ChevronRight size={18} />
             </Link>

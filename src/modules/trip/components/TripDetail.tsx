@@ -78,7 +78,7 @@ export function TripDetail({
             </span>
             <span className="text-2xl font-bold">{new Date(startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} hs</span>
           </p>
-          <p className="flex flex-col items-start w-20 text-gray-7 dark:text-gray-1">
+          <p className="flex flex-col items-start text-right min-w-[90px] text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Precio</span> 
             <span className="text-2xl font-bold">${seatPrice}</span>
             <span className="font-regular text-sm">por pasajero</span>

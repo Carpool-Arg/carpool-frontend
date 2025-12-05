@@ -23,6 +23,7 @@ import { TripStopForm } from './tripStop/TripStopsForm';
 import { TripDetail } from './TripDetail';
 import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
+import InfoTooltip from '@/components/ux/InfoTooltip';
 
 
 
@@ -97,7 +98,7 @@ export function TripForm() {
   useEffect(() => {
     if (selectedVehicle) {
       // si el usuario no cambió nada todavía, inicializo con el valor del vehículo
-      setValue("availableSeat", selectedVehicle.availableSeats, {
+      setValue("availableSeat", selectedVehicle.availableSeats-1, {
         shouldValidate: true,
         shouldDirty: true,
       });
@@ -419,11 +420,12 @@ export function TripForm() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               {/* Asientos disponibles */}
               <div>
-                <label className="block mb-1 text-sm font-medium font-inter">
+                <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
                   Asientos disponibles
+                  <InfoTooltip text="Cantidad de asientos disponibles para pasajeros"></InfoTooltip>
                 </label>
 
                 <div className="relative">
@@ -446,7 +448,7 @@ export function TripForm() {
                 <p className="text-red-500 text-sm mt-1">
                   {errors.availableSeat
                     ? errors.availableSeat.message
-                    : watch("availableSeat") > (selectedVehicle?.availableSeats ?? 0)
+                    : watch("availableSeat") > ((selectedVehicle?.availableSeats) ?? 0)
                       ? `No puede superar los asientos del vehículo`
                       : null
                   }

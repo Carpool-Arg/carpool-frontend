@@ -33,7 +33,7 @@ export function SettingsOptions() {
                     <ChevronRight size={18} />
                 </Link>
 
-                <Link href="/settings/notifications" className={linkClasses}>
+                <Link href="/settings" className={linkClasses}>
                     <div className="flex items-center gap-2">   
                     <Bell size={18}/>
                     <span>Notificaciones</span>
@@ -42,7 +42,7 @@ export function SettingsOptions() {
                     <ChevronRight size={18} />
                 </Link>
 
-                <Link href="/settings/privacy" className={linkClasses}>
+                <Link href="/settings" className={linkClasses}>
                     <div className="flex items-center gap-2">   
                     <ShieldHalf size={18}/>
                     <span>Privacidad</span>

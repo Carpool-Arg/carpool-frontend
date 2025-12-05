@@ -65,6 +65,10 @@ export function VehicleList() {
         Array.from({ length: Math.max(vehicles.length, 3) }).map((_, idx) => (
           <VehicleCardSkeleton key={idx} />
         ))
+      ) : error ? (
+        <Alert type="error" message={error} />
+      ) : vehicles.length === 0 ? (
+        <Alert type="info" message="Todavía no tenés vehículos registrados." />
       ) : (
         vehicles.map((vehicle) => (
           <VehicleCard
@@ -83,11 +87,6 @@ export function VehicleList() {
           onConfirmDelete={handleDelete}
           onEdit={handleEdit}
         />
-      )}
-      {error && (
-        <div className="mb-4">
-          <Alert type="error" message={error} />
-        </div>
       )}
     </div>
   );

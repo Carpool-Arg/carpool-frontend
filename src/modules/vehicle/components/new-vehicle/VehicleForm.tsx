@@ -11,6 +11,7 @@ import { VehicleTypeList } from "../vehicle-type/VehicleTypeList"
 import { Alert } from "@/components/ux/Alert"
 import { RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema} from "../../schemas/vehicleSchema"
 import { vehicleFormData } from "../../types/vehicle"
+import InfoTooltip from "@/components/ux/InfoTooltip"
 
 
 export function VehicleForm() {
@@ -149,11 +150,17 @@ export function VehicleForm() {
               />
               
               {/* Capacidad */}
-              <Input 
-                label="Asientos" 
-                type="number" {...step2Form.register('availableSeats', { valueAsNumber: true })} 
-                error={step2Form.formState.errors.availableSeats?.message} 
-              />
+              <div>
+                <div className="flex items-center gap-1">
+                  <label>Asientos</label>    
+                  <InfoTooltip text="Ingresá la cantidad de asientos total del vehiculo"></InfoTooltip>          
+                </div>
+                <Input  
+                  type="number" {...step2Form.register('availableSeats', { valueAsNumber: true })} 
+                  error={step2Form.formState.errors.availableSeats?.message} 
+                />
+              </div>
+              
             </div>
 
             {/* Botones */}
