@@ -122,7 +122,13 @@ export default function TripDetails() {
   const handleCloseModal = () => setIsModalOpen(false);
 
   if (loading) return TripDetailSkeleton();
-  if (error) return <ErrorMessage message={error} />;
+  if (error) return (
+    <div className="h-full my-auto">
+      <ErrorMessage message={error} />
+    </div>
+
+  );
+
 
   if (trip) {
     return (

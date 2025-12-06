@@ -34,6 +34,27 @@ export function formatFullDate(date: Date) {
     .join(" ");
 }
 
+export function formatFullDateWithYear(date: Date) {
+  const formatted = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  })
+    .format(date)
+    .replace(",", "");
+
+  return formatted
+    .split(" ")
+    .map((word, index) => {
+      if (index === 0 || index === formatted.split(" ").length - 1) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      return word;
+    })
+    .join(" ");
+}
+
 
 /**
  * Convierte un string ISO (yyyy-mm-dd) en un Date ajustado a la zona horaria local
