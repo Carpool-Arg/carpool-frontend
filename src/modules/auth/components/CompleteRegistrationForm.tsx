@@ -1,22 +1,22 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-
-import { completeRegistration } from "@/services/auth/authService"
 
 import { Check, X } from "lucide-react"
 import { CompleteRegistrationData, completeRegistrationSchema } from "../schemas/completeRegistrationSchema"
 import { useFieldValidator } from "@/shared/hooks/useFieldValidator"
 import Spinner from "@/components/ux/Spinner"
+import { completeRegistration } from "@/services/auth/authService"
 import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 
 interface CompleteRegistrationFormProps {
   email: string
 }
+
 
 const genders = [
   { label: "Masculino", value: "MALE" },
@@ -32,6 +32,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    watch
   } = useForm<CompleteRegistrationData>({
     resolver: zodResolver(completeRegistrationSchema),
     mode: 'onChange',
@@ -52,28 +53,24 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
   const dniValidation = useFieldValidator('dni');
   const phoneValidation = useFieldValidator('phone')
 
-  const usernameValue = useWatch({ name: "username" });
-  const dniValue = useWatch({ name: "dni" });
-  const phoneValue = useWatch({ name: "phone" });
-
   useEffect(() => {
-    if (usernameValue && !errors.username) {
-      usernameValidation.validate(usernameValue);
-    }
-  }, [usernameValue, errors.username]);
-
-  useEffect(() => {
-    if (dniValue && !errors.dni) {
-      dniValidation.validate(dniValue);
-    }
-  }, [dniValue, errors.dni]);
-
-  useEffect(() => {
-    if (phoneValue && !errors.phone) {
-      phoneValidation.validate(phoneValue);
-    }
-  }, [phoneValue, errors.phone]);
-
+    const subscription = watch((value, { name }) => {
+      if (name === "username" && value.username) {
+        if (!errors.username){
+          usernameValidation.validate(value.username);
+        }
+      }else if(name === "dni" && value.dni){
+        if(!errors.dni){
+          dniValidation.validate(value.dni)
+        }
+      }else if(name === "phone" && value.phone){
+        if(!errors.phone){
+          phoneValidation.validate(value.phone)
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch,errors, usernameValidation,dniValidation,phoneValidation]);
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
