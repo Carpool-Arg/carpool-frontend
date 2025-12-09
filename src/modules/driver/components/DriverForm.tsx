@@ -16,6 +16,7 @@ import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete"
 import { fetchLicenseClasses } from "@/services/licenseClass/licenseClassService"
 import { LicenseClassResponseDTO } from "../types/dto/licenseClassResponseDTO"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DriverFormSkeleton } from "./DriverSkeleton"
 
 
 export function DriverForm() {
@@ -28,6 +29,7 @@ export function DriverForm() {
     const loadClasses = async () => {
       try {
         const res = await fetchLicenseClasses();
+        
         if (res.state==="ERROR") {
           setError(res.messages?.[0] || "No se pudieron cargar las clases de licencia");
           return;
@@ -87,6 +89,18 @@ export function DriverForm() {
       }
       setError(message || 'Error al crear el perfil de conductor');
     }
+  }
+
+  if (!licenseClasses && !error) {
+    return <DriverFormSkeleton/>;
+  }
+
+  if (error && (!licenseClasses?.data || licenseClasses.data.length === 0)) {
+    return (
+      <div className="flex flex-col gap-4 w-full">
+        <Alert message={error} />
+      </div>
+    );
   }
 
   return (
