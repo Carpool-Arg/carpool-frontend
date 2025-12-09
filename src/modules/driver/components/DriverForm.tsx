@@ -13,6 +13,7 @@ import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 import { DriverData, driverSchema } from "../schema/driverSchema"
 import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete"
+import Separator from "@/components/ux/Separator"
 
 
 export function DriverForm() {
@@ -73,10 +74,14 @@ export function DriverForm() {
         
 
         {error && <Alert message={error} />}
+        <div>
+          <h1 className="font-semibold">Datos de la licencia</h1>
+          <Separator marginY="my-1" color="bg-gray-2"/>
 
+        </div>
         {/* Clase de licencia */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2">
 
             <Input
               label="Clase de Licencia"
@@ -89,7 +94,7 @@ export function DriverForm() {
           </div>
 
           {/* Vencimiento */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
 
             <Input
               label="Vencimiento"
@@ -100,9 +105,13 @@ export function DriverForm() {
               />
           </div>
 
-          
+
+          <div className="md:col-span-4">
+            <h1 className="font-semibold">Domicilio</h1>
+            <Separator marginY="my-1" color="bg-gray-2"/>
+          </div>
           {/* Localidad */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-4">
             <Controller
               name="cityId"
               control={control}
@@ -119,10 +128,10 @@ export function DriverForm() {
             />
           </div>
 
-          <div className="md:col-span-1">
+          <div className="md:col-span-3">
 
             <Input
-              label="Dirección"
+              label="Calle"
               type="text"
               autoComplete="addressStreet"
               {...register('addressStreet')}

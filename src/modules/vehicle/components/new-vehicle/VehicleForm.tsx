@@ -108,7 +108,12 @@ export function VehicleForm() {
       {/* STEP 2 */}
       {step === 2 && (
         <>
-          <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
+          <div className="space-y-2">
+            <h1 className="text-xl font-semibold">Registrar vehículo</h1>
+            <p className="text-sm text-muted-foreground">
+              Completá los siguientes datos de tu vehículo para finalizar el registro.
+            </p>
+          </div>
           {error && <Alert message={error} />}
           <form onSubmit={step2Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
             {/* Marca y modelo */}
