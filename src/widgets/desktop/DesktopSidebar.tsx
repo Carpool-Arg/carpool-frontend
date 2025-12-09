@@ -51,7 +51,7 @@ export default function DesktopSidebar() {
           />
           <span className="font-medium text-gray-6 px-2 flex items-center gap-1">
             <UserRound size={14} fill='currentColor' stroke='currentColor'/>
-            {user?.username}
+            <span className="max-w-[120px] truncate">{user?.username}</span>
           </span>
         </div>
         <Separator color='bg-gray-2' />
