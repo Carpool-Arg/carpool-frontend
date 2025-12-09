@@ -112,11 +112,11 @@ export function DriverForm() {
         <div>
           <h1 className="font-semibold">Datos de la licencia</h1>
           <Separator marginY="my-1" color="bg-gray-2"/>
-
         </div>
+
         {/* Clase de licencia */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2">
             <Controller
               name="licenseClassId"
               control={control}
@@ -127,7 +127,7 @@ export function DriverForm() {
                     onValueChange={(value) => field.onChange(Number(value))}
                     value={field.value ? String(field.value) : undefined}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-[42px]">
                       <SelectValue placeholder="Seleccionar clase..." />
                     </SelectTrigger>
 
@@ -146,12 +146,10 @@ export function DriverForm() {
                 </div>
               )}
             />
-
           </div>
 
           {/* Vencimiento */}
           <div className="md:col-span-2">
-
             <Input
               label="Vencimiento"
               type="date"
@@ -204,10 +202,7 @@ export function DriverForm() {
               error={errors.addressNumber?.message}
               />
           </div>
-          
-
         </div>
-
 
         <Button
           variant="primary"
