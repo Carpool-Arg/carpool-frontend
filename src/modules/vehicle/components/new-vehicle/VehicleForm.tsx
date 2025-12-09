@@ -11,6 +11,7 @@ import { VehicleTypeList } from "../vehicle-type/VehicleTypeList"
 import { Alert } from "@/components/ux/Alert"
 import { RegisterVehicleStep1Data, registerVehicleStep1Schema, RegisterVehicleStep2Data, registerVehicleStep2Schema} from "../../schemas/vehicleSchema"
 import { vehicleFormData } from "../../types/vehicle"
+import InfoTooltip from "@/components/ux/InfoTooltip"
 
 
 export function VehicleForm() {
@@ -107,7 +108,12 @@ export function VehicleForm() {
       {/* STEP 2 */}
       {step === 2 && (
         <>
-          <h1 className="text-xl font-semibold mb-4">Registrar vehículo</h1>
+          <div className="space-y-2">
+            <h1 className="text-xl font-semibold">Registrar vehículo</h1>
+            <p className="text-sm text-muted-foreground">
+              Completá los siguientes datos de tu vehículo para finalizar el registro.
+            </p>
+          </div>
           {error && <Alert message={error} />}
           <form onSubmit={step2Form.handleSubmit(handleSubmitFinal)} className="flex flex-col gap-4">
             {/* Marca y modelo */}
@@ -149,11 +155,17 @@ export function VehicleForm() {
               />
               
               {/* Capacidad */}
-              <Input 
-                label="Asientos" 
-                type="number" {...step2Form.register('availableSeats', { valueAsNumber: true })} 
-                error={step2Form.formState.errors.availableSeats?.message} 
-              />
+              <div>
+                <div className="flex items-center gap-1">
+                  <label>Asientos</label>    
+                  <InfoTooltip text="Ingresá la cantidad de asientos total del vehiculo"></InfoTooltip>          
+                </div>
+                <Input  
+                  type="number" {...step2Form.register('availableSeats', { valueAsNumber: true })} 
+                  error={step2Form.formState.errors.availableSeats?.message} 
+                />
+              </div>
+              
             </div>
 
             {/* Botones */}

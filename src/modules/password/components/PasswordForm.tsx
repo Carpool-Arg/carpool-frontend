@@ -1,14 +1,14 @@
 'use client'
 
-import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { VoidResponse } from "@/shared/types/response";
-import { ResetPasswordData, resetPasswordSchema } from "../schemas/resetPasswordSchema";
 import { Button } from "@/components/ux/Button";
 import { Input } from "@/components/ux/Input";
+import { VoidResponse } from "@/shared/types/response";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle, LockKeyhole, XCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ResetPasswordData, resetPasswordSchema } from "../schemas/resetPasswordSchema";
 
 
 type PasswordFormdProps = {
@@ -27,7 +27,6 @@ export default function PasswordForm({
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const passwordsForm = useForm<ResetPasswordData>({
@@ -39,16 +38,13 @@ export default function PasswordForm({
   useEffect(() => {
     if (!token) {
       setStatus("error");
-      setMessage("No se ha proporcionado un token válido.");
     }
   }, [token]);
 
   const handleSubmit = async (data: ResetPasswordData) => {
     setStatus("loading");
-    setMessage(null);
     if (!token) {
       setStatus("error");
-      setMessage("No se ha proporcionado un token.");
       return;
     }
 
@@ -58,16 +54,14 @@ export default function PasswordForm({
 
       if(response.state === "ERROR" ){
         setStatus('error')
-        setMessage(response.messages?.[0] || "Error inesperado.");
         return;
       }
       setStatus('success')
-      setMessage(successMessage)
     } catch (error: unknown) {
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;
+      console.error(message)
       setStatus("error");
-      setMessage(message || "Ocurrió un problema.");
     }
   };
 
@@ -96,7 +90,6 @@ export default function PasswordForm({
         </div>
         <h1 className="text-2xl font-semibold mb-2 text-error">Ups… ocurrió un problema</h1>
         <p className="text-gray-3 mt-4 max-w-md font-inter">No pudimos cambiar tu contraseña. Por favor, vuelve a intentarlo más tarde.</p>
-        <p className="text-gray-3 max-w-md mb-8 mt-2 font-inter">{message}</p>
         <Button variant="outline" onClick={goToLogin}>
           Volver al inicio
         </Button>

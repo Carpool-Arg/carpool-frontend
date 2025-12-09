@@ -17,6 +17,7 @@ import { fetchLicenseClasses } from "@/services/licenseClass/licenseClassService
 import { LicenseClassResponseDTO } from "../types/dto/licenseClassResponseDTO"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DriverFormSkeleton } from "./DriverSkeleton"
+import Separator from "@/components/ux/Separator"
 
 
 export function DriverForm() {
@@ -108,7 +109,11 @@ export function DriverForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
         {error && <Alert message={error} />}
+        <div>
+          <h1 className="font-semibold">Datos de la licencia</h1>
+          <Separator marginY="my-1" color="bg-gray-2"/>
 
+        </div>
         {/* Clase de licencia */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-1">
@@ -145,7 +150,7 @@ export function DriverForm() {
           </div>
 
           {/* Vencimiento */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
 
             <Input
               label="Vencimiento"
@@ -156,9 +161,13 @@ export function DriverForm() {
               />
           </div>
 
-          
+
+          <div className="md:col-span-4">
+            <h1 className="font-semibold">Domicilio</h1>
+            <Separator marginY="my-1" color="bg-gray-2"/>
+          </div>
           {/* Localidad */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-4">
             <Controller
               name="cityId"
               control={control}
@@ -175,10 +184,10 @@ export function DriverForm() {
             />
           </div>
 
-          <div className="md:col-span-1">
+          <div className="md:col-span-3">
 
             <Input
-              label="Dirección"
+              label="Calle"
               type="text"
               autoComplete="addressStreet"
               {...register('addressStreet')}
