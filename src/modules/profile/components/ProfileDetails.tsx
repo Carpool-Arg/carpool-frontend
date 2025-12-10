@@ -9,6 +9,8 @@ import { SquarePen, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ProfileData } from '../schemas/profileSchema';
+import Spinner from '@/components/ux/Spinner';
+import { Toast } from '@/components/ux/Toast';
 
 /**
  * Interfaz para representar los campos editables del usuario en el formulario.
@@ -49,10 +51,12 @@ const genders = [
 export default function ProfileDetails() {
   const { user, fetchUser, setPrevImage } = useAuth();
   const router = useRouter();
-
-  const [genderLabel, setGenderLabel] = useState<string>("");
+  
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
 
   const [editableUser, setEditableUser] = useState<EditableUser>({
     id: 0,
@@ -97,19 +101,21 @@ export default function ProfileDetails() {
       setIsChanged(false);
       return;
     }
-
+    const profileImageChanged = !!selectedFile || editableUser.profileImage !== (user.profileImage ?? '');
     const changed =
       editableUser.email !== (user.email ?? '') ||
       editableUser.gender !== (user.gender ?? '') ||
-      editableUser.phone !== (user.phone ?? '') 
+      editableUser.phone !== (user.phone ?? '') ||
+      profileImageChanged
     setIsChanged(changed);
-  }, [editableUser, user]);
+  }, [editableUser, user, selectedFile]);
 
   const handleChange = (field: keyof typeof editableUser, value: string) => {
     setEditableUser((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
+    setLoading(true);
     try {
       if (!user) return;
 
@@ -117,8 +123,7 @@ export default function ProfileDetails() {
         await uploadUserFile(user.id!, selectedFile);
       }
 
-      const genderValue: ProfileData['gender'] = 
-        genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
+      const genderValue = editableUser.gender as ProfileData['gender'];
 
       const response = await updateUser({
         phone: editableUser.phone,
@@ -128,13 +133,18 @@ export default function ProfileDetails() {
       });
 
       if (response.state === 'ERROR') {
+        setLoading(false)
+        setToast({ message: response.messages?.[0] ?? 'Error al guardar el perfil', type: 'error' });
         console.error(response.messages[0]);
         return;
       }
 
       await fetchUser();
+      setLoading(false);
       router.push('/profile');
     } catch (error: unknown) {
+      setLoading(false)
+      setToast({ message:'Error al guardar el perfil', type: 'error' });
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;
 
@@ -158,8 +168,7 @@ export default function ProfileDetails() {
     try {
       await deleteUserFile(user.id!)
 
-      const genderValue: ProfileData['gender'] = 
-      genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
+      const genderValue= editableUser.gender as ProfileData['gender'];
 
       const response = await updateUser({
         phone: editableUser.phone,
@@ -279,11 +288,7 @@ export default function ProfileDetails() {
             <select
               value={editableUser.gender}
               onChange={(e) => {
-                setGenderLabel(e.target.value);
-                setEditableUser((prev) => ({
-                  ...prev,
-                  gender: e.target.value
-                }));
+                handleChange("gender", e.target.value);
               }}
               className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
             >
@@ -306,9 +311,24 @@ export default function ProfileDetails() {
                 ' cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
           }`}
         >
-          Guardar cambios
+          {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                  <Spinner size={20} />
+                  <span>Guardando...</span>
+              </div>
+          ) : (
+              'Guardar cambios'
+          )}
         </button>
       </form>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
