@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { ProfileData } from '../schemas/profileSchema';
 import Spinner from '@/components/ux/Spinner';
 import { Toast } from '@/components/ux/Toast';
+import { AlertDialog } from '@/components/ux/AlertDialog';
 
 /**
  * Interfaz para representar los campos editables del usuario en el formulario.
@@ -58,6 +59,15 @@ export default function ProfileDetails() {
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
 
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+
+  const { resetPrevImage } = useAuth();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
+
+  const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+
   const [editableUser, setEditableUser] = useState<EditableUser>({
     id: 0,
     name: '',
@@ -95,6 +105,11 @@ export default function ProfileDetails() {
     }
   }, [user]);
 
+  useEffect(() => {
+    return () => {
+      resetPrevImage(); 
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -155,6 +170,20 @@ export default function ProfileDetails() {
   const handleEditPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+
+    // Se valida el tipo de formato de la imagen
+    if(!ALLOWED_TYPES.includes(file.type)){
+      setToast({ message:'Formato inválido. Solo se permiten PNG, JPG, JPEG y WEBP.', type: 'error' });
+      e.target.value = "";
+      return
+    }
+
+    if(file.size > MAX_FILE_SIZE_BYTES){
+      setToast({ message:'La imagen supera el tamaño máximo permitido de 2 MB', type: 'error' });
+      e.target.value = "";
+      return
+    }
+
     setSelectedFile(file);
 
     // preview para el header
@@ -329,6 +358,31 @@ export default function ProfileDetails() {
           onClose={() => setToast(null)}
         />
       )}
+
+      <AlertDialog
+        isOpen={isAlertOpen}
+        title="Tienes cambios sin guardar"
+        description="Si sales de esta página perderás los cambios realizados, incluida la foto de perfil."
+        confirmText="Salir sin guardar"
+        cancelText="Cancelar"
+        onConfirm={() => {
+          resetPrevImage();
+          setIsChanged(false);
+
+          if (pendingNavigation === "back") {
+            router.back();
+          } else if (pendingNavigation) {
+            router.push(pendingNavigation);
+          }
+
+          setPendingNavigation(null);
+          setIsAlertOpen(false);
+        }}
+        onClose={() => {
+          setPendingNavigation(null);
+          setIsAlertOpen(false);
+        }}
+      />
     </div>
   );
 }
