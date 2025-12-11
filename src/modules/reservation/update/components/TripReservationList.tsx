@@ -2,56 +2,62 @@
 
 import { updateReservation } from "@/services/reservation/reservationService";
 
-import { TicketX } from "lucide-react";
+import { Loader2, TicketX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { ReservationDTO } from "../../create/types/reservation";
 import Reservation from "../../create/components/Reservation";
+import FilterBar from "./FilterBar";
 
 
 
-interface TripReservationListProps{
+interface TripReservationListProps {
   tripReservations: ReservationDTO[] | [];
+  onLoadMore: () => void; 
+  hasMore: boolean;       
+  isLoadingMore: boolean; 
 }
 
-const LOAD_SIZE = 5;
-
-export default function TripReservationList({tripReservations}: TripReservationListProps) {
-  const [visibleCount, setVisibleCount] = useState(1);
+export default function TripReservationList({
+    tripReservations, 
+    onLoadMore, 
+    hasMore, 
+    isLoadingMore 
+}: TripReservationListProps) {
   const loaderRef = useRef<HTMLDivElement | null>(null);    
   const [loadingAcceptId, setLoadingAcceptId] = useState<number | null>(null);
-    const [loadingRejectId, setLoadingRejectId] = useState<number | null>(null);
+  const [loadingRejectId, setLoadingRejectId] = useState<number | null>(null);
 
   const [alertData, setAlertData] = useState<{
-      type: "success" | "error" | "info" | null;
-      title?: string;
-      description?: string;
-      onConfirm?: () => void;
+    type: "success" | "error" | "info" | null;
+    title?: string;
+    description?: string;
+    onConfirm?: () => void;
   } | null>(null);
 
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-          (entries) => {
-          const target = entries[0];
-          if (target.isIntersecting) {
-              // Cargar 5 más cuando el sentinela sea visible
-              setVisibleCount((prev) => Math.min(prev + LOAD_SIZE, tripReservations.length));
-          }
-          },
-          {
-          rootMargin: "200px", // empieza a cargar un poco antes del final
-          threshold: 0.1,
-          }
-      );
+    // Observer para el scroll infinito
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+        (entries) => {
+        const target = entries[0];
+        // Si es visible y hay más datos por cargar, avisamos al padre
+        if (target.isIntersecting && hasMore && !isLoadingMore) {
+            onLoadMore();
+        }
+        },
+        {
+        rootMargin: "100px", // Un poco antes de llegar al final
+        threshold: 0.1,
+        }
+    );
 
-      const currentRef = loaderRef.current;
+    const currentRef = loaderRef.current;
+    if (currentRef) observer.observe(currentRef);
 
-      if (currentRef) observer.observe(currentRef);
-
-      return () => {
-          if (currentRef) observer.unobserve(currentRef);
-      };
-    }, [tripReservations.length]);
+    return () => {
+        if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [hasMore, isLoadingMore, onLoadMore, tripReservations.length]); 
 
   const handleAcceptReservation = async (idReservation: number) =>{
     setLoadingAcceptId(idReservation);
@@ -145,51 +151,46 @@ export default function TripReservationList({tripReservations}: TripReservationL
     );
   }
 
-  const visibleReservations = tripReservations.slice(0, visibleCount);
-
-
   return (
       <div>
-          {visibleReservations.map((reservation, index) => {
-      
+          {tripReservations.map((reservation, index) => {
               return (
-                  <div key={index}>
-
-                  <div 
-                      // onClick={() => handleTripClick(trip.id)} 
-                      className="cursor-pointer block" // Añadir cursor-pointer para mejor UX
-                  >
-                      <Reservation 
-                        reservation={reservation}
-                        onAccept = {() => handleConfirm('ACCEPT',reservation.id)}
-                        onReject={()=>handleConfirm("REJECT", reservation.id)} 
-                        isAccepting={loadingAcceptId === reservation.id}
-                        isRejecting={loadingRejectId === reservation.id}
-                      /> 
-                  </div>
-                      {/* Preguntar si hace falt aun endpoint para la ciudad por defecto*/}
+                  <div key={`${reservation.id}-${index}`}> {/* Key única compuesta por si acaso */}
+                    <div className="cursor-pointer block">
+                        <Reservation 
+                          reservation={reservation}
+                          onAccept={() => handleConfirm('ACCEPT', reservation.id)}
+                          onReject={() => handleConfirm("REJECT", reservation.id)} 
+                          isAccepting={loadingAcceptId === reservation.id}
+                          isRejecting={loadingRejectId === reservation.id}
+                        /> 
+                    </div>
                   </div>
               );
-              })}
+          })}
       
-              {/* Loader o indicador al final */}
-              {visibleCount < tripReservations.length && (
-              <div ref={loaderRef} className="py-4 text-center text-sm text-muted-foreground">
-                  Cargando más reservas...
-              </div>
-          )}
+          {/* Elemento centinela para el Observer */}
+          <div ref={loaderRef} className="py-6 flex justify-center w-full">
+             {isLoadingMore && (
+                 <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
+                    <Loader2 className="animate-spin h-5 w-5" />
+                    <span className="text-sm">Cargando más reservas...</span>
+                 </div>
+             )}
+             
+          </div>
 
-            {alertData && (
-                <AlertDialog
-                    isOpen={!!alertData}
-                    onClose={() => setAlertData(null)}
-                    type={alertData.type ?? 'info'}
-                    title={alertData.title}
-                    description={alertData.description}
-                    confirmText="Aceptar"
-                    onConfirm={alertData.onConfirm}
-                />
-            )}
+          {alertData && (
+              <AlertDialog
+                  isOpen={!!alertData}
+                  onClose={() => setAlertData(null)}
+                  type={alertData.type ?? 'info'}
+                  title={alertData.title}
+                  description={alertData.description}
+                  confirmText="Aceptar"
+                  onConfirm={alertData.onConfirm}
+              />
+          )}
       </div>
   )
 }

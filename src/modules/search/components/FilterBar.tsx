@@ -25,13 +25,11 @@ function formatShortDate(date: Date) {
 interface FilterBarProps {
   selectedDate?: string; // fecha seleccionada en formato ISO (yyyy-mm-dd)
   onDateChange?: (date: Date) => void;
-
   minPrice?: number;
   maxPrice?: number;
   maxSeatPrice: number
   onMinPriceChange?: (value: number) => void;
   onMaxPriceChange?: (value: number) => void;
-
   sortByRating?: boolean; // toggle para ordenar por puntuación descendente
   setSortByRating?: (active: boolean) => void;
   onClearFilters?: () => void;

@@ -21,13 +21,8 @@ import { Alert } from "@/components/ux/Alert"
 import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { GENDERS } from "@/constants/genders"
 
-
-const genders = [
-  { label: "Masculino", value: "MALE" },
-  { label: "Femenino", value: "FEMALE" },
-  { label: "Otro", value: "UNSPECIFIED" },
-];
 
 export function RegisterForm() {
   const [step, setStep] = useState(1)
@@ -429,7 +424,7 @@ export function RegisterForm() {
               </SelectTrigger>
 
               <SelectContent>
-                {genders.map((gender) => (
+                {GENDERS.map((gender) => (
                   <SelectItem key={gender.value} value={gender.value}>
                     {gender.label}
                   </SelectItem>

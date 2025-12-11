@@ -12,17 +12,12 @@ import Spinner from "@/components/ux/Spinner"
 import { completeRegistration } from "@/services/auth/authService"
 import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
+import { GENDERS } from "@/constants/genders"
 
 interface CompleteRegistrationFormProps {
   email: string
 }
 
-
-const genders = [
-  { label: "Masculino", value: "MALE" },
-  { label: "Femenino", value: "FEMALE" },
-  { label: "Otro", value: "UNSPECIFIED" },
-];
 export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -199,7 +194,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
               defaultValue=""
             >
               <option value="" disabled >Seleccioná un género</option>
-              {genders.map((gender) => (
+              {GENDERS.map((gender) => (
                 <option key={gender.value} value={gender.value}>
                   {gender.label}
                 </option>
