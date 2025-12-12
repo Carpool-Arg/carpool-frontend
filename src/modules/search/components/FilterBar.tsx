@@ -164,21 +164,43 @@ export default function FilterBar({
             <div className="flex flex-col w-1/2">
               <span className="text-xs mb-1">Mínimo</span>
               <Input
-                type="number"
-                value={localMin}
-                onChange={(e) => handleMinChange(parseInt(e.target.value, 10) || 0)}
+                type="text"
+                inputMode="numeric"
+                value={String(localMin)}
+                onChange={(e) => {
+                  const raw = e.target.value;
+
+                  // Solo dígitos
+                  const cleaned = raw.replace(/\D+/g, "");
+
+                  // Normalizar ceros a la izquierda
+                  const normalized = cleaned.replace(/^0+/, "");
+
+                  // Si quedó vacío → volver a 0
+                  const finalValue = normalized === "" ? 0 : Number(normalized);
+
+                  handleMinChange(finalValue);
+                }}
                 className="text-sm"
               />
+
             </div>
             <div className="flex flex-col w-1/2">
               <span className="text-xs mb-1">Máximo</span>
               <Input
-                type="number"
-                value={localMax}
-                onChange={(e) => handleMaxChange(parseInt(e.target.value, 10) || 0)}
-                className="text-sm"
+                type="text"
+                inputMode="numeric"
+                value={localMax === 0 ? "" : localMax}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const cleaned = raw.replace(/\D+/g, "");
+                  const normalized = cleaned.replace(/^0+/, "");
+                  handleMaxChange(normalized ? Number(normalized) : 0);
+                }}
                 onBlur={handleMaxBlur}
+                className="text-sm"
               />
+
             </div>
           </div>
 
