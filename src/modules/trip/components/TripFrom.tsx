@@ -26,8 +26,6 @@ import { AlertDialog } from '@/components/ux/AlertDialog';
 import InfoTooltip from '@/components/ux/InfoTooltip';
 
 
-
-
 interface BaggageOption {
   value: string;
   type: string;
@@ -74,7 +72,7 @@ export function TripForm() {
     defaultValues: {
       startDateTime: '',
       availableSeat: 0,
-      seatPrice: 0,
+      seatPrice: undefined,
       originId: 0,
       originObservation: '',
       destinationId: 0,
@@ -468,15 +466,25 @@ export function TripForm() {
                   </span>
 
                   <input
-                    type="number"
-                    min={1}
+                    type="text"
+                    inputMode="numeric"
                     {...register("seatPrice", {
                       required: "Debe indicar el precio por asiento",
-                      valueAsNumber: true,
+                      setValueAs: (value) => {
+                        const cleaned = String(value).replace(/\D+/g, "");
+                        return cleaned ? Number(cleaned) : 0;
+                      },
                     })}
-                    className="w-full pl-10 pr-3 py-2 rounded border border-gray-5 dark:border-gray-2 placeholder-gray-5"
+                    onInput={(e) => {
+                      const el = e.target as HTMLInputElement;
+                      el.value = el.value.replace(/\D+/g, "");
+                    }}
+                    className="w-full pl-10 pr-3 py-2 rounded border"
                     placeholder="0"
                   />
+
+
+
                 </div>
 
                 {errors.seatPrice && (
