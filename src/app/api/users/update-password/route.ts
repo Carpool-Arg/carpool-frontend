@@ -4,12 +4,26 @@ import { parseJwt } from "@/shared/utils/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+/**
+ * Actualiza el la contraseña de un usuario.
+ *
+ * Recibe la contraseña anterior, la contraseña nueva y la de confirmación desde la petición,
+ * realiza la llamada al backend para actualizar la contraseña, devuelve la respuesta
+ * estándar de tipo UserResponse y actualiza el access y el refresh token.
+ * 
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
+ */
+
+
 export async function PUT(req: NextRequest) {
   try {
+    // Recibir FormData de la petición
     const body = await req.json();
     const token = req.cookies.get('token')?.value;
 
-    // Llamada al backend con interceptor
+     // Llamada al backend con interceptor para refresco de tokens
     const res = await fetchWithRefresh(`${apiUrl}/users/update-password`, {
       method: "PUT",
       headers: { 
@@ -28,6 +42,8 @@ export async function PUT(req: NextRequest) {
     const response: TokensResponse = await res.json();
     const newAccessToken = response.data?.accessToken;
     const newRefreshToken = response.data?.refreshToken;
+
+    // Guardar nuevos tokens en cookies
     const nextRes = NextResponse.json(response, { status: res.status });
 
     if (newAccessToken) {

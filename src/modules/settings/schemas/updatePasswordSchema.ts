@@ -15,10 +15,6 @@ export const updatePasswordSchema = z
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: "Las contraseñas no coinciden",
     path: ["confirmNewPassword"],
-  })
-  .refine((data) => data.oldPassword !== data.newPassword, {
-    message: "La nueva contraseña no puede ser igual a la anterior",
-    path: ["newPassword"],
   });
 
 export type UpdatePasswordData = z.infer<typeof updatePasswordSchema>;  
