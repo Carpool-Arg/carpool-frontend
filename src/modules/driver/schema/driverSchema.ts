@@ -1,10 +1,9 @@
 import { z } from 'zod';
 
 export const driverSchema = z.object({
-  licenseClass: z
-    .string()
-    .min(1, 'La clase de licencia es obligatoria')
-    .max(5, 'La clase de licencia no puede tener más de 5 caracteres'),
+  licenseClassId: z
+    .number()
+    .min(1, "Selecciona una clase de licencia"),
 
   licenseExpirationDate: z
     .string()

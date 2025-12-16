@@ -8,14 +8,18 @@ import { VehicleCardSkeleton } from "./VehicleSkeleton";
 import { Vehicle } from "@/models/vehicle";
 import { Alert } from "@/components/ux/Alert";
 import useIsMobile from "@/shared/hooks/useIsMobile";
+import { AlertDialog } from "@/components/ux/AlertDialog";
 
 export function VehicleList() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -41,7 +45,8 @@ export function VehicleList() {
       setVehicles((prev) => prev.filter((v) => v.id !== id));
       setIsModalOpen(false);
     } else {
-      setError(response.messages?.[0] || "Error al eliminar el vehículo");
+      setIsErrorDialogOpen(true);
+      setDeleteError(response.messages?.[0] || "Error al eliminar el vehículo");
     }
   };
 
@@ -84,10 +89,35 @@ export function VehicleList() {
           vehicle={selectedVehicle}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onConfirmDelete={handleDelete}
+          onConfirmDelete={() => (setConfirmDialogOpen(true), setIsModalOpen(false))}
           onEdit={handleEdit}
         />
       )}
+
+      <AlertDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={() => handleDelete(selectedVehicle!.id)}
+        type="error"
+        title="Confirmar eliminación"
+        description="¿Estás seguro de que querés eliminar este vehículo? Esta acción no se puede deshacer."
+        confirmText="Aceptar"
+        cancelText="Cancelar"
+      />
+
+      {deleteError && (
+        <AlertDialog
+          isOpen={isErrorDialogOpen}
+          onClose={() => setIsErrorDialogOpen(false)}
+          type="error"
+          title="Error al eliminar el vehículo"
+          description={deleteError}
+          confirmText="Aceptar"
+          singleButton={true}
+        />
+      )}
+
+
     </div>
   );
 }
