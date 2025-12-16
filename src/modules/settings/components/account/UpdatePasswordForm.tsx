@@ -51,9 +51,9 @@ export default function UpdatePasswordForm() {
       }
       router.push("/settings");
     } catch (error: unknown) {
-      let message = "Error desconocido";
+      let message = "Ocurrió un error inesperado.";
       if (error instanceof Error) message = error.message;
-      setToast({ message: 'Ocurrió un error inesperado', type: 'error' });
+      setToast({ message: message, type: 'error' });
     } finally {
       setLoading(false);
     }
