@@ -1,6 +1,6 @@
 import { MediaResponse, VoidResponse } from "@/shared/types/response";
 
-export async function getUserFile(id: number): Promise<MediaResponse> {
+export async function getUserFile(): Promise<MediaResponse> {
   try {
     const res = await fetch(`/api/media`, {
       method: 'GET',

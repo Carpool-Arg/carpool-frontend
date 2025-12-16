@@ -52,7 +52,6 @@ export default function ProfileDetails() {
     handleSubmit,
     reset,
     formState: { isDirty, errors, isValid },
-    watch
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
