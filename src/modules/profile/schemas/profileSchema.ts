@@ -6,10 +6,12 @@ export const profileSchema = z.object({
   dni: z.string().optional(),
   email: z.string().optional(),
   birthDate: z.string().optional(),
-  gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']).optional(),
-  phone: z.string().min(8, 'Número demasiado corto').max(15, 'Número demasiado largo'),
-  removeProfileImage: z.boolean(),
-  file: z.instanceof(File).optional(), // archivo opcional
+  gender: z.enum(['MALE', 'FEMALE', 'UNSPECIFIED']),
+  phone: z
+  .string()
+  .regex(/^\d+$/, 'El número de teléfono solo puede contener números')
+  .min(8, 'Número demasiado corto')
+  .max(15, 'Número demasiado largo'),
 });
 
 export type ProfileData = z.infer<typeof profileSchema>;

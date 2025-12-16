@@ -26,18 +26,26 @@ const genders = [
 ];
 
 export default function ProfileDetails() {
-  const { user, fetchUser, setPrevImage } = useAuth();
+  const { user, fetchUser, setPrevImage, prevImage } = useAuth();
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
+
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
   
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+
+  const [confirmDelete, setConfirmDelete] = useState<{
+    type: "success" | "error" | "info" | null;
+    title?: string;
+    description?: string;
+    onConfirm?: () => void;
+  } | null>(null);
+
 
   const {
     register,
@@ -55,7 +63,6 @@ export default function ProfileDetails() {
       birthDate: '',
       phone: '',
       gender: 'UNSPECIFIED',
-      removeProfileImage: false
     },
     mode: 'onChange' 
   });
@@ -71,7 +78,6 @@ export default function ProfileDetails() {
         birthDate: user.birthDate ?? '',
         phone: user.phone ?? '',
         gender: (user.gender as "MALE" | "FEMALE" | "UNSPECIFIED") ?? 'UNSPECIFIED',
-        removeProfileImage: false
       });
     }
   }, [user, reset]);
@@ -79,7 +85,7 @@ export default function ProfileDetails() {
   // Limpieza de URL de la imagen previa
   useEffect(() => {
     return () => {
-      if (selectedFile) URL.revokeObjectURL(selectedFile.name);
+      if (selectedFile) setPrevImage(originalImage)
     };
   }, [selectedFile]);
 
@@ -90,24 +96,34 @@ export default function ProfileDetails() {
 
       // Subir imagen si existe
       if (selectedFile) {
-        await uploadUserFile(user.id!, selectedFile);
+        const imageResponse = await uploadUserFile(selectedFile);
+        if (imageResponse.state == 'ERROR'){
+          setToast({message: 'Error al actualizar la foto de perfil', type: 'error'})
+          setPrevImage(originalImage);
+          setSelectedFile(null);
+          setLoading(false)
+          return
+        }
       }
 
       // Actualizar datos
-      const response = await updateUser({
-        phone: data.phone,
-        gender: data.gender as ProfileData['gender'],
-        removeProfileImage: false,
-        file: selectedFile ?? undefined,
-      });
-
-      if (response.state === 'ERROR') {
-        throw new Error(response.messages?.[0] ?? 'Error al guardar el perfil');
+      if(isDirty && isValid){
+        const response = await updateUser({
+          phone: data.phone,
+          gender: data.gender as ProfileData['gender'],
+        });
+        if (response.state === 'ERROR') {
+          setToast({message: 'Error al actualizar los datos del perfil', type: 'error'});
+          setLoading(false);
+          await fetchUser();
+          reset(data)
+          return
+        }
       }
+
 
       await fetchUser();
       setLoading(false);
-      setToast({ message: 'Perfil actualizado correctamente', type: 'success' });
       
       // Reiniciamos el estado "dirty" del form con los nuevos valores
       reset(data); 
@@ -122,9 +138,16 @@ export default function ProfileDetails() {
     }
   };
 
+  // Calculamos si hay cambios reales: Formulario sucio o archivo seleccionado
+  const hasChanges = isDirty || !!selectedFile;
+
   const handleEditPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+
+    if (!originalImage) {
+      setOriginalImage(prevImage);
+    }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       setToast({ message: 'Formato inválido. Solo se permiten PNG, JPG, JPEG y WEBP.', type: 'error' });
@@ -147,25 +170,22 @@ export default function ProfileDetails() {
   const handleDeletePhoto = async () => {
     if (!user) return;
     try {
-      await deleteUserFile(user.id!);
-      
-      // Obtenemos los valores actuales del form para enviarlos y mantener consistencia
-      const currentValues = watch(); 
+      setLoading(true);
+      const deleteResponse = await deleteUserFile();
 
-      const response = await updateUser({
-        phone: currentValues.phone,
-        gender: currentValues.gender as ProfileData['gender'],
-        removeProfileImage: true,
-      });
-
-      if (response.state === 'ERROR') {
-         throw new Error(response.messages?.[0]);
+      if (deleteResponse.state === 'ERROR'){
+        setToast({message: deleteResponse.messages?.[0] ?? 'Error al eliminar la foto de perfil', type: 'error'});
+        setSelectedFile(null);
+        setPrevImage(originalImage)
+        setLoading(false)
+        return
       }
 
       await fetchUser();
       setPrevImage(null);
       setSelectedFile(null);
       setToast({ message: 'Foto eliminada correctamente', type: 'success' });
+      setLoading(false);
 
     } catch (error: unknown) {
       let message = "Error desconocido";
@@ -175,8 +195,7 @@ export default function ProfileDetails() {
   };
 
   
-  // Calculamos si hay cambios reales: Formulario sucio o archivo seleccionado
-  const hasChanges = isDirty || !!selectedFile;
+
 
   // Controlamos si el button debe estar o no deshabilitado
   const isButtonDisabled = !hasChanges || !isValid || loading;
@@ -200,7 +219,12 @@ export default function ProfileDetails() {
         <Button
           onClick={(e) => {
             e.preventDefault(); // Prevenir submit accidental
-            handleDeletePhoto();
+            setConfirmDelete({
+              type: "info",
+              title: "Borrar foto de perfil",
+              description: "¿Estás seguro de que deseas eliminar tu foto? Se seteará una foto por defecto.",
+              onConfirm: () => handleDeletePhoto(),
+            });
           }}
           className="text-sm flex items-center gap-1"
           variant="danger"
@@ -267,7 +291,6 @@ export default function ProfileDetails() {
               {...register('gender')}
               className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <option value="UNSPECIFIED">Seleccionar</option>
               {genders.map(g => (
                 <option key={g.value} value={g.value}>{g.label}</option>
               ))}
@@ -289,7 +312,7 @@ export default function ProfileDetails() {
         >
           {loading ? (
             <div className="flex items-center justify-center gap-2">
-              <Spinner size={20} />
+              <Spinner size={20} className='border-t-white'/>
               <span>Guardando...</span>
             </div>
           ) : (
@@ -306,27 +329,18 @@ export default function ProfileDetails() {
         />
       )}
 
-      <AlertDialog
-        isOpen={isAlertOpen}
-        title="Tienes cambios sin guardar"
-        description="Si sales de esta página perderás los cambios realizados."
-        confirmText="Salir sin guardar"
-        cancelText="Cancelar"
-        onConfirm={() => {
-          reset(); 
-          if (pendingNavigation === "back") {
-            router.back();
-          } else if (pendingNavigation) {
-            router.push(pendingNavigation);
-          }
-          setPendingNavigation(null);
-          setIsAlertOpen(false);
-        }}
-        onClose={() => {
-          setPendingNavigation(null);
-          setIsAlertOpen(false);
-        }}
-      />
+
+      {confirmDelete && (
+        <AlertDialog
+          isOpen={!!confirmDelete}
+          onClose={() => setConfirmDelete(null)}
+          type={confirmDelete.type ?? 'info'}
+          title={confirmDelete.title}
+          description={confirmDelete.description}
+          confirmText="Aceptar"
+          onConfirm={confirmDelete.onConfirm}
+        />
+      )}
     </div>
   );
 }
