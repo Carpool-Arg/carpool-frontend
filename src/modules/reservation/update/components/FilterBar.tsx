@@ -23,6 +23,12 @@ export default function FilterBar({nameState, setNameState, hasBaggage, setHasBa
     })
   }
 
+  const handleClearFilters = () => {
+    setHasBaggage(undefined)
+    setNameState('PENDING')
+  }
+
+  const hasFilters = nameState !== 'PENDING' || hasBaggage !== undefined
 
   return(
     <div className="flex flex-wrap gap-2 mb-2">
@@ -60,15 +66,17 @@ export default function FilterBar({nameState, setNameState, hasBaggage, setHasBa
           </SelectContent>
         </Select>
       </div>
+      {hasFilters && (
+        <button
+          className="flex items-center gap-1 px-3 py-1 text-sm  rounded-xl bg-gray-2 transition"
+          onClick={handleClearFilters}
+          >
+          <span><BrushCleaning size={14}/></span>
+          Limpiar filtros
+          
+        </button>
+      )}
       
-      <button
-        className="flex items-center gap-1 px-3 py-1 text-sm  rounded-xl bg-gray-2 transition"
-       
-        >
-        <span><BrushCleaning size={14}/></span>
-        Limpiar filtros
-        
-      </button>
     </div>
   );
 }

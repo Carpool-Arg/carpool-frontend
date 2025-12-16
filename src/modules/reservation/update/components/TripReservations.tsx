@@ -8,6 +8,8 @@ import { BiError } from "react-icons/bi";
 import TripSkeleton from "@/modules/feed/components/TripSkeleton";
 import FilterBar from "./FilterBar";
 import { ReservationDTO } from "../../create/types/reservation"; // Asegúrate de importar el tipo correcto
+import { ChevronRight } from "lucide-react";
+import { capitalizeWords } from "@/shared/utils/string";
 
 export default function TripReservations() {
   // Paginación
@@ -26,8 +28,13 @@ export default function TripReservations() {
   
   // Aquí guardamos el array acumulado de reservas
   const [reservationsList, setReservationsList] = useState<ReservationDTO[]>([]); 
+  const [totalReservations, setTotalReservations] = useState<number>(0)
   
   const { id } = useParams();
+  const [origin, setOrigin] = useState<string>('');
+  const [destination, setDestination] = useState<string>('')
+
+  
 
   // Resetear paginación y lista cuando cambian los filtros
   useEffect(() => {
@@ -35,7 +42,7 @@ export default function TripReservations() {
     setReservationsList([]);
     setHasMore(true);
     setInitialLoading(true);
-    // Nota: No llamamos a fetch aquí directamente, dejamos que el useEffect de abajo reaccione al cambio de page=0
+    
   }, [nameState, hasBaggage, id]);
 
   useEffect(() => {
@@ -62,7 +69,9 @@ export default function TripReservations() {
 
         if (response.state === "OK" && response.data) {
           const newReservations = response.data.reservation || [];
-
+          setTotalReservations(newReservations.length)
+          setOrigin(newReservations[0].startCity);
+          setDestination(newReservations[0].destinationCity);
           // Si vienen menos datos que el tamaño de página, llegamos al final
           if (newReservations.length < size) {
             setHasMore(false);
@@ -94,6 +103,7 @@ export default function TripReservations() {
     }
   }, [hasMore, fetchingMore, initialLoading]);
 
+  
   // Renderizado de Error
   if (error) {
     return (
@@ -111,12 +121,32 @@ export default function TripReservations() {
 
   return (
     <div className="w-full">
-      <FilterBar
-        nameState={nameState}
-        setNameState={setNameState}
-        hasBaggage={hasBaggage}
-        setHasBaggage={setHasBaggage}
-      />
+      <div className="mb-4">
+        <h1 className="text-xl font-semibold">Solicitudes de reserva</h1>
+        <div className="flex items-center my-1">
+          <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
+            {capitalizeWords(origin)}
+          </div>
+          <span> <ChevronRight size={16}/> </span>
+          <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
+            {capitalizeWords(destination)}
+          </div>
+        </div>
+        <p className="font-inter text-sm">
+          ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
+          {totalReservations !== 1 && "es"} de reserva.
+        </p>
+
+      </div>
+      <div className="mb-4">
+        <FilterBar
+          nameState={nameState}
+          setNameState={setNameState}
+          hasBaggage={hasBaggage}
+          setHasBaggage={setHasBaggage}
+        />
+      </div>
+      
       
       {initialLoading ? (
          <div className="w-full">
