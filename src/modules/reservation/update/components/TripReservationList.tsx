@@ -2,12 +2,11 @@
 
 import { updateReservation } from "@/services/reservation/reservationService";
 
+import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Loader2, TicketX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { AlertDialog } from "@/components/ux/AlertDialog";
-import { ReservationDTO } from "../../create/types/reservation";
 import Reservation from "../../create/components/Reservation";
-import FilterBar from "./FilterBar";
+import { ReservationDTO } from "../../create/types/reservation";
 
 
 

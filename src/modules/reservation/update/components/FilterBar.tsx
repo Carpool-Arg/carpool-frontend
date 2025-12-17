@@ -2,8 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { STATE } from "@/constants/state";
-import { BrushCleaning, Circle, Dot, Minus, Star, X, } from "lucide-react";
-import { useState } from "react";
+import { BrushCleaning, Circle, Minus } from "lucide-react";
 import { BsHandbag } from "react-icons/bs";
 
 export interface FilterBarProps{

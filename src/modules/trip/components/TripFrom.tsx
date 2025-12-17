@@ -93,6 +93,8 @@ export function TripForm() {
   const [dateError, setDateError] = useState<string | null>(null);
   const startDateTime = watch('startDateTime');
 
+  const maxSeats = (selectedVehicle?.availableSeats ?? 0) - 1
+
   useEffect(() => {
     if (selectedVehicle) {
       // si el usuario no cambió nada todavía, inicializo con el valor del vehículo
@@ -446,8 +448,8 @@ export function TripForm() {
                 <p className="text-red-500 text-sm mt-1">
                   {errors.availableSeat
                     ? errors.availableSeat.message
-                    : watch("availableSeat") > ((selectedVehicle?.availableSeats) ?? 0)
-                      ? `No puede superar los asientos del vehículo`
+                    : watch("availableSeat") > (maxSeats)
+                      ? `No puede superar los asientos disponibles del vehículo`
                       : null
                   }
                 </p>

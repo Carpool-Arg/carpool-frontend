@@ -10,6 +10,7 @@ import FilterBar from "./FilterBar";
 import { ReservationDTO } from "../../create/types/reservation"; // Asegúrate de importar el tipo correcto
 import { ChevronRight } from "lucide-react";
 import { capitalizeWords } from "@/shared/utils/string";
+import TripReservationsSkeleton from "./TripReservationsSekeleton";
 
 export default function TripReservations() {
   // Paginación
@@ -33,8 +34,6 @@ export default function TripReservations() {
   const { id } = useParams();
   const [origin, setOrigin] = useState<string>('');
   const [destination, setDestination] = useState<string>('')
-
-  
 
   // Resetear paginación y lista cuando cambian los filtros
   useEffect(() => {
@@ -121,46 +120,57 @@ export default function TripReservations() {
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold">Solicitudes de reserva</h1>
-        <div className="flex items-center my-1">
-          <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
-            {capitalizeWords(origin)}
-          </div>
-          <span> <ChevronRight size={16}/> </span>
-          <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
-            {capitalizeWords(destination)}
-          </div>
-        </div>
-        <p className="font-inter text-sm">
-          ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
-          {totalReservations !== 1 && "es"} de reserva.
-        </p>
-
-      </div>
-      <div className="mb-4">
-        <FilterBar
-          nameState={nameState}
-          setNameState={setNameState}
-          hasBaggage={hasBaggage}
-          setHasBaggage={setHasBaggage}
-        />
-      </div>
-      
-      
       {initialLoading ? (
-         <div className="w-full">
-           {Array.from({ length: 2 }).map((_, i) => (
-             <TripSkeleton key={i} />
-           ))}
-         </div>
+        <>
+          <TripReservationsSkeleton />
+
+          <div className="w-full">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <TripSkeleton key={i} />
+            ))}
+          </div>
+        </>
       ) : (
-        <TripReservationList 
-            tripReservations={reservationsList} 
+        <>
+          <div className="mb-3">
+            <h1 className="text-xl font-semibold">Solicitudes de reserva</h1>
+            {origin || destination && 
+              <div className="flex items-center my-2">
+                <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
+                  {capitalizeWords(origin)}
+                </div>
+                <span>
+                  <ChevronRight size={16} />
+                </span>
+                <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
+                  {capitalizeWords(destination)}
+                </div>
+              </div>
+            }
+
+            <p className="font-inter text-sm">
+              ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
+              {totalReservations !== 1 && "es"} de reserva.
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <FilterBar
+              nameState={nameState}
+              setNameState={setNameState}
+              hasBaggage={hasBaggage}
+              setHasBaggage={setHasBaggage}
+            />
+          </div>
+
+          {/* LISTA */}
+          <TripReservationList
+            tripReservations={reservationsList}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
             isLoadingMore={fetchingMore}
-        />
+          />
+        </>
       )}
     </div>
   );

@@ -41,7 +41,7 @@ export const registerVehicleStep2Schema = z.object({
       required_error: 'La cantidad de asientos disponibles no puede estar en blanco.',
       invalid_type_error: 'Debe ingresar un número válido.'
     })
-    .min(1, 'La cantidad de asientos disponibles debe ser al menos 1.')
+    .min(2, 'La cantidad de asientos disponibles debe ser al menos 2.')
     .max(40, 'La cantidad de asientos no puede ser mayor a 40')
 })
 
