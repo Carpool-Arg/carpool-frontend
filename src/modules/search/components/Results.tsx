@@ -131,6 +131,7 @@ export default function Results() {
           </div>
         </div>
 
+        {/* Skeleton filtros*/}
         <div className="flex items-center gap-2 animate-pulse">
           <div className="h-5 w-1/4 bg-gray-2 rounded-lg" />
           <div className="h-5 w-1/6 bg-gray-2 rounded-lg" />

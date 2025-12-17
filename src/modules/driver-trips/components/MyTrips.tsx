@@ -38,6 +38,10 @@ export default function MyTrips() {
     if (loading) {
         return (
           <div className="w-full">
+            <div className="animate-pulse mb-6">
+                <div className="h-6 w-72 bg-gray-2 rounded-md mb-2" />
+                <div className="h-4 w-76 bg-gray-2 rounded" />
+            </div>
             {Array.from({ length: 2 }).map((_, i) => (
               <TripSkeleton key={i} />
             ))}
@@ -63,7 +67,7 @@ export default function MyTrips() {
         <div className="w-full">
             <div className="mb-6">
                 <h1 className="text-xl font-semibold">Adminstrá tus solicitudes de reserva</h1>
-                <p className="font-inter">Seleccioná un viaje para ver sus solicitudes.</p>
+                <p className="font-inter text-sm">Seleccioná un viaje para ver sus solicitudes.</p>
             </div>
             <MyTripsList myTrips={myTrips?.trips ?? []}/>
         </div>

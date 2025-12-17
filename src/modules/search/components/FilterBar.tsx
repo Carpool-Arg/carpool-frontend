@@ -31,7 +31,6 @@ interface FilterBarProps {
   maxSeatPrice: number
   onMinPriceChange?: (value: number) => void;
   onMaxPriceChange?: (value: number) => void;
-
   sortByRating?: boolean; // toggle para ordenar por puntuación descendente
   setSortByRating?: (active: boolean) => void;
   onClearFilters?: () => void;

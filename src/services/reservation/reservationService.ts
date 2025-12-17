@@ -30,7 +30,7 @@ export async function newReservation(data: Reservation): Promise<VoidResponse> {
   }
 }
 
-export async function getReservations(data: ReservationDTO): Promise<ReservationResponse>{
+export async function getReservations(data: ReservationDTO, size: number, page:number): Promise<ReservationResponse>{
   try{
     const params = new URLSearchParams();
 
@@ -41,7 +41,11 @@ export async function getReservations(data: ReservationDTO): Promise<Reservation
       }
     });
 
+    params.append("size", String(size));
+    params.append("page", String(page));
+
     const url = `/api/reservation/filter?${params.toString()}`;
+    console.log(url)
 
     const res = await fetchWithRefresh(url, {
       credentials: 'include',
