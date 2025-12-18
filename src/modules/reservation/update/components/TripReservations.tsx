@@ -1,7 +1,7 @@
 'use client'
 
 import { getReservations } from "@/services/reservation/reservationService";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import TripReservationList from "./TripReservationList";
 import { BiError } from "react-icons/bi";
@@ -13,13 +13,15 @@ import { capitalizeWords } from "@/shared/utils/string";
 import TripReservationsSkeleton from "./TripReservationsSekeleton";
 
 export default function TripReservations() {
+  const { id } = useParams();
+  const searchParams = useSearchParams();
   // Paginación
   const [page, setPage] = useState<number>(0);
   const [size] = useState<number>(5); // El size suele ser constante
   const [hasMore, setHasMore] = useState<boolean>(true); // Para saber si quedan más datos
 
   // Filters
-  const [nameState, setNameState] = useState<string | undefined>("PENDING");
+  const nameState = searchParams.get("state") ?? "PENDING";
   const [hasBaggage, setHasBaggage] = useState<boolean | undefined>(undefined);
 
   // Estados de carga y datos
@@ -29,9 +31,9 @@ export default function TripReservations() {
   
   // Aquí guardamos el array acumulado de reservas
   const [reservationsList, setReservationsList] = useState<ReservationDTO[]>([]); 
-  const [totalReservations, setTotalReservations] = useState<number>(0)
   
-  const { id } = useParams();
+  const totalReservations=reservationsList.length
+  
   const [origin, setOrigin] = useState<string>('');
   const [destination, setDestination] = useState<string>('')
 
@@ -68,7 +70,6 @@ export default function TripReservations() {
 
         if (response.state === "OK" && response.data) {
           const newReservations = response.data.reservation || [];
-          setTotalReservations(newReservations.length)
           setOrigin(newReservations[0].startCity);
           setDestination(newReservations[0].destinationCity);
           // Si vienen menos datos que el tamaño de página, llegamos al final
@@ -133,9 +134,8 @@ export default function TripReservations() {
       ) : (
         <>
           <div className="mb-3">
-            <h1 className="text-xl font-semibold">Solicitudes de reserva</h1>
-            {origin || destination && 
-              <div className="flex items-center my-2">
+            {origin && destination && 
+              <div className="flex items-center mb-2">
                 <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
                   {capitalizeWords(origin)}
                 </div>
@@ -147,23 +147,30 @@ export default function TripReservations() {
                 </div>
               </div>
             }
-
-            <p className="font-inter text-sm">
-              ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
-              {totalReservations !== 1 && "es"} de reserva.
-            </p>
+            {nameState === 'PENDING' ? (
+              <p className="font-inter text-sm">
+                ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
+                {totalReservations !== 1 && "es"} de reserva.
+              </p>
+            ): (
+              <p className="font-inter text-sm">
+                ¡Elegiste quién viaja con vos! Aceptaste {totalReservations} reserva
+                {totalReservations !== 1 && "s"}.
+              </p>
+            )}
+            
           </div>
+         
+          {totalReservations !== 0 &&
+            <div className="mb-4 mt-2">
+              <FilterBar
+                hasBaggage={hasBaggage}
+                setHasBaggage={setHasBaggage}
+              />
+            </div>
+          }
+          
 
-          <div className="mb-4">
-            <FilterBar
-              nameState={nameState}
-              setNameState={setNameState}
-              hasBaggage={hasBaggage}
-              setHasBaggage={setHasBaggage}
-            />
-          </div>
-
-          {/* LISTA */}
           <TripReservationList
             tripReservations={reservationsList}
             onLoadMore={handleLoadMore}
