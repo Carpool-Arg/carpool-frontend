@@ -138,7 +138,7 @@ export default function TripReservationList({
 
   if (tripReservations.length === 0) {
     return (
-        <div className="flex items-center justify-center p-4 gap-4 ">
+        <div className="flex items-center justify-center p-4 gap-4 mt-4">
             <div className="bg-dark-1 rounded-lg p-3">
                 <TicketX size={32} />
             </div>

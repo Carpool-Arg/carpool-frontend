@@ -1,18 +1,18 @@
 'use client'
 
-import { getReservations } from "@/services/reservation/reservationService";
-import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import TripReservationList from "./TripReservationList";
-import { BiError } from "react-icons/bi";
+import { Tab } from "@/components/ux/Tab";
 import TripSkeleton from "@/modules/feed/components/TripSkeleton";
-import FilterBar from "./FilterBar";
+import { getReservations } from "@/services/reservation/reservationService";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { BiError } from "react-icons/bi";
 import { ReservationDTO } from "../../create/types/reservation"; // Asegúrate de importar el tipo correcto
-import { ChevronRight } from "lucide-react";
-import { capitalizeWords } from "@/shared/utils/string";
-import TripReservationsSkeleton from "./TripReservationsSekeleton";
+import FilterBar from "./FilterBar";
+import TripReservationList from "./TripReservationList";
 
 export default function TripReservations() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { id } = useParams();
   const searchParams = useSearchParams();
   // Paginación
@@ -22,20 +22,41 @@ export default function TripReservations() {
 
   // Filters
   const nameState = searchParams.get("state") ?? "PENDING";
-  const [hasBaggage, setHasBaggage] = useState<boolean | undefined>(undefined);
 
   // Estados de carga y datos
   const [initialLoading, setInitialLoading] = useState(true); // Carga inicial (esqueletos)
   const [fetchingMore, setFetchingMore] = useState(false); // Carga de paginación (loader abajo)
   const [error, setError] = useState<string | null>(null);
   
-  // Aquí guardamos el array acumulado de reservas
+  // Array acumulado de reservas
   const [reservationsList, setReservationsList] = useState<ReservationDTO[]>([]); 
-  
-  const totalReservations=reservationsList.length
-  
-  const [origin, setOrigin] = useState<string>('');
-  const [destination, setDestination] = useState<string>('')
+
+
+  const state = searchParams.get("state") ?? "PENDING";
+
+  const baggageParam = searchParams.get("baggage");
+  const hasBaggage = baggageParam === "true" ? true : baggageParam === "false" ? false : undefined;
+
+  // Para cambiar el Tab (Estado)
+  const handleChangeState = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("state", value);
+    // Resetear equipaje al cambiar de tab si quisieras (opcional), sino lo dejas
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Para cambiar el Filtro (Equipaje)
+  const handleBaggageChange = (value: boolean | undefined) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value === undefined) {
+      params.delete("baggage"); // Si limpian el filtro, lo quitamos de la URL
+    } else {
+      params.set("baggage", String(value)); // "true" o "false"
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   // Resetear paginación y lista cuando cambian los filtros
   useEffect(() => {
@@ -43,7 +64,6 @@ export default function TripReservations() {
     setReservationsList([]);
     setHasMore(true);
     setInitialLoading(true);
-    
   }, [nameState, hasBaggage, id]);
 
   useEffect(() => {
@@ -70,8 +90,6 @@ export default function TripReservations() {
 
         if (response.state === "OK" && response.data) {
           const newReservations = response.data.reservation || [];
-          setOrigin(newReservations[0].startCity);
-          setDestination(newReservations[0].destinationCity);
           // Si vienen menos datos que el tamaño de página, llegamos al final
           if (newReservations.length < size) {
             setHasMore(false);
@@ -107,7 +125,7 @@ export default function TripReservations() {
   // Renderizado de Error
   if (error) {
     return (
-      <div className="flex items-center justify-center p-4 gap-4 ">
+      <div className="flex items-center justify-center p-4 gap-4">
         <div className="bg-dark-1 rounded-lg p-3">
           <BiError size={32} />
         </div>
@@ -121,63 +139,54 @@ export default function TripReservations() {
 
   return (
     <div className="w-full">
-      {initialLoading ? (
-        <>
-          <TripReservationsSkeleton />
-
-          <div className="w-full">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <TripSkeleton key={i} />
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="mb-3">
-            {origin && destination && 
-              <div className="flex items-center mb-2">
-                <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
-                  {capitalizeWords(origin)}
-                </div>
-                <span>
-                  <ChevronRight size={16} />
-                </span>
-                <div className="font-inter bg-gray-7 rounded-full text-xs py-1 px-2">
-                  {capitalizeWords(destination)}
-                </div>
-              </div>
-            }
-            {nameState === 'PENDING' ? (
-              <p className="font-inter text-sm">
-                ¡Decidí quién viaja con vos! Tenés {totalReservations} solicitud
-                {totalReservations !== 1 && "es"} de reserva.
-              </p>
-            ): (
-              <p className="font-inter text-sm">
-                ¡Elegiste quién viaja con vos! Aceptaste {totalReservations} reserva
-                {totalReservations !== 1 && "s"}.
-              </p>
-            )}
-            
-          </div>
-         
-          {totalReservations !== 0 &&
-            <div className="mb-4 mt-2">
-              <FilterBar
-                hasBaggage={hasBaggage}
-                setHasBaggage={setHasBaggage}
-              />
-            </div>
-          }
+      <>
+        <div className="mb-3">
+        
+          <h1 className="text-xl font-semibold mb-1">Reservas</h1>
           
+          
+          {nameState === 'PENDING' ? (
+            <p className="font-inter text-sm">
+              ¡Tenés interesados! Revisá quién quiere sumarse a tu viaje.
+            </p>
+          ): (
+            <p className="font-inter text-sm">
+              ¡Equipo armado! Estos son los pasajeros que viajan con vos.
+            </p>
+          )}
+          
+        </div>
 
-          <TripReservationList
-            tripReservations={reservationsList}
-            onLoadMore={handleLoadMore}
-            hasMore={hasMore}
-            isLoadingMore={fetchingMore}
-          />
-        </>
+        <Tab value={state} onChange={handleChangeState} />
+        {initialLoading ? 
+          <div className="h-6 w-32 bg-gray-2 rounded-lg animate-pulse my-4" />
+        :(
+          <div className="mb-4 mt-4">
+            <FilterBar
+              hasBaggage={hasBaggage}
+              setHasBaggage={handleBaggageChange}
+            />
+          </div>
+        )}
+        
+      </>
+      {initialLoading ? (
+
+        <div className="w-full">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <TripSkeleton key={i} />
+          ))}
+        </div>
+
+      ) : (
+        
+        <TripReservationList
+          tripReservations={reservationsList}
+          onLoadMore={handleLoadMore}
+          hasMore={hasMore}
+          isLoadingMore={fetchingMore}
+        />
+        
       )}
     </div>
   );
