@@ -76,7 +76,7 @@ export async function updateEmail(data: UpdateEmailData): Promise<TokensResponse
       body: JSON.stringify(data),
       credentials: "include"
     })
-
+    
     const response: TokensResponse = await res.json();
 
     return response;
