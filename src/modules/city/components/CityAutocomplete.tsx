@@ -9,15 +9,15 @@ import { CitiesResponseDTO } from "../types/dto/CitiesResponseDTO";
 
 interface CityAutocompleteProps {
   value: number | null;
-  onChange: (value: {id:number;name: string}  | null) => void;
+  onChange: (value: { id: number; name: string } | null) => void;
   error?: string;
   label?: string;
   placeholder: string;
   icon?: ReactNode;
   excludeIds?: number[];
   outline?: boolean;
-  onFocus?: ()=>void
-  onBlur?: ()=>void
+  onFocus?: () => void
+  onBlur?: () => void
 }
 
 export function CityAutocomplete({
@@ -37,7 +37,6 @@ export function CityAutocomplete({
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCity = async () => {
@@ -52,13 +51,13 @@ export function CityAutocomplete({
         } finally {
           setLoading(false);
         }
-      }else if (!value) {
+      } else if (!value) {
         setQuery("");
         setSelected(false);
       }
     };
     loadCity();
-  }, [value,selected]);
+  }, [value, selected]);
 
   useEffect(() => {
     // Evitar ejecutar búsqueda si se seleccionó una ciudad o el query está vacío
@@ -68,7 +67,7 @@ export function CityAutocomplete({
       return;
     }
     const controller = new AbortController();
-    
+
     const timeout = setTimeout(async () => {
       try {
         const response: CitiesResponseDTO = await fetchCities(query);
@@ -82,28 +81,28 @@ export function CityAutocomplete({
         }
 
         setCities(filteredCities);
-        if(filteredCities.length === 0){
-          setLocalError('No se encotraron localidades')
-        }
+
         setShowDropdown(true);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error(err);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          if (err.name !== "AbortError") {
+            console.error(err);
+          }
         }
       }
     }, 300);
 
     return () => {
-      controller.abort(); 
+      controller.abort();
       clearTimeout(timeout);
-    };  
+    };
   }, [query, selected]);
 
 
   const handleSelect = (city: City) => {
     setQuery(city.name);
-    setSelected(true);       
-    onChange({id:city.id, name: city.name});
+    setSelected(true);
+    onChange({ id: city.id, name: city.name });
     setShowDropdown(false);
   };
 
@@ -112,7 +111,7 @@ export function CityAutocomplete({
       <label className={`block text-sm font-medium font-inter ${label && 'mb-1'}`}>{label}</label>
 
       <div className="relative">
-        {icon && !loading &&  (
+        {icon && !loading && (
           <span className="absolute left-3 top-1/2 -translate-y-1/2 dark:text-gray-5 text-gray-2">
             {icon}
           </span>
@@ -129,14 +128,13 @@ export function CityAutocomplete({
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              setLocalError(null);
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}
             className={`w-full  rounded 
               ${outline ? "border border-gray-2 p-2 " : "focus:outline-none focus:ring-0 focus:border-none px-2 py-1.5"} 
               ${icon ? "pl-8" : "pl-2"} pr-8`}
-            onFocus={onFocus}  
+            onFocus={onFocus}
             onBlur={onBlur}
           />
         )}
