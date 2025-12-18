@@ -24,7 +24,8 @@ function formatShortDate(date: Date) {
 
 interface FilterBarProps {
   selectedDate?: string; // fecha seleccionada en formato ISO (yyyy-mm-dd)
-  onDateChange?: (date: Date) => void;
+  onDateChange?: (date: Date | undefined) => void;
+
   minPrice?: number;
   maxPrice?: number;
   maxSeatPrice: number
@@ -111,13 +112,29 @@ export default function FilterBar({
             mode="single"
             selected={selectedDate ? parseLocalDate(selectedDate) : undefined}
             onSelect={(date) => {
-              if (date && onDateChange) {
-                const normalized = new Date(date);
-                normalized.setHours(0, 0, 0, 0);
-                onDateChange(normalized);
+              if (!onDateChange) return;
+
+              // Si no hay fecha seleccionada → limpiar
+              if (!date) {
+                onDateChange(undefined);
+
+                setIsCalendarOpen(false);
+                return;
               }
+
+              const newDate = new Date(date);
+              newDate.setHours(0, 0, 0, 0);
+
+              const current = selectedDate ? parseLocalDate(selectedDate) : null;
+
+              // 👉 Si se hizo clic en la MISMA fecha → deseleccionar
+              const isSame =
+                current && current.toDateString() === newDate.toDateString();
+
+              onDateChange(isSame ? undefined : newDate);
               setIsCalendarOpen(false);
             }}
+
             className="rounded-md border w-64 h-[320px]"
             classNames={{
               today: "ring-1 ring-gray-5 rounded-lg",
@@ -136,6 +153,7 @@ export default function FilterBar({
           >
             <DollarSign size={14} />
             <span className="text-sm">Precio</span>
+            
           </button>
         </PopoverTrigger>
 
@@ -213,13 +231,14 @@ export default function FilterBar({
 
       {/* FILTRO ORDENAR POR PUNTUACIÓN */}
       <button
-        className={`flex items-center gap-1 px-3 py-1 border rounded-lg border-gray-2 hover:bg-gray-2 transition ${
+        className={`flex  items-center gap-1 px-3 py-1 border rounded-lg border-gray-2 hover:bg-gray-2 transition ${
           sortByRating ? "border-gray-6 bg-gray-8" : ""
         }`}
         onClick={() => setSortByRating && setSortByRating(!sortByRating)}
-      >
-        <Star size={14} />
+      > 
+        {sortByRating?(<Star size={14} fill="currentColor" stroke="none"/>) : (<Star size={14} />)}
         <span className="text-sm">Puntuación</span>
+
       </button>
       {onClearFilters && hasActiveFilters &&(
         <button
