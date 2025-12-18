@@ -37,6 +37,7 @@ export function CityAutocomplete({
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCity = async () => {
@@ -66,7 +67,8 @@ export function CityAutocomplete({
       setShowDropdown(false);
       return;
     }
-
+    const controller = new AbortController();
+    
     const timeout = setTimeout(async () => {
       try {
         const response: CitiesResponseDTO = await fetchCities(query);
@@ -80,13 +82,21 @@ export function CityAutocomplete({
         }
 
         setCities(filteredCities);
+        if(filteredCities.length === 0){
+          setLocalError('No se encotraron localidades')
+        }
         setShowDropdown(true);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error(err);
+        }
       }
     }, 300);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      controller.abort(); 
+      clearTimeout(timeout);
+    };  
   }, [query, selected]);
 
 
@@ -119,6 +129,7 @@ export function CityAutocomplete({
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
+              setLocalError(null);
               if (selected) setSelected(false); // solo quitamos la selección si ya había seleccionado
             }}
             placeholder={placeholder}
@@ -150,8 +161,11 @@ export function CityAutocomplete({
         )}
       </div>
 
-
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {showDropdown && cities.length === 0 && (
+        <div className="absolute z-10 w-full bg-white dark:bg-dark-5 border rounded mt-1 p-2 text-sm text-gray-400">
+          No se encontraron localidades
+        </div>
+      )}
 
       {showDropdown && cities.length > 0 && (
         <ul className="absolute z-10 w-full bg-white text-gray-2 dark:text-gray-1 dark:bg-dark-5 border border-gray-5 dark:border-gray-2 rounded mt-1 max-h-40 overflow-y-auto shadow">
@@ -166,6 +180,13 @@ export function CityAutocomplete({
           ))}
         </ul>
       )}
+
+      {(error) && (
+        <p className="text-error text-sm mt-1">
+          {error}
+        </p>
+      )}
+
     </div>
   );
 }

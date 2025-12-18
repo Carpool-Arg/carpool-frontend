@@ -28,9 +28,10 @@ export const driverSchema = z.object({
     .string()
     .regex(/^\d+$/, 'El número de calle debe contener solo dígitos'),
 
-  cityId: z
-    .number()
-    .min(1, 'La localidad es obligatoria')
-});
+  cityId: z.number({
+      required_error: 'La localidad es obligatoria',
+      invalid_type_error: 'La localidad es obligatoria',
+    }).min(1, 'La localidad es obligatoria')
+  });
 
 export type DriverData = z.infer<typeof driverSchema>;
