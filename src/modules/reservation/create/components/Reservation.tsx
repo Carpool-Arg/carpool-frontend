@@ -81,7 +81,7 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
                 <Separator color="bg-gray-2" marginY="my-2" />
                 <div className="flex items-center gap-6 justify-end">
                     
-                    <Button variant="outline" onClick={onReject}>
+                    <Button variant="outline" onClick={onReject} disabled={isAccepting || isRejecting}>
                         {isRejecting ? (
                             <div className="px-5 py-0.5">
                                 <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
@@ -91,7 +91,7 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
                         )}
                     </Button>
                     
-                    <Button variant="primary"  className="px-5" onClick={onAccept}>
+                    <Button variant="primary"  className="px-5" onClick={onAccept} disabled={isAccepting || isRejecting}>
                         {isAccepting ? (
                             <div className="px-5 py-0.5">
                                 <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>

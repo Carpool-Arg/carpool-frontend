@@ -15,13 +15,15 @@ interface TripReservationListProps {
   onLoadMore: () => void; 
   hasMore: boolean;       
   isLoadingMore: boolean; 
+  hasFilters:boolean
 }
 
 export default function TripReservationList({
     tripReservations, 
     onLoadMore, 
     hasMore, 
-    isLoadingMore 
+    isLoadingMore, 
+    hasFilters
 }: TripReservationListProps) {
   const loaderRef = useRef<HTMLDivElement | null>(null);    
   const [loadingAcceptId, setLoadingAcceptId] = useState<number | null>(null);
@@ -144,7 +146,7 @@ export default function TripReservationList({
             </div>
             <div className="border border-gray-6 h-12"></div>
             <div>
-                <p className="text-lg font-medium leading-tight">Este viaje no tiene reservas.</p>
+                <p className="text-lg font-medium leading-tight">{hasFilters ? 'No se encontraron reservas para los filtros aplicados.' : 'Este viaje no tiene reservas.'}</p>
             </div>
         </div>
     );

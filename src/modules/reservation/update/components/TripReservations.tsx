@@ -19,6 +19,7 @@ export default function TripReservations() {
   const [page, setPage] = useState<number>(0);
   const [size] = useState<number>(5); // El size suele ser constante
   const [hasMore, setHasMore] = useState<boolean>(true); // Para saber si quedan más datos
+  const [hasFilters, setHasFilters] = useState<boolean>(false);
 
   // Filters
   const nameState = searchParams.get("state") ?? "PENDING";
@@ -50,8 +51,10 @@ export default function TripReservations() {
     const params = new URLSearchParams(searchParams.toString());
 
     if (value === undefined) {
+      setHasFilters(false)
       params.delete("baggage"); // Si limpian el filtro, lo quitamos de la URL
     } else {
+      setHasFilters(true)
       params.set("baggage", String(value)); // "true" o "false"
     }
 
@@ -145,11 +148,17 @@ export default function TripReservations() {
           <h1 className="text-xl font-semibold mb-1">Reservas</h1>
           
           
-          {nameState === 'PENDING' ? (
+          {reservationsList.length === 0 ? (
+            <p className="font-inter text-sm text-gray-5">
+              {nameState === 'PENDING'
+                ? 'Todavía no hay solicitudes para este viaje.'
+                : 'Aún no hay pasajeros confirmados para este viaje.'}
+            </p>
+          ) : nameState === 'PENDING' ? (
             <p className="font-inter text-sm">
               ¡Tenés interesados! Revisá quién quiere sumarse a tu viaje.
             </p>
-          ): (
+          ) : (
             <p className="font-inter text-sm">
               ¡Equipo armado! Estos son los pasajeros que viajan con vos.
             </p>
@@ -185,6 +194,7 @@ export default function TripReservations() {
           onLoadMore={handleLoadMore}
           hasMore={hasMore}
           isLoadingMore={fetchingMore}
+          hasFilters={hasFilters}
         />
         
       )}
