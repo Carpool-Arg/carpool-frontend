@@ -26,7 +26,6 @@ export async function GET(req: NextRequest) {
     });
 
     const url = `${apiUrl}/reservation/filter?${params.toString()}`;
-    console.log('back',url)
    
     const res = await fetch(url, {
       headers: {

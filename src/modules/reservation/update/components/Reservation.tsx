@@ -18,6 +18,7 @@ export interface ReservationProps {
 
 
 export default function Reservation({ reservation,onAccept, onReject, isAccepting,isRejecting}: ReservationProps) {
+   
     return (
         <div className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200">
 
@@ -90,6 +91,7 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
                         "Rechazar"
                     )}
                 </Button>
+
                 <Button variant="primary"  className="px-5" onClick={onAccept}>
                     {isAccepting ? (
                         <div className="px-5 py-0.5">

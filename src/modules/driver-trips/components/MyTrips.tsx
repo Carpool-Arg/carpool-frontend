@@ -66,7 +66,7 @@ export default function MyTrips() {
     return (
         <div className="w-full">
             <div className="mb-6">
-                <h1 className="text-xl font-semibold">Adminstrá tus solicitudes de reserva</h1>
+                <h1 className="text-xl font-semibold">Administrá tus reservas</h1>
                 <p className="font-inter text-sm">Seleccioná un viaje para ver sus solicitudes.</p>
             </div>
             <MyTripsList myTrips={myTrips?.trips ?? []}/>
