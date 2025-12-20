@@ -44,6 +44,10 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
             setToast({ message: 'Ingresá una observación', type: 'error' })
             return
         }
+        if (observation.length > 100) {
+            setToast({ message: 'La observación no puede superar los 100 caracteres', type: 'error' })
+            return
+        }
         const exists = tripStopsList.some(stop => stop.cityId === cityId)
         if (exists) {
             setToast({ message: 'Ya agregaste esta ciudad', type: 'error' })

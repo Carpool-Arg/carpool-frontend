@@ -10,6 +10,9 @@ export const registerVehicleStep1Schema = z.object({
 export const registerVehicleStep2Schema = z.object({
   domain: z
     .string()
+    .regex(
+      /^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/i,
+      'La patente no tiene un formato válido.')
     .min(6, 'La patente debe tener entre 6 y 7 caracteres.')
     .max(7, 'La patente debe tener entre 6 y 7 caracteres.'),
       
@@ -36,13 +39,13 @@ export const registerVehicleStep2Schema = z.object({
     .min(1, 'El color del vehículo no puede estar en blanco.')
     .regex(/^[a-zA-Z ]+$/, 'El color debe contener solo letras y espacios'),
 
-    availableSeats: z
-    .number({
-      required_error: 'La cantidad de asientos disponibles no puede estar en blanco.',
-      invalid_type_error: 'Debe ingresar un número válido.'
-    })
-    .min(2, 'La cantidad de asientos disponibles debe ser al menos 2.')
-    .max(40, 'La cantidad de asientos no puede ser mayor a 40')
+  availableSeats: z
+  .number({
+    required_error: 'La cantidad de asientos disponibles no puede estar en blanco.',
+    invalid_type_error: 'Debe ingresar un número válido.'
+  })
+  .min(2, 'La cantidad de asientos disponibles debe ser al menos 2.')
+  .max(40, 'La cantidad de asientos no puede ser mayor a 40')
 })
 
 

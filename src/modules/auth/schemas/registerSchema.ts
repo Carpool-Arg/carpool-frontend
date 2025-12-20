@@ -7,7 +7,7 @@ import { z } from 'zod'
 const registerStep1BaseSchema = z.object({
   username: z
     .string()
-    .min(3, 'El nombre de usuario debe tener al menos 3 caracteres')
+    .min(6, 'El nombre de usuario debe tener al menos 6 caracteres')
     .max(25, 'El nombre de usuario no puede tener más de 25 caracteres')
     .regex(/^[a-zA-Z0-9_]+$/, 'El nombre de usuario solo puede contener letras, números y guiones bajos'),
   
@@ -38,13 +38,13 @@ export const registerStep1Schema = registerStep1BaseSchema.refine(
 export const registerStep2Schema = z.object({
   name: z
     .string()
-    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .min(1, 'El nombre debe tener al menos 1 caracter')
     .max(100, 'El nombre no puede tener más de 100 caracteres')
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 'El nombre solo puede contener letras y espacios'),
   
   lastname: z
     .string()
-    .min(2, 'El apellido debe tener al menos 2 caracteres')
+    .min(1, 'El apellido debe tener al menos 1 caracter')
     .max(100, 'El apellido no puede tener más de 100 caracteres')
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 'El apellido solo puede contener letras y espacios'),
   
