@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/authContext';
 
-import { newTrip, validateTripDateTime } from '@/services/trip/tripService';
+import { newTrip, validateTripDateTime, calculateMinSeatPrice } from '@/services/trip/tripService';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
@@ -93,6 +93,11 @@ export function TripForm() {
   const [dateError, setDateError] = useState<string | null>(null);
   const startDateTime = watch('startDateTime');
 
+  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
+
+  const seatPrice = watch("seatPrice");
+  const availableSeat = watch("availableSeat");
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -127,6 +132,45 @@ export function TripForm() {
 
     return () => clearTimeout(timeoutId);
   }, [startDateTime, selectedVehicleId]);
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  useEffect(() => {
+    // condiciones mínimas para calcular
+    if (!seatPrice || seatPrice <= 0 || !availableSeat || availableSeat <= 0) {
+      setCalculatedPrice(null);
+      return;
+    }
+
+    // si hay errores en el formulario, no calculamos
+    if (errors.seatPrice || errors.availableSeat) {
+      setCalculatedPrice(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        setCalculatingPrice(true);
+
+        await delay(300);
+
+        const response = await calculateMinSeatPrice(seatPrice,availableSeat);
+
+        if (response.state === "OK") {
+          setCalculatedPrice(response.data);
+        } else {
+          setCalculatedPrice(null);
+        }
+      } catch (error) {
+        console.error(error);
+        setCalculatedPrice(null);
+      } finally {
+        setCalculatingPrice(false);
+      }
+    }, 500);// delay para no spamear el endpoint al tipear rápido
+
+    return () => clearTimeout(timeoutId);
+  }, [seatPrice, availableSeat, errors.seatPrice, errors.availableSeat]);
 
   const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
     const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
@@ -467,8 +511,9 @@ export function TripForm() {
 
                 {/* Precio por asiento */}
                 <div>
-                  <label className="block mb-1 text-sm font-medium font-inter">
+                  <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
                     Precio por asiento
+                    <InfoTooltip text="Al precio indicado se le aplicarán las tarifas correspondientes de la plataforma"></InfoTooltip>
                   </label>
 
                   <div className="relative">
@@ -480,10 +525,9 @@ export function TripForm() {
                     type="text"
                     inputMode="numeric"
                     {...register("seatPrice", {
-                      required: "Debe indicar el precio por asiento",
                       setValueAs: (value) => {
                         const cleaned = String(value).replace(/\D+/g, "");
-                        return cleaned ? Number(cleaned) : 0;
+                        return cleaned ? Number(cleaned) : undefined;
                       },
                     })}
                     onInput={(e) => {
@@ -491,15 +535,22 @@ export function TripForm() {
                       el.value = el.value.replace(/\D+/g, "");
                     }}
                     className="w-full pl-10 pr-3 py-2 rounded border"
-                    placeholder="0"
+                    placeholder="15000"
                   />
-
-
-
                 </div>
 
                   {errors.seatPrice && (
                     <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
+                  )}
+
+                  {calculatingPrice && (
+                    <div className="mt-2 w-44 h-4 rounded bg-gray-2 animate-pulse rounded" />
+                  )}
+
+                  {!calculatingPrice && calculatedPrice !== null && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Precio final del viaje: <strong>${calculatedPrice}</strong>
+                    </p>
                   )}
                 </div>
               </div>

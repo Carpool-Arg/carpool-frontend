@@ -158,5 +158,26 @@ export const getMyTrips = async () => {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
-  } 
+  }
+}
+
+export const calculateMinSeatPrice = async(seatPrice: number, availableCurrentSeats: number) =>{
+  try {
+    const res = await fetchWithRefresh(`/api/trip/calculate-min-seat-price?seatPrice=${seatPrice}&availableCurrentSeats=${availableCurrentSeats}`,{
+      credentials: 'include'
+    })
+
+    const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
 }
