@@ -28,7 +28,7 @@ export default function InfoTooltip({ text }: { text: string }) {
     <Info size={18} className="text-gray-500 cursor-pointer" />
   );
 
-  // 📱 Mobile → Popover
+  // Mobile → Popover
   if (isMobile) {
     return (
       <Popover>

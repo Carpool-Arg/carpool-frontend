@@ -1,4 +1,4 @@
-import { VoidResponse } from "@/shared/types/response";
+import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -31,13 +31,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const res = await fetch(`${apiUrl}/trip/calculate-published-price?seatPrice=${seatPrice}&availableCurrentSeats=${availableSeats}`, {
+    const res = await fetch(`${apiUrl}/trip/calculate-price-trip?seatPrice=${seatPrice}&availableCurrentSeats=${availableSeats}`, {
       headers: { 
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: VoidResponse = await res.json();
+    const response: TripPriceCalculationResponseDTO = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

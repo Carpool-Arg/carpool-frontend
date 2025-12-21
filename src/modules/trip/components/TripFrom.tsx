@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/authContext';
 
-import { newTrip, validateTripDateTime, calculateMinSeatPrice } from '@/services/trip/tripService';
+import { newTrip, validateTripDateTime, calculatePriceTrip } from '@/services/trip/tripService';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
@@ -25,6 +25,8 @@ import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import InfoTooltip from '@/components/ux/InfoTooltip';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
+import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
+import { TripPriceSummary } from './TripPriceSummary';
 
 interface BaggageOption {
   value: string;
@@ -93,7 +95,8 @@ export function TripForm() {
   const [dateError, setDateError] = useState<string | null>(null);
   const startDateTime = watch('startDateTime');
 
-  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+  const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
+
   const [calculatingPrice, setCalculatingPrice] = useState(false);
 
   const seatPrice = watch("seatPrice");
@@ -138,13 +141,13 @@ export function TripForm() {
   useEffect(() => {
     // condiciones mínimas para calcular
     if (!seatPrice || seatPrice <= 0 || !availableSeat || availableSeat <= 0) {
-      setCalculatedPrice(null);
+      setPriceSummary(null);
       return;
     }
 
     // si hay errores en el formulario, no calculamos
     if (errors.seatPrice || errors.availableSeat) {
-      setCalculatedPrice(null);
+      setPriceSummary(null);
       return;
     }
 
@@ -154,16 +157,16 @@ export function TripForm() {
 
         await delay(300);
 
-        const response = await calculateMinSeatPrice(seatPrice,availableSeat);
+        const response = await calculatePriceTrip(seatPrice,availableSeat);
 
         if (response.state === "OK") {
-          setCalculatedPrice(response.data);
+          setPriceSummary(response.data);
         } else {
-          setCalculatedPrice(null);
+          setPriceSummary(null);
         }
       } catch (error) {
         console.error(error);
-        setCalculatedPrice(null);
+        setPriceSummary(null);
       } finally {
         setCalculatingPrice(false);
       }
@@ -513,7 +516,7 @@ export function TripForm() {
                 <div>
                   <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
                     Precio por asiento
-                    <InfoTooltip text="Al precio indicado se le aplicarán las tarifas correspondientes de la plataforma"></InfoTooltip>
+                    <InfoTooltip text="El precio ingresado corresponde al valor antes de comisiones. El monto que recibirás será menor una vez aplicadas las tarifas de la plataforma"></InfoTooltip>
                   </label>
 
                   <div className="relative">
@@ -542,18 +545,19 @@ export function TripForm() {
                   {errors.seatPrice && (
                     <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
                   )}
-
-                  {calculatingPrice && (
-                    <div className="mt-2 w-44 h-4 rounded bg-gray-2 animate-pulse rounded" />
-                  )}
-
-                  {!calculatingPrice && calculatedPrice !== null && (
-                    <p className="text-xs text-green-600 mt-1">
-                      Precio final del viaje: <strong>${calculatedPrice}</strong>
-                    </p>
-                  )}
                 </div>
               </div>
+            </div>
+
+            <div className="-mt-20">
+              {priceSummary && (
+                <TripPriceSummary
+                  publishedSeatPrice={priceSummary.seatPrice}
+                  driverPriceDiscount={priceSummary.driverPriceDiscount}
+                  netEarningsPerSeat={priceSummary.netEarningsPerSeat}
+                  loading={calculatingPrice}
+                />
+              )}
             </div>
 
             <div className="flex justify-center gap-7.5 mt-8">

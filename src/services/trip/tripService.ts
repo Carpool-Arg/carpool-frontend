@@ -1,7 +1,7 @@
 import { Trip, TripFilters } from "@/models/trip";
 import { TripDriverResponse } from "@/modules/driver-trips/types/dto/tripDriverResponseDTO";
 import { SearchTripResponse } from "@/modules/search/types/dto/searchTripResponseDTO";
-import { TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
+import { TripPriceCalculationResponseDTO, TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
 
@@ -161,13 +161,13 @@ export const getMyTrips = async () => {
   }
 }
 
-export const calculateMinSeatPrice = async(seatPrice: number, availableCurrentSeats: number) =>{
+export const calculatePriceTrip = async(seatPrice: number, availableCurrentSeats: number): Promise<TripPriceCalculationResponseDTO> =>{
   try {
-    const res = await fetchWithRefresh(`/api/trip/calculate-min-seat-price?seatPrice=${seatPrice}&availableCurrentSeats=${availableCurrentSeats}`,{
+    const res = await fetchWithRefresh(`/api/trip/calculate-price-trip?seatPrice=${seatPrice}&availableCurrentSeats=${availableCurrentSeats}`,{
       credentials: 'include'
     })
 
-    const response: VoidResponse = await res.json()
+    const response: TripPriceCalculationResponseDTO = await res.json()
 
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');
