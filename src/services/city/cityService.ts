@@ -2,17 +2,21 @@ import { CitiesResponseDTO } from "@/modules/city/types/dto/CitiesResponseDTO";
 import { CityResponseDTO } from "@/modules/city/types/dto/CityResponseDTO";
 
 
-export async function fetchCities(query: string): Promise<CitiesResponseDTO> {
+export async function fetchCities(query: string, signal?: AbortSignal): Promise<CitiesResponseDTO> {
   const res = await fetch(`/api/city/autocomplete?name=${query}`,{
     headers: {
         "Content-Type": "application/json",
     },
-    credentials: 'include'
+    credentials: 'include',
+    signal
   });
 
   if (!res.ok) throw new Error("Error al obtener localidades");
 
-  const response: CitiesResponseDTO = await res.json();
+  const text = await res.text();
+  const response: CitiesResponseDTO = text
+  ? JSON.parse(text)
+  : { data: null, messages: [], state: "ERROR" };
   return response; 
 }
 
