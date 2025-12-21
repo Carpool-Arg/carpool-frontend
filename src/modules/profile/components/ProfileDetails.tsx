@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { SquarePen, Trash } from 'lucide-react';
+import { AlertDialog } from '@/components/ux/AlertDialog';
 import { Button } from '@/components/ux/Button';
 import { Input } from '@/components/ux/Input';
+import Spinner from '@/components/ux/Spinner';
+import { Toast } from '@/components/ux/Toast';
 import { useAuth } from '@/contexts/authContext';
 import { deleteUserFile, uploadUserFile } from '@/services/media/mediaService';
 import { updateUser } from '@/services/user/userService';
-import Spinner from '@/components/ux/Spinner';
-import { Toast } from '@/components/ux/Toast';
-import { AlertDialog } from '@/components/ux/AlertDialog';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SquarePen, Trash, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { ProfileData, profileSchema } from '../schemas/profileSchema';
 
 
@@ -193,6 +193,11 @@ export default function ProfileDetails() {
     }
   };
 
+  const handleDeleteSelectedImage = () => {
+    setSelectedFile(null);
+    setPrevImage(originalImage);
+  }
+
   
 
 
@@ -205,16 +210,24 @@ export default function ProfileDetails() {
     <div className="space-y-4 max-w-md">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
-        <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors py-2">
-          <SquarePen size={14} />
-          Editar foto
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleEditPhoto}
-          />
-        </label>
+          {!selectedFile && (            
+            <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors py-2">
+              <SquarePen size={14} />
+              Editar foto
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleEditPhoto}
+              />
+            </label>
+          )}
+          {selectedFile && (            
+              <Button onClick={handleDeleteSelectedImage} className="text-sm flex items-center gap-1">
+                <X size={14} />
+                Eliminar selección
+              </Button>
+          )}
         <Button
           onClick={(e) => {
             e.preventDefault(); // Prevenir submit accidental
