@@ -98,9 +98,12 @@ export function TripForm() {
   const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
 
   const [calculatingPrice, setCalculatingPrice] = useState(false);
+  const [priceCalculationError, setPriceCalculationError] = useState<string | null>(null);
 
   const seatPrice = watch("seatPrice");
   const availableSeat = watch("availableSeat");
+
+  const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -136,6 +139,7 @@ export function TripForm() {
     return () => clearTimeout(timeoutId);
   }, [startDateTime, selectedVehicleId]);
 
+  //Funcion "helper" para asignar delay
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   useEffect(() => {
@@ -146,7 +150,7 @@ export function TripForm() {
     }
 
     // si hay errores en el formulario, no calculamos
-    if (errors.seatPrice || errors.availableSeat) {
+    if (errors.seatPrice || errors.availableSeat || exceedsVehicleSeats) {
       setPriceSummary(null);
       return;
     }
@@ -161,12 +165,18 @@ export function TripForm() {
 
         if (response.state === "OK") {
           setPriceSummary(response.data);
+          setPriceCalculationError(null);
         } else {
           setPriceSummary(null);
         }
       } catch (error) {
         console.error(error);
         setPriceSummary(null);
+        setPriceCalculationError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo calcular el precio del viaje"
+        );
       } finally {
         setCalculatingPrice(false);
       }
@@ -504,7 +514,7 @@ export function TripForm() {
                   <p className="text-red-500 text-sm mt-1">
                     {errors.availableSeat
                       ? errors.availableSeat.message
-                      : watch("availableSeat") > ((selectedVehicle?.availableSeats) ?? 0)
+                      : watch("availableSeat") >= ((selectedVehicle?.availableSeats) ?? 0)
                         ? `No puede superar los asientos del vehículo`
                         : null
                     }
@@ -541,24 +551,32 @@ export function TripForm() {
                     placeholder="15000"
                   />
                 </div>
-
                   {errors.seatPrice && (
                     <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
                   )}
                 </div>
+
+              </div>
+
+              <div className="col-span-1 md:col-span-2">
+                {(priceSummary || calculatingPrice) && (
+                  <TripPriceSummary
+                    seatPrice={seatPrice ?? 0}
+                    publishedSeatPrice={priceSummary?.publishedSeatPrice ?? 0}
+                    driverPriceDiscount={priceSummary?.driverPriceDiscount ?? 0}
+                    netEarningsPerSeat={priceSummary?.netEarningsPerSeat ?? 0}
+                    loading={calculatingPrice}
+                  />
+                )}
+
+                {priceCalculationError && !calculatingPrice && (
+                  <p className="text-sm text-red-500 mt-2">
+                    {priceCalculationError}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="-mt-20">
-              {priceSummary && (
-                <TripPriceSummary
-                  publishedSeatPrice={priceSummary.seatPrice}
-                  driverPriceDiscount={priceSummary.driverPriceDiscount}
-                  netEarningsPerSeat={priceSummary.netEarningsPerSeat}
-                  loading={calculatingPrice}
-                />
-              )}
-            </div>
 
             <div className="flex justify-center gap-7.5 mt-8">
               <Button 
@@ -574,7 +592,7 @@ export function TripForm() {
                 variant="primary"
                 onClick={() => setStep(3)}
                 className='px-12 py-2 text-sm font-inter font-medium'
-                disabled={!isValid}
+                disabled={!isValid || !!priceCalculationError || calculatingPrice}
               >
                 Siguiente
               </Button>
@@ -764,7 +782,7 @@ export function TripForm() {
               startDateTime={watch("startDateTime")}
               availableSeat={watch("availableSeat")}
               availableBaggage={watch("availableBaggage") || ""}
-              seatPrice={watch("seatPrice")}
+              seatPrice={priceSummary!.publishedSeatPrice}
               vehicle={selectedVehicle!}
               onBack={() => setStep(5)}
             />

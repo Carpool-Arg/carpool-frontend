@@ -69,6 +69,7 @@ export const tripSchema = z.object({
     .max(100, "La observación no puede tener más de 100 caracteres"),
 });
 
+
 export type TripFormData = z.infer<typeof tripSchema>;
 export type TripStopFormData = z.infer<typeof tripStopSchema>;
 
