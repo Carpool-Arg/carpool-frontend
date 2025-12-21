@@ -93,7 +93,6 @@ export function TripForm() {
   const [dateError, setDateError] = useState<string | null>(null);
   const startDateTime = watch('startDateTime');
 
-  const maxSeats = (selectedVehicle?.availableSeats ?? 0) - 1
 
   useEffect(() => {
     if (selectedVehicle) {

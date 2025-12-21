@@ -6,8 +6,11 @@ export const profileSchema = z.object({
   .min(7, 'El teléfono debe tener al menos 7 dígitos')
   .regex(/^[0-9+\-\s()]+$/, 'El número de teléfono debe contener únicamente números, guiones, signos + y espacios.')
   .max(25, 'El teléfono no puede tener más de 25 dígitos'),
-  removeProfileImage: z.boolean(),
-  file: z.instanceof(File).optional(), // archivo opcional
+  name: z.string().optional(),
+  lastname: z.string().optional(),
+  dni: z.string().optional(),
+  email: z.string().optional(),
+  birthDate: z.string().optional(),
 });
 
 export type ProfileData = z.infer<typeof profileSchema>;

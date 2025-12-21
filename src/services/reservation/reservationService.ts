@@ -45,7 +45,6 @@ export async function getReservations(data: ReservationDTO, size: number, page:n
     params.append("page", String(page));
 
     const url = `/api/reservation/filter?${params.toString()}`;
-    console.log(url)
 
     const res = await fetchWithRefresh(url, {
       credentials: 'include',

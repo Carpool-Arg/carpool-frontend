@@ -17,8 +17,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function PUT(req: NextRequest) {
   try {
-    // Recibir FormData de la petición
-    const formData = await req.formData();
+    const body = await req.json();  
     const token = req.cookies.get('token')?.value;
 
     // Llamada al backend con interceptor para refresco de tokens
@@ -26,8 +25,9 @@ export async function PUT(req: NextRequest) {
       method: "PUT",
       headers: { 
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: formData, 
+      body: JSON.stringify(body), 
     });
 
     const response: TokensResponse = await res.json();
