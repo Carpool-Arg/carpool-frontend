@@ -45,7 +45,9 @@ export default function UpdateEmailForm(){
             }
             router.push("/email-change?email=" + data.email);
         } catch (error: unknown) {
-            setToast({ message: "Ocurrió un error inesperado.", type: 'error' });
+            let message = "Ocurrió un error inesperado.";
+            if (error instanceof Error) message = error.message;
+            setToast({ message: message, type: 'error' });
         } finally {
             setLoading(false);
         }
