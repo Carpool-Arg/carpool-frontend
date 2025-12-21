@@ -15,12 +15,9 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
     const formData = await req.formData();
 
-    const res = await fetch(`${apiUrl}/media/${id}`, {
+    const res = await fetch(`${apiUrl}/media`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -57,11 +54,9 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
     
 
-    const res = await fetch(`${apiUrl}/media/${id}`, {
+    const res = await fetch(`${apiUrl}/media`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -96,11 +91,9 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
     
 
-    const res = await fetch(`${apiUrl}/media/${id}`, {
+    const res = await fetch(`${apiUrl}/media`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,

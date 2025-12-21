@@ -17,22 +17,13 @@ import { TokensResponse, VoidResponse } from "@/shared/types/response";
  */
 export async function updateUser(data: ProfileData): Promise<TokensResponse> {
   try {
-    const formData = new FormData();
-    formData.append(
-      "userProfileUpdateRequestDTO",
-      new Blob([JSON.stringify({
-        phone: data.phone,
-        gender: data.gender?.toUpperCase(),
-        removeProfileImage: data.removeProfileImage ?? false,
-      })], { type: "application/json" })
-    );
-
-    if (data.file) formData.append("file", data.file);
-
     const res = await fetch('/api/users/update-profile', {
       method: 'PUT',
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: 'include',
+      body: JSON.stringify(data),
     });
 
     const response: TokensResponse = await res.json();

@@ -1,29 +1,23 @@
 'use client';
 
+import { AlertDialog } from '@/components/ux/AlertDialog';
 import { Button } from '@/components/ux/Button';
-import { Input } from '@/components/ux/Input'; 
+import { Input } from '@/components/ux/Input';
+import Spinner from '@/components/ux/Spinner';
+import { Toast } from '@/components/ux/Toast';
 import { useAuth } from '@/contexts/authContext';
 import { deleteUserFile, uploadUserFile } from '@/services/media/mediaService';
 import { updateUser } from '@/services/user/userService';
-import { SquarePen, Trash } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SquarePen, Trash, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { ProfileData } from '../schemas/profileSchema';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { ProfileData, profileSchema } from '../schemas/profileSchema';
 
-/**
- * Interfaz para representar los campos editables del usuario en el formulario.
- */
-interface EditableUser {
-  id: number
-  name: string
-  lastname: string
-  dni: string
-  email: string
-  gender: string
-  profileImage?: string
-  phone: string
-  birthDate: string
-}
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const genders = [
   { label: "Masculino", value: "MALE" },
@@ -31,182 +25,219 @@ const genders = [
   { label: "Otro", value: "UNSPECIFIED" },
 ];
 
-/**
- * Componente ProfileDetails
- *
- * Muestra y permite editar el perfil del usuario.
- * - Campos editables: género, correo, teléfono.
- * - Campos de solo lectura: nombre, apellido, DNI.
- * - Permite editar o eliminar la foto de perfil.
- *
- * Funcionalidades:
- * - Obtiene los datos del usuario desde el contexto Auth.
- * - Carga los géneros disponibles desde el backend.
- * - Detecta cambios para habilitar/deshabilitar el botón "Guardar cambios".
- * - Actualiza el perfil usando el servicio `updateUser`.
- * - Refresca los datos del usuario y redirige a `/profile` después de guardar.
- */
 export default function ProfileDetails() {
-  const { user, fetchUser, setPrevImage } = useAuth();
+  const { user, fetchUser, setPrevImage, prevImage } = useAuth();
   const router = useRouter();
 
-  const [genderLabel, setGenderLabel] = useState<string>("");
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
 
-  const [editableUser, setEditableUser] = useState<EditableUser>({
-    id: 0,
-    name: '',
-    lastname: '',
-    dni: '',
-    email: '',
-    gender: '',
-    profileImage: '',
-    phone: '',
-    birthDate:'',
-    });
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
   
-  const [isChanged, setIsChanged] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      if (selectedFile) URL.revokeObjectURL(selectedFile.name);
-    };
-  }, [selectedFile]);
+  const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
+  const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+
+  const [confirmDelete, setConfirmDelete] = useState<{
+    type: "success" | "error" | "info" | null;
+    title?: string;
+    description?: string;
+    onConfirm?: () => void;
+  } | null>(null);
 
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty, errors, isValid },
+  } = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: '',
+      lastname: '',
+      dni: '',
+      email: '',
+      birthDate: '',
+      phone: '',
+      gender: 'UNSPECIFIED',
+    },
+    mode: 'onChange' 
+  });
+
+  // Cargar datos del usuario en el formulario
   useEffect(() => {
     if (user) {
-      setEditableUser({
-        id: user.id ?? 0,
+      reset({
         name: user.name ?? '',
         lastname: user.lastname ?? '',
         dni: user.dni ?? '',
         email: user.email ?? '',
-        gender: user.gender ?? 'UNSPECIFIED',
-        profileImage: user.profileImage ?? '',
-        phone: user.phone ?? '',
         birthDate: user.birthDate ?? '',
+        phone: user.phone ?? '',
+        gender: (user.gender as "MALE" | "FEMALE" | "UNSPECIFIED") ?? 'UNSPECIFIED',
       });
     }
-  }, [user]);
+  }, [user, reset]);
 
-
+  // Limpieza de URL de la imagen previa
   useEffect(() => {
-    if (!user) {
-      setIsChanged(false);
-      return;
-    }
+    return () => {
+      if (selectedFile) setPrevImage(originalImage)
+    };
+  }, [selectedFile]);
 
-    const changed =
-      editableUser.email !== (user.email ?? '') ||
-      editableUser.gender !== (user.gender ?? '') ||
-      editableUser.phone !== (user.phone ?? '') 
-    setIsChanged(changed);
-  }, [editableUser, user]);
-
-  const handleChange = (field: keyof typeof editableUser, value: string) => {
-    setEditableUser((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = async () => {
+  const onSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
+    setLoading(true);
     try {
       if (!user) return;
 
+      // Subir imagen si existe
       if (selectedFile) {
-        await uploadUserFile(user.id!, selectedFile);
+        const imageResponse = await uploadUserFile(selectedFile);
+        if (imageResponse.state == 'ERROR'){
+          setToast({message: 'Error al actualizar la foto de perfil', type: 'error'})
+          setPrevImage(originalImage);
+          setSelectedFile(null);
+          setLoading(false)
+          return
+        }
       }
 
-      const genderValue: ProfileData['gender'] = 
-        genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
-
-      const response = await updateUser({
-        phone: editableUser.phone,
-        gender: genderValue,
-        removeProfileImage: false,
-        file: selectedFile ?? undefined,
-      });
-
-      if (response.state === 'ERROR') {
-        console.error(response.messages[0]);
-        return;
+      // Actualizar datos
+      if(isDirty && isValid){
+        const response = await updateUser({
+          phone: data.phone,
+          gender: data.gender as ProfileData['gender'],
+        });
+        if (response.state === 'ERROR') {
+          setToast({message: 'Error al actualizar los datos del perfil', type: 'error'});
+          setLoading(false);
+          await fetchUser();
+          reset(data)
+          return
+        }
       }
+
 
       await fetchUser();
-      router.push('/profile');
+      setLoading(false);
+      
+      // Reiniciamos el estado "dirty" del form con los nuevos valores
+      reset(data); 
+      setSelectedFile(null); // Limpiamos el archivo seleccionado
+      
+      router.push('/profile'); 
     } catch (error: unknown) {
+      setLoading(false);
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;
-
-      return { data: null, messages: [message], state: "ERROR" };
+      setToast({ message, type: 'error' });
     }
   };
+
+  // Calculamos si hay cambios reales: Formulario sucio o archivo seleccionado
+  const hasChanges = isDirty || !!selectedFile;
 
   const handleEditPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    setSelectedFile(file);
 
-    // preview para el header
+    if (!originalImage) {
+      setOriginalImage(prevImage);
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setToast({ message: 'Formato inválido. Solo se permiten PNG, JPG, JPEG y WEBP.', type: 'error' });
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setToast({ message: 'La imagen supera el tamaño máximo permitido de 2 MB', type: 'error' });
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedFile(file);
+    
     const previewUrl = URL.createObjectURL(file);
     setPrevImage(previewUrl);
   };
 
   const handleDeletePhoto = async () => {
     if (!user) return;
-
     try {
-      await deleteUserFile(user.id!)
+      setLoading(true);
+      const deleteResponse = await deleteUserFile();
 
-      const genderValue: ProfileData['gender'] = 
-      genders.find(g => g.label === genderLabel)?.value as ProfileData['gender'] ?? "UNSPECIFIED";
-
-      const response = await updateUser({
-        phone: editableUser.phone,
-        gender: genderValue,
-        removeProfileImage: true, // borra la imagen en el backend
-      });
-
-      if (response.state === 'ERROR') {
-        console.error(response.messages[0]);
-        return;
+      if (deleteResponse.state === 'ERROR'){
+        setToast({message: deleteResponse.messages?.[0] ?? 'Error al eliminar la foto de perfil', type: 'error'});
+        setSelectedFile(null);
+        setPrevImage(originalImage)
+        setLoading(false)
+        return
       }
 
-      // Actualizar el usuario en el contexto
       await fetchUser();
-
-      // Limpiar la preview en el header
       setPrevImage(null);
-
-      // Opcional: resetear selectedFile
       setSelectedFile(null);
+      setToast({ message: 'Foto eliminada correctamente', type: 'success' });
+      setLoading(false);
 
     } catch (error: unknown) {
       let message = "Error desconocido";
       if (error instanceof Error) message = error.message;
-
-      return { data: null, messages: [message], state: "ERROR" };
+      setToast({ message, type: 'error' });
     }
   };
 
-  if (!user ) return <p>Cargando usuario...</p>;
+  const handleDeleteSelectedImage = () => {
+    setSelectedFile(null);
+    setPrevImage(originalImage);
+  }
+
+  
+
+
+  // Controlamos si el button debe estar o no deshabilitado
+  const isButtonDisabled = !hasChanges || !isValid || loading;
+
+  if (!user) return <p>Cargando usuario...</p>;
 
   return (
     <div className="space-y-4 max-w-md">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
-        <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer">
-          <SquarePen size={14} />
-          Editar foto
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleEditPhoto}
-          />
-        </label>
+          {!selectedFile && (            
+            <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors py-2">
+              <SquarePen size={14} />
+              Editar foto
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleEditPhoto}
+              />
+            </label>
+          )}
+          {selectedFile && (            
+              <Button onClick={handleDeleteSelectedImage} className="text-sm flex items-center gap-1">
+                <X size={14} />
+                Eliminar selección
+              </Button>
+          )}
         <Button
-          onClick={handleDeletePhoto}
+          onClick={(e) => {
+            e.preventDefault(); // Prevenir submit accidental
+            setConfirmDelete({
+              type: "info",
+              title: "Borrar foto de perfil",
+              description: "¿Estás seguro de que deseas eliminar tu foto? Se seteará una foto por defecto.",
+              onConfirm: () => handleDeletePhoto(),
+            });
+          }}
           className="text-sm flex items-center gap-1"
           variant="danger"
         >
@@ -216,97 +247,112 @@ export default function ProfileDetails() {
       </div>
 
       {/* Formulario */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (isChanged) handleSave();
-        }}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        
         {/* Nombre y Apellido (disabled) */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Nombre"
-            value={editableUser.name}
             disabled
+            {...register('name')}
           />
           <Input
             label="Apellido"
-            value={editableUser.lastname}
             disabled
+            {...register('lastname')}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="DNI"
-            value={editableUser.dni}
             disabled
+            {...register('dni')}
           />
-
           <Input
             label="Fecha de nacimiento"
-            value={editableUser.birthDate}
             disabled
+            {...register('birthDate')}
           />
-
         </div>
-        
 
         <Input
           label="Correo"
           type="email"
-          value={editableUser.email}
-          onChange={(e) => handleChange('email', e.target.value)}
           disabled
           className="w-full"
+          {...register('email')}
         />
 
-
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Celular"
-            value={editableUser.phone}
-            onChange={(e) => handleChange('phone', e.target.value)}
-          />
+          {/* Campo Celular Editable */}
+          <div>
+            <Input
+              label="Celular"
+              {...register('phone')}
+              error={errors.phone?.message} 
+            />
+          </div>
 
+          {/* Campo Género Editable */}
           <div className="flex flex-col">
             <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
               Género
             </label>
             <select
-              value={editableUser.gender}
-              onChange={(e) => {
-                setGenderLabel(e.target.value);
-                setEditableUser((prev) => ({
-                  ...prev,
-                  gender: e.target.value
-                }));
-              }}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white"
+              {...register('gender')}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <option value="">Seleccionar</option>
               {genders.map(g => (
                 <option key={g.value} value={g.value}>{g.label}</option>
               ))}
             </select>
-
+            {errors.gender && (
+              <p className=" text-red-500 mt-1">{errors.gender.message}</p>
+            )}
           </div>
         </div>
 
         <button
           type="submit"
-          disabled={!isChanged}
-          className={`w-full px-4 py-2 rounded-lg , ${
-            isChanged ? 
-                'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer' 
-            : 
-                ' cursor-not-allowed text-gray-700 dark:text-gray-3 dark:bg-gray-2 focus:ring-gray-400'
+          disabled={isButtonDisabled}
+          className={`w-full px-4 py-2 rounded-lg transition-all font-medium ${
+            !isButtonDisabled
+              ? 'bg-transparent border border-gray-400 text-gray-700 dark:border-gray-5 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-2 focus:ring-gray-400 cursor-pointer'
+              : 'cursor-not-allowed text-gray-400 bg-gray-200 dark:text-gray-500 dark:bg-dark-4 border border-transparent opacity-70'
           }`}
         >
-          Guardar cambios
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Spinner size={20} className='border-t-white'/>
+              <span>Guardando...</span>
+            </div>
+          ) : (
+            'Guardar cambios'
+          )}
         </button>
       </form>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+
+      {confirmDelete && (
+        <AlertDialog
+          isOpen={!!confirmDelete}
+          onClose={() => setConfirmDelete(null)}
+          type={confirmDelete.type ?? 'info'}
+          title={confirmDelete.title}
+          description={confirmDelete.description}
+          confirmText="Aceptar"
+          onConfirm={confirmDelete.onConfirm}
+        />
+      )}
     </div>
   );
 }

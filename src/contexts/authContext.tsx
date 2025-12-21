@@ -115,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loadImage = async () => {
       try {
-        const imgUrl = await getUserFile(user.id ?? 0);
+        const imgUrl = await getUserFile();
         if (imgUrl?.data) {
           setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
         }

@@ -11,8 +11,9 @@ export default function Spinner({
 }) {
   return (
     <div
-      className={`animate-spin rounded-full border-2 border-t-transparent dark:border-gray-2 border-gray-3 ${className}`}
+      className={` animate-spin rounded-full border-2 border-gray-2 border-t-transparent ${className}`}
       style={{ width: size, height: size }}
     />
+
   )
 }
