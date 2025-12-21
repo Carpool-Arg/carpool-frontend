@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/authContext';
 
-import { newTrip, validateTripDateTime } from '@/services/trip/tripService';
+import { newTrip, validateTripDateTime, calculatePriceTrip } from '@/services/trip/tripService';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
@@ -25,6 +25,8 @@ import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import InfoTooltip from '@/components/ux/InfoTooltip';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
+import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
+import { TripPriceSummary } from './TripPriceSummary';
 
 interface BaggageOption {
   value: string;
@@ -93,6 +95,15 @@ export function TripForm() {
   const [dateError, setDateError] = useState<string | null>(null);
   const startDateTime = watch('startDateTime');
 
+  const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
+
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
+  const [priceCalculationError, setPriceCalculationError] = useState<string | null>(null);
+
+  const seatPrice = watch("seatPrice");
+  const availableSeat = watch("availableSeat");
+
+  const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -127,6 +138,52 @@ export function TripForm() {
 
     return () => clearTimeout(timeoutId);
   }, [startDateTime, selectedVehicleId]);
+
+  //Funcion "helper" para asignar delay
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  useEffect(() => {
+    // condiciones mínimas para calcular
+    if (!seatPrice || seatPrice <= 0 || !availableSeat || availableSeat <= 0) {
+      setPriceSummary(null);
+      return;
+    }
+
+    // si hay errores en el formulario, no calculamos
+    if (errors.seatPrice || errors.availableSeat || exceedsVehicleSeats) {
+      setPriceSummary(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        setCalculatingPrice(true);
+
+        await delay(300);
+
+        const response = await calculatePriceTrip(seatPrice,availableSeat);
+
+        if (response.state === "OK") {
+          setPriceSummary(response.data);
+          setPriceCalculationError(null);
+        } else {
+          setPriceSummary(null);
+        }
+      } catch (error) {
+        console.error(error);
+        setPriceSummary(null);
+        setPriceCalculationError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo calcular el precio del viaje"
+        );
+      } finally {
+        setCalculatingPrice(false);
+      }
+    }, 500);// delay para no spamear el endpoint al tipear rápido
+
+    return () => clearTimeout(timeoutId);
+  }, [seatPrice, availableSeat, errors.seatPrice, errors.availableSeat]);
 
   const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
     const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
@@ -457,7 +514,7 @@ export function TripForm() {
                   <p className="text-red-500 text-sm mt-1">
                     {errors.availableSeat
                       ? errors.availableSeat.message
-                      : watch("availableSeat") > ((selectedVehicle?.availableSeats) ?? 0)
+                      : watch("availableSeat") >= ((selectedVehicle?.availableSeats) ?? 0)
                         ? `No puede superar los asientos del vehículo`
                         : null
                     }
@@ -467,8 +524,9 @@ export function TripForm() {
 
                 {/* Precio por asiento */}
                 <div>
-                  <label className="block mb-1 text-sm font-medium font-inter">
+                  <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
                     Precio por asiento
+                    <InfoTooltip text="El precio ingresado corresponde al valor antes de comisiones. El monto que recibirás será menor una vez aplicadas las tarifas de la plataforma"></InfoTooltip>
                   </label>
 
                   <div className="relative">
@@ -480,10 +538,9 @@ export function TripForm() {
                     type="text"
                     inputMode="numeric"
                     {...register("seatPrice", {
-                      required: "Debe indicar el precio por asiento",
                       setValueAs: (value) => {
                         const cleaned = String(value).replace(/\D+/g, "");
-                        return cleaned ? Number(cleaned) : 0;
+                        return cleaned ? Number(cleaned) : undefined;
                       },
                     })}
                     onInput={(e) => {
@@ -491,19 +548,35 @@ export function TripForm() {
                       el.value = el.value.replace(/\D+/g, "");
                     }}
                     className="w-full pl-10 pr-3 py-2 rounded border"
-                    placeholder="0"
+                    placeholder="15000"
                   />
-
-
-
                 </div>
-
                   {errors.seatPrice && (
                     <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
                   )}
                 </div>
+
+              </div>
+
+              <div className="col-span-1 md:col-span-2">
+                {(priceSummary || calculatingPrice) && (
+                  <TripPriceSummary
+                    seatPrice={seatPrice ?? 0}
+                    publishedSeatPrice={priceSummary?.publishedSeatPrice ?? 0}
+                    driverPriceDiscount={priceSummary?.driverPriceDiscount ?? 0}
+                    netEarningsPerSeat={priceSummary?.netEarningsPerSeat ?? 0}
+                    loading={calculatingPrice}
+                  />
+                )}
+
+                {priceCalculationError && !calculatingPrice && (
+                  <p className="text-sm text-red-500 mt-2">
+                    {priceCalculationError}
+                  </p>
+                )}
               </div>
             </div>
+
 
             <div className="flex justify-center gap-7.5 mt-8">
               <Button 
@@ -519,7 +592,7 @@ export function TripForm() {
                 variant="primary"
                 onClick={() => setStep(3)}
                 className='px-12 py-2 text-sm font-inter font-medium'
-                disabled={!isValid}
+                disabled={!isValid || !!priceCalculationError || calculatingPrice}
               >
                 Siguiente
               </Button>
@@ -709,7 +782,7 @@ export function TripForm() {
               startDateTime={watch("startDateTime")}
               availableSeat={watch("availableSeat")}
               availableBaggage={watch("availableBaggage") || ""}
-              seatPrice={watch("seatPrice")}
+              seatPrice={priceSummary!.publishedSeatPrice}
               vehicle={selectedVehicle!}
               onBack={() => setStep(5)}
             />

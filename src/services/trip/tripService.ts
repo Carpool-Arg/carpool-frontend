@@ -1,7 +1,7 @@
 import { Trip, TripFilters } from "@/models/trip";
 import { TripDriverResponse } from "@/modules/driver-trips/types/dto/tripDriverResponseDTO";
 import { SearchTripResponse } from "@/modules/search/types/dto/searchTripResponseDTO";
-import { TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
+import { TripPriceCalculationResponseDTO, TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
 
@@ -158,5 +158,26 @@ export const getMyTrips = async () => {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
-  } 
+  }
+}
+
+export const calculatePriceTrip = async(seatPrice: number, availableCurrentSeats: number): Promise<TripPriceCalculationResponseDTO> =>{
+  try {
+    const res = await fetchWithRefresh(`/api/trip/calculate-price-trip?seatPrice=${seatPrice}&availableCurrentSeats=${availableCurrentSeats}`,{
+      credentials: 'include'
+    })
+
+    const response: TripPriceCalculationResponseDTO = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
 }
