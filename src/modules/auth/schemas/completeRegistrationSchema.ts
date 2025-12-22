@@ -26,7 +26,7 @@ export const completeRegistrationSchema = z
     dni: z
       .string()
       .min(7, 'El DNI debe tener al menos 7 dígitos')
-      .max(50, 'El DNI no puede tener más de 50 dígitos')
+      .max(8, 'El DNI no puede tener más de 8 dígitos')
       .regex(/^\d+$/, 'El DNI solo puede contener números'),
 
     phone: z

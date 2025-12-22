@@ -26,7 +26,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid  },
     watch
   } = useForm<CompleteRegistrationData>({
     resolver: zodResolver(completeRegistrationSchema),
@@ -233,8 +233,12 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
           />
         </div>
 
-        <Button variant="primary" type="submit" className="w-full mt-4" disabled={loading || isSubmitting || !allValidationsPassed()}>
-          {loading ? <Spinner size={20} /> : "Registrarse"}
+        <Button variant="primary" type="submit" className="w-full mt-4" disabled={loading || isSubmitting || !allValidationsPassed() || !isValid}>
+          {loading ?                             
+            <div className="flex items-center justify-center gap-2">
+              <Spinner size={20} />
+                <span>Cargando...</span>
+              </div> : "Registrarse"}
         </Button>
 
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
