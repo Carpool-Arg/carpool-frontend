@@ -11,6 +11,9 @@ import { CircleSmall, Plus } from "lucide-react"
 import { useState } from "react"
 import { TripStopProps } from "./TripStop"
 import { TripStopList } from "./TripStopList"
+import { restrictToFirstScrollableAncestor, restrictToParentElement, restrictToVerticalAxis} from '@dnd-kit/modifiers';
+
+
 
 
 type TripStopFormProps = {
@@ -138,11 +141,13 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                 {tripStopsList.length > 0 && (
                     <div className="flex flex-col items-start mt-2.5 w-full">
                         <h1 className="mb-5">Paradas</h1>
-                        <div className="w-full max-h-60 overflow-y-auto">
+                        <div className="w-full h-32 overflow-y-auto">
                         <DndContext
                             sensors={sensors}
                             onDragEnd={handleDragEnd}
                             collisionDetection={closestCorners}
+                            autoScroll={false}
+                            modifiers={[restrictToVerticalAxis, restrictToFirstScrollableAncestor]}
                         >
                             <TripStopList
                             tripStops={tripStopsList}
