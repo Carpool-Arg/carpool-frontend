@@ -548,7 +548,7 @@ export function TripForm() {
                       el.value = el.value.replace(/\D+/g, "");
                     }}
                     className="w-full pl-10 pr-3 py-2 rounded border"
-                    placeholder="15000"
+                    placeholder="Ej. 1000"
                   />
                 </div>
                   {errors.seatPrice && (
