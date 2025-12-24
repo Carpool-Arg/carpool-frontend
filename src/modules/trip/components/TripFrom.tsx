@@ -336,7 +336,7 @@ export function TripForm() {
 
 
   return (
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-start gap-4  h-screen w-full max-w-md mx-auto md:py-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto md:py-8">
         {step === 1 && (
           // === PASO 1: Seleccionar vehículo ===
           <div className='flex flex-col justify-between h-full'>
@@ -371,7 +371,7 @@ export function TripForm() {
 
         {step === 2 && (
           // === PASO 2: Datos viaje ===
-          <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col justify-between flex-1 pb-8">
             <div className='space-y-3'>
               
               <h2 className="text-2xl font-medium">Nuevo viaje</h2>
