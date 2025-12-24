@@ -1,6 +1,6 @@
-import { fetchWithRefresh } from "@/lib/http/authInterceptor";
-import { UserResponse } from "@/types/response/user";
-import { parseJwt } from "@/utils/jwt";
+import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
+import { TokensResponse } from "@/shared/types/response";
+import { parseJwt } from "@/shared/utils/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -17,8 +17,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function PUT(req: NextRequest) {
   try {
-    // Recibir FormData de la petición
-    const formData = await req.formData();
+    const body = await req.json();  
     const token = req.cookies.get('token')?.value;
 
     // Llamada al backend con interceptor para refresco de tokens
@@ -26,11 +25,12 @@ export async function PUT(req: NextRequest) {
       method: "PUT",
       headers: { 
         'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: formData, 
+      body: JSON.stringify(body), 
     });
 
-    const response: UserResponse = await res.json();
+    const response: TokensResponse = await res.json();
 
     const newAccessToken = response.data?.accessToken;
     const newRefreshToken = response.data?.refreshToken;
