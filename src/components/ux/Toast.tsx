@@ -6,7 +6,7 @@ import { useEffect } from "react"
 interface ToastProps {
   message: string
   type?: 'success' | 'error' | 'info' | 'warning'
-  duration?: number // en ms
+  duration?: number
   onClose?: () => void
 }
 
@@ -14,7 +14,7 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose?.() 
+      onClose?.()
     }, duration)
 
     return () => clearTimeout(timer)
@@ -32,20 +32,30 @@ export function Toast({ message, type = 'info', duration = 3000, onClose }: Toas
 
   const getIcon = () => {
     switch (type) {
-      case 'success': return <CheckCircle/>
-      case 'error': return <XCircle/>
-      case 'info': return <Info/>
-      case 'warning': return <AlertTriangle/>
-      default: return <Info/>
+      case 'success': return <CheckCircle className="w-5 h-5 md:w-6 md:h-6" />
+      case 'error': return <XCircle className="w-5 h-5 md:w-6 md:h-6" />
+      case 'info': return <Info className="w-5 h-5 md:w-6 md:h-6" />
+      case 'warning': return <AlertTriangle className="w-5 h-5 md:w-6 md:h-6" />
+      default: return <Info className="w-5 h-5 md:w-6 md:h-6" />
     }
   }
 
   return (
     <div
-      className={`fixed bottom-16 md:bottom-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white ${getBgColor()}`}
+      className={`
+        fixed
+        right-4
+        bottom-20 md:bottom-6
+        max-w-[90%] md:max-w-sm
+        flex items-center gap-3
+        px-3 py-2 md:px-4 md:py-3
+        rounded-lg shadow-lg text-white
+        ${getBgColor()}
+        animate-slide-up
+      `}
     >
       {getIcon()}
-      <span>{message}</span>
+      <span className="text-sm md:text-base font-medium">{message}</span>
     </div>
   )
 }

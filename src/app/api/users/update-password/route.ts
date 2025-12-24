@@ -1,6 +1,6 @@
-import { fetchWithRefresh } from "@/lib/http/authInterceptor";
-import { UserResponse } from "@/types/response/user";
-import { parseJwt } from "@/utils/jwt";
+import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
+import { TokensResponse } from "@/shared/types/response";
+import { parseJwt } from "@/shared/utils/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -15,13 +15,15 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * @param {NextRequest} req - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
  */
+
+
 export async function PUT(req: NextRequest) {
   try {
     // Recibir FormData de la petición
     const body = await req.json();
     const token = req.cookies.get('token')?.value;
 
-    // Llamada al backend con interceptor para refresco de tokens
+     // Llamada al backend con interceptor para refresco de tokens
     const res = await fetchWithRefresh(`${apiUrl}/users/update-password`, {
       method: "PUT",
       headers: { 
@@ -31,8 +33,13 @@ export async function PUT(req: NextRequest) {
       body: JSON.stringify(body), 
     });
 
-    const response: UserResponse = await res.json();
+        if (!res.ok) {
 
+            const errorResponse: TokensResponse = await res.json();
+            return NextResponse.json(errorResponse, { status: res.status });
+        }
+
+    const response: TokensResponse = await res.json();
     const newAccessToken = response.data?.accessToken;
     const newRefreshToken = response.data?.refreshToken;
 
@@ -70,7 +77,7 @@ export async function PUT(req: NextRequest) {
     const message = error instanceof Error ? error.message : "Error desconocido";
     return NextResponse.json(
       { data: null, messages: [message], state: "ERROR" }, 
-      { status: 500 }
+      { status: 500 } // Error interno de tu proxy si falla la conexión o el JSON
     );
   }
 }
