@@ -1,22 +1,28 @@
 'use client';
 
+import { AlertDialog } from '@/components/ux/AlertDialog';
+import Separator from '@/components/ux/Separator';
+import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
+import { useAuth } from '@/contexts/authContext';
+import { Construction, History, Home, LogOut, LucideIcon, PlusCircle, Search, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search , User, LogOut, PlusCircle, LucideIcon, History, UserRound } from 'lucide-react';
-import { useAuth } from '@/contexts/authContext';
 import { useState } from 'react';
-import { AlertDialog } from '@/components/ux/AlertDialog';
-import Image from 'next/image';
-import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
-import Separator from '@/components/ux/Separator';
 
 export type Role = 'user' | 'driver' | null;
 
-const navItems: { href: string; icon: LucideIcon; label: string; role: Role }[] = [
+const navItems: { 
+  href: string; 
+  icon: LucideIcon; 
+  label: string; 
+  role: Role ;
+  disabled?: boolean;
+}[] = [
   { href: '/home', icon: Home, label: 'Inicio', role: 'user' },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user' },
   { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje', role: 'driver' },
-  { href: '/history', icon: History, label: 'Historial', role: 'user' },
+  { href: '/history', icon: History, label: 'Historial', role: 'user', disabled: true },
   { href: '/profile', icon: User, label: 'Perfil', role: 'user' },
 ];
 
@@ -33,6 +39,7 @@ export default function DesktopSidebar() {
 
   const userRoles = user?.roles || ['user'];
   
+  
   // Filtramos los ítems según el rol del usuario
   const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
 
@@ -40,7 +47,7 @@ export default function DesktopSidebar() {
     <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-dark-5 border-r border-gray-200 dark:border-gray-2 flex-col justify-between px-4 py-8 z-50">
       {/* Top section: logo y navegación */}
       <div>
-        <div className=" bg-gradient-to-tr from-gray-2 via-75% to-transparent rounded-lg py-1 flex items-center justify-start px-2">
+        <Link href={'/profile'} className=" bg-gradient-to-tr from-gray-2 via-75% to-transparent rounded-lg py-1 flex items-center justify-start px-2">
           <Image
             src={`${R2_PUBLIC_PREFIX}/isologo.svg`}
             alt="Imagen de login"
@@ -49,15 +56,60 @@ export default function DesktopSidebar() {
             className="object-contain dark:invert"
             priority
           />
-          <span className="font-medium text-gray-6 px-2 flex items-center gap-1">
-            <UserRound size={14} fill='currentColor' stroke='currentColor'/>
+          <span className="font-medium text-gray-6 px-2 flex items-center gap-2">
+            {!user?.profileImage ? (
+              <span className="w-5 h-5 rounded-full bg-gray-3 dark:bg-gray-2 animate-pulse" />
+            ) :  (
+              <Image
+                src={user?.profileImage ?? ''}
+                alt="Foto de perfil"
+                width={20}
+                height={20}
+                className="rounded-full object-cover"
+              />
+            )}
+
+
             <span className="max-w-[120px] truncate">{user?.username}</span>
           </span>
-        </div>
+        </Link>
         <Separator color='bg-gray-2' />
         <nav className="flex flex-col gap-2">
-          {filteredNavItems.map(({ href, icon: Icon, label }) => {
+          {filteredNavItems.map(({ href, icon: Icon, label, disabled }) => {
             const isActive = pathname.startsWith(href);
+            if (disabled) {
+            return (
+              <div
+                key={href}
+                className="
+                  group flex items-center gap-3 p-2 rounded-md text-sm
+                  text-gray-9 cursor-not-allowed
+                  transition-colors
+                  hover:text-gray-1 hover:dark:bg-gradient-to-r
+                  hover:dark:from-gray-8 hover:dark:via-gray-8 hover:dark:to-dark-5
+                "
+              >
+                <Icon size={20} />
+
+                <span className="flex items-center gap-2">
+                  {label}
+
+                  <span
+                    className="
+                      flex items-center gap-1
+                      text-[10px] font-medium
+                      px-2 py-0.5 rounded-full
+                      bg-yellow-100 text-yellow-800
+                      dark:bg-yellow-900/30 dark:text-yellow-300
+                    "
+                  >
+                    <Construction size={10} />
+                    Próximamente
+                  </span>
+                </span>
+              </div>
+            );
+          }
             return (
               <Link
                 key={href}
