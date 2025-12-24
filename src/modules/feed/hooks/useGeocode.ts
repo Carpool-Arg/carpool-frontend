@@ -35,7 +35,7 @@ export function useGeocode() {
 
       const data = await res.json();
 
-      if (!res.ok || data.error) {
+      if (!res.ok || data.state === 'ERROR') {
         setCity(FALLBACK_CITY);
         setCoords({ lat, lon });
         return FALLBACK_CITY; 
