@@ -9,12 +9,23 @@ export const registerVehicleStep1Schema = z.object({
 // Paso 2: Datos básicos del vehículo
 export const registerVehicleStep2Schema = z.object({
   domain: z
-    .string()
-    .regex(
-      /^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/i,
-      'La patente no tiene un formato válido.')
-    .min(6, 'La patente debe tener entre 6 y 7 caracteres.')
-    .max(7, 'La patente debe tener entre 6 y 7 caracteres.'),
+  .string()
+  .refine(
+    (v) => !v.includes('-'),
+    'La patente no debe contener guiones.'
+  )
+  .transform((v) =>
+    v
+      .toUpperCase()
+      .replace(/\s+/g, '')
+  )
+  .refine(
+    (v) =>
+      /^(?:[A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/.test(v),
+    'La patente no tiene un formato válido.'
+  ),
+
+  
       
   brand: z
     .string()
