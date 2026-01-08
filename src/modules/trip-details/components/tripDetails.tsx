@@ -18,6 +18,7 @@ import { TripRoutePreview } from "@/modules/trip/components/TripRoutePreview";
 import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
 import { Reservation } from "@/models/reservation";
 import { TripDetailsData } from "../types/tripDetails";
+import InfoTooltip from "@/components/ux/InfoTooltip";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -150,8 +151,9 @@ export default function TripDetails() {
 
           {/* Precio */}
           <div className="col-span-4 col-start-6 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
-            <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
+            <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl flex justify-center gap-1">
               Precio
+              <InfoTooltip text="Este precio corresponde al precio por realizar el viaje completo. Al momento de solicitar la reserva verás reflejado el precio real."></InfoTooltip>
             </h2>
             <span className="font-medium text-[28px]">${formatPrice(trip.seatPrice)}</span>
           </div>
