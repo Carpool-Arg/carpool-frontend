@@ -1,9 +1,5 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp, getApps } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported, MessagePayload } from 'firebase/messaging';
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,46 +10,66 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Inicializar Firebase solo una vez
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Función para obtener el token FCM
 export const getFCMToken = async (): Promise<string | null> => {
   try {
-    // Verificar si el navegador soporta notificaciones
     const messagingSupported = await isSupported();
-    if (!messagingSupported) return null;
+    if (!messagingSupported) {
+      console.warn('FCM no soportado en este navegador.');
+      return null;
+    }
 
     const messaging = getMessaging(app);
-    
-    // Solicitar permiso al usuario
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
-      // Obtener el token (VAPID key desde Firebase Console)
+      let registration;
+
+      if ('serviceWorker' in navigator) {
+        // 1. Intentar obtener el registro existente de sw.js
+        registration = await navigator.serviceWorker.getRegistration('/');
+        
+        // 2. Si no lo encuentra (o es undefined), esperar al .ready
+        if (!registration) {
+          
+          registration = await navigator.serviceWorker.ready;
+        }
+      }
+
+      if (!registration) {
+        throw new Error("No se encontró ningún Service Worker activo.");
+      }
+
       const token = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: registration, 
       });
       
       return token;
     } else {
+      console.warn('Permiso de notificaciones denegado.');
       return null;
     }
   } catch (error) {
-    console.error('Error al obtener el token FCM:', error);
+    console.error('Error CRÍTICO al obtener token:', error);
     return null;
   }
 };
 
-// Escuchar mensajes cuando la app está en primer plano
-export const onMessageListener = (): Promise<MessagePayload> =>
-  new Promise((resolve) => {
-    isSupported().then((supported) => {
-      if (supported) {
-        const messaging = getMessaging(app);
-        onMessage(messaging, (payload) => {
-          resolve(payload);
-        });
-      }
-    });
+// ------------------------------------------------------------------
+// CORRECCIÓN AQUÍ: Cambiamos de Promise a Callback (Observer Pattern)
+// ------------------------------------------------------------------
+export const onMessageListener = (callback: (payload: MessagePayload) => void) => {
+  isSupported().then((supported) => {
+    if (supported) {
+      const messaging = getMessaging(app);
+      
+      // onMessage devuelve una función unsubscribe que podrías retornar si quisieras limpiar
+      return onMessage(messaging, (payload) => {
+        // Cuando llega un mensaje, ejecutamos la función que nos pasó el componente
+        callback(payload);
+      });
+    }
   });
+};
