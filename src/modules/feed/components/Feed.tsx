@@ -10,7 +10,7 @@ import { useNotifications } from "@/shared/hooks/useNotifications";
 import { City } from "@/models/city";
 import { SearchData } from "@/modules/search/types/search";
 
-let initialized = false;
+
 
 export default function Feed() {
   const {user} = useAuth()
@@ -22,8 +22,7 @@ export default function Feed() {
   const feedFetchRef = useRef(false);
 
   useEffect(() => {
-    if (initialized) return;
-    initialized = true;
+
     const initNotifications = async () => {
       if (typeof window === "undefined" || !("Notification" in window)) return;
       try {
@@ -37,7 +36,7 @@ export default function Feed() {
       }
     };
     initNotifications();
-  }, [initialized,requestPermission]);
+  }, [requestPermission]);
 
   useEffect(() => {
     if(!user) return;
