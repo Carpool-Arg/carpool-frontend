@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getFCMToken, onMessageListener } from '../lib/firebase/firebase';
-import { MessagePayload } from 'firebase/messaging';
 
 interface UseNotificationsReturn {
   isLoading: boolean;
@@ -16,34 +15,33 @@ export function useNotifications(): UseNotificationsReturn {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Registrar el service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/firebase-messaging-sw.js')
-    }
 
-    // Escuchar mensajes en primer plano
-    onMessageListener()
-    .then((payload: MessagePayload) => {
-      const notif = payload.notification;
+    onMessageListener((payload) => {
 
-      // Si no hay contenido de notificación, no mostrar nada
-      if (!notif || (!notif.title && !notif.body)) return;
+      if (payload.notification) {
+        return;
+      }
 
+      const title = payload.data?.title;
+      const body = payload.data?.body;
 
-      new Notification(notif.title ?? 'Notificación', {
-        body: notif.body ?? '',
-        icon: notif.icon || '/icons/icon-192.png',
+      if (!title) return;
+
+      new Notification(title, {
+        body: body ?? '',
+        icon: '/icons/icon-192.png',
         data: payload.data,
       });
+    });
+    
+    return () => {
 
-    })
-    .catch((err) => console.error('Error al escuchar mensajes:', err));
-
+    };
   }, []);
 
   const registerNotifications = useCallback(async () => {
     if (typeof window === "undefined" || !("Notification" in window)) return;
+    
     setIsLoading(true);
     setError(null);
     
@@ -51,7 +49,6 @@ export function useNotifications(): UseNotificationsReturn {
       const token = await getFCMToken();
 
       if (!token) {
-        setError('No se pudo obtener el token. Verifica los permisos.');
         setIsLoading(false);
         return;
       }
@@ -59,24 +56,25 @@ export function useNotifications(): UseNotificationsReturn {
       // Enviar token al backend
       const response = await fetch('/api/notification/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: token,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token }),
         credentials: 'include',
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        setError(`Error al registrar token: ${errorText}`);
-        console.error('Error al registrar token:', errorText);
+        console.error('Error backend al registrar token');
       } 
-    } catch (error:unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setError(`Error al registrar notificaciones: ${errorMessage}`);
-      console.error('Error:', error);
+    } catch (error: unknown) { 
+      let errorMessage = 'Error desconocido';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      console.error('Error en registro:', errorMessage);
+      setError(`Error técnico: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +82,7 @@ export function useNotifications(): UseNotificationsReturn {
 
 
   const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
-    if (!('Notification' in window)) {
-      console.warn('Las notificaciones no son compatibles con este navegador.');
+    if (typeof window === "undefined" || !('Notification' in window)) {
       return 'denied';
     }
 

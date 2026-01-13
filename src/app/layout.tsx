@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from 'next/font/local'
 import { AppProviders } from './providers';
 import ClientLayout from "@/layout/ClientLayout";
+import ServiceWorkerRegistration from '@/SWRegister'
 import "./globals.css";
 
 export const outfit = localFont({
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body>
         <AppProviders>
           <ClientLayout>
+            <ServiceWorkerRegistration/>
             {children}
           </ClientLayout>
         </AppProviders>
