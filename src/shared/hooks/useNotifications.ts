@@ -30,6 +30,7 @@ export function useNotifications(): UseNotificationsReturn {
       new Notification(title, {
         body: body ?? '',
         icon: '/icons/icon-192.png',
+        badge: '/badge/badge-72.svg',
         data: payload.data,
       });
     });
