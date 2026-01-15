@@ -1,6 +1,6 @@
 'use client';
 
-import {  HEADER_PATHS } from '@/constants/headerPaths';
+import {  HEADER_PATHS } from '@/constants/paths/headerPaths';
 import { AppHeader } from '@/widgets/AppHeader';
 import MobileNavbar from '@/widgets/mobile/MobileNavbar';
 import { usePathname } from 'next/navigation';

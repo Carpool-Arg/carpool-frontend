@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PUBLIC_PATHS } from "./constants/publicPaths";
+import { PUBLIC_PATHS } from "./constants/paths/publicPaths";
 import {verifyTokenWithServer} from './services/auth/authService'
 import { isTokenExpired, parseJwt } from "./shared/utils/jwt";
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { PUBLIC_PATHS } from '@/constants/publicPaths';
+import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
