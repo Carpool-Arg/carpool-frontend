@@ -19,6 +19,8 @@ import { TripDetailsData } from "@/modules/trip/types/tripDetails";
 import { Reservation } from "@/models/reservation";
 import { capitalize, capitalizeWords } from "@/shared/utils/string";
 import { formatPrice } from "@/shared/utils/number";
+import { calculateTotal } from "@/services/reservation/reservationService";
+import { Toast } from "@/components/ux/Toast";
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -40,6 +42,11 @@ export default function ReservationModal({
   const [selectedOrigin, setSelectedOrigin] = useState<TripStop | undefined>(undefined);
   const [selectedDestination, setSelectedDestination] = useState<TripStop | undefined>(undefined);
   const [hasBaggage, setHasBaggage] = useState<boolean>(false);
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
+  const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null)
+
+
 
   // Flag para saber si el viaje es entre paradas intermedias
   const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
@@ -71,6 +78,46 @@ export default function ReservationModal({
       }
     }
   }, [isOpen, trip.tripStops, initialOriginId, initialDestinationId]);
+
+  useEffect(() => {
+    if (
+      !isOpen ||
+      !selectedOrigin?.cityId ||
+      !selectedDestination?.cityId
+    ) {
+      setTotalPrice(null);
+      return;
+    }
+
+    const fetchPrice = async () => {
+      try {
+        setLoadingPrice(true);
+        setTotalPrice(null);
+
+        const res = await calculateTotal(
+          trip.id,
+          selectedOrigin.cityId,
+          selectedDestination.cityId,
+        );
+
+        setTotalPrice(res.data);
+      } catch (error) {
+        setToast({ message: "Error calculando precio", type: 'error' });
+        console.error("Error calculando precio", error);
+        setTotalPrice(null);
+      } finally {
+        setLoadingPrice(false);
+      }
+    };
+
+    fetchPrice();
+  }, [
+    isOpen,
+    selectedOrigin?.cityId,
+    selectedDestination?.cityId,
+    trip.id,
+  ]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,15 +276,18 @@ export default function ReservationModal({
             </h2>
             
             
-            {isIntermediate ? (
-              <p className="text-2xl font-outfit font-semibold">
-                $ <span className="text-xl">a definir</span>
-              </p>
-            ) : (
-              <p className="text-2xl font-outfit font-semibold">
-                ${formatPrice(trip.seatPrice)}
-              </p>
-            )}
+          {loadingPrice ? (
+            <div className="h-8 w-28 rounded bg-gray-8 animate-pulse" />
+          ) : totalPrice !== null ? (
+            <p className="text-2xl font-outfit font-semibold">
+              ${formatPrice(totalPrice)}
+            </p>
+          ) : (
+            <p className="text-2xl font-outfit font-semibold text-gray-4">
+              $ <span className="text-xl">—</span>
+            </p>
+          )}
+
             
           </div>
           <Separator color="bg-gray-2" marginY="my-1"/>
@@ -266,6 +316,18 @@ export default function ReservationModal({
           </div>
         </form>
       </div>
+
+      {toast && (
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+              <div className="pointer-events-auto w-full">
+                  <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                  />
+              </div>
+          </div>
+      )}
     </div>
   );
 }
