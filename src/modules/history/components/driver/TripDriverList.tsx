@@ -15,8 +15,9 @@ export function TripDriverList({ trips }: TripDriverListProps) {
     );
   }
 
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
       {trips.map((trip) => (
         <TripDriverCard key={trip.id} trip={trip} />
       ))}
