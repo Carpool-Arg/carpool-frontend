@@ -1,27 +1,24 @@
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
-import { ArrowDown, ArrowDownRight, ChevronRight, CornerDownRight, IterationCcw } from "lucide-react";
+import { capitalizeWords } from "@/shared/utils/string";
+import { ArrowDown, ArrowDownRight, CalendarSync, ChevronRight, CornerDownRight, Dot, IterationCcw } from "lucide-react";
 import Image from "next/image";
+import { tripButtonConfig } from "./TripStateButton";
 
 interface TripCardProps {
-  trip: {
-    id: number;
-    startCity: string;
-    destinationCity: string;
-    startDateTime: string;
-    currentAvailableSeats: number;
-    seatPrice: number;
-    vehicle: VehicleResponseTripDTO
-  };
+  trip: TripDriverDTO  
 }
 
 export function TripDriverCard({ trip }: TripCardProps) {
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
 
+  const { label, Icon, className, disabled } = tripButtonConfig[trip.tripState];
+ 
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
       {/* Ruta */}
@@ -38,10 +35,17 @@ export function TripDriverCard({ trip }: TripCardProps) {
       </div>
 
       {/* Fecha */}
-      <div className="inline-flex items-center text-xs text-gray-6 mb-2 bg-gray-7 gap-1 px-2 py-1 rounded-xl font-inter">
-        <span><ClockIcon size={14} /></span>
-        <span>{formatDateTime(startDate?.toISOString())}</span>
+      <div className="flex items-center justify-between">
+        <div className="inline-flex items-center text-xs text-gray-6 mb-2 bg-gray-7 gap-1 px-2 py-1     rounded-xl font-inter">
+          <span><ClockIcon size={14} /></span>
+          <span>{formatDateTime(startDate?.toISOString())}</span>
+        </div>
+        <div className="inline-flex gap-2 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
+          <span>{capitalizeWords(trip.tripState)}</span>
+          <span className="bg-white h-1.5 w-1.5 rounded-full"></span>
+        </div>
       </div>
+      
 
       {/* Info secundaria */}
       <div className="flex items-center justify-between text-xs text-gray-6">
@@ -66,17 +70,19 @@ export function TripDriverCard({ trip }: TripCardProps) {
         </div>
         
         <button
-          className="
-            flex items-center gap-1 text-base
-            bg-gray-7 text-gray-6
+          disabled={disabled}
+          className={`
+            flex items-center gap-1 text-base cursor-pointer
             px-2 py-1 rounded-lg
             transition-all duration-200 ease-out
-            hover:bg-gray-6 hover:text-gray-8 hover:font-semibold cursor-pointer
-            hover:shadow-sm hover:-translate-y-[1px]
-          "
+            hover:shadow-sm hover:-translate-y-[1px] 
+          bg-gray-7 text-gray-6
+          hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+            ${className}
+          `}
         >
-          <IterationCcw size={16} />
-          Iniciar viaje
+          <Icon size={16} />
+          {label}
         </button>
 
       </div>

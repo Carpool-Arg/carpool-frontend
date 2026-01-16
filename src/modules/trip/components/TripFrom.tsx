@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+
 import { useForm } from 'react-hook-form';
 import { BiBriefcaseAlt } from 'react-icons/bi';
 import { BsBackpack, BsSuitcase } from 'react-icons/bs';
@@ -27,6 +27,7 @@ import InfoTooltip from '@/components/ux/InfoTooltip';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
 import { TripPriceSummary } from './TripPriceSummary';
+import { useEffect, useState } from 'react';
 
 interface BaggageOption {
   value: string;
@@ -837,7 +838,9 @@ export function TripForm() {
               router.push('/home')
             }
           }}
-          onConfirm={()=>router.push('/profile')} 
+          onConfirm={() => {
+            router.push("/history?role=driver");
+          }}
           type="success"
           title="¡Listo! Tu viaje ha sido publicado"
           description="Podrás ver y gestionar tus viajes en la sección 'Mis Viajes'."
