@@ -4,6 +4,8 @@ import { AppProviders } from './providers';
 import ClientLayout from "@/layout/ClientLayout";
 import ServiceWorkerRegistration from '@/SWRegister'
 import "./globals.css";
+import { cookies } from "next/headers";
+import { WebSocketProvider } from "@/providers/WebSocketProvider";
 
 export const outfit = localFont({
   src: [
@@ -36,19 +38,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const cookieStore = await cookies();
+  const tokenCookie = await cookieStore.get('token');
+  const token = tokenCookie?.value ?? null;
+
   return (
     <html lang="es" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
         <AppProviders>
-          <ClientLayout>
-            <ServiceWorkerRegistration/>
-            {children}
-          </ClientLayout>
+          <WebSocketProvider token={token}>
+            <ClientLayout>
+              <ServiceWorkerRegistration />
+              {children}
+            </ClientLayout>
+          </WebSocketProvider>
         </AppProviders>
       </body>
     </html>
