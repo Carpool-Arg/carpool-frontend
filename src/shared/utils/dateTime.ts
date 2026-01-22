@@ -64,3 +64,48 @@ export function formatTime(dateString: string | undefined): string {
     minute: "2-digit",
   });
 }
+
+/**
+ * Devuelve el tiempo restante hasta una fecha en formato humano.
+ *
+ * @example
+ * timeUntil("2026-01-21T19:30:00")
+ * // → "1 h 26 min"
+ *
+ * @example
+ * timeUntil("2026-01-21T18:05:00")
+ * // → "5 min"
+ *
+ * @example
+ * timeUntil("2026-01-21T18:00:00")
+ * // → "Llegando"
+ *
+ * @param dateString Fecha y hora objetivo (ISO). Puede ser undefined.
+ * @returns Tiempo restante en formato humano o null si no hay fecha.
+ */
+export function timeUntil(dateString: string | undefined): string | null {
+  if (!dateString) return null
+
+  const now = new Date()
+  const target = new Date(dateString)
+
+  const diffMs = target.getTime() - now.getTime()
+  const totalMinutes = Math.max(0, Math.round(diffMs / 60000))
+
+  if (totalMinutes === 0) return "Llegando"
+
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  if (hours > 0 && minutes > 0) {
+    return `${hours} h ${minutes} min`
+  }
+
+  if (hours > 0) {
+    return `${hours} h`
+  }
+
+  return `${minutes} min`
+}
+
+

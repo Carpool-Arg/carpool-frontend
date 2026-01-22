@@ -15,7 +15,6 @@ export default function TripHistory() {
   const role = searchParams.get("role") ?? "passenger";
 
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
-  console.log(driverTrips)
 
   const handleChangeRole = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());

@@ -120,16 +120,8 @@ function setTokenCookies(
 //MATCHER
 export const config = {
   matcher: [
-    /*
-     * Excluir rutas que empiezan con:
-     * - _next/static (archivos estáticos de Next)
-     * - _next/image (optimización de imágenes)
-     * - favicon.ico
-     * - icons/ (tus iconos de PWA)
-     * - manifest.webmanifest (tu manifiesto)
-     * - sw.js (TU SERVICE WORKER) <--- AGREGADO
-     * - workbox- (ARCHIVOS DE WORKBOX) <--- AGREGADO
-     */
-    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.webmanifest|sw.js|workbox-).*)",
+    "/((?!_next|icons|favicon.ico|manifest.webmanifest|sw.js|workbox-).*)",
   ],
 };
+
+

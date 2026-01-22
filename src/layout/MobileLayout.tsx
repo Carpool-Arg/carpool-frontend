@@ -14,7 +14,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
   
   return (
-    <div className="flex flex-col h-[100dvh] overflow-hidden">
+    <div className="flex flex-col h-dvh overflow-hidden">
       {showHeader && (
         <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
       )}
