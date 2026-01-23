@@ -1,0 +1,26 @@
+import { TripDriverCard } from "./TripDriverCard";
+import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
+
+interface TripDriverListProps {
+  trips: TripDriverDTO[];
+}
+
+export function TripDriverList({ trips }: TripDriverListProps) {
+  
+  if (trips.length === 0) {
+    return (
+      <div className="text-center text-sm text-gray-600 py-10">
+        Todavía no tenés viajes publicados.
+      </div>
+    );
+  }
+
+
+  return (
+    <div className="flex flex-col">
+      {trips.map((trip) => (
+        <TripDriverCard key={trip.id} trip={trip} />
+      ))}
+    </div>
+  );
+}

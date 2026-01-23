@@ -1,5 +1,12 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getMessaging, getToken, onMessage, isSupported, MessagePayload } from 'firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  isSupported,
+  MessagePayload,
+  deleteToken,
+} from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,6 +19,8 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
+const SW_VERSION = 'v3'; 
+
 export const getFCMToken = async (): Promise<string | null> => {
   try {
     const messagingSupported = await isSupported();
@@ -20,54 +29,62 @@ export const getFCMToken = async (): Promise<string | null> => {
       return null;
     }
 
+    if (typeof window === 'undefined') return null;
+
     const messaging = getMessaging(app);
-    const permission = await Notification.requestPermission();
-    
-    if (permission === 'granted') {
-      let registration;
 
-      if ('serviceWorker' in navigator) {
-        // 1. Intentar obtener el registro existente de sw.js
-        registration = await navigator.serviceWorker.getRegistration('/');
+    const storedVersion = localStorage.getItem('sw-version');
+
+    if (storedVersion !== SW_VERSION) {
+      try {
+        await deleteToken(messaging);
+      } catch {
         
-        // 2. Si no lo encuentra (o es undefined), esperar al .ready
-        if (!registration) {
-          
-          registration = await navigator.serviceWorker.ready;
-        }
       }
 
-      if (!registration) {
-        throw new Error("No se encontró ningún Service Worker activo.");
-      }
+      localStorage.setItem('sw-version', SW_VERSION);
+    }
 
-      const token = await getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-        serviceWorkerRegistration: registration, 
-      });
-      
-      return token;
-    } else {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
       console.warn('Permiso de notificaciones denegado.');
       return null;
     }
+
+    let registration: ServiceWorkerRegistration | undefined;
+
+    if ('serviceWorker' in navigator) {
+      registration = await navigator.serviceWorker.getRegistration('/');
+
+      if (!registration) {
+        registration = await navigator.serviceWorker.ready;
+      }
+    }
+
+    if (!registration) {
+      throw new Error('No se encontró ningún Service Worker activo.');
+    }
+
+    const token = await getToken(messaging, {
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+      serviceWorkerRegistration: registration,
+    });
+
+    return token;
   } catch (error) {
     console.error('Error CRÍTICO al obtener token:', error);
     return null;
   }
 };
 
-// ------------------------------------------------------------------
-// CORRECCIÓN AQUÍ: Cambiamos de Promise a Callback (Observer Pattern)
-// ------------------------------------------------------------------
-export const onMessageListener = (callback: (payload: MessagePayload) => void) => {
+export const onMessageListener = (
+  callback: (payload: MessagePayload) => void
+) => {
   isSupported().then((supported) => {
     if (supported) {
       const messaging = getMessaging(app);
-      
-      // onMessage devuelve una función unsubscribe que podrías retornar si quisieras limpiar
+
       return onMessage(messaging, (payload) => {
-        // Cuando llega un mensaje, ejecutamos la función que nos pasó el componente
         callback(payload);
       });
     }

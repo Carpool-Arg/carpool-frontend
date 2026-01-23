@@ -54,9 +54,9 @@ export default async function RootLayout({
         <AppProviders>
           <WebSocketProvider token={token}>
             <ClientLayout>
-              <ServiceWorkerRegistration />
+              <ServiceWorkerRegistration/>
               {children}
-            </ClientLayout>
+          </ClientLayout>
           </WebSocketProvider>
         </AppProviders>
       </body>

@@ -15,21 +15,18 @@ export function useNotifications(): UseNotificationsReturn {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-
     onMessageListener((payload) => {
-
-      if (payload.notification) {
-        return;
-      }
-
-      const title = payload.data?.title;
-      const body = payload.data?.body;
+      if (document.visibilityState !== 'visible') return;
+      
+      const title = payload.notification?.title || payload.data?.title;
+      const body = payload.notification?.body || payload.data?.body;
 
       if (!title) return;
 
       new Notification(title, {
         body: body ?? '',
         icon: '/icons/icon-192.png',
+        badge: '/badge-72.svg',
         data: payload.data,
       });
     });
