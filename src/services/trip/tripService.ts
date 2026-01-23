@@ -226,3 +226,25 @@ export const arriveTripStop = async (idTripStop:string) => {
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
+
+export const startTrip = async (idTrip:string) => {
+  try {
+    const res = await fetchWithRefresh('/api/trip/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idTrip }),
+      credentials: 'include'
+    })
+
+    const response: VoidResponse = await res.json();
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    
+    return response;
+  }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}

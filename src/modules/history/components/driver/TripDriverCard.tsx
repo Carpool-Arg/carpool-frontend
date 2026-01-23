@@ -20,6 +20,10 @@ export function TripDriverCard({ trip }: TripCardProps) {
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
 
+  const handleClick = () => {
+    onClick(trip.id.toString());
+  };
+
   /*
     const handleTripAction = () => {
       switch (state) {
@@ -37,6 +41,7 @@ export function TripDriverCard({ trip }: TripCardProps) {
     };
   */
 
+  //Esto esta hardcodeado, luego de mergear con la rama para inciar viaje eso solo tendria que tener en cuenta el estado del viaje
   const config =
   tripButtonConfig[trip.tripState] ??
   tripButtonConfig["CREATED"];
@@ -104,7 +109,7 @@ export function TripDriverCard({ trip }: TripCardProps) {
           hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
             ${className}
           `}
-          //onClick={onClick}
+          onClick={handleClick}
         >
           <Icon size={16} />
           {label}
