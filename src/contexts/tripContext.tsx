@@ -38,6 +38,10 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
       if (res.state === "OK" && res.data) {
         setCurrentTrip(res.data)
+
+        if (pathname !== TRIP_ROUTE) {
+          router.replace(TRIP_ROUTE)
+        }
       } else {
         setCurrentTrip(null)
       }
@@ -53,11 +57,6 @@ export function TripProvider({ children }: { children: ReactNode }) {
     fetchTrip()
   }, [])
 
-  useEffect(() => {
-    if (!loading && tripActive && pathname !== TRIP_ROUTE) {
-      router.replace(TRIP_ROUTE)
-    }
-  }, [tripActive, pathname, loading, router])
 
   const arriveNextStop = async () => {
     if (!currentTrip) return
@@ -77,13 +76,12 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
     if (isLastStop) {
       setCurrentTrip(null)
-      setTimeout(()=>{
-        router.push('/home')
-      },2000)
+      setTimeout(() => router.push('/home'), 2000)
+      return
     }
 
     await fetchTrip()
-
+    
     setCurrentTrip(prev => {
       if (!prev) return prev
 
