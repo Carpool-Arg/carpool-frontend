@@ -61,7 +61,7 @@ export default function CurrentTrip() {
               className="dark:invert"
             />
             <h2 className="text-2xl font-semibold leading-tight my-4">
-              Modo coche activado
+              Modo conductor activado
             </h2>
 
             <p className="text-sm text-gray-6 bg-gray-7 rounded-lg p-3">
