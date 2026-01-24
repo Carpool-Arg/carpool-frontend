@@ -3,11 +3,13 @@
 import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
+import { useWebSocket } from '@/providers/WebSocketProvider';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+
 
 interface AuthContextType {
   user: User | null;
@@ -31,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
   const pathname = usePathname();
   const [profileViewRole, setProfileViewRole] = useState<'pasajero' | 'conductor'>('pasajero');
-
+  const { reconnect } = useWebSocket(); 
   const hasRun = useRef(false);
 
   // Rutas públicas donde no necesitamos autenticación
@@ -162,6 +164,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       if (result.state === "OK") {
         await fetchUser();
+
+      // ✅ OBTENER TOKEN DEL RESPONSE
+      const accessToken = result.data?.accessToken;
+      
+      if (accessToken) {
+        console.log('🔄 Reconectando WebSocket con token del login');
+        reconnect(accessToken);
+      } else {
+        console.error('❌ No se recibió accessToken en la respuesta');
+      }
+
         router.push('/home');
       } else {
         setUser(null);

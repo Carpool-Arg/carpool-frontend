@@ -6,6 +6,8 @@ import ServiceWorkerRegistration from '@/SWRegister'
 import "./globals.css";
 import { cookies } from "next/headers";
 import { WebSocketProvider } from "@/providers/WebSocketProvider";
+import { NotificationProvider } from "@/contexts/NotificationContext";
+import { UnpaidPaymentModal } from "@/components/alerts/UnpaidPaymentModal";
 
 export const outfit = localFont({
   src: [
@@ -52,12 +54,15 @@ export default async function RootLayout({
     <html lang="es" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
         <AppProviders>
+        <NotificationProvider>
           <WebSocketProvider token={token}>
             <ClientLayout>
               <ServiceWorkerRegistration/>
               {children}
-          </ClientLayout>
+              <UnpaidPaymentModal />
+            </ClientLayout>
           </WebSocketProvider>
+        </NotificationProvider>
         </AppProviders>
       </body>
     </html>

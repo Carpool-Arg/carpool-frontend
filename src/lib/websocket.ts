@@ -1,3 +1,4 @@
+import { useNotification } from '@/contexts/NotificationContext';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
@@ -5,36 +6,35 @@ let stompClient: Stomp.Client | null = null;
 
 export const connectWebSocket = (
   token: string,
-  onNotification: (payload: any) => void
+   onMessage: (payload: unknown) => void
 ) => {
+  console.log('🔍 CONECTANDO WS CON TOKEN:', token ? `${token.substring(0, 30)}...` : 'NO HAY TOKEN');
+  
   const socket = new SockJS(
     `${process.env.NEXT_PUBLIC_API_URL}/ws`
   );
 
   stompClient = Stomp.over(socket);
-
-  stompClient.debug = () => {}; // apagar logs
+  stompClient.debug = () => {};
 
   stompClient.connect(
-    {
-      Authorization: `Bearer ${token}`,
-    },
+    { Authorization: `Bearer ${token}` },
     () => {
-      console.log('🟢 WS conectado');
-
-      stompClient?.subscribe('/user/notification', (message) => {
+      stompClient?.subscribe('/user/queue/notification', (message) => {
         const payload = JSON.parse(message.body);
-        onNotification(payload);
+        console.log(payload)
+        onMessage(payload);
       });
-    },
-    (error) => {
-      console.error('🔴 WS error', error);
     }
   );
 };
 
+// AGREGAR ESTA FUNCIÓN
 export const disconnectWebSocket = () => {
-  stompClient?.disconnect(() => {
-    console.log('🔌 WS desconectado');
-  });
+  if (stompClient && stompClient.connected) {
+    stompClient.disconnect(() => {
+      console.log('WS desconectado');
+    });
+    stompClient = null;
+  }
 };
