@@ -1,13 +1,14 @@
 import { startTrip } from "@/services/trip/tripService";
 import {
   IterationCcw,
-  CalendarSync
+  CalendarSync,
+  LucideEye
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/router";
 
 export type TripState = string;
-export type TripButtonAction = (tripId: string) => void;
+export type TripButtonAction = (tripId: string) => Promise<TripActionResult>;
 
 export const tripButtonConfig: Record<
   TripState,
@@ -20,26 +21,34 @@ export const tripButtonConfig: Record<
   }
 > = {
   CREATED: {
-    label: "Iniciar viaje",
-    Icon: IterationCcw,
-    onClick: async (tripId: string) => {
-      const response = await startTrip(tripId);
-
-      if (response.state === "ERROR") {
-        console.error(response.messages?.[0]);
-        return;
-      }
-
+    label: "Visualizar",
+    // disabled:true,
+    Icon: LucideEye,
+    onClick: async (tripId: string): Promise<TripActionResult> => {
+      return { ok: true };
     },
   },
   CLOSED: {
     label: "Iniciar viaje",
     Icon: IterationCcw,
-    onClick: (tripId) => {},
+    onClick: async (tripId: string): Promise<TripActionResult> => {
+      const response = await startTrip(tripId)
+
+      if (response.state === "ERROR") {
+        return {
+          ok: false,
+          message: response.messages?.[0] ?? "Error al iniciar el viaje",
+        };
+      }
+      
+      return { ok: true };
+    },
   },
   FINISHED: {
     label: "Agendar",
     Icon: CalendarSync,
-    onClick: (tripId) => {},
+    onClick: async (tripId: string) => {
+      return { ok: true };
+    },
   },
 };

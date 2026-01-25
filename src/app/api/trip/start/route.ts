@@ -6,7 +6,13 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
-    const body = await req.json();
+
+    const reqBody = await req.json();
+
+    const body = {
+      tripId: Number(reqBody.idTrip),
+    };
+
 
     const res = await fetch(`${apiUrl}/trip/start`, {
       method: "POST",
@@ -18,6 +24,9 @@ export async function POST(req: NextRequest) {
     });
 
     const response: VoidResponse = await res.json();
+
+
+    console.log(response);
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

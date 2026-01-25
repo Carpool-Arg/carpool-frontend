@@ -36,21 +36,13 @@ export default function CurrentTrip() {
   const timeLeft = timeUntil(nextStop?.tripStop.estimatedArrivalDateTime);
 
   //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-
 
   return (
     <div className="relative flex flex-col h-full">
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-between h-full p-4">
         <div/>
-        
+      
         <div className="flex flex-col gap-2">
           <div className="bg-gray-8/90 rounded-xl p-6 flex flex-col">
             <Image
@@ -129,10 +121,8 @@ export default function CurrentTrip() {
               </div>
             </div>
             
-
             {/* Safety note */}
             
-
             {/* Action */}
             <div className="flex items-center justify-end pt-2">
               {nextStop && 
@@ -148,7 +138,6 @@ export default function CurrentTrip() {
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   );

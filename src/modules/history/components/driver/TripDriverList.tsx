@@ -3,9 +3,10 @@ import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 
 interface TripDriverListProps {
   trips: TripDriverDTO[];
+  onError: (message: string) => void;
 }
 
-export function TripDriverList({ trips }: TripDriverListProps) {
+export function TripDriverList({ trips, onError }: TripDriverListProps) {
   
   if (trips.length === 0) {
     return (
@@ -15,11 +16,10 @@ export function TripDriverList({ trips }: TripDriverListProps) {
     );
   }
 
-
   return (
     <div className="flex flex-col">
       {trips.map((trip) => (
-        <TripDriverCard key={trip.id} trip={trip} />
+        <TripDriverCard key={trip.id} trip={trip} onError={onError} />
       ))}
     </div>
   );

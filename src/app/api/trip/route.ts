@@ -14,8 +14,18 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
+    
+    const { searchParams } = new URL(req.url);
+    const statesParam = searchParams.get('states');
 
-    const res = await fetch(`${apiUrl}/trip`, {
+    const query = statesParam
+      ? `?${statesParam
+          .split(',')
+          .map(state => `tripState=${state}`)
+          .join('&')}`
+      : '';
+
+    const res = await fetch(`${apiUrl}/trip${query}`, {
       headers: { 
         "Content-Type": "application/json" ,
         'Authorization': `Bearer ${token}`

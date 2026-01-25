@@ -164,13 +164,18 @@ export const getInitialFeed = async (cityId?: number) => {
 };
 
 
-export const getMyTrips = async () => {
+export const getMyTrips = async (states?: string[]) => {
   try {
-    const res = await fetchWithRefresh('/api/trip', {
+    const query = states?.length
+      ? `?states=${states.join(',')}`
+      : '';
+
+    const res = await fetchWithRefresh(`/api/trip${query}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
-    })
+    });
+    
     const response: TripDriverResponse = await res.json();
     if (!res.ok) {
       throw new Error(response.messages?.[0] || 'Error desconocido');

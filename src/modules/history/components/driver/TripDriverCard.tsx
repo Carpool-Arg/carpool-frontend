@@ -7,44 +7,45 @@ import { capitalizeWords } from "@/shared/utils/string";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { tripButtonConfig } from "./TripStateButton";
+import { error } from "console";
+import { Toast } from "@/components/ux/Toast";
 
 interface TripCardProps {
-  trip: TripDriverDTO  
+  trip: TripDriverDTO;
+  onError?: (message: string) => void;
 }
 
-export function TripDriverCard({ trip }: TripCardProps) {
+export function TripDriverCard({ trip ,onError }: TripCardProps) {
   const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
+  const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
 
-  const handleClick = () => {
-    onClick(trip.id.toString());
+  const handleClick = async () => {
+    if (disabled) return;
+
+    const result = await onClick(trip.id.toString());
+
+    if (!result.ok) {
+      onError?.(result.message);
+      return;
+    }
+
+    switch (state) {
+      case "CLOSED":
+        router.push(`/current-trip`);
+        break;
+
+      default:
+        console.warn("Estado no manejado");
+    }
+    
   };
 
-  /*
-    const handleTripAction = () => {
-      switch (state) {
-        case "CREATED":
-          router.push(`/current-trip`);
-          break;
-
-        case "FINISHED":
-          router.push(`/driver/trip/${trip.id}/summary`);
-          break;
-
-        default:
-          console.warn("Estado no manejado");
-      }
-    };
-  */
-
-  //Esto esta hardcodeado, luego de mergear con la rama para inciar viaje eso solo tendria que tener en cuenta el estado del viaje
-  const config =
-  tripButtonConfig[trip.tripState] ??
-  tripButtonConfig["CREATED"];
+  const config =  tripButtonConfig[trip.tripState];
 
   const { label, Icon, className, disabled, onClick} = config;
  
@@ -100,6 +101,7 @@ export function TripDriverCard({ trip }: TripCardProps) {
         
         <button
           disabled={disabled}
+          
           className={`
             flex items-center gap-1 text-base cursor-pointer
             px-2 py-1 rounded-lg
@@ -107,6 +109,7 @@ export function TripDriverCard({ trip }: TripCardProps) {
             hover:shadow-sm hover:-translate-y- 
           bg-gray-7 text-gray-6
           hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+          
             ${className}
           `}
           onClick={handleClick}
@@ -116,6 +119,19 @@ export function TripDriverCard({ trip }: TripCardProps) {
         </button>
 
       </div>
+
+      {toast && (
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+              <div className="pointer-events-auto w-full">
+                  <Toast
+                      message={toast.message}
+                      type={toast.type}
+                      onClose={() => setToast(null)}
+                  />
+              </div>
+          </div>
+      )}
     </div>
+    
   );
 }

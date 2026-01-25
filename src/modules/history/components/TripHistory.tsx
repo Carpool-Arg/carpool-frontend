@@ -7,6 +7,7 @@ import { TripDriverResponseDTO } from "@/modules/driver-trips/types/dto/tripDriv
 import { getMyTrips } from "@/services/trip/tripService";
 import { TripDriverList } from "./driver/TripDriverList";
 import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
+import { Toast } from "@/components/ux/Toast";
 
 export default function TripHistory() { 
   const searchParams = useSearchParams();
@@ -15,6 +16,8 @@ export default function TripHistory() {
   const role = searchParams.get("role") ?? "passenger";
 
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
+
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
 
   const handleChangeRole = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -27,7 +30,7 @@ export default function TripHistory() {
     const fetchTrips = async () => {
       try {
         if (role==='driver'){
-          const response = await getMyTrips();
+          const response = await getMyTrips(["CREATED", "CLOSED"]);
           if(response.state === 'OK') {
             setDriverTrips(response.data?.trips ?? [])
           }
@@ -49,8 +52,21 @@ export default function TripHistory() {
       />
 
       {role === 'driver' && (
-        <TripDriverList trips={driverTrips} />
+        <TripDriverList
+        trips={driverTrips}
+        onError={(message) =>
+          setToast({ message, type: 'error' })
+        }
+        />
       )}
+
+    {toast && (
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast(null)}
+      />
+    )}
     </div>
   );
 }
