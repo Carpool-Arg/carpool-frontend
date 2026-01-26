@@ -252,13 +252,7 @@ export default function TripDetails() {
               onClick={handleOpenModal}
               disabled={trip.currentAvailableSeats <= 0 || isProcessing}
             >
-              {isProcessing ? (
-                <div className="px-6 py-0.5">
-                  <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
-                </div>
-              ) : (
-                trip.currentAvailableSeats > 0 ? "Solicitar reserva" : "Reservas no disponibles"
-              )}
+              {trip.currentAvailableSeats > 0 ? "Solicitar reserva" : "Reservas no disponibles"}
             </Button>
           </div>
         </div>

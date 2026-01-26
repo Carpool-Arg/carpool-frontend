@@ -268,7 +268,7 @@ export const UnpaidPaymentModal = () => {
           <div className="p-6 pb-4 relative no-print">
             <button
               onClick={handleCloseSuccess}
-              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#252525] hover:bg-[#2a2a2a] flex items-center justify-center transition-colors"
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#252525] hover:bg-[#2a2a2a] flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="w-5 h-5 text-gray-400" />
             </button>

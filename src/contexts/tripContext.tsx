@@ -17,6 +17,9 @@ type TripContextType = {
   tripActive: boolean
   currentTrip: CurrentTripDTO | null
   loading: boolean
+  arriveLoading: boolean
+  errorArrive:string | null
+  clearErrorArrive: () => void
   arriveNextStop: () => Promise<void>
   refetchCurrentTrip: () => Promise<void>
 }
@@ -28,7 +31,9 @@ const TRIP_ROUTE = "/current-trip"
 export function TripProvider({ children }: { children: ReactNode }) {
   const [currentTrip, setCurrentTrip] = useState<CurrentTripDTO | null>(null)
   const [loading, setLoading] = useState(true)
-
+  const [arriveLoading, setArriveLoading] = useState(false)
+  const [errorArrive, setErrorArrive] = useState<string | null>(null)
+  const clearErrorArrive = () => setErrorArrive(null)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -41,6 +46,17 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
     fetchTrip()
   }, [user, authLoading])
+
+  useEffect(() => {
+    if (loading) return
+    if (authLoading) return
+    if (!user) return
+
+    if (!currentTrip && pathname === TRIP_ROUTE) {
+      router.replace('/home')
+    }
+  }, [currentTrip, loading, authLoading, user, pathname])
+
   
   const fetchTrip = async () => {
     try {
@@ -73,6 +89,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
   const arriveNextStop = async () => {
     if (!currentTrip) return
+    setArriveLoading(true)
     
     const nextStop = currentTrip.tripStops.find(
       stop => !stop.arrivalDateTime
@@ -81,7 +98,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
     const res = await arriveTripStop(String(nextStop?.tripstopId) ?? "" )
 
     if (res.state !== "OK") {
-      console.error(res.messages)
+      setArriveLoading(false)
+      setErrorArrive(res?.messages[0] ?? 'Ocurrió un error inesperado.')
       return
     }
 
@@ -89,6 +107,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
     if (isLastStop) {
       setCurrentTrip(null)
+      setArriveLoading(false)
       setTimeout(() => router.push('/home'), 2000)
       return
     }
@@ -97,7 +116,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     
     setCurrentTrip(prev => {
       if (!prev) return prev
-
+      setArriveLoading(false)
       return {
         ...prev,
         tripStops: prev.tripStops.map(ts =>
@@ -122,7 +141,10 @@ export function TripProvider({ children }: { children: ReactNode }) {
         tripActive,
         currentTrip,
         loading,
+        arriveLoading,
+        errorArrive,
         arriveNextStop,
+        clearErrorArrive,
         refetchCurrentTrip
       }}
     >
