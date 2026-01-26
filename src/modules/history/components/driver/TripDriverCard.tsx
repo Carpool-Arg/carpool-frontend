@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { tripButtonConfig } from "./TripStateButton";
 import { error } from "console";
 import { Toast } from "@/components/ux/Toast";
+import { useTrip } from "@/contexts/tripContext";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -23,6 +24,11 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
+  const { refetchCurrentTrip } = useTrip()
+
+  useEffect(() => {
+    setState(trip.tripState)
+  }, [trip.tripState])
 
   const handleClick = async () => {
     if (disabled) return;
@@ -36,10 +42,12 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
 
     switch (state) {
       case "CLOSED":
+        await refetchCurrentTrip()
         router.push(`/current-trip`);
         break;
 
       default:
+        console.log(state);
         console.warn("Estado no manejado");
     }
     

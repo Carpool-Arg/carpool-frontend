@@ -10,6 +10,7 @@ import {
 import { useRouter, usePathname } from "next/navigation"
 import { arriveTripStop, getCurrentTrip } from "@/services/trip/tripService"
 import { CurrentTripDTO } from "@/modules/current-trip/types/currentTrip"
+import { useAuth } from "./authContext"
 
 
 type TripContextType = {
@@ -17,6 +18,7 @@ type TripContextType = {
   currentTrip: CurrentTripDTO | null
   loading: boolean
   arriveNextStop: () => Promise<void>
+  refetchCurrentTrip: () => Promise<void>
 }
 
 const TripContext = createContext<TripContextType | undefined>(undefined)
@@ -31,7 +33,15 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname()
 
   const tripActive = !!currentTrip
+  const { user, loading: authLoading } = useAuth()
+  
+  useEffect(() => {
+    if (authLoading) return
+    if (!user) return
 
+    fetchTrip()
+  }, [user, authLoading])
+  
   const fetchTrip = async () => {
     try {
       const res = await getCurrentTrip()
@@ -53,10 +63,13 @@ export function TripProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  useEffect(() => {
-    fetchTrip()
-  }, [])
 
+  const refetchCurrentTrip = async () => {
+    const response = await getCurrentTrip();
+    if (response.state === "OK") {
+      setCurrentTrip(response.data);
+    }
+  };
 
   const arriveNextStop = async () => {
     if (!currentTrip) return
@@ -109,7 +122,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
         tripActive,
         currentTrip,
         loading,
-        arriveNextStop
+        arriveNextStop,
+        refetchCurrentTrip
       }}
     >
       {children}

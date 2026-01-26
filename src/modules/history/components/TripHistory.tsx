@@ -26,22 +26,22 @@ export default function TripHistory() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        if (role==='driver'){
-          const response = await getMyTrips(["CREATED", "CLOSED"]);
-          if(response.state === 'OK') {
-            setDriverTrips(response.data?.trips ?? [])
-          }
+  const fetchTrips = async () => {
+    try {
+      if (role==='driver'){
+        const response = await getMyTrips(["CREATED", "CLOSED"]);
+        if(response.state === 'OK') {
+          setDriverTrips(response.data?.trips ?? [])
         }
-      } catch (error) {
-        console.error('Error al obtener viajes:', error);
       }
+    } catch (error) {
+      console.error('Error al obtener viajes:', error);
     }
+  }
+
+  useEffect(() => {
     fetchTrips();
   }, [role])
-  
   
 
   return(
@@ -64,7 +64,10 @@ export default function TripHistory() {
       <Toast
         message={toast.message}
         type={toast.type}
-        onClose={() => setToast(null)}
+        onClose={() => {
+          setToast(null);
+          fetchTrips(); 
+        }}
       />
     )}
     </div>

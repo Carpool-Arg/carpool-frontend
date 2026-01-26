@@ -22,7 +22,6 @@ export const tripButtonConfig: Record<
 > = {
   CREATED: {
     label: "Visualizar",
-    // disabled:true,
     Icon: LucideEye,
     onClick: async (tripId: string): Promise<TripActionResult> => {
       return { ok: true };
