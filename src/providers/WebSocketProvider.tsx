@@ -28,31 +28,26 @@ export function WebSocketProvider({
   const { showNotification } = useNotification();
 
   const connect = (token: string) => {
-    console.log('Conectando WebSocket...');
     disconnectWebSocket();
 
     connectWebSocket(token, (payload) => {
-      console.log('Notificación WS recibida:', payload);
-      
-        showNotification({
-          type: NotificationType.PAYMENT_PENDING,
-          title: 'Pago pendiente',
-          message: payload.msg,
-          data: { paymentId: 123 },
-        });
+      showNotification({
+        type: NotificationType.PAYMENT_PENDING,
+        title: payload.pushTitle,
+        message: payload.pushBody,
+        data: payload.data,
+      });
     });
 
     setIsConnected(true);
   };
 
   const reconnect = (newToken: string) => {
-    console.log('Reconectando WebSocket con token nuevo');
     connect(newToken);
   };
 
   useEffect(() => {
     if (initialToken) {
-      console.log('Token inicial encontrado, conectando WS');
       connect(initialToken);
     }
 

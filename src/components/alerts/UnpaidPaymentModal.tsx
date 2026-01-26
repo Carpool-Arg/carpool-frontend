@@ -3,12 +3,16 @@ import { useState, useEffect } from 'react';
 import { CheckCircle, Printer, X, AlertCircle } from 'lucide-react';
 import { useNotification } from '@/contexts/NotificationContext';
 import { NotificationType } from '@/shared/types/notification';
+import { payReservation } from '@/services/reservation/reservationService'; 
+import { useAuth } from '@/contexts/authContext'; 
+
 
 export const UnpaidPaymentModal = () => {
   const { unpaidNotification, clearNotification } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-
+  const { fetchUserDebt } = useAuth();
+  
   // Agregar estilos de impresión - DEBE estar antes del early return
   useEffect(() => {
     const style = document.createElement('style');
@@ -143,12 +147,25 @@ export const UnpaidPaymentModal = () => {
     return null;
   }
 
-  const handlePay = async () => {
-    setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    setIsProcessing(false);
+const handlePay = async () => {
+  setIsProcessing(true);
+
+  try {
+    const response = await payReservation();
+
+    if (response.state === "ERROR") {
+      console.error(response.messages);
+      return;
+    }
+    await fetchUserDebt();
+
     setShowSuccess(true);
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   const handlePrint = () => {
     window.print();
@@ -185,9 +202,9 @@ export const UnpaidPaymentModal = () => {
             <div className="bg-[#252525] rounded-2xl p-5 space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center gap-4">
-                  <span className="text-gray-400 text-sm">ID de pago</span>
+                  <span className="text-gray-400 text-sm">ID de la reserva</span>
                   <span className="text-white text-sm font-mono">
-                    #{unpaidNotification.data?.paymentId || 'N/A'}
+                    #{unpaidNotification.data?.reservationId || 'N/A'}
                   </span>
                 </div>
                 
@@ -221,7 +238,7 @@ export const UnpaidPaymentModal = () => {
             <button
               onClick={handlePay}
               disabled={isProcessing}
-              className="w-full mt-6 bg-white hover:bg-gray-100 text-black font-semibold py-4 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-6 bg-white hover:bg-gray-100 text-black font-semibold py-4 rounded-2xl transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               {isProcessing ? (
                 <div className="flex items-center justify-center gap-3">
@@ -308,7 +325,7 @@ export const UnpaidPaymentModal = () => {
                 <div className="flex justify-between items-center print:print-row">
                   <span className="text-gray-400 text-sm print:print-label">ID de pago</span>
                   <span className="text-white text-sm font-mono print:print-value">
-                    #{unpaidNotification.data!.paymentId}
+                    #{unpaidNotification.data?.reservationId}
                   </span>
                 </div>
                 

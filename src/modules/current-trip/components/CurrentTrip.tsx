@@ -36,14 +36,6 @@ export default function CurrentTrip() {
   const timeLeft = timeUntil(nextStop?.tripStop.estimatedArrivalDateTime);
 
   //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-  //SKELETON DE CARGAAAAAAAAAAAA///////////////////////
-
 
   return (
     <div className="relative flex flex-col h-full">
