@@ -26,8 +26,6 @@ export async function POST(req: NextRequest) {
     const response: VoidResponse = await res.json();
 
 
-    console.log(response);
-
     if (!res.ok || response.state === "ERROR") {
       const messages =
         response.messages?.length > 0

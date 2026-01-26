@@ -4,13 +4,11 @@ import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
 import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
-import { useWebSocket } from '@/providers/WebSocketProvider';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-
 
 interface AuthContextType {
   user: User | null;
@@ -25,6 +23,7 @@ interface AuthContextType {
   setPrevImage: (value: string | null) => void;
   profileViewRole: 'pasajero' | 'conductor';
   setProfileViewRole: (role: 'pasajero' | 'conductor') => void;
+  accessToken: string | null; // <--- NUEVO: Exponemos el token para el Socket
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,13 +33,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [debt, setDebt] = useState<UserDebtResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [prevImage, setPrevImage] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null); // <--- NUEVO ESTADO
+  
   const router = useRouter();
   const pathname = usePathname();
   const [profileViewRole, setProfileViewRole] = useState<'pasajero' | 'conductor'>('pasajero');
-  const { reconnect } = useWebSocket(); 
+  
   const hasRun = useRef(false);
 
-  // Rutas públicas donde no necesitamos autenticación
   const publicRoutes = [...PUBLIC_PATHS.pages];
   const isPublicRoute = publicRoutes.some(route =>
     route === '/' ? pathname === '/' : pathname.startsWith(route)
@@ -48,50 +48,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (!debt) return;
-
     const debtRoutes = ['/debt', '/logout'];
-
-    // Usuario CON deuda
     if (debt.debtUser === true) {
-      const isAllowed = debtRoutes.some(route =>
-        pathname.startsWith(route)
-      );
-
-      if (!isAllowed) {
-        router.replace('/debt');
-      }
+      const isAllowed = debtRoutes.some(route => pathname.startsWith(route));
+      if (!isAllowed) router.replace('/debt');
       return;
     }
-
-    // Usuario SIN deuda
     if (debt.debtUser === false && pathname.startsWith('/debt')) {
       router.replace('/home');
     }
   }, [debt?.debtUser, pathname]);
 
-  // Función para obtener el usuario actual
   const fetchUser = useCallback(async (): Promise<boolean> => {
     try {
-      const res = await fetch('/api/me', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
+      const res = await fetch('/api/me', { method: 'GET', credentials: 'include' });
       if (res.ok) {
         const response = await res.json();
         if (response.data) {
           setUser({ 
             username: response.data.username,
             roles: response.data.roles,
-            id: null,
-            name: null,
-            lastname: null,
-            email: null,
-            dni: null,
-            phone: null,
-            gender: null,
-            status: null,
-            birthDate: null,
+            id: null, name: null, lastname: null, email: null, dni: null, phone: null, gender: null, status: null, birthDate: null,
            });
           return true;
         }
@@ -107,50 +84,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserDebt = useCallback(async () => {
     try {
-      const res = await fetch('/api/users/debt', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (!res.ok) {
-        setDebt(null);
-        return;
-      }
-
+      const res = await fetch('/api/users/debt', { method: 'GET', credentials: 'include' });
+      if (!res.ok) { setDebt(null); return; }
       const response = await res.json();
-
-      if (response.state === 'OK') {
-        setDebt(response.data);
-      } else {
-        setDebt(null);
-      }
+      if (response.state === 'OK') setDebt(response.data);
+      else setDebt(null);
     } catch (err) {
       console.error('Error cargando deuda:', err);
       setDebt(null);
     }
   }, []);
 
-  
-  // Función para obtener los demas datos del usuario
   const fetchFullUser = useCallback(async () => {
     try {
-      const res = await fetch("/api/users", {
-        method: "GET",
-        credentials: "include",
-      });
-
+      const res = await fetch("/api/users", { method: "GET", credentials: "include" });
       const response = await res.json();
-
       if (response.state !== "OK") return;
-
       setUser(prev => {
-        if (!prev) return response.data; // si no había usuario básico, lo reemplazás
-        return {
-          ...prev,        // username + roles
-          ...response.data, // id + email + etc desde backend
-        };
+        if (!prev) return response.data;
+        return { ...prev, ...response.data };
       });
-
     } catch (err) {
       console.error("Error cargando datos completos:", err);
     }
@@ -159,46 +112,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!user) return;
     if (user.id) return;
-
     fetchFullUser();
   }, [user, fetchFullUser]);
 
-  // Función para obtener la imagen del usuario
   useEffect(() => {
     if (!user?.id) return;
-
     const loadImage = async () => {
       try {
         const imgUrl = await getUserFile();
-        if (imgUrl?.data) {
-          setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
-        }
-      } catch (err) {
-        console.warn("No se pudo cargar la imagen:", err);
-      }
+        if (imgUrl?.data) setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
+      } catch (err) { console.warn("No se pudo cargar la imagen:", err); }
     };
-
     loadImage();
   }, [user?.id]);
 
-  // Inicializar autenticación
   useEffect(() => {
     const initializeAuth = async () => {
       if (hasRun.current) return;
       hasRun.current = true;
-
       const hasUser = await fetchUser();
-
-      if (hasUser) {
-        await fetchUserDebt();
-      }
-
+      if (hasUser) await fetchUserDebt();
       setLoading(false);
-      if (!hasUser && !isPublicRoute) {
-        router.replace('/login');
-      }
+      if (!hasUser && !isPublicRoute) router.replace('/login');
     };
-
     initializeAuth();
   }, []);
   
@@ -206,31 +142,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await loginUser(data);
-
-      // Estado del usuario
       const code = result.messages?.[0]; 
 
       if (code === 'PENDING_VERIFICATION') {
         router.push('/email-verify');
         return;
       }
-
       if (code === 'PENDING_PROFILE') {
         setUser(null);
         throw new Error(result.messages?.[1]|| 'Error al iniciar sesión');
       }
+
       if (result.state === "OK") {
         await fetchUser();
         await fetchUserDebt();
 
-      //  OBTENER TOKEN DEL RESPONSE
-      const accessToken = result.data?.accessToken;
-      
-      if (accessToken) {
-        reconnect(accessToken);
-      } else {
-        console.error('No se recibió accessToken en la respuesta');
-      }
+        // Guardar el token en el state (Para que el WS lo vea)
+        if (result.data?.accessToken) {
+            setAccessToken(result.data.accessToken); 
+        }
 
         router.push('/home');
       } else {
@@ -254,8 +184,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (result.state === "OK" && result.data) {
         await fetchUser();
         await fetchUserDebt();
+        
+        // Guardar el token de google tambien
+        if (result.data.accessToken) {
+             setAccessToken(result.data.accessToken);
+        }
 
-        // Redirigir según el estado del usuario
         if (result.data.status === 'PENDING_PROFILE') {
           router.push(`/complete-profile?email=${encodeURIComponent(result.data.email)}`);
         } else if (result.data.status === 'ACTIVE') {
@@ -276,52 +210,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      const res = await logoutUser(); 
-      if (res.state === "OK") { 
-        setUser(null);
-        router.push('/login'); 
-      } else {
-        console.error('Logout failed', res.messages?.[0]);
-        setUser(null);
-        router.push('/login');
-      }
+      await logoutUser(); 
     } catch (error) {
       console.error('Error during logout:', error);
-      // opcional: mostrar mensaje al usuario
-    
     } finally {
-      // Siempre limpiar estado y redirigir
       setUser(null);
+      setAccessToken(null);
       router.push('/login');
     }
   };
 
   const value = {
-    user,
-    loading,
-    login,
-    logout,
-    debt,
-    authGoogle,
-    fetchUser,
-    fetchUserDebt,
-    prevImage,
-    setPrevImage,
-    profileViewRole,
-    setProfileViewRole
+    user, loading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
+    prevImage, setPrevImage, profileViewRole, setProfileViewRole,
+    accessToken // Exponemos el valor
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de AuthProvider');
-  }
+  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
   return context;
 }
