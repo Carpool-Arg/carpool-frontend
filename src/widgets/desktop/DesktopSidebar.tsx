@@ -22,7 +22,7 @@ const navItems: {
   { href: '/home', icon: Home, label: 'Inicio', role: 'user' },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user' },
   { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje', role: 'driver' },
-  { href: '/history', icon: History, label: 'Historial', role: 'user' },
+  { href: '/history', icon: History, label: 'Historial', role: 'user', disabled: true },
   { href: '/profile', icon: User, label: 'Perfil', role: 'user' },
 ];
 

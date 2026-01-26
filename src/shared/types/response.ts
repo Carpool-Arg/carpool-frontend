@@ -7,5 +7,6 @@ export interface BaseResponse<T>{
 }
 
 export type VoidResponse = BaseResponse<null>;
+export type NumberResponse = BaseResponse<number>;
 export type MediaResponse = BaseResponse<string>
 export type TokensResponse = BaseResponse<TokensData>;

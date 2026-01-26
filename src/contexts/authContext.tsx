@@ -3,19 +3,24 @@
 import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
+import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
+import { useWebSocket } from '@/providers/WebSocketProvider';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (data: LoginData & { recaptchaToken?: string }) => Promise<void>;
   logout: () => void;
+  debt: UserDebtResponseDTO | null; 
   authGoogle: (idToken: string) => Promise<void>;
   fetchUser: () => Promise<boolean>;
+  fetchUserDebt: () => Promise<void>;
   prevImage: string | null;
   setPrevImage: (value: string | null) => void;
   profileViewRole: 'pasajero' | 'conductor';
@@ -26,12 +31,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [debt, setDebt] = useState<UserDebtResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const [profileViewRole, setProfileViewRole] = useState<'pasajero' | 'conductor'>('pasajero');
-
+  const { reconnect } = useWebSocket(); 
   const hasRun = useRef(false);
 
   // Rutas públicas donde no necesitamos autenticación
@@ -39,6 +45,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isPublicRoute = publicRoutes.some(route =>
     route === '/' ? pathname === '/' : pathname.startsWith(route)
   );
+
+  useEffect(() => {
+    if (!debt) return;
+
+    const debtRoutes = ['/debt', '/logout'];
+
+    // Usuario CON deuda
+    if (debt.debtUser === true) {
+      const isAllowed = debtRoutes.some(route =>
+        pathname.startsWith(route)
+      );
+
+      if (!isAllowed) {
+        router.replace('/debt');
+      }
+      return;
+    }
+
+    // Usuario SIN deuda
+    if (debt.debtUser === false && pathname.startsWith('/debt')) {
+      router.replace('/home');
+    }
+  }, [debt?.debtUser, pathname]);
 
   // Función para obtener el usuario actual
   const fetchUser = useCallback(async (): Promise<boolean> => {
@@ -73,6 +102,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error cargando usuario:', err);
       setUser(null);
       return false;
+    }
+  }, []);
+
+  const fetchUserDebt = useCallback(async () => {
+    try {
+      const res = await fetch('/api/users/debt', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        setDebt(null);
+        return;
+      }
+
+      const response = await res.json();
+
+      if (response.state === 'OK') {
+        setDebt(response.data);
+      } else {
+        setDebt(null);
+      }
+    } catch (err) {
+      console.error('Error cargando deuda:', err);
+      setDebt(null);
     }
   }, []);
 
@@ -134,6 +188,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasRun.current = true;
 
       const hasUser = await fetchUser();
+
+      if (hasUser) {
+        await fetchUserDebt();
+      }
+
       setLoading(false);
       if (!hasUser && !isPublicRoute) {
         router.replace('/login');
@@ -162,6 +221,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       if (result.state === "OK") {
         await fetchUser();
+        await fetchUserDebt();
+
+      //  OBTENER TOKEN DEL RESPONSE
+      const accessToken = result.data?.accessToken;
+      
+      if (accessToken) {
+        reconnect(accessToken);
+      } else {
+        console.error('No se recibió accessToken en la respuesta');
+      }
+
         router.push('/home');
       } else {
         setUser(null);
@@ -183,6 +253,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await authWithGoogle(idToken);
       if (result.state === "OK" && result.data) {
         await fetchUser();
+        await fetchUserDebt();
+
         // Redirigir según el estado del usuario
         if (result.data.status === 'PENDING_PROFILE') {
           router.push(`/complete-profile?email=${encodeURIComponent(result.data.email)}`);
@@ -229,8 +301,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     login,
     logout,
+    debt,
     authGoogle,
     fetchUser,
+    fetchUserDebt,
     prevImage,
     setPrevImage,
     profileViewRole,
