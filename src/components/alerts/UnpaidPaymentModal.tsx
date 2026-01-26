@@ -5,6 +5,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { NotificationType } from '@/shared/types/notification';
 import { payReservation } from '@/services/reservation/reservationService'; 
 import { useAuth } from '@/contexts/authContext'; 
+import { AlertDialog } from '../ux/AlertDialog';
 
 
 export const UnpaidPaymentModal = () => {
@@ -12,7 +13,10 @@ export const UnpaidPaymentModal = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { fetchUserDebt } = useAuth();
-  
+
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
   // Agregar estilos de impresión - DEBE estar antes del early return
   useEffect(() => {
     const style = document.createElement('style');
@@ -147,25 +151,30 @@ export const UnpaidPaymentModal = () => {
     return null;
   }
 
-const handlePay = async () => {
-  setIsProcessing(true);
+  const handleConfirmPay = async () => {
+    if (isProcessing) return;
 
-  try {
-    const response = await payReservation();
+    setConfirmDialogOpen(false);
+    setIsProcessing(true);
 
-    if (response.state === "ERROR") {
-      console.error(response.messages);
-      return;
+    try {
+      const response = await payReservation();
+
+      if (response.state === "ERROR") {
+        setPaymentError(response.messages?.[0] || "Error al procesar el pago");
+        setIsErrorDialogOpen(true);
+        return;
+      }
+
+      await fetchUserDebt();
+      setShowSuccess(true);
+    } catch (e) {
+      setPaymentError("Error inesperado al procesar el pago");
+      setIsErrorDialogOpen(true);
+    } finally {
+      setIsProcessing(false);
     }
-    await fetchUserDebt();
-
-    setShowSuccess(true);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setIsProcessing(false);
-  }
-};
+  };
 
   const handlePrint = () => {
     window.print();
@@ -202,13 +211,6 @@ const handlePay = async () => {
             <div className="bg-[#252525] rounded-2xl p-5 space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center gap-4">
-                  <span className="text-gray-400 text-sm">ID de la reserva</span>
-                  <span className="text-white text-sm font-mono">
-                    #{unpaidNotification.data?.reservationId || 'N/A'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between items-center gap-4">
                   <span className="text-gray-400 text-sm">Estado</span>
                   <span className="text-red-400 text-sm font-medium">
                     Pendiente
@@ -219,8 +221,7 @@ const handlePay = async () => {
               <div className="flex justify-between items-center gap-4">
                 <span className="text-gray-400 text-sm">Total a pagar</span>
                 <span className="text-white text-sm font-semibold">
-                  {unpaidNotification.data?.currency}{' '}
-                  {unpaidNotification.data?.total}
+                  ARS ${' '}{unpaidNotification.data?.total}
                 </span>
               </div>
               
@@ -236,15 +237,25 @@ const handlePay = async () => {
 
             {/* Botón de pago */}
             <button
-              onClick={handlePay}
+              onClick={() => setConfirmDialogOpen(true)}
               disabled={isProcessing}
-              className="w-full mt-6 bg-white hover:bg-gray-100 text-black font-semibold py-4 rounded-2xl transition-all duration-200 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+              className={`
+                w-full mt-6 font-semibold py-4 rounded-2xl
+                transition-all duration-200
+                flex items-center justify-center gap-3
+                cursor-pointer
+                ${
+                  isProcessing
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    : 'bg-white hover:bg-gray-100 text-black'
+                }
+              `}
             >
               {isProcessing ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin"></div>
-                  <span>Procesando pago...</span>
-                </div>
+                <>
+                  <span className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
+                  <span>Procesando pago…</span>
+                </>
               ) : (
                 'Pagar ahora'
               )}
@@ -322,13 +333,6 @@ const handlePay = async () => {
                   </span>
                 </div>
                 
-                <div className="flex justify-between items-center print:print-row">
-                  <span className="text-gray-400 text-sm print:print-label">ID de pago</span>
-                  <span className="text-white text-sm font-mono print:print-value">
-                    #{unpaidNotification.data?.reservationId}
-                  </span>
-                </div>
-                
                 <div className="pt-4 border-t border-gray-700 print:border-none print:mt-6 print:pt-0">
                   <div className="hidden print:block print-section">
                     <h2 className="print-section-title">Estado del Pago</h2>
@@ -358,6 +362,29 @@ const handlePay = async () => {
             </button>
           </div>
         </div>
+      )}
+
+      <AlertDialog
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={handleConfirmPay}
+        type="info"
+        title="Confirmar pago"
+        description={`Vas a pagar ARS ${unpaidNotification.data?.total}. ¿Deseás continuar?`}
+        confirmText="Pagar"
+        cancelText="Cancelar"
+      />
+
+      {paymentError && (
+        <AlertDialog
+          isOpen={isErrorDialogOpen}
+          onClose={() => setIsErrorDialogOpen(false)}
+          type="error"
+          title="Error en el pago"
+          description={paymentError}
+          confirmText="Aceptar"
+          singleButton
+        />
       )}
     </div>
   );

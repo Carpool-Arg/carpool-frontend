@@ -4,9 +4,7 @@ export enum NotificationType {
 }
 
 export interface PaymentPendingData {
-  reservationId: number;
   total: number;
-  currency: 'ARS' | 'USD';
 }
 
 export interface NotificationPayload {

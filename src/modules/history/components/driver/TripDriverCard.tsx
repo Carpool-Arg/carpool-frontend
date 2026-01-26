@@ -4,7 +4,7 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { capitalizeWords } from "@/shared/utils/string";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,30 +25,36 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
   const { refetchCurrentTrip } = useTrip()
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setState(trip.tripState)
   }, [trip.tripState])
 
   const handleClick = async () => {
-    if (disabled) return;
+    if (disabled || loading) return;
 
-    const result = await onClick(trip.id.toString());
+    setLoading(true);
 
-    if (!result.ok) {
-      onError?.(result.message);
-      return;
-    }
+    try {
+      const result = await onClick(trip.id.toString());
 
-    switch (state) {
-      case "CLOSED":
-        await refetchCurrentTrip()
-        router.push(`/current-trip`);
-        break;
+      if (!result.ok) {
+        onError?.(result.message);
+        return;
+      }
 
-      default:
-        console.log(state);
-        console.warn("Estado no manejado");
+      switch (state) {
+        case "CLOSED":
+          await refetchCurrentTrip();
+          router.push(`/current-trip`);
+          break;
+
+        default:
+          console.warn("Estado no manejado", state);
+      }
+    } finally {
+      setLoading(false);
     }
     
   };
@@ -108,22 +114,24 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
         </div>
         
         <button
-          disabled={disabled}
-          
+          disabled={disabled || loading}
           className={`
             flex items-center gap-1 text-base cursor-pointer
             px-2 py-1 rounded-lg
             transition-all duration-200 ease-out
-            hover:shadow-sm hover:-translate-y- 
-          bg-gray-7 text-gray-6
-          hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-          
+            bg-gray-7 text-gray-6
+            hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+            disabled:opacity-60 disabled:cursor-not-allowed
             ${className}
           `}
           onClick={handleClick}
         >
-          <Icon size={16} />
-          {label}
+          {loading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Icon size={16} />
+          )}
+          {loading ? "Procesando..." : label}
         </button>
 
       </div>

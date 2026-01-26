@@ -12,16 +12,14 @@ export default function Debt() {
   const isExpired = debt?.expired === true;
 
   const handlePayClick = () => {
-    if (!debt?.reservationId || debt.total == null) return;
+    if (debt?.total == null) return;
 
     showNotification({
         type: NotificationType.PAYMENT_PENDING,
         title: 'Pago pendiente',
         message: 'Tenés una reserva pendiente de pago. Completá el pago para continuar.',
         data: {
-        reservationId: debt.reservationId,
         total: debt.total,
-        currency: 'ARS',
         },
     });
   };
