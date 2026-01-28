@@ -10,5 +10,6 @@ export interface User {
   status?: string| null;
   profileImage?: string| null;
   roles: Array<'user' | 'driver' | null>;
-  birthDate: string| null
+  birthDate: string| null;
+  debtUser?: boolean;
 }

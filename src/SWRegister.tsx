@@ -1,48 +1,44 @@
 'use client';
 import { useEffect } from 'react';
 
-// 1. Definimos una interfaz mínima para los eventos de Workbox
-interface WorkboxEvent {
-  isUpdate?: boolean;
-  type?: string;
-  target?: unknown;
-}
-
-// 2. Definimos la forma básica del objeto Workbox que usamos
-interface Workbox {
-  addEventListener: (
-    event: string, 
-    callback: (event: WorkboxEvent) => void
-  ) => void;
-  register: () => Promise<void>;
-  messageSkipWaiting: () => void;
-}
-
-// 3. Extendemos Window usando nuestra interfaz tipada (Adiós 'any')
-declare global {
-  interface Window {
-    workbox: Workbox;
-  }
-}
-
 export default function ServiceWorkerRegister() {
   useEffect(() => {
-    // Verificamos si window.workbox está definido
-    if (
-      typeof window !== 'undefined' && 
-      'serviceWorker' in navigator && 
-      window.workbox !== undefined
-    ) {
-      
-      const wb = window.workbox;
-      
-      wb.register();
-      
-    } else if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .catch((err) => console.error('[SW] Falló el registro manual:', err));
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      return;
     }
+
+    const cleanAndRegister = async () => {
+      try {
+        // 1. Obtener TODOS los SW registrados
+        const registrations = await navigator.serviceWorker.getRegistrations();
+
+        // 2. Desregistrar todos
+        for (const reg of registrations) {
+          await reg.unregister();
+        }
+
+        // 3. Limpiar caches (muy importante con Workbox)
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
+
+        // 4. Registrar el SW nuevo
+        const registration = await navigator.serviceWorker.register('/sw.js');
+
+        // 5. Forzar reload cuando el nuevo SW toma control
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
+
+      } catch (err) {
+        console.error('[SW] Error limpiando/registrando:', err);
+      }
+    };
+
+    cleanAndRegister();
   }, []);
 
   return null;

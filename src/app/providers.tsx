@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { usePathname } from 'next/navigation';
 import Spinner from '@/components/ux/Spinner';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import { TripProvider } from '@/contexts/tripContext';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -47,8 +48,10 @@ export function AppProviders({ children }: AppProvidersProps) {
           }}
         >
           <AuthProvider>
-            <GlobalLoadingOverlay />
-            {children}
+            <TripProvider>
+              <GlobalLoadingOverlay />
+              {children}
+            </TripProvider>
           </AuthProvider>
         </GoogleReCaptchaProvider>
       </GoogleOAuthProvider>

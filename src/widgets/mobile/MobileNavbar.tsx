@@ -19,7 +19,7 @@ const navItems: {
   { href: '/home', icon: Home, label: 'Inicio', role: 'user', size: 22 },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user', size: 22 },
   { href: '/trip/new', icon: CirclePlus, label: 'Publicar viaje', role: 'driver', size: 22 },
-  { href: '/history', icon: History, label: 'Historial', role: 'user', size: 22, disabled: true  },
+  { href: '/history', icon: History, label: 'Historial', role: 'user', size: 22  },
   { href: '/profile', icon: User, label: 'Perfil', role: 'user', size: 22 },
 ];
 

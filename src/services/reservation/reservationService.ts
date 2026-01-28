@@ -114,3 +114,25 @@ export async function updateReservation(reservationUpdateRequest: ReservationUpd
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
+
+export async function payReservation(): Promise<VoidResponse> {
+  try {
+    const res = await fetchWithRefresh('/api/reservation/payment', {
+      method: 'POST',
+      credentials: 'include'
+    });
+
+    const response: VoidResponse = await res.json();
+
+    if (!res.ok || response.state === "ERROR") {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}

@@ -4,7 +4,17 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 
 // 1. Configuración de PWA (Workbox)
+self.skipWaiting();
 clientsClaim();
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => caches.delete(key)))
+    )
+  );
+});
+
 
 // Esta línea es CRÍTICA: aquí next-pwa inyecta los assets generados
 precacheAndRoute(self.__WB_MANIFEST);
@@ -80,3 +90,4 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+

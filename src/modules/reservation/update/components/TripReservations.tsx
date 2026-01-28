@@ -9,6 +9,7 @@ import { BiError } from "react-icons/bi";
 import { ReservationDTO } from "../../create/types/reservation"; // Asegúrate de importar el tipo correcto
 import FilterBar from "./FilterBar";
 import TripReservationList from "./TripReservationList";
+import { RESERVATION_TABS } from "@/constants/tabs/reservation";
 
 export default function TripReservations() {
   const router = useRouter();
@@ -166,7 +167,7 @@ export default function TripReservations() {
           
         </div>
 
-        <Tab value={state} onChange={handleChangeState} />
+        <Tab value={state} onChange={handleChangeState} tabs={RESERVATION_TABS}/>
         {initialLoading ? 
           <div className="h-6 w-32 bg-gray-2 rounded-lg animate-pulse my-4" />
         :(
