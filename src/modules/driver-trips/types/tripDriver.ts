@@ -12,4 +12,5 @@ export interface TripDriverDTO {
     destinationCity: string;
     availableBaggage: number;
     seatPrice: number;
+    tripState: string;
 }

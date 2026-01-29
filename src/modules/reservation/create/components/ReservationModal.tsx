@@ -45,11 +45,7 @@ export default function ReservationModal({
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null)
-
-
-
-  // Flag para saber si el viaje es entre paradas intermedias
-  const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Precarga de ciudades buscadas
   useEffect(() => {
@@ -121,13 +117,18 @@ export default function ReservationModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsProcessing(true);
     const payload = {
       trip: trip.id,
       startCity: selectedOrigin?.cityId ?? 0,
       destinationCity: selectedDestination?.cityId ?? 0,
       baggage: hasBaggage,
     };
-    onSubmit(payload);
+    try{
+      onSubmit(payload);
+    }catch{
+      setIsProcessing(false)
+    }
   };
 
   if (!isOpen) return null;
@@ -301,18 +302,26 @@ export default function ReservationModal({
               variant="outline"
               onClick={onClose}
               className="px-4 py-2 text-gray-700 border rounded"
+              disabled={isProcessing}
             >
               Cancelar
             </Button>
 
             <Button
-              type="submit"
-              variant="primary"
-              className="disabled:opacity-50"
-              disabled={selectedDestination?.cityId === undefined}
-            >
-              Reservar
+                type="submit"
+                variant="primary"
+                className="disabled:opacity-50"
+                disabled={selectedDestination?.cityId === undefined || isProcessing}
+              >
+              {isProcessing ? (
+                <div className="px-6 py-0.5">
+                  <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                </div>
+              ) : (
+                "Reservar"
+              )}
             </Button>
+            
           </div>
         </form>
       </div>

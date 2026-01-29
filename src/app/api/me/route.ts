@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     // Armamos el objeto final del usuario combinando la info del backend y los roles del token
     const user = {
       username: decoded.username,
-      roles
+      roles,
     };
 
     // Retornamos la respuesta con la estructura consistente { data, messages, state }
