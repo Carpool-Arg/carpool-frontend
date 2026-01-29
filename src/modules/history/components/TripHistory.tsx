@@ -1,13 +1,12 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import TripHistoryHeader from "./TripHistoryHeader";
-import { useEffect, useState } from "react";
-import { TripDriverResponseDTO } from "@/modules/driver-trips/types/dto/tripDriverResponseDTO";
-import { getMyTrips } from "@/services/trip/tripService";
-import { TripDriverList } from "./driver/TripDriverList";
-import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 import { Toast } from "@/components/ux/Toast";
+import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
+import { getMyTrips } from "@/services/trip/tripService";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { TripDriverList } from "./driver/TripDriverList";
+import TripHistoryHeader from "./TripHistoryHeader";
 
 export default function TripHistory() { 
   const searchParams = useSearchParams();

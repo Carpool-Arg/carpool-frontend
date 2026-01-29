@@ -1,11 +1,11 @@
 import { startTrip } from "@/services/trip/tripService";
+import type { LucideIcon } from "lucide-react";
 import {
-  IterationCcw,
   CalendarSync,
+  IterationCcw,
   LucideEye
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { useRouter } from "next/router";
+import { TripActionResult } from "../../types/TripActionResult";
 
 export type TripState = string;
 export type TripButtonAction = (tripId: string) => Promise<TripActionResult>;
@@ -24,6 +24,7 @@ export const tripButtonConfig: Record<
     label: "Visualizar",
     Icon: LucideEye,
     onClick: async (tripId: string): Promise<TripActionResult> => {
+      console.log(tripId)
       return { ok: true };
     },
   },
@@ -47,6 +48,7 @@ export const tripButtonConfig: Record<
     label: "Agendar",
     Icon: CalendarSync,
     onClick: async (tripId: string) => {
+      console.log(tripId)
       return { ok: true };
     },
   },

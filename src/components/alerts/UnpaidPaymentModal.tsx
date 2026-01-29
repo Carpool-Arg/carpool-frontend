@@ -168,7 +168,7 @@ export const UnpaidPaymentModal = () => {
 
       await fetchUserDebt();
       setShowSuccess(true);
-    } catch (e) {
+    } catch{
       setPaymentError("Error inesperado al procesar el pago");
       setIsErrorDialogOpen(true);
     } finally {

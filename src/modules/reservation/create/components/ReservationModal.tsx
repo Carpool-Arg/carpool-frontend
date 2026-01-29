@@ -47,11 +47,6 @@ export default function ReservationModal({
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false);
 
-
-
-  // Flag para saber si el viaje es entre paradas intermedias
-  const isIntermediate = selectedOrigin?.start === false || selectedDestination?.destination === false;
-
   // Precarga de ciudades buscadas
   useEffect(() => {
     if (isOpen && trip.tripStops?.length > 0) {

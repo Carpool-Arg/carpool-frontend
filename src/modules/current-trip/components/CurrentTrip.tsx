@@ -7,7 +7,6 @@ import { timeUntil } from "@/shared/utils/dateTime";
 import { capitalizeWords } from "@/shared/utils/string";
 import { ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
 
 export default function CurrentTrip() {
   const {currentTrip, arriveNextStop,loading, arriveLoading } = useTrip();

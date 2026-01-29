@@ -11,6 +11,21 @@ interface WebSocketContextType {
   reconnect: (newToken: string) => void;
 }
 
+interface WebSocketPayload {
+  type: string; 
+  pushTitle: string;
+  pushBody: string;
+  emailSubject: string;
+  emailTitle: string;
+  emailMessage: string;
+  emailOptionalMessage: string | null;
+  emailButtonUrl: string;
+  emailButtonText: string;
+  emailMessageFooter: string;
+  data: {
+    total: number;
+  };
+}
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
 export const useWebSocket = () => {
@@ -35,12 +50,13 @@ export function WebSocketProvider({
     
     disconnectWebSocket(); // limpiar el ws antes
 
-    connectWebSocket(tokenToConnect, (payload: any) => {
+    connectWebSocket(tokenToConnect, (payload: unknown) => {
+      const wsPayload = payload as WebSocketPayload;
       showNotification({
         type: NotificationType.PAYMENT_PENDING,
-        title: payload.pushTitle,
-        message: payload.pushBody,
-        data: payload.data,
+        title: wsPayload.pushTitle,
+        message: wsPayload.pushBody,
+        data: wsPayload.data,
       });
     });
 

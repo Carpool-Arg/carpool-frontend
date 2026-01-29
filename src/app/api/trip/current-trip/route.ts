@@ -1,6 +1,5 @@
 
 import { CurrentTripResponseDTO } from "@/modules/current-trip/types/dto/currentTripResponseDTO";
-import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;

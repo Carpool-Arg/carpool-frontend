@@ -1,4 +1,6 @@
+import { Toast } from "@/components/ux/Toast";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { useTrip } from "@/contexts/tripContext";
 import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
@@ -9,9 +11,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { tripButtonConfig } from "./TripStateButton";
-import { error } from "console";
-import { Toast } from "@/components/ux/Toast";
-import { useTrip } from "@/contexts/tripContext";
 
 interface TripCardProps {
   trip: TripDriverDTO;
