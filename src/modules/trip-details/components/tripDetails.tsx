@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
+import { getDriverReviews } from "@/services/review/reviewService";
 import { Rating } from "react-simple-star-rating";
 import Image from "next/image";
 import { capitalizeWords } from "@/shared/utils/string";
@@ -111,6 +112,11 @@ export default function TripDetails() {
     }
   };
 
+  const handleGoToDriverProfile = () => {
+    router.push(`/reviews/driver/${trip?.driverInfo.driverId}`);
+  };
+
+
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
@@ -172,7 +178,9 @@ export default function TripDetails() {
           </div>
 
           {/* Datos del conductor */}
-          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3">
+          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3 cursor-pointer hover:bg-gray-5 dark:hover:bg-gray-7 transition"
+              onClick={handleGoToDriverProfile}
+            >
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Datos del conductor
             </h2>
