@@ -20,6 +20,7 @@ import ReservationModal from "@/modules/reservation/create/components/Reservatio
 import { Reservation } from "@/models/reservation";
 import { TripDetailsData } from "../types/tripDetails";
 import InfoTooltip from "@/components/ux/InfoTooltip";
+import { Eye, MessageCircleMore, MessageSquareShare } from "lucide-react";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -178,8 +179,7 @@ export default function TripDetails() {
           </div>
 
           {/* Datos del conductor */}
-          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3 cursor-pointer hover:bg-gray-5 dark:hover:bg-gray-7 transition"
-              onClick={handleGoToDriverProfile}
+          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3"
             >
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Datos del conductor
@@ -194,7 +194,7 @@ export default function TripDetails() {
               />
               <div className="text-gray-7 dark:text-gray-1 flex flex-col">
                 <span className="font-medium">{trip.driverInfo.fullName}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 space-y-1.5">
                   <span className="font-medium pt-1.5">{trip.driverInfo.rating}</span>
                   <Rating
                     initialValue={trip.driverInfo.rating}
@@ -205,6 +205,25 @@ export default function TripDetails() {
                     SVGstyle={{ display: "inline" }}
                     allowFraction
                   />
+                  <button
+                    onClick={handleGoToDriverProfile}
+                    className="
+                      cursor-pointer
+                      transition-all
+                      duration-300
+                      ease-out
+                      hover:scale-110
+                      hover:-translate-y-0.5
+                      hover:bg-gray-9
+                      active:scale-95
+                      bg-gray-10
+                      p-1
+                      rounded-lg
+                    "
+                  >
+                    <MessageCircleMore size={22} />
+                  </button>
+
                 </div>
               </div>
             </div>

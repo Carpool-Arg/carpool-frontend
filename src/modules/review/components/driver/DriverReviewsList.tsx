@@ -1,5 +1,5 @@
 import { DriverReviewResponse } from "../../types/DriverReviewResponse";
-import { ReviewCard } from "./DriverReviewCard";
+import { ReviewCard } from "../ReviewCard";
 
 interface DriverReviewsListProps{
   reviews: DriverReviewResponse[];

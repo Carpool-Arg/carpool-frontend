@@ -6,13 +6,22 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DriverReviewResponse } from "../../types/DriverReviewResponse";
 import { DriverReviewsList } from "./DriverReviewsList";
+import { ListFilter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ReviewCardSkeleton } from "../ReviewCardSkeleton";
 
+export const ORDERS_BY = [
+  { label: "Más recientes", value: "RECENT" },
+  { label: "Mejor puntuadas", value: "RATING_DESC" },
+  { label: "Peor puntuadas", value: "RATING_ASC" },
+];
 export default function DriverReviews(){
   const {driverId} = useParams();
   const [loading, setLoading] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
   const [driverReviews, setDriverReviews] = useState<DriverReviewResponse[] | null>(null)
-  const [orderBy, setOrderBy] = useState<"RECENT" | "RATING_ASC" | "RATING_DESC">("RECENT");
+  const [orderBy, setOrderBy] = useState("RECENT");
+  
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -61,6 +70,7 @@ export default function DriverReviews(){
 
   useEffect(() => {
     setSkip(0);
+    setDriverReviews(null); 
     setHasMore(true);
     loadReviews(true);
   }, [driverId, orderBy]);
@@ -82,44 +92,60 @@ export default function DriverReviews(){
 
 
 
-  if(driverReviews){
-    return(
-      <div className="w-full">
-        <div className="mb-3">
-          <h1 className="text-xl font-semibold mb-1">Reseñas del chofer</h1>
-          <p className="font-inter text-sm">
-            Acá podés las reseñas que otros pasajeros le realizaron a este chofer.
-          </p>
+  
+  return(
+    <div className="w-full">
+      <div className="mb-3">
+        <h1 className="text-xl font-semibold mb-1">Reseñas del chofer</h1>
+        <p className="font-inter text-sm">
+          Acá podés ver las reseñas que otros pasajeros le realizaron a este chofer.
+        </p>
 
-        </div>
-        <select
-          value={orderBy}
-          onChange={(e) => setOrderBy(e.target.value as any)}
-          className="border rounded-md px-3 py-2 text-sm mb-2"
-        >
-          <option value="RECENT">Más recientes</option>
-          <option value="RATING_DESC">Mejor puntuadas</option>
-          <option value="RATING_ASC">Peor puntuadas</option>
-        </select>
-
-        
-        <DriverReviewsList 
-          reviews={driverReviews}
-        />
-        {loading && (
-          <p className="text-sm text-gray-500 mt-2">Cargando más reseñas...</p>
-        )}
-
-        <div ref={loaderRef} className="h-1" />
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        )}
       </div>
-    )
+      <div className="flex items-center w-1/2 gap-2 pb-4">
+        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gray-8">
+          <ListFilter size={20}/>
+          <p>Filtro</p>
+        </div>
 
-  }
+        <Select
+          value={orderBy}
+          onValueChange={setOrderBy}
+        >
+          <SelectTrigger
+            id="orderBy"
+            className="font-outfit dark:bg-dark-5"
+          >
+            <SelectValue/>
+          </SelectTrigger>
+
+          <SelectContent>
+            {ORDERS_BY.map((order) => (
+              <SelectItem key={order.value} value={order.value}>
+                {order.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {loading ?  (
+        <ReviewCardSkeleton/>
+      ) : (
+        <DriverReviewsList 
+          reviews={driverReviews ?? []}
+        />
+      )}
+
+      <div ref={loaderRef} className="h-1" />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </div>
+  )
+
 }
