@@ -45,6 +45,10 @@ export default function DriverReviews(){
         orderBy
       );
 
+      if(reviewsRes.state != 'OK'){
+        setToast({message: reviewsRes.messages[0] ?? 'Ocurrió un error', type: 'error'})
+      }
+
       const newReviews = reviewsRes.data ?? [];
 
       if (reset) {
