@@ -26,13 +26,16 @@ export default function DriverReviews(){
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const LIMIT = 10;
+  const reviews = driverReviews ?? [];
+
 
 
 
   const loadReviews = useCallback( async (reset = false) => {
     try{
-      setLoading(true)
-      if (!driverId || !hasMore && !reset) return;
+      if (!driverId || (!hasMore && !reset)) return;
+      setLoading(true);
+
 
       const currentSkip = reset ? 0 : skip;
 
@@ -129,13 +132,17 @@ export default function DriverReviews(){
         </Select>
       </div>
       
-      {loading ?  (
-        <ReviewCardSkeleton/>
-      ) : (
-        <DriverReviewsList 
-          reviews={driverReviews ?? []}
-        />
-      )}
+      <DriverReviewsList reviews={reviews} />
+
+      {reviews.length === 0 && loading &&
+        Array.from({ length: 5 }).map((_, index) => (
+          <ReviewCardSkeleton key={index} />
+        ))
+      }
+
+      {reviews.length > 0 && loading && <ReviewCardSkeleton />}
+
+
 
       <div ref={loaderRef} className="h-1" />
       {toast && (

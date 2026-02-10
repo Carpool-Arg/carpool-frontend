@@ -5,28 +5,28 @@ export function ReviewCardSkeleton() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* número */}
-          <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-700" />
+          <div className="h-4 w-6 rounded bg-gray-300 dark:bg-gray-2" />
 
           {/* estrellas */}
           <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="h-4 w-4 rounded-sm bg-gray-300 dark:bg-gray-700"
+                className="h-4 w-4 rounded-sm bg-gray-300 dark:bg-gray-2"
               />
             ))}
           </div>
         </div>
 
         {/* fecha */}
-        <div className="h-3 w-20 rounded bg-gray-300 dark:bg-gray-700" />
+        <div className="h-3 w-20 rounded bg-gray-300 dark:bg-gray-2" />
       </div>
 
       {/* descripción */}
       <div className="mt-3 space-y-2">
-        <div className="h-3 w-full rounded bg-gray-300 dark:bg-gray-700" />
-        <div className="h-3 w-11/12 rounded bg-gray-300 dark:bg-gray-700" />
-        <div className="h-3 w-9/12 rounded bg-gray-300 dark:bg-gray-700" />
+        <div className="h-3 w-full rounded bg-gray-300 dark:bg-gray-2" />
+        <div className="h-3 w-11/12 rounded bg-gray-300 dark:bg-gray-2" />
+        <div className="h-3 w-9/12 rounded bg-gray-300 dark:bg-gray-2" />
       </div>
     </div>
   );

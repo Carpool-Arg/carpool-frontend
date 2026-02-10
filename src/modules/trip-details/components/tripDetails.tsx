@@ -1,26 +1,25 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
-import { getDriverReviews } from "@/services/review/reviewService";
-import { Rating } from "react-simple-star-rating";
-import Image from "next/image";
-import { capitalizeWords } from "@/shared/utils/string";
-import { TripDetailSkeleton } from "./TripDetailSkeleton";
-import { ErrorMessage } from "../../../components/ui/Error";
-import { formatPrice } from "@/shared/utils/number";
-import { useParams, useRouter } from "next/navigation";
-import { newReservation } from "@/services/reservation/reservationService";
-import { AlertDialog } from "../../../components/ux/AlertDialog";
-import { Button } from "../../../components//ux/Button";
+import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { Reservation } from "@/models/reservation";
+import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
 import { baggageOptions } from "@/modules/trip/components/TripFrom";
 import { TripRoutePreview } from "@/modules/trip/components/TripRoutePreview";
-import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
-import { Reservation } from "@/models/reservation";
+import { newReservation } from "@/services/reservation/reservationService";
+import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
+import { formatPrice } from "@/shared/utils/number";
+import { capitalizeWords } from "@/shared/utils/string";
+import { MessageCircleMore } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Rating } from "react-simple-star-rating";
+import { Button } from "../../../components//ux/Button";
+import { ErrorMessage } from "../../../components/ui/Error";
+import { AlertDialog } from "../../../components/ux/AlertDialog";
 import { TripDetailsData } from "../types/tripDetails";
-import InfoTooltip from "@/components/ux/InfoTooltip";
-import { Eye, MessageCircleMore, MessageSquareShare } from "lucide-react";
+import { TripDetailSkeleton } from "./TripDetailSkeleton";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
