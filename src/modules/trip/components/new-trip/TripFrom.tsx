@@ -15,7 +15,7 @@ import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 
 import { TripRoutePreview } from './TripRoutePreview';
 import { VehicleSelector } from './VehicleSelector';
-import { TripFormData, tripSchema } from '../schemas/tripSchema';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
 import { Button } from '@/components/ux/Button';
 import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
@@ -25,7 +25,7 @@ import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import InfoTooltip from '@/components/ux/InfoTooltip';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
-import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
+import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
 import { TripPriceSummary } from './TripPriceSummary';
 import { useEffect, useState } from 'react';
 

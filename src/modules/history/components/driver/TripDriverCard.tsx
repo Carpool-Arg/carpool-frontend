@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { tripButtonConfig } from "./TripStateButton";
+import { tripStateMap } from "@/shared/utils/trip";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -48,6 +49,9 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
           await refetchCurrentTrip();
           router.push(`/current-trip`);
           break;
+        case "CREATED":
+          router.push(`/trip/edit/${trip.id}`);
+          break;
 
         default:
           console.warn("Estado no manejado", state);
@@ -83,13 +87,13 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
           <span><ClockIcon size={14} /></span>
           <span>{formatDateTime(startDate?.toISOString())}</span>
         </div>
-        <div className="inline-flex gap-2 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
-          <span>{capitalizeWords(trip.tripState)}</span>
+        <div className="inline-flex gap-1 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
           <span className="bg-white h-1.5 w-1.5 rounded-full"></span>
+          <span>{tripStateMap[trip.tripState]}</span>
+          
         </div>
       </div>
       
-
       {/* Info secundaria */}
       <div className="flex items-center justify-between text-xs text-gray-6">
         <div className="flex items-center gap-2">
@@ -136,15 +140,15 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
       </div>
 
       {toast && (
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
-              <div className="pointer-events-auto w-full">
-                  <Toast
-                      message={toast.message}
-                      type={toast.type}
-                      onClose={() => setToast(null)}
-                  />
-              </div>
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+          <div className="pointer-events-auto w-full">
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
           </div>
+        </div>
       )}
     </div>
     

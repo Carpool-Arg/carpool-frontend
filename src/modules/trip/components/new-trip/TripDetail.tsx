@@ -3,7 +3,7 @@ import { Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { Vehicle } from "@/models/vehicle";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { baggageOptions } from "./TripFrom";
+import { baggageOptions } from "../new-trip/TripFrom";
 
 interface TripDetailProps {
   origin: string;
@@ -78,7 +78,7 @@ export function TripDetail({
             </span>
             <span className="text-2xl font-bold">{new Date(startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} hs</span>
           </p>
-          <p className="flex flex-col items-start text-right min-w-[90px] text-gray-7 dark:text-gray-1">
+          <p className="flex flex-col items-start text-right min-w-22.5 text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Precio</span> 
             <span className="text-2xl font-bold">${seatPrice}</span>
             <span className="font-regular text-sm">por pasajero</span>
@@ -113,7 +113,7 @@ export function TripDetail({
           <div className="flex justify-between items-center">
             <div className="flex py-2 gap-2 items-center">
               <div className="p-1 rounded-lg bg-gray-11 dark:bg-gray-2">
-                <div className="w-9 h-9 relative flex-shrink-0 ">
+                <div className="w-9 h-9 relative shrink-0 ">
                   <Image
                     src={`${R2_PUBLIC_PREFIX}/${(vehicle.vehicleTypeName).toLowerCase()}.png`}
                     alt={`Imagen Tipo Vehiculo ${(vehicle.vehicleTypeName).toLowerCase()}`}
