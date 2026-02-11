@@ -1,15 +1,18 @@
+interface TabItem {
+  label: string;
+  value: string;
+}
+
+
 interface TabsProps {
+  tabs: TabItem[]
   value: string | undefined;
   onChange: (v: string) => void;
 }
 
-const TABS = [
-  { label: "Solicitudes", value: "PENDING" },
-  { label: "Aceptadas", value: "ACCEPTED" },
-];
 
-export function Tab({ value, onChange }: TabsProps) {
-  const activeIndex = TABS.findIndex(t => t.value === value);
+export function Tab({ value, onChange, tabs }: TabsProps) {
+  const activeIndex = tabs.findIndex(t => t.value === value);
 
   return (
     <div className="bg-gray-8 rounded-full w-full p-1">
@@ -23,7 +26,7 @@ export function Tab({ value, onChange }: TabsProps) {
           }}
         />
 
-        {TABS.map(tab => {
+        {tabs.map(tab => {
           const active = value === tab.value;
           return (
             <button
