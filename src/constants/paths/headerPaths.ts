@@ -1,4 +1,5 @@
 export const HEADER_PATHS = [
+  '/history',
   '/reservations/', 
   '/search',
   '/trip/details',
@@ -20,6 +21,7 @@ export const HEADER_PATHS = [
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
+  '/history': 'Historial de viajes',
   '/trip/new': 'Publicar viaje',
   '/trip/details': 'Detalles del viaje',
   '/vehicle/edit': 'Editar Vehículo',

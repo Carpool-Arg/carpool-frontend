@@ -8,4 +8,6 @@ export const STATE = [
 
   // Viajes
   { value: "CREATED", label: "Creado", scope: "TRIP" },
+  { value: "CLOSED", label: "Cerrado", scope: "TRIP" },
+  { value: "FINISHED", label: "Finalizado", scope: "TRIP" },
 ];

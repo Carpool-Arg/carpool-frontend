@@ -107,12 +107,9 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
               
             </div>
            
-            <div className="">
-              {isActualOrigin ? 
-                <p className="text-xl font-semibold">${formatPrice(trip.seatPrice)}</p>
-              : 
-                <p className="text-sm text-gray-11 md:text-lg lg:text-lg">$ a definir</p>
-              }
+            <div>
+              <p className="text-xl font-semibold">${formatPrice(trip.seatPrice)}</p>
+
               <p className="flex items-center gap-1 justify-end text-xl">
                 {trip.availableSeat}
                 <span><UserRound size={20}/></span>

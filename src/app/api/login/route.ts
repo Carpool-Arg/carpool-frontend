@@ -50,8 +50,18 @@ export async function POST(req: NextRequest) {
     const accessToken = response.data?.accessToken;
     const refreshToken = response.data?.refreshToken;
 
-    // Guardar nuevos tokens en cookies
-    const nextRes = NextResponse.json(response, { status: res.status });
+    const responseWithToken = {
+      ...response,
+      data: {
+        ...response.data,
+        accessToken, 
+      }
+    };
+
+    const nextRes = NextResponse.json(responseWithToken, { status: res.status });
+
+    // // Guardar nuevos tokens en cookies
+    // const nextRes = NextResponse.json(response, { status: res.status });
 
     if (accessToken) {
       // Decodificar el token para calcular la duración
