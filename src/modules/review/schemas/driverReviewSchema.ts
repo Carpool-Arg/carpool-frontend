@@ -7,8 +7,7 @@ export const driverReviewSchema = z.object({
     .max(5),
   comment: z
     .string()
-    .min(10, "La reseña debe tener al menos 10 caracteres")
-    .max(300, "Máximo 300 caracteres"),
+    .max(255, "Máximo 255 caracteres"),
 });
 
 export type DriverReviewForm = z.infer<typeof driverReviewSchema>;
