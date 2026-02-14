@@ -6,18 +6,24 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { capitalizeWords } from "@/shared/utils/string";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { tripButtonConfig } from "./TripStateButton";
+import { AlertDialog } from "@/components/ux/AlertDialog";
+import { CancelReasonModal } from "../CancelReasonModal";
+import { cancelTrip } from "@/services/trip/tripService";
 
 interface TripCardProps {
   trip: TripDriverDTO;
   onError?: (message: string) => void;
+  onSuccess?: (message: string) => void;
+  openMenuTripId: number | null;
+  setOpenMenuTripId: (id: number | null) => void;
 }
 
-export function TripDriverCard({ trip ,onError }: TripCardProps) {
+export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
   const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
@@ -25,10 +31,53 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
   const { refetchCurrentTrip } = useTrip()
   const [loading, setLoading] = useState(false);
+  const [isReasonModalOpen, setReasonModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState<string | null>(null);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
+  
+  const isMenuOpen = openMenuTripId === trip.id;
 
+  const canCancel =
+  (trip.tripState === "CREATED" || trip.tripState === "CLOSED");
+  
+  const cancelDescription = trip.hasReservations
+    ? "Este viaje tiene reservas activas. Se notificará a los pasajeros y deberán ser reembolsados. ¿Deseás continuar?"
+    : "¿Estás seguro que querés cancelar este viaje?";
+  
   useEffect(() => {
     setState(trip.tripState)
   }, [trip.tripState])
+
+
+  const handleStartCancel = () => {
+    if (trip.hasReservations) {
+      setReasonModalOpen(true);
+    } else {
+      setCancelReason(null);
+      setCancelDialogOpen(true);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (loading) return;
+
+    setCancelDialogOpen(false);
+    setLoading(true);
+
+    try {
+      const response = await cancelTrip(trip.id, cancelReason ?? undefined);
+
+      if (response.state === "ERROR") {
+        onError?.(response.messages?.[0] ?? "Error al cancelar el viaje");
+        return;
+      }
+
+      onError?.("Viaje cancelado correctamente");
+    } finally {
+      setLoading(false);
+      setCancelReason(null);
+    }
+  };
 
   const handleClick = async () => {
     if (disabled || loading) return;
@@ -39,7 +88,7 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
       const result = await onClick(trip.id.toString());
 
       if (!result.ok) {
-        onError?.(result.message);
+        onSuccess?.(result.message);
         return;
       }
 
@@ -111,32 +160,111 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
           </div>
           
         </div>
-        
-        <button
-          disabled={disabled || loading}
-          className={`
-            flex items-center gap-1 text-base cursor-pointer
-            px-2 py-1 rounded-lg
-            transition-all duration-200 ease-out
-            bg-gray-7 text-gray-6
-            hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-            disabled:opacity-60 disabled:cursor-not-allowed
-            ${className}
-          `}
-          onClick={handleClick}
-        >
-          {loading ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Icon size={16} />
-          )}
-          {loading ? "Procesando..." : label}
-        </button>
 
+        <div className="relative">
+          <button
+              onClick={() =>
+                setOpenMenuTripId(isMenuOpen ? null : trip.id)
+              }            
+              className={`
+              p-2 rounded-full
+              text-sm font-medium
+              transition-all duration-200
+              ${isMenuOpen
+                ? "bg-white text-black"
+                : "bg-gray-7 text-gray-6 hover:bg-gray-6 hover:text-gray-8"
+              }
+              cursor-pointer
+            `}
+          >
+            <Ellipsis size={16} />
+          </button>
+
+        {isMenuOpen && (
+          <div
+            className="
+              absolute right-0 mt-2 w-56
+              bg-[#1a1a1a] border border-gray-700
+              rounded-xl shadow-lg
+              p-2
+              z-50
+              space-y-1
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Acción principal */}
+            <button
+              disabled={disabled || loading}
+              onClick={() => {
+                setOpenMenuTripId(null);
+                handleClick();
+              }}
+              className={`
+                w-full flex items-center gap-2
+                px-3 py-2 rounded-lg text-sm
+                transition-all duration-200
+                bg-gray-7 text-gray-6
+                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                disabled:opacity-60 disabled:cursor-not-allowed
+                cursor-pointer
+                ${className}
+              `}
+            >
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Icon size={16} />
+              )}
+              {label}
+            </button>
+
+            <button
+              className={`
+                w-full flex items-center gap-2
+                px-3 py-2 rounded-lg text-sm
+                transition-all duration-200
+                bg-gray-7 text-gray-6
+                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                disabled:opacity-60 disabled:cursor-not-allowed
+                cursor-pointer
+              `}
+            >
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Pencil size={16} />
+              )}
+                Editar
+            </button>
+
+            {/* Cancelar */}
+            {canCancel && (
+              <button
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  handleStartCancel();
+                }}
+                className="
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  text-red-500
+                  bg-red-500/10
+                  hover:bg-red-500/20
+                  transition-all duration-200
+                  cursor-pointer
+                "
+              >
+                <Ban size={16} />
+                Cancelar
+              </button>
+            )}
+          </div>
+        )}
+        </div>
       </div>
 
       {toast && (
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
               <div className="pointer-events-auto w-full">
                   <Toast
                       message={toast.message}
@@ -146,7 +274,27 @@ export function TripDriverCard({ trip ,onError }: TripCardProps) {
               </div>
           </div>
       )}
+
+      <AlertDialog
+        isOpen={isCancelDialogOpen}
+        onClose={() => setCancelDialogOpen(false)}
+        onConfirm={handleConfirmCancel}
+        type="info"
+        title="Cancelar viaje"
+        description={cancelDescription}
+        confirmText="Sí, cancelar"
+        cancelText="Volver"
+      />
+
+      <CancelReasonModal
+        isOpen={isReasonModalOpen}
+        onClose={() => setReasonModalOpen(false)}
+        onConfirm={(reason) => {
+          setCancelReason(reason);
+          setCancelDialogOpen(true);  
+        }}
+      />
     </div>
-    
+
   );
 }
