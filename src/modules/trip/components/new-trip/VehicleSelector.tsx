@@ -2,6 +2,7 @@ import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
 import { Vehicle } from "@/models/vehicle";
 import { VehicleCardSkeleton } from "@/modules/vehicle/components/VehicleSkeleton";
 import { VehicleCard } from "@/modules/vehicle/components/VehicleCard";
+import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
 
 export function VehicleSelector({ 
   selectedVehicle, 
