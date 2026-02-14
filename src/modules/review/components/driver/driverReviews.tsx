@@ -135,8 +135,8 @@ export default function DriverReviews(){
           </SelectContent>
         </Select>
       </div>
+      {!loading && <DriverReviewsList reviews={reviews} />}
       
-      <DriverReviewsList reviews={reviews} />
 
       {reviews.length === 0 && loading &&
         Array.from({ length: 5 }).map((_, index) => (
