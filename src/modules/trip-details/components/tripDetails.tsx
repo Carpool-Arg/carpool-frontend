@@ -1,24 +1,25 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
-import { Rating } from "react-simple-star-rating";
-import Image from "next/image";
-import { capitalizeWords } from "@/shared/utils/string";
-import { TripDetailSkeleton } from "./TripDetailSkeleton";
-import { ErrorMessage } from "../../../components/ui/Error";
-import { formatPrice } from "@/shared/utils/number";
-import { useParams, useRouter } from "next/navigation";
-import { newReservation } from "@/services/reservation/reservationService";
-import { AlertDialog } from "../../../components/ux/AlertDialog";
-import { Button } from "../../../components//ux/Button";
+import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { Reservation } from "@/models/reservation";
+import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
 import { baggageOptions } from "@/modules/trip/components/TripFrom";
 import { TripRoutePreview } from "@/modules/trip/components/TripRoutePreview";
-import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
-import { Reservation } from "@/models/reservation";
+import { newReservation } from "@/services/reservation/reservationService";
+import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
+import { formatPrice } from "@/shared/utils/number";
+import { capitalizeWords } from "@/shared/utils/string";
+import { MessageCircleMore } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Rating } from "react-simple-star-rating";
+import { Button } from "../../../components//ux/Button";
+import { ErrorMessage } from "../../../components/ui/Error";
+import { AlertDialog } from "../../../components/ux/AlertDialog";
 import { TripDetailsData } from "../types/tripDetails";
-import InfoTooltip from "@/components/ux/InfoTooltip";
+import { TripDetailSkeleton } from "./TripDetailSkeleton";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -111,6 +112,11 @@ export default function TripDetails() {
     }
   };
 
+  const handleGoToDriverProfile = () => {
+    router.push(`/reviews/driver/${trip?.driverInfo.driverId}`);
+  };
+
+
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
@@ -172,7 +178,8 @@ export default function TripDetails() {
           </div>
 
           {/* Datos del conductor */}
-          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3">
+          <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3"
+            >
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Datos del conductor
             </h2>
@@ -186,7 +193,7 @@ export default function TripDetails() {
               />
               <div className="text-gray-7 dark:text-gray-1 flex flex-col">
                 <span className="font-medium">{trip.driverInfo.fullName}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 space-y-1.5">
                   <span className="font-medium pt-1.5">{trip.driverInfo.rating}</span>
                   <Rating
                     initialValue={trip.driverInfo.rating}
@@ -197,6 +204,25 @@ export default function TripDetails() {
                     SVGstyle={{ display: "inline" }}
                     allowFraction
                   />
+                  <button
+                    onClick={handleGoToDriverProfile}
+                    className="
+                      cursor-pointer
+                      transition-all
+                      duration-300
+                      ease-out
+                      hover:scale-110
+                      hover:-translate-y-0.5
+                      hover:bg-gray-9
+                      active:scale-95
+                      bg-gray-10
+                      p-1
+                      rounded-lg
+                    "
+                  >
+                    <MessageCircleMore size={22} />
+                  </button>
+
                 </div>
               </div>
             </div>
