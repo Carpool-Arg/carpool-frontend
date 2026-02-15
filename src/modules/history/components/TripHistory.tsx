@@ -16,7 +16,7 @@ export default function TripHistory() {
 
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
 
-  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
 
   const handleChangeRole = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -55,6 +55,9 @@ export default function TripHistory() {
         trips={driverTrips}
         onError={(message) =>
           setToast({ message, type: 'error' })
+        }
+        onSuccess={(message) =>
+          setToast({ message, type: 'success' })
         }
         />
       )}

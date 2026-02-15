@@ -10,16 +10,21 @@ import { TripActionResult } from "../../types/TripActionResult";
 export type TripState = string;
 export type TripButtonAction = (tripId: string) => Promise<TripActionResult>;
 
-export const tripButtonConfig: Record<
-  TripState,
-  {
+export type TripButtonConfig = {
+  label: string;
+  Icon: LucideIcon;
+  className?: string;
+  disabled?: boolean;
+  onClick: TripButtonAction;
+  secondaryActions?: {
     label: string;
     Icon: LucideIcon;
     className?: string;
-    disabled?: boolean;
     onClick: TripButtonAction;
-  }
-> = {
+  }[];
+};
+
+export const tripButtonConfig: Record<TripState, TripButtonConfig> = {
   CREATED: {
     label: "Visualizar",
     Icon: LucideEye,
@@ -48,7 +53,6 @@ export const tripButtonConfig: Record<
     label: "Agendar",
     Icon: CalendarSync,
     onClick: async (tripId: string) => {
-      console.log(tripId)
       return { ok: true };
     },
   },

@@ -13,4 +13,5 @@ export interface TripDriverDTO {
     availableBaggage: number;
     seatPrice: number;
     tripState: string;
+    hasReservations: boolean;
 }
