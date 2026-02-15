@@ -32,6 +32,7 @@ export default function NewDriverReview() {
     formState: { errors, isSubmitting },
   } = useForm<DriverReviewForm>({
     resolver: zodResolver(driverReviewSchema),
+    mode: 'onChange',
     defaultValues: {
       rating: 0,
       comment: "",
@@ -107,7 +108,7 @@ export default function NewDriverReview() {
     if (rating === 3) return "Regular";
     if (rating === 4) return "Bueno";
     if (rating === 5) return "Excelente";
-    return "Seleccioná una calificación";
+    return 'Seleccioná una calificación'
   };
 
   if (isChecking) {
@@ -130,10 +131,14 @@ export default function NewDriverReview() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 w-full"
     >
+      <span className="text-lg font-medium">
+        ¿Cómo calificarías al chofer?
+      </span>
       {/* Rating */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 justify-center items-center">
+       
         <Rating
           onClick={handleRating}
           fillColor="#ffffff"
@@ -143,9 +148,10 @@ export default function NewDriverReview() {
           className={isSubmitting ? "pointer-events-none opacity-50" : ""}
         />
 
-        <span className="text-lg font-medium">
+        <span className="text-lg font-bold">
           {getRatingText(rating)}
         </span>
+        
 
         {errors.rating && (
           <span className="text-sm text-red-500">
@@ -153,12 +159,14 @@ export default function NewDriverReview() {
           </span>
         )}
       </div>
-
+      <span className="text-lg font-medium">
+        ¿Querés contarnos un poco más?
+      </span>
       <div className="flex flex-col gap-1">
         <textarea
           {...register("comment")}
           rows={4}
-          placeholder="Dejá tu reseña..."
+          placeholder="¿Que le dirias a otras personas acerca de este chofer? (Opcional)"
           disabled={isSubmitting}
           className={`
             w-full rounded-xl border bg-gray-2 p-3 text-sm
