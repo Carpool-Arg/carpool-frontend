@@ -8,7 +8,7 @@ interface TripDriverListProps {
   onSuccess: (message: string) => void;
 }
 
-export function TripDriverList({ trips, onError }: TripDriverListProps) {
+export function TripDriverList({ trips, onError, onSuccess }: TripDriverListProps) {
   const [openMenuTripId, setOpenMenuTripId] = useState<number | null>(null);
 
   if (trips.length === 0) {
@@ -22,7 +22,7 @@ export function TripDriverList({ trips, onError }: TripDriverListProps) {
   return (
     <div className="flex flex-col">
       {trips.map((trip) => (
-        <TripDriverCard key={trip.id} trip={trip} onError={onError}   openMenuTripId={openMenuTripId} setOpenMenuTripId={setOpenMenuTripId} />
+        <TripDriverCard key={trip.id} trip={trip} onError={onError}  onSuccess={onSuccess}  openMenuTripId={openMenuTripId} setOpenMenuTripId={setOpenMenuTripId} />
       ))}
     </div>
   );

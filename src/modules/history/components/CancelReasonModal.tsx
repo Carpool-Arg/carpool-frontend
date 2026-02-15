@@ -1,15 +1,16 @@
 'use client';
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  loading?: boolean;
   onConfirm: (reason: string) => void;
 }
 
-export function CancelReasonModal({ isOpen, onClose, onConfirm }: Props) {
+export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false,  }: Props) {
   const [reason, setReason] = useState("");
 
   if (!isOpen) return null;
@@ -64,10 +65,11 @@ export function CancelReasonModal({ isOpen, onClose, onConfirm }: Props) {
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!reason.trim()}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 cursor-pointer"
+            disabled={!reason.trim() || loading}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 cursor-pointer"
           >
-            Continuar
+            {loading && <Loader2 size={16} className="animate-spin" />}
+            {loading ? "Cancelando..." : "Continuar"}
           </button>
         </div>
       </div>

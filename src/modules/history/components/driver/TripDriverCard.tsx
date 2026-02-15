@@ -72,7 +72,11 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         return;
       }
 
-      onError?.("Viaje cancelado correctamente");
+      onSuccess?.("Viaje cancelado correctamente");
+
+      if (isReasonModalOpen) {
+        setReasonModalOpen(false);  
+      }
     } finally {
       setLoading(false);
       setCancelReason(null);
@@ -289,6 +293,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
       <CancelReasonModal
         isOpen={isReasonModalOpen}
         onClose={() => setReasonModalOpen(false)}
+        loading={loading}
         onConfirm={(reason) => {
           setCancelReason(reason);
           setCancelDialogOpen(true);  
