@@ -3,6 +3,8 @@
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useState } from "react";
 
+const MAX_REASON_LENGTH = 250;
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -13,10 +15,13 @@ interface Props {
 export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false,  }: Props) {
   const [reason, setReason] = useState("");
 
+  const isEmpty = !reason.trim();
+  const isTooLong = reason.length > MAX_REASON_LENGTH;
+  const isInvalid = isEmpty || isTooLong;
   if (!isOpen) return null;
 
   const handleConfirm = () => {
-    if (!reason.trim()) return;
+    if (isInvalid) return;
     onConfirm(reason);
   };
 
@@ -30,9 +35,31 @@ export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false, 
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="w-full p-3 rounded-lg bg-[#252525] text-white resize-none h-40"
+          disabled={loading}
+          className={`
+            w-full p-3 rounded-lg bg-[#252525] text-white resize-none h-40
+            ${isTooLong ? "border border-red-500" : ""}
+          `}
           placeholder="Ingresá el motivo de cancelación"
+          maxLength={300} // permitimos escribir un poco más para mostrar error
         />
+
+        {/* Contador */}
+        <div className="flex justify-between mt-2 text-xs">
+          {isTooLong ? (
+            <span className="text-red-400">
+              El motivo no puede superar los {MAX_REASON_LENGTH} caracteres.
+            </span>
+          ) : (
+            <span className="text-gray-500">
+              Máximo {MAX_REASON_LENGTH} caracteres
+            </span>
+          )}
+
+          <span className={isTooLong ? "text-red-400" : "text-gray-500"}>
+            {reason.length}/{MAX_REASON_LENGTH}
+          </span>
+        </div>
 
         {/* Warning */}
         <div
@@ -65,8 +92,8 @@ export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false, 
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!reason.trim() || loading}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            disabled={!reason.trim() || loading || isInvalid}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2 cursor-pointer disabled:cursor-default disabled:hover:bg-red-500"
           >
             {loading && <Loader2 size={16} className="animate-spin" />}
             {loading ? "Cancelando..." : "Continuar"}
