@@ -46,19 +46,15 @@ export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false, 
 
         {/* Contador */}
         <div className="flex justify-between mt-2 text-xs">
-          {isTooLong ? (
-            <span className="text-red-400">
-              El motivo no puede superar los {MAX_REASON_LENGTH} caracteres.
-            </span>
-          ) : (
-            <span className="text-gray-500">
-              Máximo {MAX_REASON_LENGTH} caracteres
-            </span>
-          )}
-
           <span className={isTooLong ? "text-red-400" : "text-gray-500"}>
             {reason.length}/{MAX_REASON_LENGTH}
           </span>
+
+          {isTooLong && (
+            <span className="text-red-400">
+              El motivo no puede superar los {MAX_REASON_LENGTH} caracteres.
+            </span>
+          )}
         </div>
 
         {/* Warning */}
