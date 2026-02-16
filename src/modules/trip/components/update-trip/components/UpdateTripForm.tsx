@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useTripDetails } from "../hooks/useTripData";
 import { Input } from "@/components/ux/Input";
 import { Button } from "@/components/ux/Button";
@@ -9,8 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TripFormData, tripSchema } from "@/modules/trip/schemas/tripSchema";
 import { useForm } from "react-hook-form";
 import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete";
-import { TripStop } from "@/models/tripStop";
-import { ArrowLeftRight, Circle, DollarSign, Repeat, Square, UsersRound } from "lucide-react";
+import { TripStop, TripStopExtended } from "@/models/tripStop";
+import { ArrowLeftRight, ChevronDown, ChevronRight, ChevronUp, Circle, DollarSign, Equal, Minus, Plus, Repeat, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { formatDomain } from "@/shared/utils/domain";
@@ -19,25 +19,33 @@ import { Vehicle } from "@/models/vehicle";
 import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
 import { VehicleSelector } from "../../new-trip/VehicleSelector";
 import { useAuth } from "@/contexts/authContext";
+import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
+import { TripDetail } from "../../new-trip/TripDetail";
+import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
+import { baggageOptions } from "../../new-trip/TripFrom";
 
-type UpdateTripDTO = {
-  seatPrice: number;
-  availableSeat: number;
-  availableBaggage: string;
-  startDateTime: string;
-  vehicle: {
-    brand: string;
-    model: string;
-    color: string;
-    domain: string;
-  };
-};
+
 
 export function UpdateTripForm() {
   const { id } = useParams();
   const { trip, loading, error } = useTripDetails(Number(id));
   const {user} = useAuth()
+  const router = useRouter()
   const [step, setStep] = useState<number>(0);
+
+  const [tripStops, setTripStops] = useState<TripStop[]>([])
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isBaggageOpen, setIsBaggageOpen] = useState(false);
+
+  
+  const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
+
+  const selectedBaggage = baggageOptions.find(
+    option => option.value === trip?.availableBaggage
+  );
 
   const [origin, setOrigin] = useState<TripStop>({
     cityId: 0,
@@ -86,10 +94,33 @@ export function UpdateTripForm() {
     setTripVehicle(trip.vehicle)
     reset({
       startDateTime: trip.startDateTime.slice(0, 16),
-      seatPrice: trip.seatPrice
+      seatPrice: trip.seatPrice,
+      availableSeat: trip.availableSeat,
+      tripStops: trip.tripStops,
+      availableBaggage: trip.availableBaggage
     })
     
   }, [trip]);
+
+  const availableBaggage = watch('availableBaggage');
+
+  const intermediateStops = trip?.tripStops.filter(
+    stop => !stop.start && !stop.destination
+  );
+
+  const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
+    const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
+      ...stop,
+      order: index + 2,
+      start: false,
+      destination: false
+    }));
+    setTripStops(formattedStops);
+  };
+
+  const handleBaggageOptions = () => {
+    setIsBaggageOpen(!isBaggageOpen)
+  }
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error al cargar el viaje</p>;
@@ -100,7 +131,7 @@ export function UpdateTripForm() {
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">
             <div className="flex items-center gap-2">
-              <div className="w-12 h-12 relative shrink-0 ">
+              <div className="w-12 h-12 relative shrink-0">
                 <Image
                   src={`${R2_PUBLIC_PREFIX}/${(trip?.vehicle.vehicleTypeName ?? 'auto').toLowerCase()}.png`}
                   alt={`Imagen Tipo Vehiculo ${(trip?.vehicle.vehicleTypeName ?? 'auto').toLowerCase()}`}
@@ -113,12 +144,16 @@ export function UpdateTripForm() {
                   {trip?.vehicle.brand} {trip?.vehicle.model}
                 </span>
                 <span className="font-inter text-sm">
-                  {trip?.vehicle.domain}
+                  {formatDomain(trip?.vehicle.domain ?? "")}
                 </span>
               </div>
               
             </div>
-            <button className="bg-gray-2 p-2 rounded-full">
+            <button 
+              type="button"
+              className="bg-gray-2 p-2 rounded-full"
+              onClick={() => setStep(1)}
+            >      
               <Repeat/>
             </button>
           </div>
@@ -215,6 +250,19 @@ export function UpdateTripForm() {
 
           </div>
 
+          <div className="my-4">
+            <button 
+              type="button"
+              className="
+                flex items-center gap-1 text-sm 
+                px-3 py-1.5 bg-gray-7 rounded-lg font-light"
+              onClick={()=>setStep(2)}
+            >
+              Modificar paradas intermedias
+              <ChevronRight size={16}/>
+            </button>
+          </div>
+
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium font-inter">Fecha y hora de salida</label>
             <input
@@ -257,7 +305,8 @@ export function UpdateTripForm() {
               <p className="text-red-500 text-sm mt-1">
                 
               </p>
-            
+              
+              
             </div>
 
             {/* Precio por asiento */}
@@ -294,6 +343,44 @@ export function UpdateTripForm() {
               )}
             </div>
           </div>
+          <div className="">
+            
+            <button
+              type="button"
+              onClick={handleBaggageOptions}
+              className="flex items-center justify-between w-full mb-1"
+            >
+              <span className="text-sm font-medium font-inter">Equipaje</span>
+              {isBaggageOpen ?
+                <Minus size={14}/>
+              :
+                <Equal size={15}/>
+              }
+            </button>
+            
+            
+            {isBaggageOpen && 
+              <div className="flex items-center justify-around p-2 bg-gray-7 rounded-lg">
+                {baggageOptions.map(({ type, icon: Icon, value}) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setValue("availableBaggage", value)}
+                    className={`cursor-pointer flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-2xl  transition ${
+                      availableBaggage === value
+                        ? "bg-gray-6 text-gray-2 border border-gray-4"
+                        : "text-dark-3 dark:text-gray-1"
+                    }`}
+                  >
+                    <Icon className="w-8 h-8" />
+                    <span className="font-medium font-inter text-xs">{type}</span>
+                  </button>
+                ))}
+              </div>
+            }
+            
+            
+          </div>
         </div>
       }
 
@@ -318,7 +405,7 @@ export function UpdateTripForm() {
             <Button
               type="button"
               variant="primary"
-              onClick={() => setStep(2)}
+              onClick={() => setStep(0)}
               disabled={!selectedVehicleId}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
@@ -327,11 +414,74 @@ export function UpdateTripForm() {
           </div>
         </div>
       }
-      
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Guardando..." : "Guardar cambios"}
-      </Button>
+      {step === 2 && (
+        <div className="flex flex-col h-screen md:pb-8 justify-between">
+          <div className="flex-1">
+            <TripStopForm
+              initialStops={intermediateStops}
+              onSubmitTripStops={(stops) => {
+                setValue("tripStops", stops, { shouldValidate: true });
+                handleTripStopsSubmit(stops); 
+              }}
+              origin={origin?.cityId}
+              destination={destination?.cityId}
+              onBack={() => setStep(0)}
+              onNext={() => {
+                trigger().then((valid) => {
+                  if (valid) setStep(0);
+                });
+              }}
+            />
+            {errors.tripStops && (
+              <p className="text-xs text-red-500 mt-2">
+                {errors.tripStops.message}
+              </p>
+            )}
+          </div>
+
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className='flex flex-col justify-between mb-8 '>
+          <TripDetail
+            origin={origin?.cityName ?? "Origen"}
+            destination={destination.cityName ?? "Destino"}
+            startDateTime={watch("startDateTime")}
+            availableSeat={watch("availableSeat")}
+            availableBaggage={watch("availableBaggage") || ""}
+            seatPrice={priceSummary!.publishedSeatPrice}
+            vehicle={selectedVehicle!}
+            onBack={() => setStep(5)}
+          />
+          <div className="flex justify-center gap-7.5 my-8 mb-8">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => router.push('/trip/new')}
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setIsDialogOpen(true)}
+              variant="primary"
+              className='px-12 py-2 text-sm font-inter font-medium'
+            > 
+              {isProcessing ? (
+                <div className='px-5 py-0.5'>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                </div>
+              ) : (
+                <span>Publicar</span>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+      
     </form>
   );
 }

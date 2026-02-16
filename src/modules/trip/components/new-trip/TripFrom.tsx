@@ -39,7 +39,7 @@ export const baggageOptions: BaggageOption[] = [
   { value: "LIVIANO", type: "Liviano", icon: BsBackpack },
   { value: "MEDIANO", type: "Mediano", icon: BiBriefcaseAlt },
   { value: "PESADO", type: "Pesado", icon: BsSuitcase },
-  { value: "NO_EQUIPAJE", type: "Sin equipaje", icon: CircleX },
+  { value: "NO_EQUIPAJE", type: "Sin", icon: CircleX },
 ];
 
 
