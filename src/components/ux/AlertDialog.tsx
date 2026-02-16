@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Info } from "lucide-react"
+import { AlertCircle, CheckCircle, Info, Loader2 } from "lucide-react"
 import { ReactNode } from "react"
 
 type AlertDialogProps = {
@@ -12,7 +12,8 @@ type AlertDialogProps = {
   cancelText?: string
   children?: ReactNode
   secondaryButton?: { text: string; onClick: () => void },
-  singleButton?: boolean
+  singleButton?: boolean,
+  loading?: boolean
 }
 
 export function AlertDialog({
@@ -26,7 +27,8 @@ export function AlertDialog({
   cancelText = "Cancelar",
   children,
   secondaryButton,
-  singleButton = false
+  singleButton = false,
+  loading = false
 }: AlertDialogProps) {
   if (!isOpen) return null
 
@@ -70,6 +72,10 @@ export function AlertDialog({
             }}
             className={`px-4 cursor-pointer py-2 rounded-md ${confirmButtonStyle[type]}`}
           >
+            {loading && (
+              <Loader2 size={16} className="animate-spin" />
+            )}
+
             {confirmText}
           </button>
         </div>

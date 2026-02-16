@@ -253,3 +253,25 @@ export const startTrip = async (idTrip:string) => {
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
+
+export const cancelTrip = async (idTrip:number, reason: string | undefined) => {
+  try {
+    const res = await fetchWithRefresh('/api/trip/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idTrip, reason }),
+      credentials: 'include'
+    })
+
+    const response: VoidResponse = await res.json();
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    
+    return response;
+  }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
