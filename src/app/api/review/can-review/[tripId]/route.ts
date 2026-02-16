@@ -12,7 +12,7 @@ export async function GET(
     const token = req.cookies.get('token')?.value;
 
 
-    const res = await fetch(`${apiUrl}/reviews/can-review/${tripId}`, {
+    const res = await fetch(`${apiUrl}/review/can-review/${tripId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

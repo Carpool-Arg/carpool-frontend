@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { CheckCircle, Printer, X, AlertCircle } from 'lucide-react';
+import { CheckCircle, Printer, X, AlertCircle, Star } from 'lucide-react';
 import { useNotification } from '@/contexts/NotificationContext';
 import { NotificationType } from '@/shared/types/notification';
 import { payReservation } from '@/services/reservation/reservationService'; 
 import { useAuth } from '@/contexts/authContext'; 
 import { AlertDialog } from '../ux/AlertDialog';
+import { useRouter } from 'next/navigation';
 
 
 export const UnpaidPaymentModal = () => {
@@ -17,6 +18,7 @@ export const UnpaidPaymentModal = () => {
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
+  const router = useRouter()
   // Agregar estilos de impresión - DEBE estar antes del early return
   useEffect(() => {
     const style = document.createElement('style');
@@ -184,6 +186,12 @@ export const UnpaidPaymentModal = () => {
     setShowSuccess(false);
     clearNotification();
   };
+
+  const handleGoToReview = () => {
+    router.push(`/driver-review/trip/${unpaidNotification.data?.tripId}`); 
+    handleCloseSuccess()
+  };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
@@ -359,6 +367,14 @@ export const UnpaidPaymentModal = () => {
             >
               <Printer className="w-5 h-5" />
               Imprimir comprobante
+            </button>
+
+            <button
+              onClick={handleGoToReview}
+              className="w-full mt-3 bg-[#1f2937] hover:bg-[#273449] text-white font-semibold py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 no-print"
+            >
+              <Star className="w-5 h-5 text-yellow-400" />
+              Reseñar al chofer
             </button>
           </div>
         </div>

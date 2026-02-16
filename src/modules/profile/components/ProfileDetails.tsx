@@ -208,11 +208,6 @@ export default function ProfileDetails() {
 
   return (
     <div className="space-y-4 max-w-md">
-    <button
-        onClick={() => router.push('/driver-review/trip/1')}
-      >
-        Ir a otra página
-    </button>
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            
