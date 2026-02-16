@@ -21,7 +21,7 @@ export function CancelReasonModal({ isOpen, onClose, onConfirm,loading = false, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-45">
       <div className="bg-[#1a1a1a] p-6 rounded-2xl w-full max-w-xl">
         <h2 className="text-white text-lg font-semibold mb-4">
           Motivo de cancelación

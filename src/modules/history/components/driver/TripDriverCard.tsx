@@ -41,7 +41,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   (trip.tripState === "CREATED" || trip.tripState === "CLOSED");
   
   const cancelDescription = trip.hasReservations
-    ? "Este viaje tiene reservas activas. Se notificará a los pasajeros y deberán ser reembolsados. ¿Deseás continuar?"
+    ? "Este viaje tiene reservas activas. ¿Deseás continuar?"
     : "¿Estás seguro que querés cancelar este viaje?";
   
   useEffect(() => {
@@ -61,7 +61,10 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   const handleConfirmCancel = async () => {
     if (loading) return;
 
-    setCancelDialogOpen(false);
+    if (trip.hasReservations) {
+      setCancelDialogOpen(false);
+    }
+
     setLoading(true);
 
     try {
@@ -288,6 +291,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         description={cancelDescription}
         confirmText="Sí, cancelar"
         cancelText="Volver"
+        loading={loading}
       />
 
       <CancelReasonModal
