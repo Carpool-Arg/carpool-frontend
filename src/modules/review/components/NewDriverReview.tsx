@@ -177,7 +177,7 @@ export default function NewDriverReview() {
         />
 
         <div className="flex justify-between text-xs text-gray-500">
-          <span>{commentValue.length}/255</span>
+          <span>{commentValue.length}/250</span>
           {errors.comment && (
             <span className="text-red-500">
               {errors.comment.message}
