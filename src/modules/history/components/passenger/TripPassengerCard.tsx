@@ -1,18 +1,16 @@
+import { Toast } from "@/components/ux/Toast";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { useTrip } from "@/contexts/tripContext";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { formatDomain } from "@/shared/utils/domain";
+import { getClockIcon } from "@/shared/utils/getTimeIcon";
+import { translateTripState } from "@/shared/utils/state";
+import { ChevronRight, Ellipsis, Loader2, LogOut, LucideEye, Star } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
 import { tripButtonConfig } from "./TripPassengerStateButton";
-import { capitalizeWords } from "@/shared/utils/string";
-import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
-import Image from "next/image";
-import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { formatDomain } from "@/shared/utils/domain";
-import { Toast } from "@/components/ux/Toast";
-import { AlertDialog } from "@/components/ux/AlertDialog";
-import { CancelReasonModal } from "../CancelReasonModal";
-import { useEffect, useState } from "react";
-import { getClockIcon } from "@/shared/utils/getTimeIcon";
-import { useRouter } from "next/navigation";
-import { useTrip } from "@/contexts/tripContext";
 
 interface TripPassengerCardProps {
   trip: TripHistoryUserDTO;
@@ -24,66 +22,28 @@ interface TripPassengerCardProps {
 
 export function TripPassengerCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
 
-const [state, setState] = useState('CREATED')
+  const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
-  const { refetchCurrentTrip } = useTrip()
   const [loading, setLoading] = useState(false);
-  const [isReasonModalOpen, setReasonModalOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState<string | null>(null);
-  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
   
   const isMenuOpen = openMenuTripId === trip.tripId;
 
-  const canCancel =
-  (trip.tripState === "CREATED" || trip.tripState === "CLOSED");
-  
-  const cancelDescription = "¿Estás seguro que querés cancelar este viaje?";
+  const canReview = (trip.tripState === "FINISHED" && !trip.reviewed);
+  const canLeave = (trip.tripState === "CLOSED" || trip.tripState == 'CREATED' );
   
   useEffect(() => {
     setState(trip.tripState)
   }, [trip.tripState])
 
 
-  const handleStartCancel = () => {
+  const handleReview = () => {
+    router.push(`/driver-review/trip/${trip.tripId}`); 
   };
 
-  const handleConfirmCancel = async () => {
-  };
 
-  const handleClick = async () => {
-    if (disabled || loading) return;
-
-    setLoading(true);
-
-    try {
-      const result = await onClick(trip.tripId.toString());
-
-      if (!result.ok) {
-        onSuccess?.(result.message);
-        return;
-      }
-
-      switch (state) {
-        case "CLOSED":
-          await refetchCurrentTrip();
-          router.push(`/current-trip`);
-          break;
-
-        default:
-          console.warn("Estado no manejado", state);
-      }
-    } finally {
-      setLoading(false);
-    }
-    
-  };
-
-  const config =  tripButtonConfig[trip.tripState];
-
-  const { label, Icon, className, disabled, onClick} = config;
  
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
@@ -107,7 +67,7 @@ const [state, setState] = useState('CREATED')
           <span>{formatDateTime(startDate?.toISOString())}</span>
         </div>
         <div className="inline-flex gap-2 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
-          <span>{capitalizeWords(trip.tripState)}</span>
+          <span>{translateTripState(trip.tripState)}</span>
           <span className="bg-white h-1.5 w-1.5 rounded-full"></span>
         </div>
       </div>
@@ -126,7 +86,7 @@ const [state, setState] = useState('CREATED')
           </div>
           <div className="flex flex-col">
             <span className="font-semibold">
-              {trip.vehicle.brand} {trip.vehicle.model}
+              {trip.vehicle.brand} {trip.vehicle.model} de {trip.driverName}
             </span>
             <span className="font-inter">
               {formatDomain(trip.vehicle.domain)}
@@ -166,31 +126,7 @@ const [state, setState] = useState('CREATED')
             "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Acción principal */}
-            <button
-              disabled={disabled || loading}
-              onClick={() => {
-                setOpenMenuTripId(null);
-                handleClick();
-              }}
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-                ${className}
-              `}
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Icon size={16} />
-              )}
-              {label}
-            </button>
+            
 
             <button
               className={`
@@ -206,18 +142,14 @@ const [state, setState] = useState('CREATED')
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : (
-                <Pencil size={16} />
+                <LucideEye size={16} />
               )}
-                Editar
+                Visualizar
             </button>
-
-            {/* Cancelar */}
-            {canCancel && (
+            
+            
+            {canLeave && (
               <button
-                onClick={() => {
-                  setOpenMenuTripId(null);
-                  handleStartCancel();
-                }}
                 className="
                   w-full flex items-center gap-2
                   px-3 py-2 rounded-lg text-sm
@@ -228,8 +160,33 @@ const [state, setState] = useState('CREATED')
                   cursor-pointer
                 "
               >
-                <Ban size={16} />
-                Cancelar
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <LogOut size={16} />
+                )}
+                  Abandonar viaje
+              </button>
+            )}
+
+            {/* Cancelar */}
+            {canReview && (
+              <button
+                onClick={() => {
+                  handleReview();
+                }}
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+              >
+                <Star size={16} />
+                Reseñar al chofer
               </button>
             )}
           </div>
@@ -249,27 +206,6 @@ const [state, setState] = useState('CREATED')
           </div>
       )}
 
-      <AlertDialog
-        isOpen={isCancelDialogOpen}
-        onClose={() => setCancelDialogOpen(false)}
-        onConfirm={handleConfirmCancel}
-        type="info"
-        title="Cancelar viaje"
-        description={cancelDescription}
-        confirmText="Sí, cancelar"
-        cancelText="Volver"
-        loading={loading}
-      />
-
-      <CancelReasonModal
-        isOpen={isReasonModalOpen}
-        onClose={() => setReasonModalOpen(false)}
-        loading={loading}
-        onConfirm={(reason) => {
-          setCancelReason(reason);
-          setCancelDialogOpen(true);  
-        }}
-      />
     </div>
 
   );

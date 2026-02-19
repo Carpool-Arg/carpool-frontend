@@ -11,4 +11,5 @@ export interface TripHistoryUserDTO {
     destinationCity: string;
     seatPrice: number;
     tripState: string;
+    reviewed: boolean;
 }

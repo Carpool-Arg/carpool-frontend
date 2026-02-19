@@ -14,6 +14,7 @@ import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { cancelTrip } from "@/services/trip/tripService";
+import { translateTripState } from "@/shared/utils/state";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -140,7 +141,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
           <span>{formatDateTime(startDate?.toISOString())}</span>
         </div>
         <div className="inline-flex gap-2 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
-          <span>{capitalizeWords(trip.tripState)}</span>
+          <span>{translateTripState(trip.tripState)}</span>
           <span className="bg-white h-1.5 w-1.5 rounded-full"></span>
         </div>
       </div>
