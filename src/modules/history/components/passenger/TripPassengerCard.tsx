@@ -1,30 +1,30 @@
-import { Toast } from "@/components/ux/Toast";
-import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { useTrip } from "@/contexts/tripContext";
-import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 import { formatDateTime } from "@/shared/utils/dateTime";
-import { formatDomain } from "@/shared/utils/domain";
-import { getClockIcon } from "@/shared/utils/getTimeIcon";
+import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
+import { tripButtonConfig } from "./TripPassengerStateButton";
 import { capitalizeWords } from "@/shared/utils/string";
 import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { formatDomain } from "@/shared/utils/domain";
+import { Toast } from "@/components/ux/Toast";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { CancelReasonModal } from "../CancelReasonModal";
-import { cancelTrip } from "@/services/trip/tripService";
+import { useEffect, useState } from "react";
+import { getClockIcon } from "@/shared/utils/getTimeIcon";
+import { useRouter } from "next/navigation";
+import { useTrip } from "@/contexts/tripContext";
 
-interface TripCardProps {
-  trip: TripDriverDTO;
+interface TripPassengerCardProps {
+  trip: TripHistoryUserDTO;
   onError?: (message: string) => void;
   onSuccess?: (message: string) => void;
   openMenuTripId: number | null;
   setOpenMenuTripId: (id: number | null) => void;
 }
 
-export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
-  const [state, setState] = useState('CREATED')
+export function TripPassengerCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
+
+const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
@@ -35,14 +35,12 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   const [cancelReason, setCancelReason] = useState<string | null>(null);
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
   
-  const isMenuOpen = openMenuTripId === trip.id;
+  const isMenuOpen = openMenuTripId === trip.tripId;
 
   const canCancel =
   (trip.tripState === "CREATED" || trip.tripState === "CLOSED");
   
-  const cancelDescription = trip.hasReservations
-    ? "Este viaje tiene reservas activas. ¿Deseás continuar?"
-    : "¿Estás seguro que querés cancelar este viaje?";
+  const cancelDescription = "¿Estás seguro que querés cancelar este viaje?";
   
   useEffect(() => {
     setState(trip.tripState)
@@ -50,40 +48,9 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
 
   const handleStartCancel = () => {
-    if (trip.hasReservations) {
-      setReasonModalOpen(true);
-    } else {
-      setCancelReason(null);
-      setCancelDialogOpen(true);
-    }
   };
 
   const handleConfirmCancel = async () => {
-    if (loading) return;
-
-    if (trip.hasReservations) {
-      setCancelDialogOpen(false);
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await cancelTrip(trip.id, cancelReason ?? undefined);
-
-      if (response.state === "ERROR") {
-        onError?.(response.messages?.[0] ?? "Error al cancelar el viaje");
-        return;
-      }
-
-      onSuccess?.("Viaje cancelado correctamente");
-
-      if (isReasonModalOpen) {
-        setReasonModalOpen(false);  
-      }
-    } finally {
-      setLoading(false);
-      setCancelReason(null);
-    }
   };
 
   const handleClick = async () => {
@@ -92,7 +59,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     setLoading(true);
 
     try {
-      const result = await onClick(trip.id.toString());
+      const result = await onClick(trip.tripId.toString());
 
       if (!result.ok) {
         onSuccess?.(result.message);
@@ -171,7 +138,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         <div className="relative">
           <button
               onClick={() =>
-                setOpenMenuTripId(isMenuOpen ? null : trip.id)
+                setOpenMenuTripId(isMenuOpen ? null : trip.tripId)
               }            
               className={`
               p-2 rounded-full
