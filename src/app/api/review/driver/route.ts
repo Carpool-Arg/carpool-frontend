@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
+/**
+ * Obtiene las reservas que otros usuarios le han realizado a un chofer
+ * Recbe como parametros el id del chofer del cual se quieren obtener las reseñas
+ * el skip para el paginado y el orderBy para determinar en que orden mostrar las reseñas
+ * @returns 
+ */
 export async function GET(
   req: NextRequest
 ){

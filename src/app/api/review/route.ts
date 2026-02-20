@@ -4,7 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
-
+/**
+ * Metodo para realizar una reseña a un chofer de un viaje
+ * Recibe una request que contiene cantidad de estrellas, descripcion de la misma y el id del viaje
+ * @returns 
+ */
 export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;

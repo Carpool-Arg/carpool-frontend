@@ -103,17 +103,25 @@ export default function NewDriverReview() {
   const commentValue = watch("comment") || "";
 
   const getRatingText = (rating: number) => {
-    if (rating === 1) return "Muy malo";
-    if (rating === 2) return "Malo";
-    if (rating === 3) return "Regular";
-    if (rating === 4) return "Bueno";
-    if (rating === 5) return "Excelente";
-    return 'Seleccioná una calificación'
+    switch (rating) {
+      case 1:
+        return "Muy malo";
+      case 2:
+        return "Malo";
+      case 3:
+        return "Regular";
+      case 4:
+        return "Bueno";
+      case 5:
+        return "Excelente";
+      default:
+        return "Seleccioná una calificación";
+    }
   };
 
   if (isChecking) {
     return (
-      <div className="h-full my-auto">
+      <div className="h-full my-auto w-lg">
         <NewDriverReviewSkeleton/>
       </div>
     );
@@ -166,6 +174,7 @@ export default function NewDriverReview() {
         <textarea
           {...register("comment")}
           rows={4}
+          maxLength={300}
           placeholder="¿Que le dirias a otras personas acerca de este chofer? (Opcional)"
           disabled={isSubmitting}
           className={`
@@ -190,7 +199,7 @@ export default function NewDriverReview() {
         type="submit"
         variant="primary"
         disabled={isSubmitting}
-        className="disabled:opacity-50"
+        className="disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {isSubmitting ? (
           <div className="px-6 py-0.5 flex justify-center">

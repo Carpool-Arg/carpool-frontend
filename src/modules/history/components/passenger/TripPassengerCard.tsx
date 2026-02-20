@@ -1,6 +1,5 @@
 import { Toast } from "@/components/ux/Toast";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { useTrip } from "@/contexts/tripContext";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
@@ -8,9 +7,8 @@ import { translateTripState } from "@/shared/utils/state";
 import { ChevronRight, Ellipsis, Loader2, LogOut, LucideEye, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
-import { tripButtonConfig } from "./TripPassengerStateButton";
 
 interface TripPassengerCardProps {
   trip: TripHistoryUserDTO;
@@ -20,9 +18,8 @@ interface TripPassengerCardProps {
   setOpenMenuTripId: (id: number | null) => void;
 }
 
-export function TripPassengerCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
+export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
 
-  const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
@@ -34,9 +31,7 @@ export function TripPassengerCard({ trip ,onError, onSuccess, openMenuTripId, se
   const canReview = (trip.tripState === "FINISHED" && !trip.reviewed);
   const canLeave = (trip.tripState === "CLOSED" || trip.tripState == 'CREATED' );
   
-  useEffect(() => {
-    setState(trip.tripState)
-  }, [trip.tripState])
+
 
 
   const handleReview = () => {
@@ -138,6 +133,7 @@ export function TripPassengerCard({ trip ,onError, onSuccess, openMenuTripId, se
                 disabled:opacity-60 disabled:cursor-not-allowed
                 cursor-pointer
               `}
+              onClick={()=>setLoading(true)}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />

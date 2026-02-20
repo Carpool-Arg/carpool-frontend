@@ -41,7 +41,7 @@ export default function CurrentTrip() {
 
   return (
 
-    <div className="bg-gray-8/90 backdrop-blur rounded-xl p-6 space-y-4">
+    <div className="rounded-xl p-6 space-y-4">
       {loading ? (
         <CurrentTripSkeleton />
       ) : (

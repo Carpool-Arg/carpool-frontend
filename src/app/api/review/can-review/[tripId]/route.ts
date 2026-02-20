@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * Ddeterminar si el usuario en sesion puede realizar una reseña a un chofer de un determinado viaje
+ * Recibe el id del viaje que se desea reseñar
+ * @param req 
+ * @returns devuelve una response con un booleano que indica el resultado de la consulta
+ */
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ tripId: string }> }

@@ -1,20 +1,19 @@
+import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Toast } from "@/components/ux/Toast";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { useTrip } from "@/contexts/tripContext";
 import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
+import { cancelTrip } from "@/services/trip/tripService";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
-import { capitalizeWords } from "@/shared/utils/string";
+import { translateTripState } from "@/shared/utils/state";
 import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
-import { AlertDialog } from "@/components/ux/AlertDialog";
 import { CancelReasonModal } from "../CancelReasonModal";
-import { cancelTrip } from "@/services/trip/tripService";
-import { translateTripState } from "@/shared/utils/state";
+import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 
 interface TripCardProps {
   trip: TripDriverDTO;
