@@ -28,6 +28,7 @@ import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleto
 import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
 import { TripPriceSummary } from './TripPriceSummary';
 import { useEffect, useState } from 'react';
+import { Toast } from '@/components/ux/Toast';
 
 interface BaggageOption {
   value: string;
@@ -45,7 +46,7 @@ export const baggageOptions: BaggageOption[] = [
 
 export function TripForm() {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
-  const [error, setError] = useState<string>('');
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
   const router = useRouter()
   const {user} = useAuth();
   const [tripStops, setTripStops] = useState<TripStop[]>([])
@@ -86,6 +87,7 @@ export function TripForm() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
 
   const { vehicles, loading: vehiclesLoading, error: vehiclesError } = useUserVehicles();
   const selectedVehicleId = watch('idVehicle');
@@ -228,7 +230,7 @@ export function TripForm() {
 
   const onSubmit = async (data: TripFormData) => {
     if (!origin || !destination) {
-      setError("Debes seleccionar origen y destino");
+      setToast({ message:"Debes seleccionar origen y destino", type: 'error' })
       return;
     }
     setIsProcessing(true);
@@ -267,15 +269,16 @@ export function TripForm() {
 
     try {
       const response = await newTrip(payload);
-
       if (response.state === "ERROR") {
-        setError(response.messages?.[0] || "Error al guardar el viaje");
+        setToast({ message: response.messages?.[0] || "Error al guardar el viaje", type: 'error' })
+        setIsProcessing(false);
         return;
       }
       setIsProcessing(false);
       setIsSuccessDialogOpen(true);
     } catch (error) {
-      setError("Error al crear el viaje");
+      setToast({ message: "Error al guardar el viaje", type: 'error' })
+      setIsProcessing(false);
       console.error(error)
     }
   };
@@ -791,7 +794,8 @@ export function TripForm() {
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={() => router.push('/trip/new')}
+                disabled= {isProcessing}
+                onClick={() => setIsCancelDialogOpen(true)}
                 className='px-12 py-2 text-sm font-inter font-medium'
               >
                 Cancelar
@@ -813,11 +817,7 @@ export function TripForm() {
             </div>
           </div>
         )}
-        {error && (
-          <div className="mb-4">
-            <Alert type="error" message={error} />
-          </div>
-        )}
+
         <AlertDialog
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
@@ -827,6 +827,16 @@ export function TripForm() {
           description="Una vez publicado, otros usuarios podrán ver y solicitar unirse a este viaje."
           confirmText="Publicar"
           cancelText="Cancelar"
+        />
+        <AlertDialog
+          isOpen={isCancelDialogOpen}
+          onClose={() => setIsCancelDialogOpen(false)}
+          onConfirm={() => router.push('/home')} 
+          type="info"
+          title="¿Estás seguro de cancelar la publicación?"
+          description="Se perderán todos los datos ingresados del viaje."
+          confirmText="Sí, cancelar"
+          cancelText="Volver"
         />
         <AlertDialog
           isOpen={isSuccessDialogOpen}
@@ -847,6 +857,13 @@ export function TripForm() {
           confirmText="Mis viajes"
           cancelText="Inicio"
         />
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </form>
   );
   
