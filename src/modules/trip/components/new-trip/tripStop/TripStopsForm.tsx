@@ -7,7 +7,7 @@ import { City } from "@/models/city"
 import { TripStop, TripStopExtended } from "@/models/tripStop"
 import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable"
-import { CircleSmall, Plus } from "lucide-react"
+import { CircleSmall, Plus, Save } from "lucide-react"
 import { useState } from "react"
 import { TripStopProps } from "./TripStop"
 import { TripStopList } from "./TripStopList"
@@ -22,18 +22,19 @@ type TripStopFormProps = {
   onNext: () => void
 };
 
-export function TripStopForm({ initialStops=[], origin, destination,onSubmitTripStops, onBack, onNext }: TripStopFormProps){
+export function TripStopForm({ initialStops=[], origin, destination, onSubmitTripStops, onBack, onNext }: TripStopFormProps){
     const [tripStopsList, setTripStopsList] = useState<TripStopProps[]>(
-    initialStops.map((stop, index) => ({
-      id: index + 1, // le damos un id para DnD
-      title: stop.cityName ?? '',      // podés poner stop.observation o alguna otra info si querés
-      cityId: stop.cityId,
-      observation: stop.observation,
-    }))
-  );
+        initialStops.map((stop, index) => ({
+        id: index + 1, // le damos un id para DnD
+        title: stop.cityName ?? '',      // podés poner stop.observation o alguna otra info si querés
+        cityId: stop.cityId,
+        observation: stop.observation,
+        }))
+    );
     const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
     const [observation, setObservation] = useState('')
     const [city, setCity] = useState<City>()
+    const [editingStopId, setEditingStopId] = useState<number | null>(null)
 
     const addTripStop = (title:string, cityId:number, observation:string) => {
         if (!cityId) {
@@ -48,15 +49,33 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
             setToast({ message: 'La observación no puede superar los 100 caracteres', type: 'error' })
             return
         }
-        const exists = tripStopsList.some(stop => stop.cityId === cityId)
+        const exists = tripStopsList.some(
+            stop =>
+                stop.cityId === cityId &&
+                stop.id !== editingStopId 
+            )
         if (exists) {
             setToast({ message: 'Ya agregaste esta ciudad', type: 'error' })
             return
         }
-
-        setTripStopsList(prev => [...prev, { id: prev.length + 1, title, cityId, observation }])
+        if (editingStopId) {
+            setTripStopsList(prev =>
+            prev.map(stop =>
+                stop.id === editingStopId
+                ? { ...stop, title, cityId, observation }
+                : stop
+                )
+            )
+        } else {
+            setTripStopsList(prev => [
+            ...prev,
+            { id: Date.now(), title, cityId, observation }
+            ])
+        }
+        
         setCity(undefined)
         setObservation('')
+        setEditingStopId(null)
     }
 
     const getTripStopsPos = (id: UniqueIdentifier) => tripStopsList.findIndex(tripStop => tripStop.id === id)
@@ -76,6 +95,15 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
     //Esto me daba error si lo hacia con el id del objeto, no se porque habia mas de uno con el mismo id
     const handleDeleteTripStop = (cityId: number) => {
         setTripStopsList(prev => prev.filter(stop => stop.cityId !== cityId))
+    }
+
+    const handleEditTripStop = (stopId: number) => {
+        const stop = tripStopsList.find(s => s.id === stopId)
+        if (!stop) return
+
+        setCity({ id: stop.cityId, name: stop.title })
+        setObservation(stop.observation ?? "")
+        setEditingStopId(stopId)
     }
 
 
@@ -107,12 +135,19 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                 </h2>
                 
                 <CityAutocomplete
+                    key={editingStopId ?? "new"}
                     value={city?.id ?? 0}
                     onChange={c => setCity(c ? { id: c.id, name: c.name } : undefined)}
                     label='Ingrese la localidad intermedia'
                     placeholder='Seleccione la localidad'
                     icon={<CircleSmall size={18} />}
-                    excludeIds={[origin ?? 0, destination ?? 0, ...tripStopsList.map(stop => stop.cityId)] }
+                    excludeIds={[
+                        origin ?? 0, 
+                        destination ?? 0, 
+                        ...tripStopsList
+                            .filter(stop => stop.id !== editingStopId) 
+                            .map(stop => stop.cityId)
+                    ]}
                     outline={true}
                 />
                 
@@ -129,10 +164,12 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                 </div>
 
                 <div className="w-full flex justify-center mt-4.5">
-                    <button type="button" className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer text-white dark:text-gray-6 hover:bg-gray-2/75"
+                    <button
+                        type="button"
+                        className="flex items-center justify-center bg-gray-2 rounded-full p-3 w-1/4 cursor-pointer text-white dark:text-gray-6 hover:bg-gray-2/75"
                         onClick={() => addTripStop(city?.name ?? "", city?.id ?? 0, observation)}
                     >
-                        <Plus size={18}/>
+                        {editingStopId ? <Save size={18} /> : <Plus size={18} />}
                     </button>
                 </div>
                 {tripStopsList.length > 0 && (
@@ -145,8 +182,9 @@ export function TripStopForm({ initialStops=[], origin, destination,onSubmitTrip
                             collisionDetection={closestCorners}
                         >
                             <TripStopList
-                            tripStops={tripStopsList}
-                            onDelete={handleDeleteTripStop}
+                                tripStops={tripStopsList}
+                                onDelete={handleDeleteTripStop}
+                                onEdit={handleEditTripStop}
                             />
                         </DndContext>
                         </div>

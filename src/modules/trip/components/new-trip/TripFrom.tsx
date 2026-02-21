@@ -351,7 +351,7 @@ export function TripForm() {
               {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
 
               <VehicleSelector
-                selectedVehicle={selectedVehicle}
+                selectedVehicleId={selectedVehicleId}
                 onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
               />
             </div>

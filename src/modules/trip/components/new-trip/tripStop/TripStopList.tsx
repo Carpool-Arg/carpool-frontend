@@ -1,14 +1,15 @@
 import React from 'react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { TripStop, TripStopProps } from './TripStop';
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface ColumnProps{
-    tripStops: TripStopProps[];
-    onDelete: (id: number) => void;
+  tripStops: TripStopProps[];
+  onDelete: (id: number) => void;
+  onEdit: (id: number) => void
 }
 
-export const TripStopList = ({ tripStops, onDelete} :ColumnProps) => {
+export const TripStopList = ({ tripStops, onDelete, onEdit} :ColumnProps) => {
   return (
     <div className='rounded-lg flex flex-col gap-3.5 w-full p-2'>
         <SortableContext 
@@ -21,13 +22,22 @@ export const TripStopList = ({ tripStops, onDelete} :ColumnProps) => {
                 {index + 1}.
               </span>
               <TripStop id={tripStop.id} title={tripStop.title} cityId={tripStop.cityId} observation={tripStop.observation} />
-              <button
-                type="button"
-                onClick={() => onDelete(tripStop.cityId)}
-                className="cursor-pointer rounded-full bg-gray-6 dark:bg-gray-2 p-2 ml-2 hover:bg-red-100 dark:hover:bg-red-900"
-              >
-                <Trash2 size={18} className="text-gray-2 dark:text-gray-1" />
-              </button> 
+              <div className='flex items-center'>
+                <button
+                  type="button"
+                  onClick={() => onDelete(tripStop.cityId)}
+                  className="cursor-pointer rounded-full bg-gray-6 dark:bg-gray-2 p-2 ml-2 hover:bg-red-100 dark:hover:bg-red-900"
+                >
+                  <Trash2 size={18} className="text-gray-2 dark:text-gray-1" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onEdit(tripStop.id)}
+                  className="cursor-pointer rounded-full bg-gray-6 dark:bg-gray-2 p-2 ml-2 hover:bg-red-100 dark:hover:bg-gray-9/80"
+                >
+                  <Pencil size={18} className="text-gray-2 dark:text-gray-1" />
+                </button> 
+              </div>
             </div>
           )}
 

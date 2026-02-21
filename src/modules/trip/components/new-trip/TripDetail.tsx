@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Vehicle } from "@/models/vehicle";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { baggageOptions } from "../new-trip/TripFrom";
+import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
+
 
 interface TripDetailProps {
   origin: string;
@@ -11,8 +13,8 @@ interface TripDetailProps {
   startDateTime: string;
   availableSeat: number;
   availableBaggage: string;
-  seatPrice: number;
-  vehicle: Vehicle;
+  seatPrice?: number;
+  vehicle: Vehicle | VehicleResponseTripDTO;
   onBack: () => void;
 }
 

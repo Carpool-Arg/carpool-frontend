@@ -23,12 +23,16 @@ import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
 import { TripDetail } from "../../new-trip/TripDetail";
 import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
 import { baggageOptions } from "../../new-trip/TripFrom";
+import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
+import { TripRoutePreview } from "../../new-trip/TripRoutePreview";
 
 
 
 export function UpdateTripForm() {
   const { id } = useParams();
   const { trip, loading, error } = useTripDetails(Number(id));
+  const { vehicles } = useUserVehicles();
+
   const {user} = useAuth()
   const router = useRouter()
   const [step, setStep] = useState<number>(0);
@@ -39,7 +43,6 @@ export function UpdateTripForm() {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
-
   
   const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
 
@@ -65,8 +68,8 @@ export function UpdateTripForm() {
     observation: ""
   })
 
-  const [tripVehicle, setTripVehicle]= useState<VehicleResponseTripDTO>()
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>()
+  const [tripVehicle, setTripVehicle]= useState<Vehicle>()
+
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -81,7 +84,8 @@ export function UpdateTripForm() {
       originObservation: '',
       destinationId: 0,
       destinationObservation: '',
-      tripStops: []
+      tripStops: [],
+      idVehicle: 0
     }
   })
 
@@ -91,15 +95,14 @@ export function UpdateTripForm() {
     if (!trip) return;
     setOrigin(trip.tripStops[0])
     setDestination(trip.tripStops.find(stop=> stop.destination)!)
-    setTripVehicle(trip.vehicle)
     reset({
       startDateTime: trip.startDateTime.slice(0, 16),
       seatPrice: trip.seatPrice,
       availableSeat: trip.availableSeat,
       tripStops: trip.tripStops,
-      availableBaggage: trip.availableBaggage
+      availableBaggage: trip.availableBaggage,
+      idVehicle: trip.vehicle.id
     })
-    
   }, [trip]);
 
   const availableBaggage = watch('availableBaggage');
@@ -107,6 +110,35 @@ export function UpdateTripForm() {
   const intermediateStops = trip?.tripStops.filter(
     stop => !stop.start && !stop.destination
   );
+
+  const buildTripRoute = (): TripStop[] => {
+    if (!origin || !destination) return [];
+
+    return [
+      {
+        cityId: origin.cityId,
+        cityName: origin.cityName || "Origen",
+        start: true,
+        destination: false,
+        order: 1,
+        observation: origin.observation
+      },
+      ...tripStops.map((stop, index) => ({
+        ...stop,
+        start: false,
+        destination: false,
+        order: index + 2
+      })),
+      {
+        cityId: destination.cityId,
+        cityName: destination.cityName || "Destino",
+        start: false,
+        destination: true,
+        order: tripStops.length + 2,
+        observation: destination.observation
+      }
+    ];
+    };
 
   const handleTripStopsSubmit = (stops: { cityId: number; cityName: string; observation: string }[]) => {
     const formattedStops: TripStopExtended[] = stops.map((stop, index) => ({
@@ -122,6 +154,10 @@ export function UpdateTripForm() {
     setIsBaggageOpen(!isBaggageOpen)
   }
 
+  const currentVehicle =
+    vehicles.find(v => v.id === selectedVehicleId) ??
+    trip?.vehicle; 
+
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error al cargar el viaje</p>;
 
@@ -133,18 +169,18 @@ export function UpdateTripForm() {
             <div className="flex items-center gap-2">
               <div className="w-12 h-12 relative shrink-0">
                 <Image
-                  src={`${R2_PUBLIC_PREFIX}/${(trip?.vehicle.vehicleTypeName ?? 'auto').toLowerCase()}.png`}
-                  alt={`Imagen Tipo Vehiculo ${(trip?.vehicle.vehicleTypeName ?? 'auto').toLowerCase()}`}
+                  src={`${R2_PUBLIC_PREFIX}/${(currentVehicle?.vehicleTypeName ?? 'auto').toLowerCase()}.png`}
+                  alt={`Imagen Tipo Vehiculo ${(currentVehicle?.vehicleTypeName ?? 'auto').toLowerCase()}`}
                   fill
                   style={{ objectFit: 'contain' }}
                 />
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold">
-                  {trip?.vehicle.brand} {trip?.vehicle.model}
+                  {currentVehicle?.brand} {currentVehicle?.model}
                 </span>
                 <span className="font-inter text-sm">
-                  {formatDomain(trip?.vehicle.domain ?? "")}
+                  {formatDomain(currentVehicle?.domain ?? "")}
                 </span>
               </div>
               
@@ -343,44 +379,38 @@ export function UpdateTripForm() {
               )}
             </div>
           </div>
-          <div className="">
-            
-            <button
-              type="button"
-              onClick={handleBaggageOptions}
-              className="flex items-center justify-between w-full mb-1"
-            >
-              <span className="text-sm font-medium font-inter">Equipaje</span>
-              {isBaggageOpen ?
-                <Minus size={14}/>
-              :
-                <Equal size={15}/>
-              }
-            </button>
-            
-            
-            {isBaggageOpen && 
-              <div className="flex items-center justify-around p-2 bg-gray-7 rounded-lg">
-                {baggageOptions.map(({ type, icon: Icon, value}) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setValue("availableBaggage", value)}
-                    className={`cursor-pointer flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-2xl  transition ${
-                      availableBaggage === value
-                        ? "bg-gray-6 text-gray-2 border border-gray-4"
-                        : "text-dark-3 dark:text-gray-1"
-                    }`}
-                  >
-                    <Icon className="w-8 h-8" />
-                    <span className="font-medium font-inter text-xs">{type}</span>
-                  </button>
-                ))}
-              </div>
-            }
-            
+          <div className="flex flex-col gap-1">   
+            <label className="text-sm font-medium font-inter">Equipaje</label>
+            <div className="flex items-center justify-around p-2 bg-gray-7 rounded-lg">
+              {baggageOptions.map(({ type, icon: Icon, value}) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setValue("availableBaggage", value)}
+                  className={`cursor-pointer flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-2xl  transition ${
+                    availableBaggage === value
+                      ? "bg-gray-6 text-gray-2 border border-gray-4"
+                      : "text-dark-3 dark:text-gray-1"
+                  }`}
+                >
+                  <Icon className="w-8 h-8" />
+                  <span className="font-medium font-inter text-xs">{type}</span>
+                </button>
+              ))}
+            </div>
             
           </div>
+          <div className="flex justify-center my-4">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => setStep(3)}
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Siguiente
+            </Button>
+          </div>
+          
         </div>
       }
 
@@ -396,7 +426,7 @@ export function UpdateTripForm() {
             {/* {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>} */}
 
             <VehicleSelector
-              selectedVehicle={selectedVehicle}
+              selectedVehicleId={selectedVehicleId}
               onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
             />
           </div>
@@ -428,9 +458,7 @@ export function UpdateTripForm() {
               destination={destination?.cityId}
               onBack={() => setStep(0)}
               onNext={() => {
-                trigger().then((valid) => {
-                  if (valid) setStep(0);
-                });
+                setStep(0)
               }}
             />
             {errors.tripStops && (
@@ -444,6 +472,41 @@ export function UpdateTripForm() {
       )}
 
       {step === 3 && (
+        <div className="flex flex-col justify-between h-full items-center">
+          <div className="flex flex-col gap-4 w-full max-w-md mx-auto mt-8">
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              ¿Deseas confirmar el recorrido?
+            </h2>
+            <div className='items-center w-full bg-gray-6 dark:bg-gray-8 py-4 px-6 rounded-lg'>
+              <TripRoutePreview
+                tripStops={buildTripRoute()}
+              />
+            </div>
+            
+          </div>
+
+          <div className="flex justify-center gap-7.5 mt-8">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setStep(0)}
+              className='px-15 py-2 text-sm font-inter font-medium'
+            >
+              Atrás
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => setStep(4)}
+              className='px-12 py-2 text-sm font-inter font-medium'
+            >
+              Siguiente
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && (
         <div className='flex flex-col justify-between mb-8 '>
           <TripDetail
             origin={origin?.cityName ?? "Origen"}
@@ -451,8 +514,8 @@ export function UpdateTripForm() {
             startDateTime={watch("startDateTime")}
             availableSeat={watch("availableSeat")}
             availableBaggage={watch("availableBaggage") || ""}
-            seatPrice={priceSummary!.publishedSeatPrice}
-            vehicle={selectedVehicle!}
+            //seatPrice={priceSummary!.publishedSeatPrice}
+            vehicle={currentVehicle!}
             onBack={() => setStep(5)}
           />
           <div className="flex justify-center gap-7.5 my-8 mb-8">
@@ -481,6 +544,8 @@ export function UpdateTripForm() {
           </div>
         </div>
       )}
+
+    
       
     </form>
   );
