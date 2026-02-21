@@ -7,6 +7,7 @@ export const PROTECTED_PATHS = [
   '/settings',
   '/vehicle', '/vehicle/new', 
   '/trip/new','/trip/details', 
+  '/driver-review/trip/',
   '/reviews/driver',
   '/reservations',
   '/history'

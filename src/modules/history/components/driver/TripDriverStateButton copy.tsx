@@ -53,6 +53,7 @@ export const tripButtonConfig: Record<TripState, TripButtonConfig> = {
     label: "Agendar",
     Icon: CalendarSync,
     onClick: async (tripId: string) => {
+      console.log(tripId)
       return { ok: true };
     },
   },

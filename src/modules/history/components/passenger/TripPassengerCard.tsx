@@ -1,122 +1,44 @@
-import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Toast } from "@/components/ux/Toast";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { useTrip } from "@/contexts/tripContext";
-import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
-import { cancelTrip } from "@/services/trip/tripService";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { translateTripState } from "@/shared/utils/state";
-import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
+import { ChevronRight, Ellipsis, Loader2, LogOut, LucideEye, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { CancelReasonModal } from "../CancelReasonModal";
-import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
+import { useState } from "react";
+import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
 
-interface TripCardProps {
-  trip: TripDriverDTO;
+interface TripPassengerCardProps {
+  trip: TripHistoryUserDTO;
   onError?: (message: string) => void;
   onSuccess?: (message: string) => void;
   openMenuTripId: number | null;
   setOpenMenuTripId: (id: number | null) => void;
 }
 
-export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
-  const [state, setState] = useState('CREATED')
+export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
+
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
-  const { refetchCurrentTrip } = useTrip()
   const [loading, setLoading] = useState(false);
-  const [isReasonModalOpen, setReasonModalOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState<string | null>(null);
-  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
   
-  const isMenuOpen = openMenuTripId === trip.id;
+  const isMenuOpen = openMenuTripId === trip.tripId;
 
-  const canCancel =
-  (trip.tripState === "CREATED" || trip.tripState === "CLOSED");
+  const canReview = (trip.tripState === "FINISHED" && !trip.reviewed);
+  const canLeave = (trip.tripState === "CLOSED" || trip.tripState == 'CREATED' );
   
-  const cancelDescription = trip.hasReservations
-    ? "Este viaje tiene reservas activas. ¿Deseás continuar?"
-    : "¿Estás seguro que querés cancelar este viaje?";
-  
-  useEffect(() => {
-    setState(trip.tripState)
-  }, [trip.tripState])
 
 
-  const handleStartCancel = () => {
-    if (trip.hasReservations) {
-      setReasonModalOpen(true);
-    } else {
-      setCancelReason(null);
-      setCancelDialogOpen(true);
-    }
+
+  const handleReview = () => {
+    router.push(`/driver-review/trip/${trip.tripId}`); 
   };
 
-  const handleConfirmCancel = async () => {
-    if (loading) return;
 
-    if (trip.hasReservations) {
-      setCancelDialogOpen(false);
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await cancelTrip(trip.id, cancelReason ?? undefined);
-
-      if (response.state === "ERROR") {
-        onError?.(response.messages?.[0] ?? "Error al cancelar el viaje");
-        return;
-      }
-
-      onSuccess?.("Viaje cancelado correctamente");
-
-      if (isReasonModalOpen) {
-        setReasonModalOpen(false);  
-      }
-    } finally {
-      setLoading(false);
-      setCancelReason(null);
-    }
-  };
-
-  const handleClick = async () => {
-    if (disabled || loading) return;
-
-    setLoading(true);
-
-    try {
-      const result = await onClick(trip.id.toString());
-
-      if (!result.ok) {
-        onSuccess?.(result.message);
-        return;
-      }
-
-      switch (state) {
-        case "CLOSED":
-          await refetchCurrentTrip();
-          router.push(`/current-trip`);
-          break;
-
-        default:
-          console.warn("Estado no manejado", state);
-      }
-    } finally {
-      setLoading(false);
-    }
-    
-  };
-
-  const config =  tripButtonConfig[trip.tripState];
-
-  const { label, Icon, className, disabled, onClick} = config;
  
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
@@ -159,7 +81,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
           </div>
           <div className="flex flex-col">
             <span className="font-semibold">
-              {trip.vehicle.brand} {trip.vehicle.model}
+              {trip.vehicle.brand} {trip.vehicle.model} de {trip.driverName}
             </span>
             <span className="font-inter">
               {formatDomain(trip.vehicle.domain)}
@@ -171,7 +93,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         <div className="relative">
           <button
               onClick={() =>
-                setOpenMenuTripId(isMenuOpen ? null : trip.id)
+                setOpenMenuTripId(isMenuOpen ? null : trip.tripId)
               }            
               className={`
               p-2 rounded-full
@@ -199,31 +121,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
             "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Acción principal */}
-            <button
-              disabled={disabled || loading}
-              onClick={() => {
-                setOpenMenuTripId(null);
-                handleClick();
-              }}
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-                ${className}
-              `}
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Icon size={16} />
-              )}
-              {label}
-            </button>
+            
 
             <button
               className={`
@@ -235,22 +133,19 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
                 disabled:opacity-60 disabled:cursor-not-allowed
                 cursor-pointer
               `}
+              onClick={()=>setLoading(true)}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : (
-                <Pencil size={16} />
+                <LucideEye size={16} />
               )}
-                Editar
+                Visualizar
             </button>
-
-            {/* Cancelar */}
-            {canCancel && (
+            
+            
+            {canLeave && (
               <button
-                onClick={() => {
-                  setOpenMenuTripId(null);
-                  handleStartCancel();
-                }}
                 className="
                   w-full flex items-center gap-2
                   px-3 py-2 rounded-lg text-sm
@@ -261,8 +156,33 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
                   cursor-pointer
                 "
               >
-                <Ban size={16} />
-                Cancelar
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <LogOut size={16} />
+                )}
+                  Abandonar viaje
+              </button>
+            )}
+
+            {/* Cancelar */}
+            {canReview && (
+              <button
+                onClick={() => {
+                  handleReview();
+                }}
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+              >
+                <Star size={16} />
+                Reseñar al chofer
               </button>
             )}
           </div>
@@ -282,27 +202,6 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
           </div>
       )}
 
-      <AlertDialog
-        isOpen={isCancelDialogOpen}
-        onClose={() => setCancelDialogOpen(false)}
-        onConfirm={handleConfirmCancel}
-        type="info"
-        title="Cancelar viaje"
-        description={cancelDescription}
-        confirmText="Sí, cancelar"
-        cancelText="Volver"
-        loading={loading}
-      />
-
-      <CancelReasonModal
-        isOpen={isReasonModalOpen}
-        onClose={() => setReasonModalOpen(false)}
-        loading={loading}
-        onConfirm={(reason) => {
-          setCancelReason(reason);
-          setCancelDialogOpen(true);  
-        }}
-      />
     </div>
 
   );
