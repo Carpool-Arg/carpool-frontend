@@ -22,22 +22,28 @@ import { useAuth } from "@/contexts/authContext";
 import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
 import { TripDetail } from "../../new-trip/TripDetail";
 import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
-import { baggageOptions } from "../../new-trip/TripFrom";
+import { baggageOptions } from "../../new-trip/TripForm";
 import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
 import { TripRoutePreview } from "../../new-trip/TripRoutePreview";
-
-
+import { calculatePriceTrip, updateTrip, validateTripDateTime } from "@/services/trip/tripService";
+import { AlertDialog } from "@/components/ux/AlertDialog";
+import { TripPriceSummary } from "../../new-trip/TripPriceSummary";
+import { commissionRate } from "@/constants/trip/trip";
+import UpdateTripFormSkeleton from "./UpdateTripSkeleton";
 
 export function UpdateTripForm() {
   const { id } = useParams();
-  const { trip, loading, error } = useTripDetails(Number(id));
+  const { trip, loading } = useTripDetails(Number(id));
   const { vehicles } = useUserVehicles();
-
   const {user} = useAuth()
   const router = useRouter()
-  const [step, setStep] = useState<number>(0);
 
-  const [tripStops, setTripStops] = useState<TripStop[]>([])
+  const [step, setStep] = useState<number>(0);
+  const [error, setError] = useState<string>();
+  const [tripStops, setTripStops] = useState<TripStop[]>([]);
+  
+  //Errores
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
@@ -45,6 +51,11 @@ export function UpdateTripForm() {
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   
   const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
+
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
+  const [priceCalculationError, setPriceCalculationError] = useState<string | null>(null);
+  
+   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const selectedBaggage = baggageOptions.find(
     option => option.value === trip?.availableBaggage
@@ -68,9 +79,6 @@ export function UpdateTripForm() {
     observation: ""
   })
 
-  const [tripVehicle, setTripVehicle]= useState<Vehicle>()
-
-
   const [submitting, setSubmitting] = useState(false);
 
   const { handleSubmit, register, watch, setValue, trigger,reset, formState: { errors , isValid},  }  = useForm<TripFormData>({
@@ -89,19 +97,106 @@ export function UpdateTripForm() {
     }
   })
 
+  const startDateTime = watch('startDateTime');
   const selectedVehicleId = watch('idVehicle');
+  const seatPrice = watch("seatPrice");
+  const availableSeat = watch("availableSeat");
+
+  
+
+  const currentVehicle =
+    vehicles.find(v => v.id === selectedVehicleId) ??
+    trip?.vehicle; 
+  
+  //const exceedsVehicleSeats = !!currentVehicle && availableSeat >= currentVehicle.availableSeats;
+
+  /*
+  useEffect(() => {
+    if (!startDateTime || !selectedVehicleId) {
+      setDateError(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const response = await validateTripDateTime(startDateTime);
+        if (response.state === 'ERROR') {
+          setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
+        } else {
+          setDateError(null);
+        }
+      } catch (error) {
+        setDateError('Error validando la fecha y hora');
+        console.error(error);
+      }
+    }, 500); // delay para no spamear el endpoint al tipear rápido
+
+    return () => clearTimeout(timeoutId);
+  }, [startDateTime, selectedVehicleId]);
+  */
+
+  useEffect(() => {
+    // condiciones mínimas para calcular
+    if (!seatPrice || seatPrice <= 0 || !availableSeat || availableSeat <= 0) {
+      setPriceSummary(null);
+      return;
+    }
+
+    // si hay errores en el formulario, no calculamos
+    if (errors.seatPrice || errors.availableSeat /*|| exceedsVehicleSeats*/ ) {
+      setPriceSummary(null);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        setCalculatingPrice(true);
+
+        await delay(300);
+
+        const response = await calculatePriceTrip(seatPrice,availableSeat);
+
+        if (response.state === "OK") {
+          setPriceSummary(response.data);
+          setPriceCalculationError(null);
+        } else {
+          setPriceSummary(null);
+        }
+      } catch (error) {
+        console.error(error);
+        setPriceSummary(null);
+        setPriceCalculationError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo calcular el precio del viaje"
+        );
+      } finally {
+        setCalculatingPrice(false);
+      }
+    }, 500);// delay para no spamear el endpoint al tipear rápido
+
+    return () => clearTimeout(timeoutId);
+  }, [seatPrice, availableSeat, errors.seatPrice, errors.availableSeat]);
 
   useEffect(() => {
     if (!trip) return;
-    setOrigin(trip.tripStops[0])
-    setDestination(trip.tripStops.find(stop=> stop.destination)!)
+    const originStop = trip.tripStops.find(stop => stop.start);
+    const destinationStop = trip.tripStops.find(stop => stop.destination);
+
+    setOrigin(originStop!);
+    setDestination(destinationStop!);
+
     reset({
       startDateTime: trip.startDateTime.slice(0, 16),
-      seatPrice: trip.seatPrice,
+      seatPrice: Number((trip.seatPrice * (1 - commissionRate)).toFixed(2)),
       availableSeat: trip.availableSeat,
       tripStops: trip.tripStops,
       availableBaggage: trip.availableBaggage,
-      idVehicle: trip.vehicle.id
+      idVehicle: trip.vehicle.id,
+      originId: originStop?.cityId ?? 0,
+      originObservation: originStop?.observation ?? '',
+      destinationId: destinationStop?.cityId ?? 0,
+      destinationObservation: destinationStop?.observation ?? '',
     })
   }, [trip]);
 
@@ -123,7 +218,7 @@ export function UpdateTripForm() {
         order: 1,
         observation: origin.observation
       },
-      ...tripStops.map((stop, index) => ({
+      ...(intermediateStops || []).map((stop, index) => ({
         ...stop,
         start: false,
         destination: false,
@@ -150,19 +245,77 @@ export function UpdateTripForm() {
     setTripStops(formattedStops);
   };
 
-  const handleBaggageOptions = () => {
-    setIsBaggageOpen(!isBaggageOpen)
-  }
+  const handleConfirmPublish = () => {
+    handleSubmit(
+      (data) => {
+        onSubmit(data);
+      },
+    )();
+  };
 
-  const currentVehicle =
-    vehicles.find(v => v.id === selectedVehicleId) ??
-    trip?.vehicle; 
+  const onSubmit = async (data: TripFormData) => {
+    if (!origin || !destination) {
+      setError("Debes seleccionar origen y destino");
+      return;
+    }
+    setIsProcessing(true);
 
-  if (loading) return <p>Cargando...</p>;
+    const tripStopsPayload = [
+      {
+        cityId: data.originId,
+        start: true,
+        destination: false,
+        order: 1,
+        observation: data.originObservation
+      },
+      ...((intermediateStops || []).map((stop, index) => ({
+        ...stop,
+        order: index + 2, // empezamos en 2 para que no choque con origen
+        start: false,
+        destination: false,
+      }))),
+      {
+        cityId: data.destinationId,
+        start: false,
+        destination: true,
+        order: (data.tripStops?.length || 0) + 2,
+        observation: data.destinationObservation
+      }
+    ];
+
+    const payload = {
+      idTrip: id,
+      idVehicle: data.idVehicle,
+      startDateTime: data.startDateTime,
+      availableSeat: data.availableSeat,
+      seatPrice: data.seatPrice,
+      availableBaggage: data.availableBaggage,
+      tripStops: tripStopsPayload
+    };
+
+    try {
+      const response = await updateTrip(payload);
+
+      if (response.state === "ERROR") {
+        setError(response.messages?.[0] || "Error al guardar el viaje");
+        return;
+      }
+      setIsProcessing(false);
+      setIsSuccessDialogOpen(true);
+    } catch (error) {
+      setError("Error al crear el viaje");
+      console.error(error)
+    }
+  };
+
+  
+
+  if (loading) return <UpdateTripFormSkeleton/>;
   if (error) return <p>Error al cargar el viaje</p>;
 
   return (
-    <form className="w-full md:mt-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
+      {error && <p className="text-red-500">{error}</p>}
       {step === 0 &&
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">
@@ -290,13 +443,43 @@ export function UpdateTripForm() {
             <button 
               type="button"
               className="
+                group
                 flex items-center gap-1 text-sm 
-                px-3 py-1.5 bg-gray-7 rounded-lg font-light"
-              onClick={()=>setStep(2)}
+                px-4 py-1.5 
+                bg-gray-7 hover:bg-gray-2
+                rounded-lg font-light
+                transition-colors duration-200 cursor-pointer
+              "
+              onClick={() => setStep(2)}
             >
               Modificar paradas intermedias
-              <ChevronRight size={16}/>
+
+              <ChevronRight 
+                size={16}
+                className="transition-transform duration-200 group-hover:translate-x-2"
+              />
             </button>
+          </div>
+
+          <div className="flex flex-col gap-1">   
+            <label className="text-sm font-medium font-inter">Equipaje</label>
+            <div className="flex items-center justify-around p-2 bg-gray-7 rounded-lg">
+              {baggageOptions.map(({ type, icon: Icon, value}) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setValue("availableBaggage", value)}
+                  className={`cursor-pointer flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-2xl  transition ${
+                    availableBaggage === value
+                      ? "bg-gray-6 text-gray-2 border border-gray-4"
+                      : "text-dark-3 dark:text-gray-1"
+                  }`}
+                >
+                  <Icon className="w-8 h-8" />
+                  <span className="font-medium font-inter text-xs">{type}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -359,16 +542,20 @@ export function UpdateTripForm() {
 
               <input
                 type="text"
-                inputMode="numeric"
+                inputMode="decimal"
                 {...register("seatPrice", {
                   setValueAs: (value) => {
-                    const cleaned = String(value).replace(/\D+/g, "");
+                    const cleaned = String(value)
+                      .replace(/[^0-9.]/g, "")      // permite números y punto
+                      .replace(/(\..*?)\..*/g, "$1"); // solo un punto decimal
                     return cleaned ? Number(cleaned) : undefined;
                   },
                 })}
                 onInput={(e) => {
                   const el = e.target as HTMLInputElement;
-                  el.value = el.value.replace(/\D+/g, "");
+                  el.value = el.value
+                    .replace(/[^0-9.]/g, "")
+                    .replace(/(\..*?)\..*/g, "$1");
                 }}
                 className="w-full pl-10 pr-3 py-2 rounded border"
                 placeholder="Ej. 1000"
@@ -378,28 +565,25 @@ export function UpdateTripForm() {
                 <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
               )}
             </div>
-          </div>
-          <div className="flex flex-col gap-1">   
-            <label className="text-sm font-medium font-inter">Equipaje</label>
-            <div className="flex items-center justify-around p-2 bg-gray-7 rounded-lg">
-              {baggageOptions.map(({ type, icon: Icon, value}) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setValue("availableBaggage", value)}
-                  className={`cursor-pointer flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-2xl  transition ${
-                    availableBaggage === value
-                      ? "bg-gray-6 text-gray-2 border border-gray-4"
-                      : "text-dark-3 dark:text-gray-1"
-                  }`}
-                >
-                  <Icon className="w-8 h-8" />
-                  <span className="font-medium font-inter text-xs">{type}</span>
-                </button>
-              ))}
+            <div className="col-span-1 md:col-span-2">
+              {(priceSummary || calculatingPrice) && (
+                <TripPriceSummary
+                  seatPrice={seatPrice ?? 0}
+                  publishedSeatPrice={priceSummary?.publishedSeatPrice ?? 0}
+                  driverPriceDiscount={priceSummary?.driverPriceDiscount ?? 0}
+                  netEarningsPerSeat={priceSummary?.netEarningsPerSeat ?? 0}
+                  loading={calculatingPrice}
+                />
+              )}
+
+              {priceCalculationError && !calculatingPrice && (
+                <p className="text-sm text-red-500 mt-2">
+                  {priceCalculationError}
+                </p>
+              )}
             </div>
-            
           </div>
+          
           <div className="flex justify-center my-4">
             <Button
               type="button"
@@ -418,8 +602,7 @@ export function UpdateTripForm() {
         <div className='flex flex-col justify-between h-full'>
           <div>
             <div className='text-center mb-4'>
-              <h2 className="text-2xl"><span className='font-semibold'>{user?.name}</span>, ¿con qué vehículo 
-                deseas viajar hoy? 
+              <h2 className="text-2xl"><span className='font-semibold'>{user?.name}</span>, ¿Deseas cambiar el vehículo del viaje? 
               </h2>
             </div>
 
@@ -514,7 +697,7 @@ export function UpdateTripForm() {
             startDateTime={watch("startDateTime")}
             availableSeat={watch("availableSeat")}
             availableBaggage={watch("availableBaggage") || ""}
-            //seatPrice={priceSummary!.publishedSeatPrice}
+            seatPrice={priceSummary!.publishedSeatPrice}
             vehicle={currentVehicle!}
             onBack={() => setStep(5)}
           />
@@ -545,8 +728,17 @@ export function UpdateTripForm() {
         </div>
       )}
 
-    
-      
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleConfirmPublish} 
+        type="info"
+        title="¿Deseas Editar el viaje?"
+        description="Una vez editado, otros usuarios podrán ver y solicitar unirse a este viaje."
+        confirmText="Editar"
+        cancelText="Cancelar"
+      />
+
     </form>
   );
 }

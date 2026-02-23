@@ -26,7 +26,6 @@ export async function getTrips(filters: TripFilters): Promise<SearchTripResponse
   } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
-
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
@@ -248,6 +247,30 @@ export const startTrip = async (idTrip:string) => {
     
     return response;
   }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function updateTrip(data: Trip): Promise<VoidResponse> {
+  console.log(data,'data service')
+  try {
+    const res = await fetch('/api/trip',{
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data)
+    })
+
+    const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
