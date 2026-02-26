@@ -1,10 +1,11 @@
 import { capitalizeWords } from "@/shared/utils/string";
-import { Circle, Plus, Square, UsersRound } from "lucide-react";
+import { ChevronRight, Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { Vehicle } from "@/models/vehicle";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { baggageOptions } from "./TripForm";
 import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
+import { TripStop } from "@/models/tripStop";
 
 
 interface TripDetailProps {
@@ -16,6 +17,7 @@ interface TripDetailProps {
   seatPrice?: number;
   vehicle: Vehicle | VehicleResponseTripDTO;
   onBack: () => void;
+  hasTripstops: boolean
 }
 
 export function TripDetail({
@@ -26,7 +28,8 @@ export function TripDetail({
   availableBaggage,
   seatPrice,
   vehicle,
-  onBack
+  onBack,
+  hasTripstops
 }: TripDetailProps) {
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === availableBaggage
@@ -63,8 +66,23 @@ export function TripDetail({
         </div>
         <div>
           <button onClick={onBack} className="cursor-pointer text-white text-sm flex items-center gap-1 border rounded-lg py-1.5 px-2 border-gray-5 dark:border-gray-2 dark:hover:bg-gray-8">
-            <Plus size={14}/>
-            Añadir localidad intermedia
+            {hasTripstops ?
+                <div className="flex items-center gap-1">
+                  Modificar paradas intermedias
+                  <ChevronRight
+                    size={14}
+                    
+                  />
+                </div>
+              :
+                <div className="flex items-center gap-1">
+                  <Plus 
+                    size={14}
+                    
+                  />
+                  <span>Agregar paradas intermedias</span>
+                </div>
+              }
           </button>
         </div>
         

@@ -5,4 +5,5 @@ export interface VehicleResponseTripDTO{
     brand: string;
     model: string;
     color: string;   
+    availableSeats: number;
 }

@@ -41,7 +41,7 @@ export function UpdateTripForm() {
   const [step, setStep] = useState<number>(0);
   const [error, setError] = useState<string>();
   const [tripStops, setTripStops] = useState<TripStop[]>([]);
-  
+
   //Errores
   const [dateError, setDateError] = useState<string | null>(null);
 
@@ -55,11 +55,9 @@ export function UpdateTripForm() {
   const [calculatingPrice, setCalculatingPrice] = useState(false);
   const [priceCalculationError, setPriceCalculationError] = useState<string | null>(null);
   
-   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const selectedBaggage = baggageOptions.find(
-    option => option.value === trip?.availableBaggage
-  );
+  const hasTripstops = tripStops?.length > 0;
 
   const [origin, setOrigin] = useState<TripStop>({
     cityId: 0,
@@ -102,17 +100,15 @@ export function UpdateTripForm() {
   const seatPrice = watch("seatPrice");
   const availableSeat = watch("availableSeat");
 
-  
-
   const currentVehicle =
     vehicles.find(v => v.id === selectedVehicleId) ??
     trip?.vehicle; 
   
-  //const exceedsVehicleSeats = !!currentVehicle && availableSeat >= currentVehicle.availableSeats;
+  const exceedsVehicleSeats = !!currentVehicle && availableSeat >= currentVehicle.availableSeats;
 
-  /*
+  
   useEffect(() => {
-    if (!startDateTime || !selectedVehicleId) {
+    if (!startDateTime || !selectedVehicleId || startDateTime===trip?.startDateTime) {
       setDateError(null);
       return;
     }
@@ -133,7 +129,7 @@ export function UpdateTripForm() {
 
     return () => clearTimeout(timeoutId);
   }, [startDateTime, selectedVehicleId]);
-  */
+  
 
   useEffect(() => {
     // condiciones mínimas para calcular
@@ -143,7 +139,7 @@ export function UpdateTripForm() {
     }
 
     // si hay errores en el formulario, no calculamos
-    if (errors.seatPrice || errors.availableSeat /*|| exceedsVehicleSeats*/ ) {
+    if (errors.seatPrice || errors.availableSeat || exceedsVehicleSeats ) {
       setPriceSummary(null);
       return;
     }
@@ -186,9 +182,15 @@ export function UpdateTripForm() {
     setOrigin(originStop!);
     setDestination(destinationStop!);
 
+    const intermediateStops = trip?.tripStops.filter(
+      stop => !stop.start && !stop.destination
+    );
+
+    setTripStops(intermediateStops)
+
     reset({
       startDateTime: trip.startDateTime.slice(0, 16),
-      seatPrice: Number((trip.seatPrice * (1 - commissionRate)).toFixed(2)),
+      seatPrice: trip.originalSeatPrice,
       availableSeat: trip.availableSeat,
       tripStops: trip.tripStops,
       availableBaggage: trip.availableBaggage,
@@ -202,9 +204,6 @@ export function UpdateTripForm() {
 
   const availableBaggage = watch('availableBaggage');
 
-  const intermediateStops = trip?.tripStops.filter(
-    stop => !stop.start && !stop.destination
-  );
 
   const buildTripRoute = (): TripStop[] => {
     if (!origin || !destination) return [];
@@ -218,7 +217,7 @@ export function UpdateTripForm() {
         order: 1,
         observation: origin.observation
       },
-      ...(intermediateStops || []).map((stop, index) => ({
+      ...(tripStops || []).map((stop, index) => ({
         ...stop,
         start: false,
         destination: false,
@@ -251,6 +250,7 @@ export function UpdateTripForm() {
         onSubmit(data);
       },
     )();
+    setIsSuccessDialogOpen(true)
   };
 
   const onSubmit = async (data: TripFormData) => {
@@ -268,7 +268,7 @@ export function UpdateTripForm() {
         order: 1,
         observation: data.originObservation
       },
-      ...((intermediateStops || []).map((stop, index) => ({
+      ...((tripStops || []).map((stop, index) => ({
         ...stop,
         order: index + 2, // empezamos en 2 para que no choque con origen
         start: false,
@@ -315,7 +315,6 @@ export function UpdateTripForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
-      {error && <p className="text-red-500">{error}</p>}
       {step === 0 &&
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">
@@ -340,10 +339,10 @@ export function UpdateTripForm() {
             </div>
             <button 
               type="button"
-              className="bg-gray-2 p-2 rounded-full"
+              className="group bg-gray-2 p-2 rounded-full cursor-pointer hover:bg-gray-9/45"
               onClick={() => setStep(1)}
             >      
-              <Repeat/>
+              <Repeat className="transition-transform duration-300 group-hover:rotate-180" />
             </button>
           </div>
           <div className="">
@@ -444,7 +443,7 @@ export function UpdateTripForm() {
               type="button"
               className="
                 group
-                flex items-center gap-1 text-sm 
+                 text-sm 
                 px-4 py-1.5 
                 bg-gray-7 hover:bg-gray-2
                 rounded-lg font-light
@@ -452,12 +451,26 @@ export function UpdateTripForm() {
               "
               onClick={() => setStep(2)}
             >
-              Modificar paradas intermedias
-
-              <ChevronRight 
-                size={16}
-                className="transition-transform duration-200 group-hover:translate-x-2"
-              />
+              {(tripStops?.length ?? 0) > 0 ?
+                <div className="flex items-center gap-1">
+                  Modificar paradas intermedias
+                  <ChevronRight 
+                    size={16}
+                    className="transition-transform duration-200 group-hover:translate-x-2"
+                  />
+                </div>
+              :
+                
+                <div className="flex items-center gap-1">
+                  <Plus 
+                    size={16}
+                  />
+                  <span className="transition-transform duration-200 group-hover:translate-x-2">Agregar paradas intermedias</span>
+                  
+                </div>
+                
+              }
+             
             </button>
           </div>
 
@@ -500,7 +513,7 @@ export function UpdateTripForm() {
             {/* Asientos disponibles */}
             <div>
               <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
-                Asientos disponibles
+                Asientos
                 <InfoTooltip text="Cantidad de asientos disponibles para pasajeros"></InfoTooltip>
               </label>
 
@@ -565,7 +578,7 @@ export function UpdateTripForm() {
                 <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
               )}
             </div>
-            <div className="col-span-1 md:col-span-2">
+            <div className="col-span-2">
               {(priceSummary || calculatingPrice) && (
                 <TripPriceSummary
                   seatPrice={seatPrice ?? 0}
@@ -590,6 +603,7 @@ export function UpdateTripForm() {
               variant="primary"
               onClick={() => setStep(3)}
               className='px-12 py-2 text-sm font-inter font-medium'
+              disabled={!isValid || !!priceCalculationError || calculatingPrice}
             >
               Siguiente
             </Button>
@@ -620,7 +634,7 @@ export function UpdateTripForm() {
               variant="primary"
               onClick={() => setStep(0)}
               disabled={!selectedVehicleId}
-              className='px-12 py-2 text-sm font-inter font-medium'
+              className='px-12 py-2 text-sm font-inter font-medium '
             >
               Siguiente
             </Button>
@@ -632,7 +646,7 @@ export function UpdateTripForm() {
         <div className="flex flex-col h-screen md:pb-8 justify-between">
           <div className="flex-1">
             <TripStopForm
-              initialStops={intermediateStops}
+              initialStops={tripStops}
               onSubmitTripStops={(stops) => {
                 setValue("tripStops", stops, { shouldValidate: true });
                 handleTripStopsSubmit(stops); 
@@ -694,18 +708,19 @@ export function UpdateTripForm() {
           <TripDetail
             origin={origin?.cityName ?? "Origen"}
             destination={destination.cityName ?? "Destino"}
+            hasTripstops={hasTripstops}
             startDateTime={watch("startDateTime")}
             availableSeat={watch("availableSeat")}
             availableBaggage={watch("availableBaggage") || ""}
             seatPrice={priceSummary!.publishedSeatPrice}
             vehicle={currentVehicle!}
-            onBack={() => setStep(5)}
+            onBack={() => setStep(2)}
           />
           <div className="flex justify-center gap-7.5 my-8 mb-8">
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => router.push('/trip/new')}
+              onClick={() => router.push('/history?role=driver')}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
               Cancelar
@@ -721,7 +736,7 @@ export function UpdateTripForm() {
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
                 </div>
               ) : (
-                <span>Publicar</span>
+                <span>Guardar</span>
               )}
             </Button>
           </div>
@@ -735,8 +750,27 @@ export function UpdateTripForm() {
         type="info"
         title="¿Deseas Editar el viaje?"
         description="Una vez editado, otros usuarios podrán ver y solicitar unirse a este viaje."
-        confirmText="Editar"
+        confirmText="Guardar cambios"
         cancelText="Cancelar"
+      />
+      <AlertDialog
+        isOpen={isSuccessDialogOpen}
+        onClose={() => setIsSuccessDialogOpen(false)}
+        secondaryButton={{
+          text: "Inicio",
+          onClick: () => {
+            setIsSuccessDialogOpen(false)
+            router.push('/home') //deberia llevar a los detalles del viaje
+          }
+        }}
+        onConfirm={() => {
+          router.push("/history?role=driver");
+        }}
+        type="success"
+        title="¡Listo! Tu viaje ha sido editado"
+        description="Podrás ver y gestionar tus viajes en la sección 'Mis Viajes'."
+        confirmText="Mis viajes"
+        cancelText="Inicio"
       />
 
     </form>

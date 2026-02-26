@@ -39,7 +39,7 @@ export const baggageOptions: BaggageOption[] = [
   { value: "LIVIANO", type: "Liviano", icon: BsBackpack },
   { value: "MEDIANO", type: "Mediano", icon: BiBriefcaseAlt },
   { value: "PESADO", type: "Pesado", icon: BsSuitcase },
-  { value: "NO_EQUIPAJE", type: "Sin", icon: CircleX },
+  { value: "NO_EQUIPAJE", type: "", icon: CircleX },
 ];
 
 
@@ -105,6 +105,8 @@ export function TripForm() {
   const availableSeat = watch("availableSeat");
 
   const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
+
+  const hasTripstops = tripStops?.length > 0
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -780,6 +782,7 @@ export function TripForm() {
             <TripDetail
               origin={origin?.cityName ?? "Origen"}
               destination={destination.cityName ?? "Destino"}
+              hasTripstops={hasTripstops}
               startDateTime={watch("startDateTime")}
               availableSeat={watch("availableSeat")}
               availableBaggage={watch("availableBaggage") || ""}
