@@ -117,7 +117,6 @@ export async function PUT(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
     const body = await req.json();
-    console.log('body',body)
 
     const res = await fetch(`${apiUrl}/trip`, {
       method: "PUT",

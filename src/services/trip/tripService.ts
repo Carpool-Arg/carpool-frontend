@@ -254,7 +254,6 @@ export const startTrip = async (idTrip:string) => {
 }
 
 export async function updateTrip(data: Trip): Promise<VoidResponse> {
-  console.log(data,'data service')
   try {
     const res = await fetch('/api/trip',{
       method: 'PUT',
