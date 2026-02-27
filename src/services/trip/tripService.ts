@@ -5,6 +5,7 @@ import { CurrentTripResponseDTO } from "@/modules/current-trip/types/dto/current
 import { TripPriceCalculationResponseDTO, TripResponseDTO, VerifyCreatorResponse } from "@/modules/trip/types/dto/tripResponseDTO";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
+import { TripHistoryUserResponse } from "@/modules/history/types/dto/TripHistoryUserResponseDTO";
 
 
 export async function getTrips(filters: TripFilters): Promise<SearchTripResponse> {
@@ -188,6 +189,39 @@ export const getMyTrips = async (states?: string[]) => {
   }
 }
 
+export const getHistoryTripUser = async ( skip:number,states?: string[]) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (skip !== undefined) {
+      params.append("skip", skip.toString());
+    }
+
+    if (states?.length) {
+      params.append("states", states.join(","));
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+
+    const res = await fetchWithRefresh(`/api/trip/history-trip-user${query}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+    
+    const response: TripHistoryUserResponse = await res.json();
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    
+    return response;
+  }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
 export const calculatePriceTrip = async(seatPrice: number, availableCurrentSeats: number): Promise<TripPriceCalculationResponseDTO> =>{
   try {
     const res = await fetchWithRefresh(`/api/trip/calculate-price-trip?seatPrice=${seatPrice}&availableCurrentSeats=${availableCurrentSeats}`,{
@@ -237,6 +271,28 @@ export const startTrip = async (idTrip:string) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idTrip }),
+      credentials: 'include'
+    })
+
+    const response: VoidResponse = await res.json();
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    
+    return response;
+  }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export const cancelTrip = async (idTrip:number, reason: string | undefined) => {
+  try {
+    const res = await fetchWithRefresh('/api/trip/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idTrip, reason }),
       credentials: 'include'
     })
 

@@ -5,6 +5,7 @@ export enum NotificationType {
 
 export interface PaymentPendingData {
   total: number;
+  tripId: number;
 }
 
 export interface NotificationPayload {
