@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import MyTrip from "./MyTrip";
 import { TripDriverDTO } from "../types/tripDriver";
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 
 interface MyTripListProps{
     myTrips: TripDriverDTO[] | [];
@@ -47,17 +48,12 @@ export default function MyTripsList({myTrips}: MyTripListProps) {
 
     if (myTrips.length === 0) {
         return (
-            <div className="flex items-center justify-center p-4 gap-4 ">
-                <div className="bg-dark-1 rounded-lg p-3">
-                    <MapPinOff size={32} />
-                </div>
-                <div className="border border-gray-6 h-12"></div>
-                <div>
-                    <p className="text-lg font-medium leading-tight">No tienes viajes programados.</p>
-                </div>
-            </div>
+            <EmptyAlert
+              icon={<MapPinOff size={32} />}
+              title="No tienes viajes programados"
+            />
         );
-    }
+      }
 
     const visibleTrips = myTrips.slice(0, visibleCount);
 

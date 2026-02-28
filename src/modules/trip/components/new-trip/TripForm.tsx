@@ -852,7 +852,7 @@ export function TripForm() {
             }
           }}
           onConfirm={() => {
-            router.push("/history?role=driver");
+            router.push("/trips?role=driver");
           }}
           type="success"
           title="¡Listo! Tu viaje ha sido publicado"

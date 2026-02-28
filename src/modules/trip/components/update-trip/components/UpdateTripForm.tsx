@@ -720,7 +720,7 @@ export function UpdateTripForm() {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => router.push('/history?role=driver')}
+              onClick={() => router.push('/trips?role=driver')}
               className='px-12 py-2 text-sm font-inter font-medium'
             >
               Cancelar
@@ -764,7 +764,7 @@ export function UpdateTripForm() {
           }
         }}
         onConfirm={() => {
-          router.push("/history?role=driver");
+          router.push("/trips?role=driver");
         }}
         type="success"
         title="¡Listo! Tu viaje ha sido editado"

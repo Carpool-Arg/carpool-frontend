@@ -8,7 +8,7 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { translateTripState } from "@/shared/utils/state";
-import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
+import { Ban, ChevronRight, Ellipsis, EllipsisVertical, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -100,6 +100,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         return;
       }
 
+
       switch (state) {
         case "CLOSED":
           await refetchCurrentTrip();
@@ -144,10 +145,8 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
           <span>{formatDateTime(startDate?.toISOString())}</span>
         </div>
         <div className="inline-flex gap-2 items-center text-xs text-gray-6 mb-2 bg-gray-7 px-3 py-1 rounded-xl font-inter">
-          <span>{translateTripState(trip.tripState)}</span>
           <span className="bg-white h-1.5 w-1.5 rounded-full"></span>
           <span>{tripStateMap[trip.tripState]}</span>
-          
         </div>
       </div>
       
@@ -175,13 +174,13 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
         <div className="relative">
           <button
-              onClick={() =>
-                setOpenMenuTripId(isMenuOpen ? null : trip.id)
-              }            
-              className={`
+            onClick={() =>
+              setOpenMenuTripId(isMenuOpen ? null : trip.id)
+            }
+            className={`
               p-2 rounded-full
               text-sm font-medium
-              transition-all duration-200
+              transition-all duration-300 ease-in-out
               ${isMenuOpen
                 ? "bg-white text-black"
                 : "bg-gray-7 text-gray-6 hover:bg-gray-6 hover:text-gray-8"
@@ -189,14 +188,20 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               cursor-pointer
             `}
           >
-            <Ellipsis size={16} />
+            <Ellipsis
+              size={16}
+              className={`
+                transition-all duration-300 ease-in-out
+                ${isMenuOpen ? "scale-130" : "scale-100"}
+              `}
+            />
           </button>
 
         {isMenuOpen && (
           <div
             className="
               absolute right-0 mt-2 w-56
-              bg-[#1a1a1a] border border-gray-700
+              bg-dark-2 border border-gray-2
               rounded-xl shadow-lg
               p-2
               z-50
@@ -240,6 +245,10 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
                 disabled:opacity-60 disabled:cursor-not-allowed
                 cursor-pointer
               `}
+              onClick={() => {
+                setOpenMenuTripId(null);
+                handleClick();
+              }}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
