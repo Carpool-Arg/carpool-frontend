@@ -23,7 +23,7 @@ export const HEADER_PATHS = [
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
-  '/trips': 'Historial de viajes',
+  '/trips': 'Viajes',
   '/trip/edit': 'Editar viaje',
   '/trip/new': 'Publicar viaje',
   '/trip/details': 'Detalles del viaje',

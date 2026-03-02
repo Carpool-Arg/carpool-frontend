@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 import { tripStateMap } from "@/shared/utils/trip";
+import { hasMinimumHoursRemaining } from "@/shared/utils/date";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -44,6 +45,9 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   const cancelDescription = trip.hasReservations
     ? "Este viaje tiene reservas activas. ¿Deseás continuar?"
     : "¿Estás seguro que querés cancelar este viaje?";
+
+
+  const canEdit = hasMinimumHoursRemaining(trip.startDateTime, 12) || !trip.hasReservations;
   
   useEffect(() => {
     setState(trip.tripState)
@@ -235,28 +239,31 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               {label}
             </button>
 
-            <button
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-              `}
-              onClick={() => {
-                setOpenMenuTripId(null);
-                handleClick();
-              }}
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Pencil size={16} />
-              )}
-                Editar
-            </button>
+            {/* Editar */}
+            {canEdit && (
+              <button
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  handleClick();
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Pencil size={16} />
+                )}
+                  Editar
+              </button>
+            )}
 
             {/* Cancelar */}
             {canCancel && (

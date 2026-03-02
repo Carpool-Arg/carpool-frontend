@@ -14,5 +14,5 @@ export interface TripDetailsData {
     availableSeat: number;
     availableBaggage: string;
     seatPrice: number;
-    originalSeatPrice: number;
+    originalSeatPrice?: number;
 }
