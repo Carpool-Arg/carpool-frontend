@@ -49,11 +49,14 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
   const has12Hours = hasMinimumHoursRemaining(trip.startDateTime, 12);
 
-  const canEdit = has12Hours && !trip.hasReservations;
+  const canEdit = has12Hours && !trip.hasReservations && trip.tripState === "CREATED";
   
   let editDescription = "";
 
-  if (trip.hasReservations) {
+  if (trip.tripState !== "CREATED") {
+    editDescription =
+      "Este viaje ya no se encuentra en estado editable.";
+  } else if (trip.hasReservations) {
     editDescription =
       "Este viaje tiene reservas activas, por eso no puede editarse.";
   } else if (!has12Hours) {

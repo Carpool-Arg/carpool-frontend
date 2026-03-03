@@ -1,40 +1,36 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useTripDetails } from "../hooks/useTripData";
-import { Input } from "@/components/ux/Input";
-import { Button } from "@/components/ux/Button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TripFormData, tripSchema } from "@/modules/trip/schemas/tripSchema";
-import { useForm } from "react-hook-form";
-import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete";
-import { TripStop, TripStopExtended } from "@/models/tripStop";
-import { ArrowLeftRight, ChevronDown, ChevronRight, ChevronUp, Circle, DollarSign, Equal, Minus, Plus, Repeat, Square, UsersRound } from "lucide-react";
-import Image from "next/image";
-import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { formatDomain } from "@/shared/utils/domain";
-import InfoTooltip from "@/components/ux/InfoTooltip";
-import { Vehicle } from "@/models/vehicle";
-import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
-import { VehicleSelector } from "../../new-trip/VehicleSelector";
-import { useAuth } from "@/contexts/authContext";
-import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
-import { TripDetail } from "../../new-trip/TripDetail";
-import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
-import { baggageOptions } from "../../new-trip/TripForm";
-import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
-import { TripRoutePreview } from "../../new-trip/TripRoutePreview";
-import { calculatePriceTrip, updateTrip, validateTripDateTime } from "@/services/trip/tripService";
 import { AlertDialog } from "@/components/ux/AlertDialog";
+import { Button } from "@/components/ux/Button";
+import InfoTooltip from "@/components/ux/InfoTooltip";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { useAuth } from "@/contexts/authContext";
+import { TripStop, TripStopExtended } from "@/models/tripStop";
+import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete";
+import { TripFormData, tripSchema } from "@/modules/trip/schemas/tripSchema";
+import { TripPriceCalculationResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
+import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
+import { calculatePriceTrip, updateTrip, validateTripDateTime } from "@/services/trip/tripService";
+import { formatDomain } from "@/shared/utils/domain";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronRight, Circle, DollarSign, Plus, Repeat, Square, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { TripDetail } from "../../new-trip/TripDetail";
+import { baggageOptions } from "../../new-trip/TripForm";
 import { TripPriceSummary } from "../../new-trip/TripPriceSummary";
-import { commissionRate } from "@/constants/trip/trip";
+import { TripRoutePreview } from "../../new-trip/TripRoutePreview";
+import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
+import { VehicleSelector } from "../../new-trip/VehicleSelector";
+import { useTripDetails } from "../hooks/useTripData";
 import UpdateTripFormSkeleton from "./UpdateTripSkeleton";
 
 export function UpdateTripForm() {
   const { id } = useParams();
   const { trip, loading } = useTripDetails(Number(id));
-  const { vehicles } = useUserVehicles();
+  const { vehicles, error: vehiclesError } = useUserVehicles();
   const {user} = useAuth()
   const router = useRouter()
 
@@ -48,10 +44,8 @@ export function UpdateTripForm() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   
   const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
-
   const [calculatingPrice, setCalculatingPrice] = useState(false);
   const [priceCalculationError, setPriceCalculationError] = useState<string | null>(null);
   
@@ -76,8 +70,6 @@ export function UpdateTripForm() {
     order: 1,
     observation: ""
   })
-
-  const [submitting, setSubmitting] = useState(false);
 
   const { handleSubmit, register, watch, setValue, trigger,reset, formState: { errors , isValid},  }  = useForm<TripFormData>({
     resolver: zodResolver(tripSchema),
@@ -506,6 +498,9 @@ export function UpdateTripForm() {
             {errors.startDateTime && (
               <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
             )}
+            {dateError && (
+              <p className="text-red-500 text-sm mt-1">{dateError}</p>
+            )}
             
           </div>
 
@@ -535,7 +530,12 @@ export function UpdateTripForm() {
 
               </div>
               <p className="text-red-500 text-sm mt-1">
-                
+                {errors.availableSeat
+                  ? errors.availableSeat.message
+                  : watch("availableSeat") >= ((currentVehicle?.availableSeats) ?? 0)
+                    ? `No puede superar los asientos del vehículo`
+                    : null
+                }
               </p>
               
               
@@ -620,7 +620,7 @@ export function UpdateTripForm() {
               </h2>
             </div>
 
-            {/* {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>} */}
+            {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>} 
 
             <VehicleSelector
               selectedVehicleId={selectedVehicleId}
@@ -655,7 +655,9 @@ export function UpdateTripForm() {
               destination={destination?.cityId}
               onBack={() => setStep(0)}
               onNext={() => {
-                setStep(0)
+                trigger().then((valid) => {
+                  if (valid) setStep(0);
+                });
               }}
             />
             {errors.tripStops && (
