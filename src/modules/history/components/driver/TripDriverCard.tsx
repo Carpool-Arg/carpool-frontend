@@ -36,6 +36,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   const [isReasonModalOpen, setReasonModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState<string | null>(null);
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   
   const isMenuOpen = openMenuTripId === trip.id;
 
@@ -46,8 +47,19 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     ? "Este viaje tiene reservas activas. ¿Deseás continuar?"
     : "¿Estás seguro que querés cancelar este viaje?";
 
+  const has12Hours = hasMinimumHoursRemaining(trip.startDateTime, 12);
 
-  const canEdit = hasMinimumHoursRemaining(trip.startDateTime, 12) || !trip.hasReservations;
+  const canEdit = has12Hours && !trip.hasReservations;
+  
+  let editDescription = "";
+
+  if (trip.hasReservations) {
+    editDescription =
+      "Este viaje tiene reservas activas, por eso no puede editarse.";
+  } else if (!has12Hours) {
+    editDescription =
+      "El viaje comienza en menos de 12 horas, por lo que ya no es posible editarlo.";
+  }
   
   useEffect(() => {
     setState(trip.tripState)
@@ -122,6 +134,10 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     }
     
   };
+
+  const handleEdit = () => {
+    setEditDialogOpen(true);
+  }
 
   const config =  tripButtonConfig[trip.tripState];
 
@@ -240,30 +256,30 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
             </button>
 
             {/* Editar */}
-            {canEdit && (
-              <button
-                className={`
-                  w-full flex items-center gap-2
-                  px-3 py-2 rounded-lg text-sm
-                  transition-all duration-200
-                  bg-gray-7 text-gray-6
-                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                  disabled:opacity-60 disabled:cursor-not-allowed
-                  cursor-pointer
-                `}
-                onClick={() => {
-                  setOpenMenuTripId(null);
-                  handleClick();
-                }}
-              >
-                {loading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Pencil size={16} />
-                )}
-                  Editar
-              </button>
-            )}
+            
+            <button
+              className={`
+                w-full flex items-center gap-2
+                px-3 py-2 rounded-lg text-sm
+                transition-all duration-200
+                bg-gray-7 text-gray-6
+                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                disabled:opacity-60 disabled:cursor-not-allowed
+                cursor-pointer
+              `}
+              onClick={() => {
+                setOpenMenuTripId(null);
+                canEdit? handleClick() : handleEdit();
+              }}
+            >
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Pencil size={16} />
+              )}
+                Editar
+            </button>
+            
 
             {/* Cancelar */}
             {canCancel && (
@@ -313,6 +329,17 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         confirmText="Sí, cancelar"
         cancelText="Volver"
         loading={loading}
+      />
+
+      <AlertDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        confirmText="Aceptar"
+        type="info"
+        title="Editar viaje"
+        description={editDescription}
+        loading={loading}
+        singleButton={true}
       />
 
       <CancelReasonModal
