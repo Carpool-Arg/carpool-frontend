@@ -60,13 +60,14 @@ export default function DesktopSidebar() {
             {!user?.profileImage ? (
               <span className="w-5 h-5 rounded-full bg-gray-3 dark:bg-gray-2 animate-pulse" />
             ) :  (
-              <Image
-                src={user?.profileImage ?? ''}
-                alt="Foto de perfil"
-                width={20}
-                height={20}
-                className="rounded-full object-cover"
-              />
+              <div className="relative w-5 h-5 rounded-full overflow-hidden">
+                <Image
+                  src={user?.profileImage ?? ''}
+                  alt="Foto de perfil"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             )}
 
 
