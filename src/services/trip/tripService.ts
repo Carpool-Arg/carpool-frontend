@@ -100,14 +100,22 @@ export async function getTripDetails(tripId: number): Promise<TripResponseDTO>{
 }
 
 
-export const validateTripDateTime = async(startDateTime: string) =>{
+export const validateTripDateTime = async(startDateTime: string, idTrip?: number) =>{
   try {
     const formattedDateTime =  `${startDateTime}:00`
     
-    const res = await fetchWithRefresh(`/api/trip/check-trip-availability?startDateTime=${formattedDateTime}`,{
-      credentials: 'include'
+    const params = new URLSearchParams({
+      startDateTime: formattedDateTime
     })
 
+    if (idTrip) {
+      params.append("idTrip", idTrip.toString())
+    }
+
+    const res = await fetchWithRefresh(`/api/trip/check-trip-availability?${params}`, {
+      credentials: "include"
+    })
+    
     const response: VoidResponse = await res.json()
 
     if (!res.ok) {

@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const { searchParams } = new URL(req.url);
     const datetime = searchParams.get('startDateTime');
+    const idTrip = searchParams.get('idTrip');
 
     
     if (!datetime) {
@@ -26,7 +27,15 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    const res = await fetch(`${apiUrl}/trip/check-trip-availability?startDateTime=${datetime}`, {
+    const params = new URLSearchParams({
+      startDateTime: datetime
+    });
+
+    if (idTrip) {
+      params.append("idTrip", idTrip);
+    }
+
+    const res = await fetch(`${apiUrl}/trip/check-trip-availability?${params}`, {
       headers: { 
         'Authorization': `Bearer ${token}`
       },

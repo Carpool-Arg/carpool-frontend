@@ -107,7 +107,7 @@ export function UpdateTripForm() {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const response = await validateTripDateTime(startDateTime);
+        const response = await validateTripDateTime(startDateTime, trip?.id);
         if (response.state === 'ERROR') {
           setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
         } else {
