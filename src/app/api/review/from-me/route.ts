@@ -1,5 +1,5 @@
 import { CityResponseDTO } from "@/modules/city/types/dto/CityResponseDTO";
-import { BooleanResponse } from "@/shared/types/response";
+import { ReviewsFromMeDTO } from "@/modules/review/types/dto/ReviewsFromMeDTO";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -14,20 +14,48 @@ export async function GET(
   req: NextRequest,
   context: { params: Promise<{ tripId: string }> }
 ) {
-  const { tripId } = await context.params;
   try {
     const token = req.cookies.get('token')?.value;
 
 
-    const res = await fetch(`${apiUrl}/review/can-review/${tripId}`, {
+    const searchParams = req.nextUrl.searchParams;
+    const role = searchParams.get("role");
+    const skip = searchParams.get("skip");
+    const orderBy = searchParams.get("orderBy");
+
+    const fromDate = searchParams.get("fromDate");
+    const toDate = searchParams.get("toDate");
+
+    if (!role || !skip || !orderBy) {
+      return NextResponse.json(
+        {
+          data: null,
+          messages: ["Faltan parametros."],
+          state: "ERROR",
+        },
+        { status: 400 }
+      );
+    }
+
+    const params = new URLSearchParams();
+
+    params.append("skip", skip);
+    params.append("orderBy", orderBy);
+    params.append("role", role);
+
+
+    if (fromDate) params.append("fromDate", fromDate);
+    if (toDate) params.append("toDate", toDate);
+
+    const res = await fetch(`${apiUrl}/review/my-made-reviews?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
 
-    const response: BooleanResponse = await res.json();
+    const response: ReviewsFromMeDTO = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

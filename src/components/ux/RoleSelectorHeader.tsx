@@ -1,20 +1,24 @@
 import { Tab } from "@/components/ux/Tab";
 import { HISTORY_TABS } from "@/constants/tabs/history";
 
-interface TripHistoryHeaderProps {
+interface RoleSelectorHeaderProps {
   role: string;
+  title: string, 
+  description: string,
   onChangeRole: (value: string) => void;
 }
 
-export default function TripHistoryHeader({
+export default function RoleSelectorHeader({
   role,
+  title,
+  description,
   onChangeRole,
-}: TripHistoryHeaderProps) {
+}: RoleSelectorHeaderProps) {
   return (
     <div className="mb-3">
-      <h1 className="text-xl font-semibold mb-1">Historial de viajes</h1>
+      <h1 className="text-xl font-semibold mb-1">{title}</h1>
       <p className="font-inter text-sm">
-        Acá podés ver tus viajes realizados y los que están por comenzar.
+        {description}
       </p>
 
       <div className="mt-3">
