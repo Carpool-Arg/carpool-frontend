@@ -33,7 +33,7 @@ export function UserReviewCard({review, passenger}: ReviewCardProps){
       </div>
 
             
-      <div className="mb-4 mt-2">
+      <div className="mb-4 mt-2 px-2">
         <span> {review.description}</span>
       </div>
 
