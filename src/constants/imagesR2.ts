@@ -1,0 +1,1 @@
+export const R2_PUBLIC_PREFIX:string = 'https://pub-15165322192045ea9751c967a7ea3853.r2.dev'
