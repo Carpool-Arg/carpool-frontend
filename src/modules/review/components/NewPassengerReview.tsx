@@ -1,22 +1,22 @@
 'use client'
 
+import { ErrorMessage } from "@/components/ui/Error";
+import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Button } from "@/components/ux/Button";
+import { Toast } from "@/components/ux/Toast";
+import { canDriverReview, createPassengerReview } from "@/services/review/reviewService";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { Rating } from "react-simple-star-rating";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Rating } from "react-simple-star-rating";
 import { ReviewForm, reviewSchema } from "../schemas/reviewSchema";
 import { ReviewRequestDTO } from "../types/dto/ReviewRequestDTO";
-import { createDriverReview, canUserReview } from "@/services/review/reviewService";
-import { Toast } from "@/components/ux/Toast";
-import { AlertDialog } from "@/components/ux/AlertDialog";
-import { ErrorMessage } from "@/components/ui/Error";
 import { NewDriverReviewSkeleton } from "./NewDriverReviewSekeleton";
 
 
-export default function NewDriverReview() {
-  const { tripId } = useParams();
+export default function NewPassengerReview() {
+  const { tripId, passengerId } = useParams();
   const [rating, setRating] = useState<number>(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
@@ -42,11 +42,11 @@ export default function NewDriverReview() {
   useEffect(() => {
     const verifyCanUserReview = async () => {
       try {
-        if (!tripId) return;
+        if (!tripId || !passengerId) return;
 
         setIsChecking(true);
 
-        const canReviewRes = await canUserReview(tripId.toString());
+        const canReviewRes = await canDriverReview(tripId.toString(), passengerId.toString());
 
         if (!canReviewRes.data) {
           setError('No puedes realizar una reseña para este viaje.');
@@ -68,8 +68,6 @@ export default function NewDriverReview() {
     }
   }, [tripId]);
 
-
-
   const handleRating = (rate: number) => {
     if (isSubmitting) return;
     setRating(rate);
@@ -82,60 +80,57 @@ export default function NewDriverReview() {
       description: data.comment,
       tripId: Number(tripId),
     };
-
-    try {
-      const response = await createDriverReview(payload);
-
-      if (response.state != 'OK') {
-        setToast({ message: response.messages[0] ?? 'Error al crear la reseña', type: 'error' });
-        return
-      }
-      setIsSuccessDialogOpen(true)
-    } catch (error: unknown) {
-      let message = "Error desconocido";
-      if (error instanceof Error) message = error.message;
-      setToast({ message, type: 'error' });
-    }
-
-
-  };
-
-  const commentValue = watch("comment") || "";
-
-  const getRatingText = (rating: number) => {
-    switch (rating) {
-      case 1:
-        return "Muy malo";
-      case 2:
-        return "Malo";
-      case 3:
-        return "Regular";
-      case 4:
-        return "Bueno";
-      case 5:
-        return "Excelente";
-      default:
-        return "Seleccioná una calificación";
-    }
-  };
-
-  if (isChecking) {
-    return (
-      <div className="h-full my-auto w-lg">
-        <NewDriverReviewSkeleton/>
-      </div>
-    );
-  }
-
-
-
-  if (error) return (
-    <div className="h-full my-auto">
-      <ErrorMessage message={error} />
-    </div>
-
-  );
+      try {
+        const response = await createPassengerReview(payload);
   
+        if (response.state != 'OK') {
+          setToast({ message: response.messages[0] ?? 'Error al crear la reseña', type: 'error' });
+          return
+        }
+        setIsSuccessDialogOpen(true)
+      } catch (error: unknown) {
+        let message = "Error desconocido";
+        if (error instanceof Error) message = error.message;
+        setToast({ message, type: 'error' });
+      }
+  
+  
+    };
+  
+    const commentValue = watch("comment") || "";
+  
+    const getRatingText = (rating: number) => {
+      switch (rating) {
+        case 1:
+          return "Muy malo";
+        case 2:
+          return "Malo";
+        case 3:
+          return "Regular";
+        case 4:
+          return "Bueno";
+        case 5:
+          return "Excelente";
+        default:
+          return "Seleccioná una calificación";
+      }
+    };
+  
+    if (isChecking) {
+      return (
+        <div className="h-full my-auto w-lg">
+          <NewDriverReviewSkeleton/>
+        </div>
+      );
+    }
+  
+    if (error) return (
+      <div className="h-full my-auto">
+        <ErrorMessage message={error} />
+      </div>
+  
+    );
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -175,7 +170,7 @@ export default function NewDriverReview() {
           {...register("comment")}
           rows={4}
           maxLength={300}
-          placeholder="¿Que le dirias a otras personas acerca de este chofer? (Opcional)"
+          placeholder="¿Que le dirias a otras personas acerca de este pasajero? (Opcional)"
           disabled={isSubmitting}
           className={`
             w-full rounded-xl border bg-gray-2 p-3 text-sm
@@ -229,7 +224,5 @@ export default function NewDriverReview() {
         onConfirm={()=> router.push('/home')}
       />
     </form>
-
-
   );
 }
