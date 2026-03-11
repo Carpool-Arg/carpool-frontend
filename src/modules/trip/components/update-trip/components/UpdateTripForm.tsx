@@ -26,6 +26,7 @@ import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
 import { VehicleSelector } from "../../new-trip/VehicleSelector";
 import { useTripDetails } from "../hooks/useTripData";
 import UpdateTripFormSkeleton from "./UpdateTripSkeleton";
+import { Toast } from "@/components/ux/Toast";
 
 export function UpdateTripForm() {
   const { id } = useParams();
@@ -35,7 +36,7 @@ export function UpdateTripForm() {
   const router = useRouter()
 
   const [step, setStep] = useState<number>(0);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | null>();
   const [tripStops, setTripStops] = useState<TripStop[]>([]);
 
   //Errores
@@ -300,10 +301,12 @@ export function UpdateTripForm() {
     }
   };
 
-  
+  const handleCloseToast = () => {
+    setError(null)
+    router.refresh()
+  }
 
   if (loading) return <UpdateTripFormSkeleton/>;
-  if (error) return <p>Error al cargar el viaje</p>;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
@@ -774,6 +777,14 @@ export function UpdateTripForm() {
         confirmText="Mis viajes"
         cancelText="Inicio"
       />
+
+      {error && (
+        <Toast
+          message={error}
+          type="error"
+          onClose={handleCloseToast}
+        />
+      )}
 
     </form>
   );

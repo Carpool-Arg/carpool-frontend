@@ -11,7 +11,7 @@ import { translateTripState } from "@/shared/utils/state";
 import { Ban, ChevronRight, Ellipsis, EllipsisVertical, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 import { tripStateMap } from "@/shared/utils/trip";
@@ -37,6 +37,9 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   const [cancelReason, setCancelReason] = useState<string | null>(null);
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [openUpwards, setOpenUpwards] = useState(false);
   
   const isMenuOpen = openMenuTripId === trip.id;
 
@@ -63,6 +66,8 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     editDescription =
       "El viaje comienza en menos de 12 horas, por lo que ya no es posible editarlo.";
   }
+
+
   
   useEffect(() => {
     setState(trip.tripState)
@@ -197,9 +202,20 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
         <div className="relative">
           <button
-            onClick={() =>
-              setOpenMenuTripId(isMenuOpen ? null : trip.id)
-            }
+            ref={buttonRef}
+            onClick={() => {
+              if (!isMenuOpen) {
+                const rect = buttonRef.current?.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - (rect?.bottom || 0);
+
+                // altura aproximada del menu
+                const menuHeight = 150;
+
+                setOpenUpwards(spaceBelow < menuHeight);
+              }
+
+              setOpenMenuTripId(isMenuOpen ? null : trip.id);
+            }}
             className={`
               p-2 rounded-full
               text-sm font-medium
@@ -222,14 +238,15 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
         {isMenuOpen && (
           <div
-            className="
-              absolute right-0 mt-2 w-56
+            className={`
+              absolute right-0 w-56
+              ${openUpwards ? "bottom-full mb-2" : "top-full mt-2"}
               bg-dark-2 border border-gray-2
               rounded-xl shadow-lg
               p-2
               z-50
               space-y-1
-            "
+            `}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Acción principal */}
