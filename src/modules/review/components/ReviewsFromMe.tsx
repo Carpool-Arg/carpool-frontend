@@ -8,12 +8,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ReviewsFromMeResponse } from "../types/ReviewsFromMeResponse";
 import { ReviewsFromMeList } from "./ReviewsFromMeList";
 import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
+import { UserReviewCardSkeleton } from "./UserRevireCardSkeleton";
 
 
 export const ORDERS_BY = [
   { label: "Más recientes", value: "RECENT" },
-  { label: "Mejor puntuadas", value: "RATING_DESC" },
-  { label: "Peor puntuadas", value: "RATING_ASC" },
+  { label: "Mejor puntuación", value: "RATING_DESC" },
+  { label: "Peor puntuación", value: "RATING_ASC" },
 ];
 export default function ReviewsFromMe(){
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,7 +24,7 @@ export default function ReviewsFromMe(){
   const [role, setRole]=useState('passenger');
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
-  
+  const isInteracting = useRef(false);
   
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -39,34 +40,44 @@ export default function ReviewsFromMe(){
 
 
   const loadReviews = useCallback(async (reset = false) => {
-  if (!hasMoreRef.current && !reset) return;
-  setLoading(true);
-
-  const currentSkip = reset ? 0 : skipRef.current;
-
-  if (reset) {
-    skipRef.current = 0;
-    hasMoreRef.current = true;
-  }
-
-  const reviewsRes = await getReviewsFromMe(
-    role, currentSkip, orderBy, fromDate ? new Date(fromDate) : undefined, toDate ? new Date(toDate) : undefined
-  );
-
-    const newReviews = reviewsRes.data?.reviews ?? [];
-
-    if (reset) {
-      setReviewsFromMe({ reviews: newReviews });
-    } else {
-      setReviewsFromMe(prev => ({
-        reviews: [...(prev?.reviews ?? []), ...newReviews]
-      }));
-    }
-
-    if (newReviews.length < LIMIT) {
-      hasMoreRef.current = false;
-    } else {
-      skipRef.current = currentSkip + LIMIT;
+    try{
+      if (!hasMoreRef.current && !reset) return;
+      setLoading(true);
+  
+      const currentSkip = reset ? 0 : skipRef.current;
+  
+      if (reset) {
+        skipRef.current = 0;
+        hasMoreRef.current = true;
+      }
+  
+      const reviewsRes = await getReviewsFromMe(
+        role, currentSkip, orderBy, fromDate ? new Date(fromDate) : undefined, toDate ? new Date(toDate) : undefined
+      );
+  
+      const newReviews = reviewsRes.data?.reviews ?? [];
+  
+      if (reset) {
+        setReviewsFromMe({ reviews: newReviews });
+      } else {
+        setReviewsFromMe(prev => ({
+          reviews: [...(prev?.reviews ?? []), ...newReviews]
+        }));
+      }
+  
+      if (newReviews.length < LIMIT) {
+        hasMoreRef.current = false;
+      } else {
+        skipRef.current = currentSkip + LIMIT;
+      }
+    }catch(error: unknown){
+      if (error instanceof Error) {
+        setToast({message: error.message, type: 'error'})
+      } else {
+        setToast({message: 'Ocurrió un error inesperado', type: 'error'})
+      }
+    }finally{
+      setLoading(false)
     }
 
     setLoading(false);
@@ -106,10 +117,13 @@ export default function ReviewsFromMe(){
         role={role}
         onChangeRole={handleChangeRole}
       />
-      <div className="flex items-center w-1/2 gap-2 pb-4">
-        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gray-8">
+    <div className="flex flex-col gap-3 pb-4">
+
+      {/* Filtro + Orden */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gray-8 w-fit">
           <ListFilter size={20}/>
-          <p>Filtro</p>
+          <p>Filtros</p>
         </div>
 
         <Select
@@ -118,7 +132,7 @@ export default function ReviewsFromMe(){
         >
           <SelectTrigger
             id="orderBy"
-            className="font-outfit dark:bg-dark-5"
+            className="font-outfit dark:bg-dark-5 flex-1"
           >
             <SelectValue/>
           </SelectTrigger>
@@ -131,26 +145,44 @@ export default function ReviewsFromMe(){
             ))}
           </SelectContent>
         </Select>
-        <div className="flex gap-2">
+      </div>
+
+      {/* Fechas */}
+      <div className="flex gap-3">
+        <div className="flex flex-col text-sm flex-1">
+          <label className="text-gray-11 mb-1">Desde</label>
           <input
             type="date"
             value={fromDate ?? ""}
             onChange={(e) => setFromDate(e.target.value || null)}
-            className="border rounded px-2 py-1"
+            max={toDate ?? undefined}
+            className="border border-gray-2 rounded px-2 py-1 h-8"
           />
+        </div>
 
+        <div className="flex flex-col text-sm flex-1">
+          <label className="text-gray-11 mb-1">Hasta</label>
           <input
             type="date"
             value={toDate ?? ""}
+            min={fromDate ?? undefined}
             onChange={(e) => setToDate(e.target.value || null)}
-            className="border rounded px-2 py-1"
+            className="border border-gray-2 rounded px-2 py-1 h-8"
           />
         </div>
       </div>
 
+</div>
+
       <ReviewsFromMeList reviews={reviewsFromMe?.reviews ?? []} passenger={role == 'passenger' } />
 
+      {reviewsFromMe?.reviews.length === 0 && loading &&
+        Array.from({ length: 5 }).map((_, index) => (
+          <UserReviewCardSkeleton key={index} />
+        ))
+      }
 
+      {reviewsFromMe?.reviews && reviewsFromMe?.reviews.length > 0 && loading && <UserReviewCardSkeleton />}
 
       <div ref={loaderRef} className="h-1" />
       {toast && (

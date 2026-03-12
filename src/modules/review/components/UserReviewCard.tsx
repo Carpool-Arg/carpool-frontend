@@ -55,11 +55,6 @@ export function UserReviewCard({review, passenger}: ReviewCardProps){
 
       </div>
 
-      
-
-
-
-
     </div>
   )
 }
