@@ -4,18 +4,17 @@ import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { useTrip } from "@/contexts/tripContext";
 import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
 import { cancelTrip } from "@/services/trip/tripService";
+import { hasMinimumHoursRemaining } from "@/shared/utils/date";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
-import { translateTripState } from "@/shared/utils/state";
-import { Ban, ChevronRight, Ellipsis, EllipsisVertical, Loader2, Pencil } from "lucide-react";
+import { tripStateMap } from "@/shared/utils/trip";
+import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
-import { tripStateMap } from "@/shared/utils/trip";
-import { hasMinimumHoursRemaining } from "@/shared/utils/date";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -289,7 +288,11 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               `}
               onClick={() => {
                 setOpenMenuTripId(null);
-                canEdit? handleClick() : handleEdit();
+                if (canEdit) {
+                  handleClick();
+                } else {
+                  handleEdit();
+                }
               }}
             >
               {loading ? (

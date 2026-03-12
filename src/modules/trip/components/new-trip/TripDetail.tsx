@@ -1,11 +1,10 @@
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { Vehicle } from "@/models/vehicle";
+import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
 import { capitalizeWords } from "@/shared/utils/string";
 import { ChevronRight, Circle, Plus, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
-import { Vehicle } from "@/models/vehicle";
-import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { baggageOptions } from "./TripForm";
-import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
-import { TripStop } from "@/models/tripStop";
 
 
 interface TripDetailProps {

@@ -1,12 +1,12 @@
 'use client';
 
+import { Toast } from '@/components/ux/Toast';
 import { useAuth } from '@/contexts/authContext';
-import { CirclePlus, History, Home, LucideIcon, Route, Search, User } from 'lucide-react';
+import { CirclePlus, Home, LucideIcon, Route, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Role } from '../desktop/DesktopSidebar';
-import { Toast } from '@/components/ux/Toast';
 import { useState } from 'react';
+import { Role } from '../desktop/DesktopSidebar';
 
 const navItems: { 
   href: string; 

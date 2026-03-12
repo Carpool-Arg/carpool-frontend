@@ -13,7 +13,6 @@ export function EmptyAlert({
   icon,
   title,
   description,
-  action,
 }: EmptyStateProps) {
   return (
     <div className="flex items-center justify-center p-4 gap-4 w-full ">
