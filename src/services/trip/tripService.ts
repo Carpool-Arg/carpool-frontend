@@ -99,6 +99,27 @@ export async function getTripDetails(tripId: number): Promise<TripResponseDTO>{
   }
 }
 
+export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>{
+  try{
+    const res = await fetchWithRefresh(`/api/trip/edit/${tripId}`,{
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    })
+
+   const response: TripResponseDTO = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
 
 export const validateTripDateTime = async(startDateTime: string, idTrip?: number) =>{
   try {

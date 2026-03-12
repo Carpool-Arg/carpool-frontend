@@ -2,6 +2,7 @@
 
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Button } from "@/components/ux/Button";
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { useAuth } from "@/contexts/authContext";
@@ -13,7 +14,7 @@ import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
 import { calculatePriceTrip, updateTrip, validateTripDateTime } from "@/services/trip/tripService";
 import { formatDomain } from "@/shared/utils/domain";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight, Circle, DollarSign, Plus, Repeat, Square, UsersRound } from "lucide-react";
+import { ChevronRight, Circle, CircleX, DollarSign, Plus, Repeat, Square, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,11 +27,10 @@ import { TripStopForm } from "../../new-trip/tripStop/TripStopsForm";
 import { VehicleSelector } from "../../new-trip/VehicleSelector";
 import { useTripDetails } from "../hooks/useTripData";
 import UpdateTripFormSkeleton from "./UpdateTripSkeleton";
-import { Toast } from "@/components/ux/Toast";
 
 export function UpdateTripForm() {
   const { id } = useParams();
-  const { trip, loading } = useTripDetails(Number(id));
+  const { trip, loading, error: tripError } = useTripDetails(Number(id));
   const { vehicles, error: vehiclesError } = useUserVehicles();
   const {user} = useAuth()
   const router = useRouter()
@@ -44,6 +44,7 @@ export function UpdateTripForm() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
   const [priceSummary, setPriceSummary] = useState<TripPriceCalculationResponseDTO["data"] | null>(null);
@@ -238,12 +239,7 @@ export function UpdateTripForm() {
   };
 
   const handleConfirmPublish = () => {
-    handleSubmit(
-      (data) => {
-        onSubmit(data);
-      },
-    )();
-    setIsSuccessDialogOpen(true)
+    handleSubmit(onSubmit)();
   };
 
   const onSubmit = async (data: TripFormData) => {
@@ -291,6 +287,8 @@ export function UpdateTripForm() {
 
       if (response.state === "ERROR") {
         setError(response.messages?.[0] || "Error al guardar el viaje");
+        setIsProcessing(false);
+        setIsErrorDialogOpen(true);
         return;
       }
       setIsProcessing(false);
@@ -301,12 +299,20 @@ export function UpdateTripForm() {
     }
   };
 
-  const handleCloseToast = () => {
-    setError(null)
-    router.refresh()
-  }
-
   if (loading) return <UpdateTripFormSkeleton/>;
+
+  if (tripError) {
+    return (
+      <div className="flex items-center justify-center mt-50">
+        <EmptyAlert
+          icon={<CircleX size={32} />}
+          title="Error inesperado"
+          description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
+        />
+      </div>
+      
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
@@ -735,6 +741,7 @@ export function UpdateTripForm() {
               onClick={() => setIsDialogOpen(true)}
               variant="primary"
               className='px-12 py-2 text-sm font-inter font-medium'
+              disabled={isProcessing}
             > 
               {isProcessing ? (
                 <div className='px-5 py-0.5'>
@@ -778,13 +785,19 @@ export function UpdateTripForm() {
         cancelText="Inicio"
       />
 
-      {error && (
-        <Toast
-          message={error}
-          type="error"
-          onClose={handleCloseToast}
-        />
-      )}
+      <AlertDialog
+        isOpen={isErrorDialogOpen}
+        onClose={() => {
+          setIsErrorDialogOpen(false)
+          router.push("/trips?role=driver")
+        }}
+        type="error"
+        title="No se pudo editar el viaje"
+        description={error || "Ocurrió un error inesperado. Intenta nuevamente."}
+        confirmText="Entendido"
+      />
+
+      
 
     </form>
   );
