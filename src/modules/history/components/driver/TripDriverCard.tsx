@@ -24,6 +24,8 @@ interface TripCardProps {
   setOpenMenuTripId: (id: number | null) => void;
 }
 
+type TripMenuAction = "view" | "edit" | "start";
+
 export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
   const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
@@ -110,37 +112,42 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     }
   };
 
-  const handleClick = async () => {
+  const handleClick = async (action: TripMenuAction) => {
     if (disabled || loading) return;
 
     setLoading(true);
 
     try {
-      const result = await onClick(trip.id.toString());
-
-      if (!result.ok) {
-        onSuccess?.(result.message);
-        return;
-      }
-
-
-      switch (state) {
-        case "CLOSED":
-          await refetchCurrentTrip();
-          router.push(`/current-trip`);
+      switch (action) {
+        case "view":
+          router.push(`/trip/details/driver/${trip.id}`);
           break;
-        case "CREATED":
+
+        case "edit":
+          if (state !== "CREATED") {
+            console.warn("No se puede editar este viaje");
+            return;
+          }
+
           router.push(`/trip/edit/${trip.id}`);
           break;
 
-        default:
-          console.warn("Estado no manejado", state);
+        case "start":
+          if (state !== "CLOSED") {
+            console.warn("El viaje no puede iniciarse");
+            return;
+          }
+
+          await refetchCurrentTrip();
+          router.push(`/current-trip`);
+          break;
       }
     } finally {
       setLoading(false);
     }
-    
   };
+    
+
 
   const handleEdit = () => {
     setEditDialogOpen(true);
@@ -148,7 +155,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
   const config =  tripButtonConfig[trip.tripState];
 
-  const { label, Icon, className, disabled, onClick} = config;
+  const { label, Icon, className, disabled} = config;
  
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
@@ -253,7 +260,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               disabled={disabled || loading}
               onClick={() => {
                 setOpenMenuTripId(null);
-                handleClick();
+                handleClick("view");
               }}
               className={`
                 w-full flex items-center gap-2
@@ -289,7 +296,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               onClick={() => {
                 setOpenMenuTripId(null);
                 if (canEdit) {
-                  handleClick();
+                  handleClick('edit');
                 } else {
                   handleEdit();
                 }

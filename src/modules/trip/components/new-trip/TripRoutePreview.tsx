@@ -23,11 +23,11 @@ export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps
               {/* Columna de puntos y línea */}
               <div className="flex flex-col items-center relative">
                 {/* Punto del stop */}
-                <div className="flex-shrink-0 z-10">
+                <div className="shrink-0 z-10 mt-1">
 
-                {isFirst && <Circle size={12} fill="white" stroke="white" />}
-                {!isFirst && !isLast && <Circle size={12} className=" text-gray-2 dark:text-gray-6" />}
-                {isLast && <Square size={12} fill="white" stroke="white" />}
+                  {isFirst && <Circle size={12} fill="white" stroke="white" />}
+                  {!isFirst && !isLast && <Circle size={12} className=" text-gray-2 dark:text-gray-6" />}
+                  {isLast && <Square size={12} fill="white" stroke="white" />}
                 </div>
 
                 {/* Línea que conecta con el siguiente */}
@@ -39,7 +39,7 @@ export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps
               {/* Contenido del stop */}
               <div className="ml-4 flex-1 max-w-[250px] md:max-w-[300px] xl:max-w-[350px] pb-2">
                 
-                <h3 className={`font-medium leading-5 text-gray-900 dark:text-white ${!isFirst && !isLast ? 'text-md' : 'text-lg'}`}>
+                <h3 className={`font-medium leading-5 text-gray-900 dark:text-white ${!isFirst && !isLast ? 'text-md ml-1 font-normal' : 'text-lg'}`}>
                   {capitalizeWords(stop.cityName)} 
                   {withTimes && stop.estimatedArrivalDateTime
                     ? isFirst || isLast
@@ -48,7 +48,7 @@ export function TripRoutePreview({ tripStops , withTimes}: TripRoutePreviewProps
                     : ""}
                 </h3>
                 {stop.observation && (
-                  <p className="text-sm font-light text-gray-2 dark:text-gray-6 mt-1 break-words max-w-full">
+                  <p className={`text-sm font-light text-gray-2 dark:text-gray-6 mt-1 break-words max-w-full ${!isFirst && !isLast ? 'ml-1' : ''}`}>
                     {capitalizeWords(stop.observation)}
                   </p>
                 )}
