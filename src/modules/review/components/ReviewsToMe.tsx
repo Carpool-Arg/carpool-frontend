@@ -57,13 +57,15 @@ export default function ReviewsToMe(){
   
       const newReviews = reviewsRes.data?.reviews ?? [];
       const newTotal = reviewsRes.data?.total ?? 0;
+      const newRating = reviewsRes.data?.rating ?? 0;
   
       if (reset) {
-        setReviewsToMe({ reviews: newReviews, total: newTotal});
+        setReviewsToMe({ reviews: newReviews, total: newTotal, rating: newRating });
       } else {
         setReviewsToMe(prev => ({
           reviews: [...(prev?.reviews ?? []), ...newReviews],
-          total: newTotal
+          total: newTotal, 
+          rating: newRating
         }));
       }
   
@@ -174,7 +176,28 @@ export default function ReviewsToMe(){
         </div>
 
       </div>
-    
+      
+      <div className="flex items-center gap-3 pb-3">
+        <div className="text-3xl font-semibold">
+          {reviewsToMe?.rating?.toFixed(1) ?? "0.0"}
+        </div>
+
+        <div className="flex flex-col">
+          <Rating
+            initialValue={reviewsToMe?.rating}
+            fillColor="#ffffff"
+            emptyColor="#706562"
+            size={18}
+            readonly
+            allowFraction
+            SVGstyle={{ display: "inline" }}
+          />
+          <span className="text-xs text-gray-11">
+            como {role === "passenger" ? "pasajero" : "chofer"}
+          </span>
+        </div>
+      </div>
+
       
       <ReviewsToMeList reviews={reviewsToMe?.reviews ?? []} passenger={role == 'passenger' } />
 

@@ -1,5 +1,6 @@
 import { Tab } from "@/components/ux/Tab";
 import { HISTORY_TABS } from "@/constants/tabs/history";
+import { useAuth } from "@/contexts/authContext";
 
 interface RoleSelectorHeaderProps {
   role: string;
@@ -14,6 +15,13 @@ export default function RoleSelectorHeader({
   description,
   onChangeRole,
 }: RoleSelectorHeaderProps) {
+  const { user} = useAuth();
+  const userRoles = user?.roles || ['user'];
+  const tabs = HISTORY_TABS.map(tab =>
+    tab.value === "driver"
+      ? { ...tab, disabled:  !userRoles?.includes('driver')}
+      : tab
+  );
   return (
     <div className="mb-3">
       <h1 className="text-xl font-semibold mb-1">{title}</h1>
@@ -25,7 +33,7 @@ export default function RoleSelectorHeader({
         <Tab
           value={role}
           onChange={onChangeRole}
-          tabs={HISTORY_TABS}
+          tabs={tabs}
         />
       </div>
     </div>
