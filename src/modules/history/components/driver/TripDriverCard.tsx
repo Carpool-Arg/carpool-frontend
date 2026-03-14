@@ -9,7 +9,7 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { tripStateMap } from "@/shared/utils/trip";
-import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
+import { Ban, ChevronRight, Ellipsis, Loader2, LucideEye, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +24,7 @@ interface TripCardProps {
   setOpenMenuTripId: (id: number | null) => void;
 }
 
-type TripMenuAction = "view" | "edit" | "start";
+export type TripActionScope = "view" | "start" | "edit";
 
 export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
   const [state, setState] = useState('CREATED')
@@ -112,35 +112,35 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     }
   };
 
-  const handleClick = async (action: TripMenuAction) => {
-    if (disabled || loading) return;
+  const handleAction = async (scope: TripActionScope) => {
+    if (loading) return;
 
     setLoading(true);
 
     try {
-      switch (action) {
-        case "view":
-          router.push(`/trip/details/driver/${trip.id}`);
-          break;
+      const result = await config.onClick(trip.id.toString(), scope);
 
-        case "edit":
-          if (state !== "CREATED") {
-            console.warn("No se puede editar este viaje");
-            return;
-          }
+      if (!result.ok) {
+        setToast({
+          message: result.message ?? "Error",
+          type: "error",
+        });
+        return;
+      }
 
-          router.push(`/trip/edit/${trip.id}`);
-          break;
+      if (scope === "start") {
+        await refetchCurrentTrip();
+        router.push("/current-trip");
+        return;
+      }
 
-        case "start":
-          if (state !== "CLOSED") {
-            console.warn("El viaje no puede iniciarse");
-            return;
-          }
+      if (scope === "view") {
+        router.push(`/trip/details/driver/${trip.id}`);
+        return;
+      }
 
-          await refetchCurrentTrip();
-          router.push(`/current-trip`);
-          break;
+      if (scope === "edit") {
+        router.push(`/trip/edit/${trip.id}`);
       }
     } finally {
       setLoading(false);
@@ -260,7 +260,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               disabled={disabled || loading}
               onClick={() => {
                 setOpenMenuTripId(null);
-                handleClick("view");
+                handleAction(trip.tripState === "CLOSED" ? "start" : "view");
               }}
               className={`
                 w-full flex items-center gap-2
@@ -282,33 +282,58 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
             </button>
 
             {/* Editar */}
+            {trip.tripState === 'FINISHED' ? (
+              <button
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  handleAction("view")
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <LucideEye size={16} />
+                )}
+                  Visualizar
+              </button>
+            ):(
+              <button
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  if (canEdit) {
+                    handleAction("edit");
+                  } else {
+                    handleEdit();
+                  }
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Pencil size={16} />
+                )}
+                  Editar
+              </button>
+            )}
             
-            <button
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-              `}
-              onClick={() => {
-                setOpenMenuTripId(null);
-                if (canEdit) {
-                  handleClick('edit');
-                } else {
-                  handleEdit();
-                }
-              }}
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Pencil size={16} />
-              )}
-                Editar
-            </button>
             
 
             {/* Cancelar */}

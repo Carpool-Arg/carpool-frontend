@@ -6,6 +6,7 @@ import { TripPriceCalculationResponseDTO, TripResponseDTO, VerifyCreatorResponse
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
 import { TripHistoryUserResponse } from "@/modules/history/types/dto/TripHistoryUserResponseDTO";
+import { TripPassengersResponseDTO } from "@/modules/trip-details/types/dto/tripPassengersResponseDTO";
 
 
 export async function getTrips(filters: TripFilters): Promise<SearchTripResponse> {
@@ -50,6 +51,28 @@ export async function getCurrentTrip(): Promise<CurrentTripResponseDTO> {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
 
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function getTripPassengers(tripId: number): Promise<TripPassengersResponseDTO> {
+  console.log(tripId)
+  try {
+    const res = await fetch(`/api/trip/passengers?tripId=${tripId}`,{
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    const response: TripPassengersResponseDTO = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
   }
 }

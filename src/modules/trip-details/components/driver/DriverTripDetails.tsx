@@ -14,43 +14,44 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Rating } from "react-simple-star-rating";
 import { TripDetailSkeleton } from "../TripDetailSkeleton";
+import PassengersTrip from "./PassengersTrip";
 
 export default function DriverTripDetails() {
   const { id } = useParams();
   const router = useRouter();
 
-  const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id))
+  // const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id))
 
-  const handleGoToDriverProfile = () => {
-    router.push(`/reviews/driver/${trip?.driverInfo.driverId}`);
-  };
+  // const handleGoToDriverProfile = () => {
+  //   router.push(`/reviews/driver/${trip?.driverInfo.driverId}`);
+  // };
 
-  const selectedBaggage = baggageOptions.find(
-    (b) => b.value === trip?.availableBaggage
-  );
+  // const selectedBaggage = baggageOptions.find(
+  //   (b) => b.value === trip?.availableBaggage
+  // );
 
-  const BaggageIcon = selectedBaggage?.icon;
+  // const BaggageIcon = selectedBaggage?.icon;
 
 
-  if (tripLoading) return TripDetailSkeleton();
-  if (tripError) return (
-    <div className="my-50">
-      <EmptyAlert
-        icon={<CircleX size={32} />}
-        title="Error inesperado"
-        description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
-      />
-    </div>
+  // if (tripLoading) return TripDetailSkeleton();
+  // if (tripError) return (
+  //   <div className="my-50">
+  //     <EmptyAlert
+  //       icon={<CircleX size={32} />}
+  //       title="Error inesperado"
+  //       description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
+  //     />
+  //   </div>
 
-  );
+  // );
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
-      {trip &&
+      {/* {trip &&
         <div
           className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4 mb-4"
         >
-          {/* Disponibilidad */}
+          
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl">
               Disponibilidad
@@ -60,7 +61,7 @@ export default function DriverTripDetails() {
             </span>
           </div>
 
-          {/* Precio */}
+
           <div className="col-span-4 col-start-6 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl flex justify-center gap-1">
               Precio
@@ -69,7 +70,7 @@ export default function DriverTripDetails() {
             <span className="font-medium text-[28px]">${formatPrice(trip?.seatPrice ?? 0)}</span>
           </div>
 
-          {/* Recorrido */}
+         
           <div className="col-span-9 row-span-4 row-start-3 bg-gray-6 dark:bg-gray-8 rounded-xl flex flex-col">
             <h2 className="text-gray-7 mt-3 ml-3 dark:text-gray-1 font-medium text-xl">
               Recorrido
@@ -82,7 +83,7 @@ export default function DriverTripDetails() {
             </div>
           </div>
 
-          {/* Datos del conductor */}
+         
           <div className="col-span-9 row-span-2 row-start-7 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl p-3"
             >
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
@@ -133,7 +134,7 @@ export default function DriverTripDetails() {
             </div>
           </div>
 
-          {/* Datos del vehículo */}
+         
           <div className="col-span-6 row-span-2 row-start-9 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center p-2">
             <h2 className="text-gray-7 self-start dark:text-gray-1 font-medium text-xl mb-2">
               Datos del vehículo
@@ -156,7 +157,7 @@ export default function DriverTripDetails() {
             </div>
           </div>
 
-          {/* Equipaje */}
+
           <div className="col-span-3 col-start-7 row-span-2 row-start-9 bg-gray-6 dark:bg-gray-8 flex flex-col rounded-xl justify-center items-center p-2">
             <h2 className="text-gray-7 dark:text-gray-1 font-medium text-xl mb-2">
               Equipaje
@@ -172,8 +173,14 @@ export default function DriverTripDetails() {
               <span className="font-medium text-xl">{selectedBaggage?.type}</span>
             </div>
           </div>
+
+          
         </div>
-      }
+      } */}
+
+      <div className="flex flex-col gap-2">
+        <PassengersTrip idTrip={Number(id) ?? null}/>
+      </div>
     </div>
   );
 }

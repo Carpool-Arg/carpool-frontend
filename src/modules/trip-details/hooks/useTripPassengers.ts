@@ -1,19 +1,20 @@
-import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
-import { getTripForUpdate } from "@/services/trip/tripService";
+import { getTripPassengers } from "@/services/trip/tripService";
 import { useCallback, useEffect, useState } from "react";
+import { Passenger } from "../types/passenger";
 
 
-type UseTripDetailsResult = {
-  trip: TripResponseDTO["data"];
+type UseTripPassengerResult = {
+  passengers: Passenger[] | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
 };
 
-export function useTripDetails(tripId?: number): UseTripDetailsResult {
-  const [trip, setTrip] = useState<TripResponseDTO["data"]>(null);
+export function useTripPassengers(tripId: number): UseTripPassengerResult {
+  const [passengers, setPassenger] = useState<Passenger[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  console.log(tripId)
   
   const fetchTrip = useCallback(async () => {
     if (!tripId) return;
@@ -22,20 +23,20 @@ export function useTripDetails(tripId?: number): UseTripDetailsResult {
     setError(null);
 
     try {
-      const response = await getTripForUpdate(tripId);
+      const response = await getTripPassengers(tripId);
 
       if (response.state === "ERROR") {
         throw new Error(response.messages?.[0]);
       }
 
-      setTrip(response.data);
+      setPassenger(response.data?.passengers ?? []);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Error desconocido");
       }
-      setTrip(null);
+      setPassenger(null);
     } finally {
       setLoading(false);
     }
@@ -46,9 +47,8 @@ export function useTripDetails(tripId?: number): UseTripDetailsResult {
   }, [fetchTrip]);
 
   return {
-    trip,
+    passengers,
     loading,
     error,
-    refetch: fetchTrip,
   };
 }
