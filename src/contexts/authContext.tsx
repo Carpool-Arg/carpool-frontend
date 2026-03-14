@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!hasUser && !isPublicRoute) router.replace('/login');
     };
     initializeAuth();
-  }, []);
+  });
   
   const login = async (data: LoginData & { recaptchaToken?: string }) => {
     setLoading(true);

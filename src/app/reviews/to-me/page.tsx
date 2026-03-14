@@ -1,5 +1,3 @@
-import DriverReviews from "@/modules/review/components/driver/driverReviews";
-import ReviewsFromMe from "@/modules/review/components/ReviewsFromMe";
 import ReviewsToMe from "@/modules/review/components/ReviewsToMe";
 
 export default function ReviewsFromMePage(){

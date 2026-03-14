@@ -28,7 +28,6 @@ export default function ReviewsToMe(){
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
   
-  const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const LIMIT = 10;
@@ -92,7 +91,6 @@ export default function ReviewsToMe(){
 
 
   useEffect(() => {
-    setSkip(0);
     setReviewsToMe(null); 
     setHasMore(true);
     loadReviews(true);

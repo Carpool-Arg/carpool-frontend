@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, Lock, MessageSquareShare, ShieldHalf, UserRoundCog, UserStar } from "lucide-react";
+import { ChevronRight, MessageSquareShare, UserStar } from "lucide-react";
 import Link from "next/link";
 
 

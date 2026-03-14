@@ -1,4 +1,3 @@
-import { ReviewsFromMeDTO } from "@/modules/review/types/dto/ReviewsFromMeDTO";
 import { ReviewsToMeDTO } from "@/modules/review/types/dto/ReviewsToMeDTO";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,7 +11,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const token = req.cookies.get('token')?.value;

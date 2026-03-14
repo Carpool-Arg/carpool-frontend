@@ -1,4 +1,3 @@
-import { CityResponseDTO } from "@/modules/city/types/dto/CityResponseDTO";
 import { BooleanResponse } from "@/shared/types/response";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -13,8 +13,6 @@ export function ProfileHeader({role}:ProfileHeaderProps) {
   const { user, prevImage } = useAuth();
   const imageToShow = prevImage || user?.profileImage;
 
-  const userRoles = user?.roles || ['user'];
-
   return (
     <div className="flex items-top justify-center gap-4 px-4">
 

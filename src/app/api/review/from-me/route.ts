@@ -10,8 +10,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * @returns 
  */
 export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ tripId: string }> }
+  req: NextRequest
 ) {
   try {
     const token = req.cookies.get('token')?.value;

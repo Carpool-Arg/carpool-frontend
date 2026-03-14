@@ -1,6 +1,6 @@
 'use client'
 import { AlertDialog } from '@/components/ux/AlertDialog';
-import { ChevronRight, CircleStar, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen, UserStar } from 'lucide-react';
+import { ChevronRight, CircleStar, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaCarAlt } from 'react-icons/fa';
