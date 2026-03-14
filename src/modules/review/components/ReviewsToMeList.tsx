@@ -2,16 +2,16 @@ import { UserReview } from "../types/UserReview";
 import { UserReviewCard } from "./UserReviewCard";
 
 
-interface ReviewsFromMeListProps{
+interface ReviewsToMeListProps{
   reviews: UserReview[] | null | undefined;
   passenger: boolean
 }
 
-export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
+export function ReviewsToMeList({reviews, passenger}:ReviewsToMeListProps){
   if(reviews?.length === 0){
     return(
       <div className="text-center text-sm text-gray-600 py-10">
-        Aún no has realizado reseñas.
+        Aún no te han realizado reseñas.
       </div>
     )
   }

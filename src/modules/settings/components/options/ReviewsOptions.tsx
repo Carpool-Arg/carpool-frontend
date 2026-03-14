@@ -14,7 +14,7 @@ export function ReviewsOptions() {
         <div>
             <p className='px-6 text-sm mb-0.5 text-white/75'>Reseñas</p>
             <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl">
-                <Link href="/settings/account" className={linkClasses}>
+                <Link href="/reviews/to-me" className={linkClasses}>
                     <div className="flex items-center gap-2">   
                     <UserStar size={18}/>
                     <span>Mi reputación</span>

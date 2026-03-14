@@ -1,14 +1,15 @@
 'use client'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
 import { Toast } from "@/components/ux/Toast";
-import { getReviewsFromMe } from "@/services/review/reviewService";
+import { getReviewsToMe } from "@/services/review/reviewService";
 import { ListFilter } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ReviewsFromMeResponse } from "../types/ReviewsFromMeResponse";
-import { ReviewsFromMeList } from "./ReviewsFromMeList";
-import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
+import { ReviewsToMeResponse } from "../types/ReviewsToMeResponse";
+import { ReviewsToMeList } from "./ReviewsToMeList";
 import { UserReviewCardSkeleton } from "./UserRevireCardSkeleton";
+import { Rating } from "react-simple-star-rating";
 
 
 export const ORDERS_BY = [
@@ -16,10 +17,10 @@ export const ORDERS_BY = [
   { label: "Mejor puntuación", value: "RATING_DESC" },
   { label: "Peor puntuación", value: "RATING_ASC" },
 ];
-export default function ReviewsFromMe(){
+export default function ReviewsToMe(){
   const [loading, setLoading] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
-  const [reviewsFromMe, setReviewsFromMe] = useState<ReviewsFromMeResponse | null>(null)
+  const [reviewsToMe, setReviewsToMe] = useState<ReviewsToMeResponse | null>(null)
   const [orderBy, setOrderBy] = useState("RECENT");
   const [role, setRole]=useState('passenger');
   const [fromDate, setFromDate] = useState<string | null>(null);
@@ -50,19 +51,21 @@ export default function ReviewsFromMe(){
         hasMoreRef.current = true;
       }
   
-      const reviewsRes = await getReviewsFromMe(
+      const reviewsRes = await getReviewsToMe(
         role, currentSkip, orderBy, fromDate ? new Date(fromDate) : undefined, toDate ? new Date(toDate) : undefined
       );
   
       const newReviews = reviewsRes.data?.reviews ?? [];
-      const newTotal = reviewsRes.data?.total ?? 0
+      const newTotal = reviewsRes.data?.total ?? 0;
+      const newRating = reviewsRes.data?.rating ?? 0;
   
       if (reset) {
-        setReviewsFromMe({ reviews: newReviews, total: newTotal });
+        setReviewsToMe({ reviews: newReviews, total: newTotal, rating: newRating });
       } else {
-        setReviewsFromMe(prev => ({
+        setReviewsToMe(prev => ({
           reviews: [...(prev?.reviews ?? []), ...newReviews],
-          total: newTotal
+          total: newTotal, 
+          rating: newRating
         }));
       }
   
@@ -87,7 +90,7 @@ export default function ReviewsFromMe(){
 
   useEffect(() => {
     setSkip(0);
-    setReviewsFromMe(null); 
+    setReviewsToMe(null); 
     setHasMore(true);
     loadReviews(true);
   }, [orderBy,role, fromDate, toDate]);
@@ -114,76 +117,90 @@ export default function ReviewsFromMe(){
     <div className="w-full">
       <RoleSelectorHeader
         title="Listado de reseñas"
-        description="Aca podés ver las reseñas que realizaste a pasajeros y choferes"
+        description="Aca podés ver las reseñas que otros choferes y pasajeros te han realizado"
         role={role}
         onChangeRole={handleChangeRole}
       />
-    <div className="flex flex-col gap-3 pb-4">
+      <div className="flex flex-col gap-3 pb-4">
 
-      {/* Filtro + Orden */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gray-8 w-fit">
-          <ListFilter size={20}/>
-          <p>Filtros</p>
-        </div>
+        {/* Filtro + Orden */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg bg-gray-8 w-fit">
+            <ListFilter size={20}/>
+            <p>Filtros</p>
+          </div>
 
-        <Select
-          value={orderBy}
-          onValueChange={setOrderBy}
-        >
-          <SelectTrigger
-            id="orderBy"
-            className="font-outfit dark:bg-dark-5 flex-1"
+          <Select
+            value={orderBy}
+            onValueChange={setOrderBy}
           >
-            <SelectValue/>
-          </SelectTrigger>
+            <SelectTrigger
+              id="orderBy"
+              className="font-outfit dark:bg-dark-5 flex-1"
+            >
+              <SelectValue/>
+            </SelectTrigger>
 
-          <SelectContent>
-            {ORDERS_BY.map((order) => (
-              <SelectItem key={order.value} value={order.value}>
-                {order.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Fechas */}
-      <div className="flex gap-3">
-        <div className="flex flex-col text-sm flex-1">
-          <label className="text-gray-11 mb-1">Desde</label>
-          <input
-            type="date"
-            value={fromDate ?? ""}
-            onChange={(e) => setFromDate(e.target.value || null)}
-            max={toDate ?? undefined}
-            className="border border-gray-2 rounded px-2 py-1 h-8"
-          />
+            <SelectContent>
+              {ORDERS_BY.map((order) => (
+                <SelectItem key={order.value} value={order.value}>
+                  {order.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex flex-col text-sm flex-1">
-          <label className="text-gray-11 mb-1">Hasta</label>
-          <input
-            type="date"
-            value={toDate ?? ""}
-            min={fromDate ?? undefined}
-            onChange={(e) => setToDate(e.target.value || null)}
-            className="border border-gray-2 rounded px-2 py-1 h-8"
-          />
+        <div className="flex gap-3">
+          <div className="flex flex-col text-sm flex-1">
+            <label className="text-gray-11 mb-1">Desde</label>
+            <input
+              type="date"
+              value={fromDate ?? ""}
+              onChange={(e) => setFromDate(e.target.value || null)}
+              max={toDate ?? undefined}
+              className="border border-gray-2 rounded px-2 py-1 h-8"
+            />
+          </div>
+
+          <div className="flex flex-col text-sm flex-1">
+            <label className="text-gray-11 mb-1">Hasta</label>
+            <input
+              type="date"
+              value={toDate ?? ""}
+              min={fromDate ?? undefined}
+              onChange={(e) => setToDate(e.target.value || null)}
+              className="border border-gray-2 rounded px-2 py-1 h-8"
+            />
+          </div>
         </div>
+
       </div>
+      
+      <div className="flex items-center gap-2">
+        <span className="font-medium pt-1.5">{reviewsToMe?.rating}</span>
+        <Rating
+          initialValue={reviewsToMe?.rating}
+          fillColor="#ffffff"
+          emptyColor="#706562"
+          size={18}
+          readonly
+          SVGstyle={{ display: "inline" }}
+          allowFraction
+        />
+        <span className="font-medium pt-1.5">({reviewsToMe?.total})</span>
 
-</div>
+      </div>
+      
+      <ReviewsToMeList reviews={reviewsToMe?.reviews ?? []} passenger={role == 'passenger' } />
 
-      <ReviewsFromMeList reviews={reviewsFromMe?.reviews ?? []} passenger={role == 'passenger' } />
-
-      {reviewsFromMe?.reviews.length === 0 && loading &&
+      {reviewsToMe?.reviews.length === 0 && loading &&
         Array.from({ length: 5 }).map((_, index) => (
           <UserReviewCardSkeleton key={index} />
         ))
       }
 
-      {reviewsFromMe?.reviews && reviewsFromMe?.reviews.length > 0 && loading && <UserReviewCardSkeleton />}
+      {reviewsToMe?.reviews && reviewsToMe?.reviews.length > 0 && loading && <UserReviewCardSkeleton />}
 
       <div ref={loaderRef} className="h-1" />
       {toast && (

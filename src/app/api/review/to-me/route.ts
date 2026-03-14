@@ -1,10 +1,11 @@
 import { ReviewsFromMeDTO } from "@/modules/review/types/dto/ReviewsFromMeDTO";
+import { ReviewsToMeDTO } from "@/modules/review/types/dto/ReviewsToMeDTO";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Metodo para obtener las reseñas que he realizado
+ * Metodo para obtener las reseñas que me han realizado
  * @param req 
  * @param context 
  * @returns 
@@ -46,7 +47,7 @@ export async function GET(
     if (fromDate) params.append("fromDate", fromDate);
     if (toDate) params.append("toDate", toDate);
 
-    const res = await fetch(`${apiUrl}/review/my-made-reviews?${params.toString()}`, {
+    const res = await fetch(`${apiUrl}/review/my-reviews?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export async function GET(
       },
     });
 
-    const response: ReviewsFromMeDTO = await res.json();
+    const response: ReviewsToMeDTO = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =
