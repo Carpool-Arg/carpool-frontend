@@ -7,9 +7,11 @@ import { getReviewsToMe } from "@/services/review/reviewService";
 import { ListFilter } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ReviewsToMeResponse } from "../types/ReviewsToMeResponse";
-import { ReviewsToMeList } from "./ReviewsToMeList";
 import { UserReviewCardSkeleton } from "./UserRevireCardSkeleton";
 import { Rating } from "react-simple-star-rating";
+import { useAuth } from "@/contexts/authContext";
+import Image from "next/image";
+import { ReviewsToMeList } from "./ReviewsToMeList";
 
 
 export const ORDERS_BY = [
@@ -33,6 +35,7 @@ export default function ReviewsToMe(){
 
   const skipRef = useRef(0);
   const hasMoreRef = useRef(true);
+  const {user} = useAuth()
 
   const handleChangeRole = (value: string) => {
     setRole(value);
@@ -115,6 +118,44 @@ export default function ReviewsToMe(){
   
   return(
     <div className="w-full">
+
+      <div className="flex items-center justify-center gap-3 pb-3 bg-gray-8 rounded-lg px-3 py-2 mb-2">
+        {user ? (
+          <div className="relative w-8 h-8 rounded-full overflow-hidden border">
+            <Image
+              src={user.profileImage ?? "/default-profile.png"}
+              alt={user.name ?? ''}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gray-2 animate-pulse" />
+        )}
+
+        {reviewsToMe?.rating !== undefined ? (
+          <div className="text-3xl font-semibold">
+            {reviewsToMe.rating.toFixed(1)}
+          </div>
+        ) : (
+          <div className="h-8 w-12 rounded bg-gray-2 animate-pulse" />
+        )}
+
+        <div className="flex flex-col">
+          <Rating
+            initialValue={reviewsToMe?.rating}
+            fillColor="#ffffff"
+            emptyColor="#706562"
+            size={18}
+            readonly
+            allowFraction
+            SVGstyle={{ display: "inline" }}
+          />
+          <span className="text-xs text-gray-11">
+            como {role === "passenger" ? "pasajero" : "chofer"}
+          </span>
+        </div>
+      </div>
       <RoleSelectorHeader
         title="Listado de reseñas"
         description="Aca podés ver las reseñas que otros choferes y pasajeros te han realizado"
@@ -177,26 +218,7 @@ export default function ReviewsToMe(){
 
       </div>
       
-      <div className="flex items-center gap-3 pb-3">
-        <div className="text-3xl font-semibold">
-          {reviewsToMe?.rating?.toFixed(1) ?? "0.0"}
-        </div>
 
-        <div className="flex flex-col">
-          <Rating
-            initialValue={reviewsToMe?.rating}
-            fillColor="#ffffff"
-            emptyColor="#706562"
-            size={18}
-            readonly
-            allowFraction
-            SVGstyle={{ display: "inline" }}
-          />
-          <span className="text-xs text-gray-11">
-            como {role === "passenger" ? "pasajero" : "chofer"}
-          </span>
-        </div>
-      </div>
 
       
       <ReviewsToMeList reviews={reviewsToMe?.reviews ?? []} passenger={role == 'passenger' } />

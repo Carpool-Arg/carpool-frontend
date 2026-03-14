@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser({ 
             username: response.data.username,
             roles: response.data.roles,
-            id: null, name: null, lastname: null, email: null, dni: null, phone: null, gender: null, status: null, birthDate: null,
+            id: null, name: null, lastname: null, email: null, dni: null, phone: null, gender: null, status: null, birthDate: null, passengerRating:0
            });
           return true;
         }

@@ -1,5 +1,7 @@
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 import { UserReview } from "../types/UserReview";
 import { UserReviewCard } from "./UserReviewCard";
+import { StarOff } from "lucide-react";
 
 
 interface ReviewsFromMeListProps{
@@ -10,8 +12,11 @@ interface ReviewsFromMeListProps{
 export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
   if(reviews?.length === 0){
     return(
-      <div className="text-center text-sm text-gray-600 py-10">
-        Aún no has realizado reseñas.
+      <div>
+        <EmptyAlert
+          icon={<StarOff size={32} />}
+          title="Aún no has realizado reseñas."
+        />
       </div>
     )
   }
