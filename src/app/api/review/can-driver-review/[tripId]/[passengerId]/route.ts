@@ -1,29 +1,32 @@
-import { ReviewResponseDTO } from "@/modules/review/types/dto/ReviewResponseDTO";
+import { BooleanResponse } from "@/shared/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
 /**
- * Metodo para realizar una reseña a un chofer de un viaje
- * Recibe una request que contiene cantidad de estrellas, descripcion de la misma y el id del viaje
- * @returns 
+ * Ddeterminar si el usuario en sesion puede realizar una reseña a un chofer de un determinado viaje
+ * Recibe el id del viaje que se desea reseñar
+ * @param req 
+ * @returns devuelve una response con un booleano que indica el resultado de la consulta
  */
-export async function POST(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ tripId: string, passengerId:number}> }
+) {
+  const { tripId, passengerId } = await context.params;
   try {
     const token = req.cookies.get('token')?.value;
-    const body = await req.json();
 
-    const res = await fetch(`${apiUrl}/review/driver`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json" ,
+
+    const res = await fetch(`${apiUrl}/review/can-driver-review/${tripId}/${passengerId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(body),
     });
 
-    const response: ReviewResponseDTO = await res.json();
+    const response: BooleanResponse = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =
@@ -35,9 +38,9 @@ export async function POST(req: NextRequest) {
         { status: res.ok ? 200 : res.status } 
       );
     }
-
     return NextResponse.json(response, { status: res.status });
   } catch (error: unknown) {
+    // Manejo de errores inesperados
     const message = error instanceof Error ? error.message : "Error desconocido";
     const errorRes = NextResponse.json(
       { data: null, messages: [message], state: "ERROR" },
@@ -45,5 +48,4 @@ export async function POST(req: NextRequest) {
     );
     return errorRes;
   }
-
 }

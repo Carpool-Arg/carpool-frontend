@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const driverReviewSchema = z.object({
+export const reviewSchema = z.object({
   rating: z
     .number()
     .min(1, "Seleccioná una calificación")
@@ -10,4 +10,4 @@ export const driverReviewSchema = z.object({
     .max(250, "Máximo 250 caracteres"),
 });
 
-export type DriverReviewForm = z.infer<typeof driverReviewSchema>;
+export type ReviewForm = z.infer<typeof reviewSchema>;
