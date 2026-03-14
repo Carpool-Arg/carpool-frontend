@@ -57,15 +57,13 @@ export default function ReviewsToMe(){
   
       const newReviews = reviewsRes.data?.reviews ?? [];
       const newTotal = reviewsRes.data?.total ?? 0;
-      const newRating = reviewsRes.data?.rating ?? 0;
   
       if (reset) {
-        setReviewsToMe({ reviews: newReviews, total: newTotal, rating: newRating });
+        setReviewsToMe({ reviews: newReviews, total: newTotal});
       } else {
         setReviewsToMe(prev => ({
           reviews: [...(prev?.reviews ?? []), ...newReviews],
-          total: newTotal, 
-          rating: newRating
+          total: newTotal
         }));
       }
   
@@ -176,21 +174,7 @@ export default function ReviewsToMe(){
         </div>
 
       </div>
-      
-      <div className="flex items-center gap-2">
-        <span className="font-medium pt-1.5">{reviewsToMe?.rating}</span>
-        <Rating
-          initialValue={reviewsToMe?.rating}
-          fillColor="#ffffff"
-          emptyColor="#706562"
-          size={18}
-          readonly
-          SVGstyle={{ display: "inline" }}
-          allowFraction
-        />
-        <span className="font-medium pt-1.5">({reviewsToMe?.total})</span>
-
-      </div>
+    
       
       <ReviewsToMeList reviews={reviewsToMe?.reviews ?? []} passenger={role == 'passenger' } />
 
