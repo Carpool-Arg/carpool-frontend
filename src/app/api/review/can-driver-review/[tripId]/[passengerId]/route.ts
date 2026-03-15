@@ -11,7 +11,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ tripId: string, passengerId:number}> }
+  context: { params: Promise<{ tripId: string, passengerId:string}> }
 ) {
   const { tripId, passengerId } = await context.params;
   try {
