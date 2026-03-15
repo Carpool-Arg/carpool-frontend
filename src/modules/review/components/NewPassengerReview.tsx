@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Rating } from "react-simple-star-rating";
 import { ReviewForm, reviewSchema } from "../schemas/reviewSchema";
-import { ReviewRequestDTO } from "../types/dto/ReviewRequestDTO";
 import { NewDriverReviewSkeleton } from "./NewDriverReviewSekeleton";
 import { PassengerReviewRequestDTO } from "../types/dto/PassengerReviewRequestDTO";
 
