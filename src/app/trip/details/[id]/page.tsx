@@ -1,4 +1,4 @@
-import TripDetails from "@/modules/trip-details/components/tripDetails";
+import TripDetails from "@/modules/trip-details/components/passenger/tripDetails";
 
 
 export default function TripDetailsPage(){

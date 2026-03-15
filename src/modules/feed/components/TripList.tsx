@@ -7,6 +7,7 @@ import Trip from "./Trip";
 import { SearchData } from "@/modules/search/types/search";
 import { City } from "@/models/city";
 import { formatFullDate, formatFullDateWithYear, parseLocalDate } from "@/shared/utils/date";
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 
 interface TripListProps {
   feed: SearchData[] | [];
@@ -68,18 +69,11 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
 
   if (feed.length === 0) {
     return (
-      <div className="flex items-center justify-center p-4 gap-4 ">
-        <div className="bg-dark-1 rounded-lg p-3">
-          <MapPinOff size={32} />
-        </div>
-        <div className="border border-gray-6 h-12"></div>
-        <div >
-          <p className="text-lg font-medium leading-tight">No hay viajes disponibles</p>
-          <p className="text-sm text-gray-9 font-inter" >
-            Intenta ajustar tus filtros o volver más tarde.
-          </p>
-        </div>
-      </div>
+      <EmptyAlert
+        icon={<MapPinOff size={32} />}
+        title="No hay viajes disponibles"
+        description="Intenta ajustar tus filtros o volver más tarde."
+      />
     );
   }
 

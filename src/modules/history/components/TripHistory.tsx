@@ -9,6 +9,7 @@ import { TripHistoryUserDTO } from "../types/TripHistoryUserDTO";
 import { TripDriverList } from "./driver/TripDriverList";
 import { TripPassengerList } from "./passenger/TripPassengerList";
 import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
+import { TripDriverCardSkeleton } from "./driver/TripDriverCardSkeleton";
 
 export default function TripHistory() { 
   const searchParams = useSearchParams();
@@ -17,7 +18,9 @@ export default function TripHistory() {
   const role = searchParams.get("role") ?? "passenger";
 
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
+
   const [passengerTrips, setPassengerTrips]=useState<TripHistoryUserDTO[]>([])
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
 
@@ -29,11 +32,13 @@ export default function TripHistory() {
   };
 
   const fetchTrips = async () => {
+    setLoading(true);
     try {
       if (role==='driver'){
-        const response = await getMyTrips(["CREATED", "CLOSED"]);
+        const response = await getMyTrips(["CREATED", "CLOSED", "FINISHED"]);
         if(response.state === 'OK') {
           setDriverTrips(response.data?.trips ?? [])
+          
         }else{
           setToast({ message: response.messages[0] ?? 'No se han podido recuperar los viajes del chofer.', type: 'error' })
           setDriverTrips([])
@@ -52,12 +57,16 @@ export default function TripHistory() {
       const message = error instanceof Error ? error.message : "Error desconocido";
       setToast({ message, type: 'error' })
       console.error('Error al obtener viajes:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     fetchTrips();
   }, [role])
+  
+
   
 
   return(
@@ -69,7 +78,15 @@ export default function TripHistory() {
         onChangeRole={handleChangeRole}
       />
 
-      {role === 'driver' && (
+      {loading &&
+        <div className="w-full">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <TripDriverCardSkeleton key={index} />
+          ))}
+        </div>
+      }
+
+      {role === 'driver' && !loading && (
         <TripDriverList
         trips={driverTrips}
         onError={(message) =>
@@ -80,7 +97,7 @@ export default function TripHistory() {
         }
         />
       )}
-      {role === 'passenger' && (
+      {role === 'passenger' && !loading && (
         <TripPassengerList
         trips={passengerTrips}
         onError={(message) =>

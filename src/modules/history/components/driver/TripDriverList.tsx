@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { TripDriverCard } from "./TripDriverCard";
 import { TripDriverDTO } from "@/modules/driver-trips/types/tripDriver";
+import { MapPinOff } from "lucide-react";
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 
 interface TripDriverListProps {
   trips: TripDriverDTO[];
@@ -13,9 +15,11 @@ export function TripDriverList({ trips, onError, onSuccess }: TripDriverListProp
 
   if (trips.length === 0) {
     return (
-      <div className="text-center text-sm text-gray-600 py-10">
-        Todavía no tenés viajes publicados.
-      </div>
+        <EmptyAlert
+          icon={<MapPinOff size={32} />}
+          title="No hay viajes disponibles"
+          description="Todavía no tenés viajes asociados como chofer."
+        />
     );
   }
 

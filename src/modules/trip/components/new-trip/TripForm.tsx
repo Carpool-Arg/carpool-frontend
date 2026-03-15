@@ -21,13 +21,13 @@ import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
 import { useEffect, useState } from 'react';
-import { TripFormData, tripSchema } from '../schemas/tripSchema';
-import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
+import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
 import { TripDetail } from './TripDetail';
 import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 
 interface BaggageOption {
   value: string;
@@ -39,7 +39,7 @@ export const baggageOptions: BaggageOption[] = [
   { value: "LIVIANO", type: "Liviano", icon: BsBackpack },
   { value: "MEDIANO", type: "Mediano", icon: BiBriefcaseAlt },
   { value: "PESADO", type: "Pesado", icon: BsSuitcase },
-  { value: "NO_EQUIPAJE", type: "Sin equipaje", icon: CircleX },
+  { value: "NO_EQUIPAJE", type: "", icon: CircleX },
 ];
 
 
@@ -106,6 +106,8 @@ export function TripForm() {
   const availableSeat = watch("availableSeat");
 
   const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
+
+  const hasTripstops = tripStops?.length > 0
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -353,7 +355,7 @@ export function TripForm() {
               {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
 
               <VehicleSelector
-                selectedVehicle={selectedVehicle}
+                selectedVehicleId={selectedVehicleId}
                 onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
               />
             </div>
@@ -782,6 +784,7 @@ export function TripForm() {
             <TripDetail
               origin={origin?.cityName ?? "Origen"}
               destination={destination.cityName ?? "Destino"}
+              hasTripstops={hasTripstops}
               startDateTime={watch("startDateTime")}
               availableSeat={watch("availableSeat")}
               availableBaggage={watch("availableBaggage") || ""}
@@ -848,7 +851,7 @@ export function TripForm() {
             }
           }}
           onConfirm={() => {
-            router.push("/history?role=driver");
+            router.push("/trips?role=driver");
           }}
           type="success"
           title="¡Listo! Tu viaje ha sido publicado"

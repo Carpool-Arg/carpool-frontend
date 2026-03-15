@@ -8,4 +8,5 @@ export interface ReservationDTO{
     lastNameUser: string;
     urlImage: string;
     state: string;
+    ratingUser: number;
 }

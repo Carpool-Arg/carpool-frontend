@@ -6,6 +6,7 @@ import { TripPriceCalculationResponseDTO, TripResponseDTO, VerifyCreatorResponse
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { VoidResponse } from "@/shared/types/response";
 import { TripHistoryUserResponse } from "@/modules/history/types/dto/TripHistoryUserResponseDTO";
+import { TripPassengersResponseDTO } from "@/modules/trip-details/types/dto/tripPassengersResponseDTO";
 
 
 export async function getTrips(filters: TripFilters): Promise<SearchTripResponse> {
@@ -27,7 +28,6 @@ export async function getTrips(filters: TripFilters): Promise<SearchTripResponse
   } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
-
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
@@ -51,6 +51,28 @@ export async function getCurrentTrip(): Promise<CurrentTripResponseDTO> {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
 
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function getTripPassengers(tripId: number): Promise<TripPassengersResponseDTO> {
+  console.log(tripId)
+  try {
+    const res = await fetch(`/api/trip/passengers?tripId=${tripId}`,{
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    const response: TripPassengersResponseDTO = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };
   }
 }
@@ -100,15 +122,44 @@ export async function getTripDetails(tripId: number): Promise<TripResponseDTO>{
   }
 }
 
-
-export const validateTripDateTime = async(startDateTime: string) =>{
-  try {
-    const formattedDateTime =  `${startDateTime}:00`
-    
-    const res = await fetchWithRefresh(`/api/trip/check-trip-availability?startDateTime=${formattedDateTime}`,{
+export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>{
+  try{
+    const res = await fetchWithRefresh(`/api/trip/edit/${tripId}`,{
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     })
 
+   const response: TripResponseDTO = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+
+export const validateTripDateTime = async(startDateTime: string, idTrip?: number) =>{
+  try {
+    const formattedDateTime =  `${startDateTime}:00`
+    
+    const params = new URLSearchParams({
+      startDateTime: formattedDateTime
+    })
+
+    if (idTrip) {
+      params.append("idTrip", idTrip.toString())
+    }
+
+    const res = await fetchWithRefresh(`/api/trip/check-trip-availability?${params}`, {
+      credentials: "include"
+    })
+    
     const response: VoidResponse = await res.json()
 
     if (!res.ok) {
@@ -304,6 +355,29 @@ export const cancelTrip = async (idTrip:number, reason: string | undefined) => {
     
     return response;
   }catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function updateTrip(data: Trip): Promise<VoidResponse> {
+  try {
+    const res = await fetch('/api/trip',{
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data)
+    })
+
+    const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
     let message = "Error desconocido";
     if (error instanceof Error) message = error.message;
     return { data: null, messages: [message], state: "ERROR" };

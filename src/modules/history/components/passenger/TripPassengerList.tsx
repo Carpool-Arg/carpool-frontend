@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
 import { TripPassengerCard } from "./TripPassengerCard";
+import { MapPinOff } from "lucide-react";
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
 
 interface TripPassengerListProps {
   trips: TripHistoryUserDTO[];
@@ -13,9 +15,11 @@ export function TripPassengerList({ trips, onError, onSuccess }: TripPassengerLi
 
   if (trips.length === 0) {
     return (
-      <div className="text-center text-sm text-gray-600 py-10">
-        Todavía no tenés viajes asociados.
-      </div>
+        <EmptyAlert
+          icon={<MapPinOff size={32} />}
+          title="No hay viajes disponibles"
+          description="Todavía no tenés viajes asociados como pasajero."
+        />
     );
   }
 
