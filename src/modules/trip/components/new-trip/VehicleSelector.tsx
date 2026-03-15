@@ -1,13 +1,13 @@
-import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
 import { Vehicle } from "@/models/vehicle";
-import { VehicleCardSkeleton } from "@/modules/vehicle/components/VehicleSkeleton";
 import { VehicleCard } from "@/modules/vehicle/components/VehicleCard";
+import { VehicleCardSkeleton } from "@/modules/vehicle/components/VehicleSkeleton";
+import { useUserVehicles } from "@/modules/vehicle/hooks/useUserVehicles";
 
 export function VehicleSelector({ 
-  selectedVehicle, 
+  selectedVehicleId, 
   onSelect 
 }: { 
-  selectedVehicle?: Vehicle, 
+  selectedVehicleId: number, 
   onSelect: (v: Vehicle) => void 
 }) {
   const { vehicles, loading, error } = useUserVehicles();
@@ -25,7 +25,7 @@ export function VehicleSelector({
           <div 
             key={v.id} 
             className={`rounded-lg transition-all ${
-              selectedVehicle?.id === v.id 
+              selectedVehicleId === v.id 
                 ? "ring-2 ring-blue-500" 
                 : ""
             }`}

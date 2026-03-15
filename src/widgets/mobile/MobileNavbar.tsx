@@ -1,12 +1,12 @@
 'use client';
 
+import { Toast } from '@/components/ux/Toast';
 import { useAuth } from '@/contexts/authContext';
-import { CirclePlus, History, Home, LucideIcon, Search, User } from 'lucide-react';
+import { CirclePlus, Home, LucideIcon, Route, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Role } from '../desktop/DesktopSidebar';
-import { Toast } from '@/components/ux/Toast';
 import { useState } from 'react';
+import { Role } from '../desktop/DesktopSidebar';
 
 const navItems: { 
   href: string; 
@@ -19,12 +19,12 @@ const navItems: {
   { href: '/home', icon: Home, label: 'Inicio', role: 'user', size: 22 },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user', size: 22 },
   { href: '/trip/new', icon: CirclePlus, label: 'Publicar viaje', role: 'driver', size: 22 },
-  { href: '/history', icon: History, label: 'Historial', role: 'user', size: 22  },
+  { href: '/trips', icon: Route, label: 'Viajes', role: 'user', size: 22  },
   { href: '/profile', icon: User, label: 'Perfil', role: 'user', size: 22 },
 ];
 
 // Rutas en las que debe mostrarse el navbar (soporta rutas dinámicas con startsWith)
-const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip','/reservations/','/reservations', '/settings', '/history'];
+const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip','/reservations/','/reservations', '/settings', '/trips'];
 
 export default function MobileNavbar() {
   const pathname = usePathname();

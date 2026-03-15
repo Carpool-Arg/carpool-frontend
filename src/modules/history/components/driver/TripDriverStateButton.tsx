@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { TripActionResult } from "../../types/TripActionResult";
 
+
 export type TripState = string;
 export type TripButtonAction = (tripId: string) => Promise<TripActionResult>;
 
@@ -28,8 +29,7 @@ export const tripButtonConfig: Record<TripState, TripButtonConfig> = {
   CREATED: {
     label: "Visualizar",
     Icon: LucideEye,
-    onClick: async (tripId: string): Promise<TripActionResult> => {
-      console.log(tripId)
+    onClick: async (): Promise<TripActionResult> => {
       return { ok: true };
     },
   },

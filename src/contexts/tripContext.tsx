@@ -108,7 +108,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     if (isLastStop) {
       setCurrentTrip(null)
       setArriveLoading(false)
-      setTimeout(() => router.push('/home'), 2000)
+      setTimeout(() => router.push(`/trip/details/driver/${currentTrip.idTrip}`), 2000)
       return
     }
 

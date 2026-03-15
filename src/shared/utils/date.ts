@@ -149,3 +149,42 @@ export function formatISOToShortDate(isoDate: string): string {
     year: "numeric"
   }).format(date);
 }
+
+
+/**
+ * Determina si una fecha tiene al menos una cantidad mínima de horas restantes
+ * respecto al momento actual.
+ *
+ * @param date - Fecha objetivo. Puede ser un objeto Date o un string
+ *               que pueda ser interpretado por el constructor de Date.
+ * @param hours - Cantidad mínima de horas que deben faltar.
+ * @returns `true` si la diferencia entre ahora y la fecha objetivo
+ *          es mayor o igual a la cantidad de horas indicada.
+ *          En caso contrario, devuelve `false`.
+ *
+ * @example
+ * // Si el viaje empieza en 15 horas
+ * hasMinimumHoursRemaining("2026-03-03T18:00:00Z", 12)
+ * // → true
+ *
+ * @example
+ * // Si el viaje empieza en 11 horas y 59 minutos
+ * hasMinimumHoursRemaining("2026-03-03T14:00:00Z", 12)
+ * // → false
+ *
+ * @observaciones
+ * - Si la fecha está en el pasado, la función devuelve `false`.
+ * - El parseo de strings depende de la zona horaria del entorno.
+ */
+export const hasMinimumHoursRemaining = (
+  date: string | Date,
+  hours: number
+): boolean => {
+  const now = Date.now()
+  const target = new Date(date).getTime()
+
+  const diffMs = target - now
+  const requiredMs = hours * 60 * 60 * 1000
+
+  return diffMs >= requiredMs
+}

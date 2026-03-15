@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/contexts/authContext';
 
-import { newTrip, validateTripDateTime, calculatePriceTrip } from '@/services/trip/tripService';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
+import { calculatePriceTrip, newTrip, validateTripDateTime } from '@/services/trip/tripService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
@@ -13,22 +13,21 @@ import { useForm } from 'react-hook-form';
 import { BiBriefcaseAlt } from 'react-icons/bi';
 import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 
-import { TripRoutePreview } from './TripRoutePreview';
-import { VehicleSelector } from './VehicleSelector';
-import { TripFormData, tripSchema } from '../schemas/tripSchema';
-import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
-import { Button } from '@/components/ux/Button';
-import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
-import { TripStopForm } from './tripStop/TripStopsForm';
-import { TripDetail } from './TripDetail';
-import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
+import { Button } from '@/components/ux/Button';
 import InfoTooltip from '@/components/ux/InfoTooltip';
-import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
-import { TripPriceCalculationResponseDTO } from '../types/dto/tripResponseDTO';
-import { TripPriceSummary } from './TripPriceSummary';
-import { useEffect, useState } from 'react';
 import { Toast } from '@/components/ux/Toast';
+import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
+import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
+import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
+import { useEffect, useState } from 'react';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
+import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
+import { TripDetail } from './TripDetail';
+import { TripPriceSummary } from './TripPriceSummary';
+import { TripRoutePreview } from './TripRoutePreview';
+import { TripStopForm } from './tripStop/TripStopsForm';
+import { VehicleSelector } from './VehicleSelector';
 
 interface BaggageOption {
   value: string;
@@ -40,7 +39,7 @@ export const baggageOptions: BaggageOption[] = [
   { value: "LIVIANO", type: "Liviano", icon: BsBackpack },
   { value: "MEDIANO", type: "Mediano", icon: BiBriefcaseAlt },
   { value: "PESADO", type: "Pesado", icon: BsSuitcase },
-  { value: "NO_EQUIPAJE", type: "Sin equipaje", icon: CircleX },
+  { value: "NO_EQUIPAJE", type: "", icon: CircleX },
 ];
 
 
@@ -107,6 +106,8 @@ export function TripForm() {
   const availableSeat = watch("availableSeat");
 
   const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
+
+  const hasTripstops = tripStops?.length > 0
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -354,7 +355,7 @@ export function TripForm() {
               {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
 
               <VehicleSelector
-                selectedVehicle={selectedVehicle}
+                selectedVehicleId={selectedVehicleId}
                 onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
               />
             </div>
@@ -783,6 +784,7 @@ export function TripForm() {
             <TripDetail
               origin={origin?.cityName ?? "Origen"}
               destination={destination.cityName ?? "Destino"}
+              hasTripstops={hasTripstops}
               startDateTime={watch("startDateTime")}
               availableSeat={watch("availableSeat")}
               availableBaggage={watch("availableBaggage") || ""}
@@ -849,7 +851,7 @@ export function TripForm() {
             }
           }}
           onConfirm={() => {
-            router.push("/history?role=driver");
+            router.push("/trips?role=driver");
           }}
           type="success"
           title="¡Listo! Tu viaje ha sido publicado"

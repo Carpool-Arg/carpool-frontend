@@ -1,0 +1,1 @@
+export const commissionRate = 0.05;

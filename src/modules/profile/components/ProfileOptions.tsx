@@ -66,7 +66,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           </Link>
 
           <Link
-            href={`/trips/${isDriver ? 'driver' : 'passenger'}`}
+            href={`/trips?role=${isDriver ? 'driver' : 'passenger'}`}
             className={linkClasses}
           >
             <div className="flex items-center gap-2">   

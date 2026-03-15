@@ -1,9 +1,11 @@
-import { capitalizeWords } from "@/shared/utils/string";
-import { Circle, Plus, Square, UsersRound } from "lucide-react";
-import Image from "next/image";
-import { Vehicle } from "@/models/vehicle";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { baggageOptions } from "./TripFrom";
+import { Vehicle } from "@/models/vehicle";
+import { VehicleResponseTripDTO } from "@/modules/driver-trips/types/vehicleTrip";
+import { capitalizeWords } from "@/shared/utils/string";
+import { ChevronRight, Circle, Plus, Square, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { baggageOptions } from "./TripForm";
+
 
 interface TripDetailProps {
   origin: string;
@@ -11,9 +13,10 @@ interface TripDetailProps {
   startDateTime: string;
   availableSeat: number;
   availableBaggage: string;
-  seatPrice: number;
-  vehicle: Vehicle;
+  seatPrice?: number;
+  vehicle: Vehicle | VehicleResponseTripDTO;
   onBack: () => void;
+  hasTripstops: boolean
 }
 
 export function TripDetail({
@@ -24,7 +27,8 @@ export function TripDetail({
   availableBaggage,
   seatPrice,
   vehicle,
-  onBack
+  onBack,
+  hasTripstops
 }: TripDetailProps) {
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === availableBaggage
@@ -61,8 +65,23 @@ export function TripDetail({
         </div>
         <div>
           <button onClick={onBack} className="cursor-pointer text-white text-sm flex items-center gap-1 border rounded-lg py-1.5 px-2 border-gray-5 dark:border-gray-2 dark:hover:bg-gray-8">
-            <Plus size={14}/>
-            Añadir localidad intermedia
+            {hasTripstops ?
+                <div className="flex items-center gap-1">
+                  Modificar paradas intermedias
+                  <ChevronRight
+                    size={14}
+                    
+                  />
+                </div>
+              :
+                <div className="flex items-center gap-1">
+                  <Plus 
+                    size={14}
+                    
+                  />
+                  <span>Agregar paradas intermedias</span>
+                </div>
+              }
           </button>
         </div>
         
@@ -78,7 +97,7 @@ export function TripDetail({
             </span>
             <span className="text-2xl font-bold">{new Date(startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} hs</span>
           </p>
-          <p className="flex flex-col items-start text-right min-w-[90px] text-gray-7 dark:text-gray-1">
+          <p className="flex flex-col items-start text-right min-w-22.5 text-gray-7 dark:text-gray-1">
             <span className="font-medium text-lg">Precio</span> 
             <span className="text-2xl font-bold">${seatPrice}</span>
             <span className="font-regular text-sm">por pasajero</span>
@@ -113,7 +132,7 @@ export function TripDetail({
           <div className="flex justify-between items-center">
             <div className="flex py-2 gap-2 items-center">
               <div className="p-1 rounded-lg bg-gray-11 dark:bg-gray-2">
-                <div className="w-9 h-9 relative flex-shrink-0 ">
+                <div className="w-9 h-9 relative shrink-0 ">
                   <Image
                     src={`${R2_PUBLIC_PREFIX}/${(vehicle.vehicleTypeName).toLowerCase()}.png`}
                     alt={`Imagen Tipo Vehiculo ${(vehicle.vehicleTypeName).toLowerCase()}`}
