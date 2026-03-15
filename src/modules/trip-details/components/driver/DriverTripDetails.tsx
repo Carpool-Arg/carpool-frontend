@@ -1,24 +1,10 @@
 'use client'
 
-import { EmptyAlert } from "@/components/ux/EmptyAlert";
-import InfoTooltip from "@/components/ux/InfoTooltip";
-import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
-import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
-import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
-import { useTripDetails } from "@/modules/trip/components/update-trip/hooks/useTripData";
-import { formatDomain } from "@/shared/utils/domain";
-import { formatPrice } from "@/shared/utils/number";
-import { capitalizeWords } from "@/shared/utils/string";
-import { CircleX, MessageCircleMore } from "lucide-react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { Rating } from "react-simple-star-rating";
-import { TripDetailSkeleton } from "../TripDetailSkeleton";
+import { useParams } from "next/navigation";
 import PassengersTrip from "./PassengersTrip";
 
 export default function DriverTripDetails() {
   const { id } = useParams();
-  const router = useRouter();
 
   // const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id))
 
