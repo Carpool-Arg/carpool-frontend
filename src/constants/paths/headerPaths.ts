@@ -6,6 +6,8 @@ export const HEADER_PATHS = [
   '/trip/new',
   '/trip', '/trips',
   '/reviews/driver/',
+  '/reviews/from-me',
+  '/reviews/to-me',
   '/reservations',
   '/vehicle/edit',
   '/vehicle/new',
@@ -19,7 +21,8 @@ export const HEADER_PATHS = [
   '/settings/account',
   '/settings/security',
   '/settings',
-  '/home'
+  '/home',
+  '/account/reviews'
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
@@ -28,6 +31,8 @@ export const HEADER_TITLES: Record<string, string> = {
   '/trip/new': 'Publicar viaje',
   '/trip/details': 'Detalles del viaje',
   '/reviews/driver/':'Reseñas',
+  '/reviews/from-me':'Reseñas que has hecho',
+  '/reviews/to-me': 'Reseñas que te han hecho',
   '/vehicle/edit': 'Editar Vehículo',
   '/vehicle/new': 'Registrar Vehículo',
   '/vehicle': 'Vehículos',
@@ -41,7 +46,8 @@ export const HEADER_TITLES: Record<string, string> = {
   '/settings/account/update-email': 'Correo electrónico',
   '/settings/account': 'Cuenta',
   '/settings/security': 'Seguridad',
-  '/settings': 'Configuración'
+  '/settings': 'Configuración',
+  '/account/reviews': 'Consulta de reseñas' 
 };
 
 export const getMatchingHeaderPath = (pathname: string) => {

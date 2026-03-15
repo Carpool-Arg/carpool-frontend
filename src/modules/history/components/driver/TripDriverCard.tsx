@@ -12,7 +12,7 @@ import { tripStateMap } from "@/shared/utils/trip";
 import { Ban, ChevronRight, Ellipsis, Loader2, LucideEye, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 
@@ -27,7 +27,6 @@ interface TripCardProps {
 export type TripActionScope = "view" | "start" | "edit";
 
 export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
-  const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
@@ -67,12 +66,6 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     editDescription =
       "El viaje comienza en menos de 12 horas, por lo que ya no es posible editarlo.";
   }
-
-
-  
-  useEffect(() => {
-    setState(trip.tripState)
-  }, [trip.tripState])
 
 
   const handleStartCancel = () => {

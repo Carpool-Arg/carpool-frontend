@@ -1,6 +1,6 @@
 'use client'
 import { AlertDialog } from '@/components/ux/AlertDialog';
-import { ChevronRight, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
+import { ChevronRight, CircleStar, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaCarAlt } from 'react-icons/fa';
@@ -72,6 +72,18 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
             <div className="flex items-center gap-2">   
               <History size={18}/>
               <span>Historial de viajes</span>
+            </div>
+            
+            <ChevronRight size={18} />
+          </Link>
+
+          <Link
+            href={`/account/reviews`}
+            className={linkClasses}
+            >
+            <div className="flex items-center gap-2">   
+              <CircleStar size={18}/>
+              <span>Reseñas</span>
             </div>
             
             <ChevronRight size={18} />

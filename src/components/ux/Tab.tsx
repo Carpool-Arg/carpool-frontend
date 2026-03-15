@@ -1,6 +1,7 @@
 interface TabItem {
   label: string;
   value: string;
+  disabled?: boolean;
 }
 
 
@@ -31,10 +32,12 @@ export function Tab({ value, onChange, tabs }: TabsProps) {
           return (
             <button
               key={tab.value}
+              disabled={tab.disabled}
               onClick={() => onChange(tab.value)}
               className={`
                 relative z-10 w-1/2 px-4 py-1.5 text-sm
-                transition-colors duration-300 cursor-pointer
+                transition-colors duration-300
+                ${tab.disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                 ${active ? "text-white" : "text-gray-11 hover:text-white"}
               `}
             >
