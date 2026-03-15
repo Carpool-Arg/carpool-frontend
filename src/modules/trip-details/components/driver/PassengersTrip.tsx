@@ -6,6 +6,7 @@ import PassengerCard from "./PassengerCard";
 import { UserRoundMinus } from "lucide-react";
 import { Toast } from "@/components/ux/Toast";
 import PassengerCardSkeleton from "./PassengerCardSekeleton";
+import { useRouter } from "next/navigation";
 
 interface PassengersTripProps {
   idTrip: number;
@@ -13,9 +14,10 @@ interface PassengersTripProps {
 
 export default function PassengersTrip({ idTrip }: PassengersTripProps) {
   const { passengers, loading, error } = useTripPassengers(idTrip);
-  
+  const router = useRouter();
+
   const handlePassengerReview = (idPassenger: number) => {
-    console.log(idPassenger)
+    router.push(`/passenger-review/trip/${idTrip}/${idPassenger}`);
   }
 
   if (loading) {

@@ -1,4 +1,5 @@
 import { DriverReviewResponseDTO } from "@/modules/review/types/dto/DriverReviewResponseDTO";
+import { PassengerReviewRequestDTO } from "@/modules/review/types/dto/PassengerReviewRequestDTO";
 import { ReviewRequestDTO } from "@/modules/review/types/dto/ReviewRequestDTO";
 import { ReviewResponseDTO } from "@/modules/review/types/dto/ReviewResponseDTO";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
@@ -28,7 +29,7 @@ export async function createDriverReview(request: ReviewRequestDTO): Promise<Rev
   }
 }
 
-export async function createPassengerReview(request: ReviewRequestDTO): Promise<ReviewResponseDTO>{
+export async function createPassengerReview(request: PassengerReviewRequestDTO): Promise<ReviewResponseDTO>{
   try{
     const res = await fetchWithRefresh('/api/review/passenger', {
       method: 'POST',

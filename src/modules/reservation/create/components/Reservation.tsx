@@ -33,7 +33,7 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
                     <div className="flex items-end gap-4">
                         <p className="text-xl">{reservation.nameUser} {reservation.lastNameUser}</p>
                         <p className={`flex items-center gap-1 text-success`}>
-                            5.0
+                            {reservation.ratingUser}
                             <span>
                                 <Star size={12} fill="currentColor" />
                             </span>

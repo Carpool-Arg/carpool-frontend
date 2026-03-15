@@ -13,6 +13,7 @@ import { Rating } from "react-simple-star-rating";
 import { ReviewForm, reviewSchema } from "../schemas/reviewSchema";
 import { ReviewRequestDTO } from "../types/dto/ReviewRequestDTO";
 import { NewDriverReviewSkeleton } from "./NewDriverReviewSekeleton";
+import { PassengerReviewRequestDTO } from "../types/dto/PassengerReviewRequestDTO";
 
 
 export default function NewPassengerReview() {
@@ -49,7 +50,7 @@ export default function NewPassengerReview() {
         const canReviewRes = await canDriverReview(tripId.toString(), passengerId.toString());
 
         if (!canReviewRes.data) {
-          setError('No puedes realizar una reseña para este viaje.');
+          setError('No puedes realizar una reseña para este pasajero.');
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -75,10 +76,11 @@ export default function NewPassengerReview() {
   };
 
   const onSubmit = async (data: ReviewForm) => {
-    const payload: ReviewRequestDTO = {
+    const payload: PassengerReviewRequestDTO = {
       stars: data.rating,
       description: data.comment,
       tripId: Number(tripId),
+      passengerId: Number(passengerId),
     };
       try {
         const response = await createPassengerReview(payload);
@@ -218,10 +220,10 @@ export default function NewPassengerReview() {
         onClose={() => setIsSuccessDialogOpen(false)}
         type="success"
         title="¡Reseña enviada con éxito!"
-        description='Gracias por tomarte el tiempo de calificar al chofer. Tu comentario ayuda a que los viajes sean cada vez mejores'
+        description='Gracias por tomarte el tiempo de calificar al pasajero. Tu comentario ayuda a que los viajes sean cada vez mejores'
         confirmText="Aceptar"
         singleButton={true}
-        onConfirm={()=> router.push('/home')}
+        onConfirm={()=> router.push(`/trip/details/driver/${tripId}`)}
       />
     </form>
   );
