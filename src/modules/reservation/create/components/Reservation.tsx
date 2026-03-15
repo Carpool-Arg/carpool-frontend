@@ -22,13 +22,16 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
         <div className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200">
             <div className="flex items-center gap-4 w-full justify-between">
                 <div className="flex items-center gap-2">
-                    <Image
+
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden border">
+                        <Image
                         src={reservation.urlImage}
                         alt={"Foto de perfil del pasajero"}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover border"
-                    />
+                        fill
+                        className="object-cover"
+                        />
+                    </div>
+
 
                     <div className="flex items-end gap-4">
                         <p className="text-xl">{reservation.nameUser} {reservation.lastNameUser}</p>
