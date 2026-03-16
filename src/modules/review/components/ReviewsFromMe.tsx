@@ -112,7 +112,7 @@ export default function ReviewsFromMe(){
     <div className="w-full">
       <RoleSelectorHeader
         title="Listado de reseñas"
-        description="Aca podés ver las reseñas que realizaste a pasajeros y choferes"
+        description={`Aca podés ver las reseñas que realizaste como ${role === 'passenger' ? 'pasajero' : 'chofer'}.`}
         role={role}
         onChangeRole={handleChangeRole}
       />
