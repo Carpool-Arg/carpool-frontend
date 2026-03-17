@@ -1,11 +1,10 @@
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
-import { UserReview } from "../types/UserReview";
-import { UserReviewCard } from "./UserReviewCard";
+import { UserReview } from "../../types/UserReview";
+import { UserReviewCard } from "../UserReviewCard";
 import { StarOff } from "lucide-react";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { useState } from "react";
 import { deleteReview } from "@/services/review/reviewService";
-import { useRouter } from "next/navigation";
 
 
 interface ReviewsFromMeListProps{
@@ -20,7 +19,6 @@ export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleDelete = (reviewId: number) => {
     setIsDeleteDialogOpen(true);
@@ -41,8 +39,10 @@ export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
       }
     } catch (error: unknown){
       setLoading(false);
+      setIsDeleteDialogOpen(false);
       setDeleteError(error instanceof Error ? error.message : "Error al eliminar la reseña");
     } finally {
+      setIsDeleteDialogOpen(false);
       setLoading(false);
     }
   };
@@ -74,6 +74,7 @@ export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
         confirmText="Sí, eliminar"
         cancelText="Cancelar"
         loading={loading}
+        autoCloseOnConfirm={false}
       />
 
       <AlertDialog
@@ -88,8 +89,10 @@ export function ReviewsFromMeList({reviews, passenger}:ReviewsFromMeListProps){
 
       <AlertDialog
         isOpen={isSuccessDialogOpen}
-        onClose={() => setIsSuccessDialogOpen(false)}
-        onConfirm={() => router.refresh()}
+        onClose={() => {
+          setIsSuccessDialogOpen(false)
+          window.location.reload();
+        }}
         type="success"
         title="Operación exitosa!"
         description="La reseña fue eliminada correctamente."
