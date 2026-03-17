@@ -8,7 +8,7 @@ interface ReviewCardProps{
   review: UserReview,
   passenger: boolean,
   fromMe: boolean,
-  handleDelete: (reviewId: number) => void
+  handleDelete?: (reviewId: number) => void
 }
 
 
@@ -56,7 +56,7 @@ export function UserReviewCard({review, passenger, fromMe, handleDelete}: Review
             <span className="text-sm text-gray-11"> {passenger ? 'Fue tu chofer el ' : 'Lo llevaste el '} {formatDateTime(review.tripDate)}</span>
           </div>
         </div>
-        {fromMe && (
+        {fromMe && handleDelete && (
           <div className="px-2">
             <button className="bg-gray-8 p-2 rounded-full cursor-pointer hover:bg-gray-7" onClick={() => handleDelete(review.id)}>
               <span><Trash2 size={20}/></span>
