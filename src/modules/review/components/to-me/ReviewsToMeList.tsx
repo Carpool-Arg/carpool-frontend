@@ -25,7 +25,7 @@ export function ReviewsToMeList({reviews, passenger}:ReviewsToMeListProps){
   return(
     <div className="flex flex-col">
       {reviews?.map((review) => (
-        <UserReviewCard key={review.id} review={review} passenger={passenger} fromMe= {true}/>
+        <UserReviewCard key={review.id} review={review} passenger={passenger} fromMe= {false}/>
       ))}
     </div>
   )
