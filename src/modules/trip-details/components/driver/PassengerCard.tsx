@@ -48,7 +48,7 @@ export default function PassengerCard({ passenger, handlePassengerReview }: Pass
       </div>
       {passenger.review &&
         <div className="flex flex-col p-2 text-gray-11/90">
-          <p className="text-sm font-light text-gray-11/90">Tu opinión sobre este pasajero</p>
+          <p className="text-sm font-light text-gray-11/90">Tu {passenger.review.description ? "opinión" : "calificación"} sobre este pasajero</p>
           <div className="flex items-center gap-1 px-1">
             <span className="font-medium text-sm pt-1.5">{passenger.review.stars}</span>
             <Rating
@@ -61,9 +61,11 @@ export default function PassengerCard({ passenger, handlePassengerReview }: Pass
               allowFraction
             />
           </div>
-          <p className="text-sm px-2 py-1 italic">
-            &quot;{passenger.review?.description}&quot;
-          </p>
+          {passenger.review.description && (
+            <p className="text-sm px-2 py-1 italic">
+              &quot;{passenger.review?.description}&quot;
+            </p>
+          )}
         </div>
       }
     </div>
