@@ -1,4 +1,4 @@
-import ReviewsToMe from "@/modules/review/components/ReviewsToMe";
+import ReviewsToMe from "@/modules/review/components/to-me/ReviewsToMe";
 
 export default function ReviewsFromMePage(){
   return(

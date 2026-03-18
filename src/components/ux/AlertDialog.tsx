@@ -13,7 +13,8 @@ type AlertDialogProps = {
   children?: ReactNode
   secondaryButton?: { text: string; onClick: () => void },
   singleButton?: boolean,
-  loading?: boolean
+  loading?: boolean,
+  autoCloseOnConfirm?: boolean 
 }
 
 export function AlertDialog({
@@ -28,7 +29,8 @@ export function AlertDialog({
   children,
   secondaryButton,
   singleButton = false,
-  loading = false
+  loading = false,
+  autoCloseOnConfirm = true,
 }: AlertDialogProps) {
   if (!isOpen) return null
 
@@ -68,15 +70,17 @@ export function AlertDialog({
           <button
             onClick={() => {
               onConfirm?.()
-              onClose()
+              if (autoCloseOnConfirm) {
+                onClose()
+              }
             }}
             className={`px-4 cursor-pointer py-2 rounded-md ${confirmButtonStyle[type]}`}
           >
-            {loading && (
+            {loading ? (
               <Loader2 size={16} className="animate-spin" />
+            ): (
+              confirmText
             )}
-
-            {confirmText}
           </button>
         </div>
       </div>

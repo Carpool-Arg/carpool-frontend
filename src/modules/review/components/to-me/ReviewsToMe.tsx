@@ -6,12 +6,12 @@ import { Toast } from "@/components/ux/Toast";
 import { getReviewsToMe } from "@/services/review/reviewService";
 import { ListFilter } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ReviewsToMeResponse } from "../types/ReviewsToMeResponse";
-import { UserReviewCardSkeleton } from "./UserRevireCardSkeleton";
 import { Rating } from "react-simple-star-rating";
 import { useAuth } from "@/contexts/authContext";
 import Image from "next/image";
+import { ReviewsToMeResponse } from "../../types/ReviewsToMeResponse";
 import { ReviewsToMeList } from "./ReviewsToMeList";
+import { UserReviewCardSkeleton } from "../UserRevireCardSkeleton";
 
 
 export const ORDERS_BY = [

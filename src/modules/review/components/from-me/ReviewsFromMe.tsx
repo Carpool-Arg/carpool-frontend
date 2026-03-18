@@ -5,10 +5,10 @@ import { Toast } from "@/components/ux/Toast";
 import { getReviewsFromMe } from "@/services/review/reviewService";
 import { ListFilter } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ReviewsFromMeResponse } from "../types/ReviewsFromMeResponse";
+import { ReviewsFromMeResponse } from "../../types/ReviewsFromMeResponse";
 import { ReviewsFromMeList } from "./ReviewsFromMeList";
 import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
-import { UserReviewCardSkeleton } from "./UserRevireCardSkeleton";
+import { UserReviewCardSkeleton } from "../UserRevireCardSkeleton";
 
 
 export const ORDERS_BY = [
@@ -112,7 +112,7 @@ export default function ReviewsFromMe(){
     <div className="w-full">
       <RoleSelectorHeader
         title="Listado de reseñas"
-        description="Aca podés ver las reseñas que realizaste a pasajeros y choferes"
+        description={`Aca podés ver las reseñas que realizaste como ${role === 'passenger' ? 'pasajero' : 'chofer'}.`}
         role={role}
         onChangeRole={handleChangeRole}
       />

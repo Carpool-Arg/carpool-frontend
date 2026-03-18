@@ -1,7 +1,8 @@
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
-import { UserReview } from "../types/UserReview";
-import { UserReviewCard } from "./UserReviewCard";
+
 import { StarOff } from "lucide-react";
+import { UserReviewCard } from "../UserReviewCard";
+import { UserReview } from "../../types/UserReview";
 
 
 interface ReviewsToMeListProps{
@@ -24,7 +25,7 @@ export function ReviewsToMeList({reviews, passenger}:ReviewsToMeListProps){
   return(
     <div className="flex flex-col">
       {reviews?.map((review) => (
-        <UserReviewCard key={review.id} review={review} passenger={passenger}/>
+        <UserReviewCard key={review.id} review={review} passenger={passenger} fromMe= {false}/>
       ))}
     </div>
   )
