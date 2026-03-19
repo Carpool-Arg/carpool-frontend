@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Role } from '../desktop/DesktopSidebar';
+import { PROTECTED_PATHS } from '@/constants/paths/protectedPaths';
 
 const navItems: { 
   href: string; 
@@ -23,9 +24,6 @@ const navItems: {
   { href: '/profile', icon: User, label: 'Perfil', role: 'user', size: 22 },
 ];
 
-// Rutas en las que debe mostrarse el navbar (soporta rutas dinámicas con startsWith)
-const allowedPaths = ['/home', '/search', '/notifications', '/profile', '/vehicle', '/trip','/reservations/','/reservations', '/settings', '/trips'];
-
 export default function MobileNavbar() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -39,7 +37,7 @@ export default function MobileNavbar() {
   const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
 
   // Mostrar solo si la ruta empieza con una ruta permitida
-  const shouldShowNavbar = allowedPaths.some((path) => pathname.startsWith(path));
+  const shouldShowNavbar = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
   if (!shouldShowNavbar) return null;
 
 return (
