@@ -4,7 +4,7 @@ import { AlertDialog } from '@/components/ux/AlertDialog';
 import Separator from '@/components/ux/Separator';
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 import { useAuth } from '@/contexts/authContext';
-import { Construction, History, Home, LogOut, LucideIcon, PlusCircle, Search, User } from 'lucide-react';
+import { Construction, Home, LogOut, LucideIcon, PlusCircle, Route, Search, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -22,7 +22,7 @@ const navItems: {
   { href: '/home', icon: Home, label: 'Inicio', role: 'user' },
   { href: '/search', icon: Search, label: 'Buscar', role: 'user' },
   { href: '/trip/new', icon: PlusCircle, label: 'Publicar viaje', role: 'driver' },
-  { href: '/history', icon: History, label: 'Historial', role: 'user'},
+  { href: '/trips', icon: Route, label: 'Viajes', role: 'user'},
   { href: '/profile', icon: User, label: 'Perfil', role: 'user' },
 ];
 
@@ -60,13 +60,14 @@ export default function DesktopSidebar() {
             {!user?.profileImage ? (
               <span className="w-5 h-5 rounded-full bg-gray-3 dark:bg-gray-2 animate-pulse" />
             ) :  (
-              <Image
-                src={user?.profileImage ?? ''}
-                alt="Foto de perfil"
-                width={20}
-                height={20}
-                className="rounded-full object-cover"
-              />
+              <div className="relative w-5 h-5 rounded-full overflow-hidden">
+                <Image
+                  src={user?.profileImage ?? ''}
+                  alt="Foto de perfil"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             )}
 
 

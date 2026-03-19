@@ -39,6 +39,9 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
   const tripActive = !!currentTrip
   const { user, loading: authLoading } = useAuth()
+
+  const isDriver = user?.roles?.includes('driver');
+
   
   useEffect(() => {
     if (authLoading) return
@@ -59,6 +62,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
   
   const fetchTrip = async () => {
+    if(!isDriver) return
+    
     try {
       const res = await getCurrentTrip()
 
@@ -81,6 +86,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
 
   const refetchCurrentTrip = async () => {
+    if(!isDriver) return
+
     const response = await getCurrentTrip();
     if (response.state === "OK") {
       setCurrentTrip(response.data);
@@ -108,7 +115,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     if (isLastStop) {
       setCurrentTrip(null)
       setArriveLoading(false)
-      setTimeout(() => router.push('/home'), 2000)
+      setTimeout(() => router.push(`/trip/details/driver/${currentTrip.idTrip}`), 2000)
       return
     }
 

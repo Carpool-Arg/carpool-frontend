@@ -5,5 +5,5 @@ export const HISTORY_TABS: {
   value: HistoryRole;
 }[] = [
   { label: "Pasajero", value: "passenger" },
-  { label: "Conductor", value: "driver" },
+  { label: "Chofer", value: "driver" },
 ];

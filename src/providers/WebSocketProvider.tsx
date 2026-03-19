@@ -24,6 +24,7 @@ interface WebSocketPayload {
   emailMessageFooter: string;
   data: {
     total: number;
+    tripId: number;
   };
 }
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
