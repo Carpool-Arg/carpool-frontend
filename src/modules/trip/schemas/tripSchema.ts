@@ -40,6 +40,7 @@ export const tripSchema = z.object({
     })
     .positive("El precio debe ser mayor a 0")
     .max(99999, " El precio no puede ser mayor a $99999"),
+    
 
   idVehicle: z
     .number({ invalid_type_error: "El ID del vehículo debe ser un número" })

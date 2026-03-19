@@ -2,6 +2,7 @@
 
 import { Alert } from '@/components/ux/Alert';
 import { useAuth } from '@/contexts/authContext';
+import { ProfileHeader } from '@/modules/profile/components/ProfileHeader';
 import { ProfileOptions } from '@/modules/profile/components/ProfileOptions';
 import { RoleSwithcer } from '@/modules/profile/components/RoleSwitcher';
 
@@ -18,28 +19,35 @@ export default function ProfilePage() {
   const handleRegisterAsDriver = () => {
     router.push('/register-driver');
   };
-
+  
   return (
-    <>
-      <RoleSwithcer role={profileViewRole} onChange={setProfileViewRole} />
-
-      {profileViewRole === 'conductor' && !isDriver ? (
-        <div className="mt-6 space-y-3">
-          <Alert type="info" message="Aún no estás registrado como conductor.">
-            <button
-              onClick={handleRegisterAsDriver}
-              className="mt-2 text-sm text-blue-600 hover:underline cursor-pointer"
-            >
-              Registrarme como conductor
-            </button>
-          </Alert>
+    
+      <div className="max-w-lg mx-auto">
+        <div className='md:mt-8'>
+          <ProfileHeader role={profileViewRole} />
         </div>
-      ) : (
-        <ProfileOptions
-          role={profileViewRole === 'conductor' ? 'driver' : 'passenger'}
-          logout={logout}
-        />
-      )}
-    </>
+        <div className='mt-4 flex justify-center'>
+          <RoleSwithcer role={profileViewRole} onChange={setProfileViewRole} />
+        </div>
+  
+        {profileViewRole === 'conductor' && !isDriver ? (
+          <div className="mt-6 space-y-3">
+            <Alert type="info" message="Aún no estás registrado como conductor.">
+              <button
+                onClick={handleRegisterAsDriver}
+                className="mt-2 text-sm text-blue-600 hover:underline cursor-pointer"
+              >
+                Registrarme como conductor
+              </button>
+            </Alert>
+          </div>
+        ) : (
+          <ProfileOptions
+            role={profileViewRole === 'conductor' ? 'driver' : 'passenger'}
+            logout={logout}
+          />
+        )}
+      </div>
+    
   );
 }

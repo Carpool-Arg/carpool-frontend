@@ -1,4 +1,5 @@
-import { TripForm } from "@/modules/trip/components/TripFrom";
+import { TripForm } from "@/modules/trip/components/new-trip/TripForm";
+
 
 export default function NewTripPage(){
     return(

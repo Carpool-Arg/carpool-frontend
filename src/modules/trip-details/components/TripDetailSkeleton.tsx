@@ -3,10 +3,6 @@
 export function TripDetailSkeleton() {
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen animate-pulse">
-      <div className="w-full">
-        <div className="h-6 w-40 bg-gray-300 dark:bg-gray-2 rounded mx-auto" />
-        <div className="h-1 w-full bg-gray-200 dark:bg-gray-5/75 rounded mt-2" />
-      </div>
 
       <div
         style={{

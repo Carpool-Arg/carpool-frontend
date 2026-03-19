@@ -1,28 +1,38 @@
 type Role = 'pasajero' | 'conductor';
 
 export function RoleSwithcer({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
+  const activeIndex = role === 'conductor' ? 1 : 0;
+
   return (
-    <div className="flex justify-center my-4">
-      <div className="relative flex border border-gray-300 rounded-full w-52 bg-gray-100">
-        {/* fondo deslizante */}
+    <div className="bg-gray-8 rounded-full w-2/3 p-1 my-4">
+      <div className="relative flex">
+        {/* PILL */}
         <div
-          className={`
-            absolute top-0 left-0 w-1/2 h-full bg-primary-dark rounded-full transition-transform duration-300 ease-in-out
-            ${role === 'conductor' ? 'translate-x-full' : 'translate-x-0'}
-          `}
+          className="absolute inset-y-0 w-1/2 rounded-full bg-black
+                     transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(${activeIndex * 100}%)`,
+          }}
         />
-        {/* botones */}
+
         <button
           onClick={() => onChange('pasajero')}
-          className={`w-1/2 z-10 py-2 rounded-l-full text-sm font-medium transition-colors duration-300 cursor-pointer
-            ${ role === 'pasajero' ? 'text-white' : 'text-gray-2/80'}`}
+          className={`
+            relative z-10 w-1/2 px-4 py-1.5 text-sm
+            transition-colors duration-300 cursor-pointer
+            ${role === 'pasajero' ? "text-white" : "text-gray-11 hover:text-white"}
+          `}
         >
           Pasajero
         </button>
+
         <button
           onClick={() => onChange('conductor')}
-          className={`w-1/2 z-10 py-2 rounded-r-full text-sm font-medium transition-colors duration-300 cursor-pointer
-            ${role === 'conductor' ? 'text-white' : 'text-gray-2/80'}`}
+          className={`
+            relative z-10 w-1/2 px-4 py-1.5 text-sm
+            transition-colors duration-300 cursor-pointer
+            ${role === 'conductor' ? "text-white" : "text-gray-11 hover:text-white"}
+          `}
         >
           Conductor
         </button>
