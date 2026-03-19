@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ProfileData, profileSchema } from '../schemas/profileSchema';
+import { ProfileHeader } from './ProfileHeader';
 
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -207,7 +208,11 @@ export default function ProfileDetails() {
   if (!user) return <p>Cargando usuario...</p>;
 
   return (
-    <div className="space-y-4 max-w-md">
+    <div className="space-y-4 ">
+      <div className=' md:py-8'>
+        <ProfileHeader />
+
+      </div>
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            

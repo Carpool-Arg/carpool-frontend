@@ -17,6 +17,7 @@ export const HEADER_PATHS = [
   '/profile',
   '/register-driver',
   '/driver-review/trip/',
+  '/passenger-review/trip/',
   '/settings/account/update-password',
   '/settings/account/update-email',
   '/settings/account',
@@ -27,7 +28,6 @@ export const HEADER_PATHS = [
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
-  '/history': 'Historial de viajes',
   '/trips': 'Viajes',
   '/trip/edit': 'Editar viaje',
   '/trip/new': 'Publicar viaje',
@@ -35,6 +35,8 @@ export const HEADER_TITLES: Record<string, string> = {
   '/reviews/driver/':'Reseñas',
   '/reviews/from-me':'Reseñas que has hecho',
   '/reviews/to-me': 'Reseñas que te han hecho',
+  '/driver-review/trip/': 'Reseñar al chofer',
+  '/passenger-review/trip/': 'Reseñar al pasajero',
   '/vehicle/edit': 'Editar Vehículo',
   '/vehicle/new': 'Registrar Vehículo',
   '/vehicle': 'Vehículos',
@@ -43,7 +45,6 @@ export const HEADER_TITLES: Record<string, string> = {
   '/register-driver': 'Registrar conductor',
   '/reservations/':'Reservas del viaje', 
   '/reservations':'Viajes',
-  '/driver-review/trip/': 'Reseñar al chofer',
   '/settings/account/update-password': 'Contraseña',
   '/settings/account/update-email': 'Correo electrónico',
   '/settings/account': 'Cuenta',

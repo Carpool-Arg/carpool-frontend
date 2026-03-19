@@ -4,7 +4,7 @@ import { Star } from 'lucide-react';
 import Image from 'next/image';
 
 interface ProfileHeaderProps{
-  role: string
+  role?: string
 }
 
 
