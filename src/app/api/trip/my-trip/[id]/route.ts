@@ -1,32 +1,35 @@
-import { BooleanResponse } from "@/shared/types/response";
+
+import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Ddeterminar si el usuario en sesion puede realizar una reseña a un chofer de un determinado viaje
- * Recibe el id del viaje que se desea reseñar
- * @param req 
- * @returns devuelve una response con un booleano que indica el resultado de la consulta
+ * Recupera los detalles de un viaje específico para editar.
+ * 
+ * Recibe el ID del viaje como parámetro de la ruta,
+ * realiza la llamada al backend para obtener los detalles del viaje,
+ * y devuelve la respuesta estándar de tipo `TripResponse`.
+ * 
+ * @param req {NextRequest} - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con los detalles del viaje
  */
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ tripId: string, passengerId:string}> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { tripId, passengerId } = await context.params;
   try {
+    const { id } = await context.params;
     const token = req.cookies.get('token')?.value;
 
-
-    const res = await fetch(`${apiUrl}/review/can-driver-review/${tripId}/${passengerId}`, {
-      method: "GET",
+    const res = await fetch(`${apiUrl}/trip/my-trip/${id}`, {
       headers: {
         "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: BooleanResponse = await res.json();
+    const response: TripResponseDTO = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =
@@ -38,6 +41,7 @@ export async function GET(
         { status: res.ok ? 200 : res.status } 
       );
     }
+
     return NextResponse.json(response, { status: res.status });
   } catch (error: unknown) {
     // Manejo de errores inesperados

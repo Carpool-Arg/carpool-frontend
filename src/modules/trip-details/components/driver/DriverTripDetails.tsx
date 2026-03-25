@@ -1,39 +1,50 @@
 'use client'
 
+import { EmptyAlert } from "@/components/ux/EmptyAlert";
+import InfoTooltip from "@/components/ux/InfoTooltip";
+import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
+import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
+import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
+import { useTripDetails } from "@/modules/trip/components/update-trip/hooks/useTripData";
+import { formatDomain } from "@/shared/utils/domain";
+import { formatPrice } from "@/shared/utils/number";
+import { capitalizeWords } from "@/shared/utils/string";
+import { CircleX } from "lucide-react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+import { Rating } from "react-simple-star-rating";
+import { TripDetailSkeleton } from "../TripDetailSkeleton";
 import PassengersTrip from "./PassengersTrip";
 
 export default function DriverTripDetails() {
   const { id } = useParams();
+  const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id));
 
-  // const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id))
+  const selectedBaggage = baggageOptions.find(
+    (b) => b.value === trip?.availableBaggage
+  );
 
-  // const handleGoToDriverProfile = () => {
-  //   router.push(`/reviews/driver/${trip?.driverInfo.driverId}`);
-  // };
-
-  // const selectedBaggage = baggageOptions.find(
-  //   (b) => b.value === trip?.availableBaggage
-  // );
-
-  // const BaggageIcon = selectedBaggage?.icon;
+  const BaggageIcon = selectedBaggage?.icon;
 
 
-  // if (tripLoading) return TripDetailSkeleton();
-  // if (tripError) return (
-  //   <div className="my-50">
-  //     <EmptyAlert
-  //       icon={<CircleX size={32} />}
-  //       title="Error inesperado"
-  //       description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
-  //     />
-  //   </div>
+  if (tripLoading) 
+    return (
+      <TripDetailSkeleton reservationButton={false}/>
+    )
+  if (tripError) return (
+    <div className="my-50">
+      <EmptyAlert
+        icon={<CircleX size={32} />}
+        title="Error inesperado"
+        description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
+      />
+    </div>
 
-  // );
+  );
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
-      {/* {trip &&
+      {trip &&
         <div
           className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4 mb-4"
         >
@@ -96,24 +107,6 @@ export default function DriverTripDetails() {
                     SVGstyle={{ display: "inline" }}
                     allowFraction
                   />
-                  <button
-                    onClick={handleGoToDriverProfile}
-                    className="
-                      cursor-pointer
-                      transition-all
-                      duration-300
-                      ease-out
-                      hover:scale-110
-                      hover:-translate-y-0.5
-                      hover:bg-gray-9
-                      active:scale-95
-                      bg-gray-10
-                      p-1
-                      rounded-lg
-                    "
-                  >
-                    <MessageCircleMore size={22} />
-                  </button>
 
                 </div>
               </div>
@@ -162,11 +155,15 @@ export default function DriverTripDetails() {
 
           
         </div>
-      } */}
+      } 
 
-      <div className="flex flex-col gap-2">
-        <PassengersTrip idTrip={Number(id) ?? null}/>
-      </div>
+      {trip && 
+        <div className="mb-4 w-full">
+          <PassengersTrip idTrip={Number(id) ?? null}/>
+        </div>
+      }
+      
+
     </div>
   );
 }

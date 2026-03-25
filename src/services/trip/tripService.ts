@@ -124,7 +124,7 @@ export async function getTripDetails(tripId: number): Promise<TripResponseDTO>{
 
 export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>{
   try{
-    const res = await fetchWithRefresh(`/api/trip/edit/${tripId}`,{
+    const res = await fetchWithRefresh(`/api/trip/my-trip/${tripId}`,{
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     })
