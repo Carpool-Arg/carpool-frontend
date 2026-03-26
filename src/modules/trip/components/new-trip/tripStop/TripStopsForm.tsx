@@ -5,7 +5,7 @@ import { Button } from "@/components/ux/Button"
 import { Toast } from "@/components/ux/Toast"
 import { City } from "@/models/city"
 import { TripStop, TripStopExtended } from "@/models/tripStop"
-import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core"
+import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable"
 import { CircleSmall, Plus, Save } from "lucide-react"
 import { useState } from "react"
@@ -24,13 +24,19 @@ type TripStopFormProps = {
 
 export function TripStopForm({ initialStops=[], origin, destination, onSubmitTripStops, onBack, onNext }: TripStopFormProps){
     const [tripStopsList, setTripStopsList] = useState<TripStopProps[]>(
-        initialStops.map((stop, index) => ({
-        id: index + 1, // le damos un id para DnD
-        title: stop.cityName ?? '',      // podés poner stop.observation o alguna otra info si querés
-        cityId: stop.cityId,
-        observation: stop.observation,
-        }))
+        [...initialStops]
+            .sort((a, b) => {
+                if (a.order == null || b.order == null) return 0;
+                return a.order - b.order;
+            })
+            .map((stop, index) => ({
+                id: index + 1,
+                title: stop.cityName ?? '',
+                cityId: stop.cityId,
+                observation: stop.observation,
+            }))
     );
+
     const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
     const [observation, setObservation] = useState('')
     const [city, setCity] = useState<City>()
@@ -69,7 +75,7 @@ export function TripStopForm({ initialStops=[], origin, destination, onSubmitTri
         } else {
             setTripStopsList(prev => [
             ...prev,
-            { id: Date.now(), title, cityId, observation }
+            { id: prev.length === 0 ? 1 : Math.max(...prev.map(s => s.id)) + 1, title, cityId, observation }
             ])
         }
         
@@ -78,19 +84,20 @@ export function TripStopForm({ initialStops=[], origin, destination, onSubmitTri
         setEditingStopId(null)
     }
 
-    const getTripStopsPos = (id: UniqueIdentifier) => tripStopsList.findIndex(tripStop => tripStop.id === id)
+    
+    // handleDragEnd - solo mover, no reasignar nada
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
 
-    const handleDragEnd = (event:DragEndEvent) => {
-        const {active, over} = event
+        setTripStopsList(prev => {
+            const oldIndex = prev.findIndex(i => i.id === active.id);
+            const newIndex = prev.findIndex(i => i.id === over.id);
+            return arrayMove(prev, oldIndex, newIndex); // ← sin el .map de order
+        });
+    };
 
-        if (!over || active.id === over.id) return
 
-        setTripStopsList(tripStopsList =>{
-            const originalPos = getTripStopsPos(active.id)
-            const newPos = getTripStopsPos(over.id)
-            return arrayMove(tripStopsList,originalPos,newPos)
-        })
-    }
 
     //Esto me daba error si lo hacia con el id del objeto, no se porque habia mas de uno con el mismo id
     const handleDeleteTripStop = (cityId: number) => {
@@ -115,16 +122,15 @@ export function TripStopForm({ initialStops=[], origin, destination, onSubmitTri
         })
     )
 
+    // formatTripStop - el order se asigna recién al enviar
     const formatTripStop = (stops: TripStopProps[]) =>
         stops.map((stop, index) => ({
             ...stop,
-            order: index + 1,
+            order: index + 1,   // ← solo acá, al momento de submitear
             start: false,
             destination: false,
             cityName: stop.title
-        }
-    ));
-
+        }));
 
     
     return(

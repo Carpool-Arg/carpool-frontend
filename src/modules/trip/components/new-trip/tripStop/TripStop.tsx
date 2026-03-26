@@ -9,6 +9,7 @@ export interface TripStopProps{
     title: string
     cityId: number
     observation: string
+    order?:number
 }
 
 export const TripStop = ({id,title}: TripStopProps) => {
