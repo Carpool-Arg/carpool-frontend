@@ -6,10 +6,11 @@ import { capitalizeWords } from '@/shared/utils/string'
 
 export interface TripStopProps{
     id:number,
-    title: string
-    cityId: number
-    observation: string
-    order?:number
+    title: string,
+    cityId: number,
+    observation: string,
+    order?:number,
+    tripStopId?: number
 }
 
 export const TripStop = ({id,title}: TripStopProps) => {

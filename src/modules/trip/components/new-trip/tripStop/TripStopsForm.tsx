@@ -34,6 +34,7 @@ export function TripStopForm({ initialStops=[], origin, destination, onSubmitTri
                 title: stop.cityName ?? '',
                 cityId: stop.cityId,
                 observation: stop.observation,
+                tripStopId: stop.tripStopId
             }))
     );
 
@@ -129,7 +130,8 @@ export function TripStopForm({ initialStops=[], origin, destination, onSubmitTri
             order: index + 1,   // ← solo acá, al momento de submitear
             start: false,
             destination: false,
-            cityName: stop.title
+            cityName: stop.title,
+            tripStopId: stop.tripStopId,
         }));
 
     

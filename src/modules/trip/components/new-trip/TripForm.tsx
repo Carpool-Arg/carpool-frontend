@@ -246,7 +246,7 @@ export function TripForm() {
       },
       ...((data.tripStops || []).map((stop, index) => ({
         ...stop,
-        order: index + 2, // empezamos en 2 para que no choque con origen
+        order: index + 2,
         start: false,
         destination: false,
       }))),
@@ -254,7 +254,7 @@ export function TripForm() {
         cityId: data.destinationId,
         start: false,
         destination: true,
-        order: (data.tripStops?.length || 0) + 2,
+        order: (tripStops?.length || 0) + 2,
         observation: data.destinationObservation
       }
     ];

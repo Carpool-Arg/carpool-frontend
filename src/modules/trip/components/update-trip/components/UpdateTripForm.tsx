@@ -242,6 +242,9 @@ export function UpdateTripForm() {
     handleSubmit(onSubmit)();
   };
 
+  const findExistingStop = (predicate: (s: TripStop) => boolean) =>
+    trip?.tripStops.find(predicate);
+
   const onSubmit = async (data: TripFormData) => {
     if (!origin || !destination) {
       setError("Debes seleccionar origen y destino");
@@ -251,6 +254,7 @@ export function UpdateTripForm() {
 
     const tripStopsPayload = [
       {
+        tripStopId: findExistingStop(s => s.start)?.tripStopId,
         cityId: data.originId,
         start: true,
         destination: false,
@@ -264,10 +268,11 @@ export function UpdateTripForm() {
         destination: false,
       }))),
       {
+        tripStopId: findExistingStop(s => s.destination)?.tripStopId,
         cityId: data.destinationId,
         start: false,
         destination: true,
-        order: (data.tripStops?.length || 0) + 2,
+        order: (tripStops?.length || 0) + 2,
         observation: data.destinationObservation
       }
     ];
