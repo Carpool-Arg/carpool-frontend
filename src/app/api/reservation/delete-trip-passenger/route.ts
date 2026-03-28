@@ -1,0 +1,50 @@
+import { VoidResponse } from "@/shared/types/response";
+import { NextRequest, NextResponse } from "next/server";
+
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+/**
+ * Eliminar a un pasajero de un viaje cuando ya tiene una reserva aceptada
+ * 
+ * Recibe el id de la reserva y una razón de la cancelacion, que es opcional 
+ * @param req 
+ */
+export async function PUT(req: NextRequest) {
+  try{
+    const token = req.cookies.get('token')?.value;
+    const body = await req.json();
+
+    const res = await fetch(`${apiUrl}/reservation/delete-trip-passenger`, {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json" ,
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body),
+    });  
+    
+    const response: VoidResponse = await res.json()
+    
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
+      return NextResponse.json(
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status } 
+      );
+    }
+
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
+    );
+    return errorRes;
+  }
+}

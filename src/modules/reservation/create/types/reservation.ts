@@ -1,6 +1,7 @@
 export interface ReservationDTO{
     id:number;
     createdAt:string;
+    tripStartDatetime: string;
     startCity: string;
     destinationCity: string;
     baggage: boolean;

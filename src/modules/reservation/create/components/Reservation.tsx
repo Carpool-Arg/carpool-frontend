@@ -1,6 +1,6 @@
 import { Button } from "@/components/ux/Button";
 import Separator from "@/components/ux/Separator";
-import { Circle, Square, Star } from "lucide-react";
+import { Circle, Square, Star, UserX } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineBackpack, MdOutlineNoBackpack } from "react-icons/md";
 import { ReservationDTO } from "../types/reservation";
@@ -12,12 +12,14 @@ export interface ReservationProps {
     reservation: ReservationDTO;
     onAccept: ()=>void
     onReject: ()=>void
+    onDelete: () => void
     isAccepting?: boolean;
     isRejecting?: boolean;
+    isDeleting?: boolean;
 }
 
 
-export default function Reservation({ reservation,onAccept, onReject, isAccepting,isRejecting}: ReservationProps) {
+export default function Reservation({ reservation,onAccept, onReject,onDelete, isAccepting,isRejecting, isDeleting}: ReservationProps) {
     return (
         <div className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200">
             <div className="flex items-center gap-4 w-full justify-between">
@@ -80,32 +82,60 @@ export default function Reservation({ reservation,onAccept, onReject, isAcceptin
                 </div>
             </div>
             {reservation.state ==='PENDING' && 
-            <div>
-                <Separator color="bg-gray-2" marginY="my-2" />
-                <div className="flex items-center gap-6 justify-end">
-                    
-                    <Button variant="outline" onClick={onReject} disabled={isAccepting || isRejecting}>
-                        {isRejecting ? (
-                            <div className="px-5 py-0.5">
-                                <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
-                            </div> 
-                        ) : (
-                            "Rechazar"
-                        )}
-                    </Button>
-                    
-                    <Button variant="primary"  className="px-5" onClick={onAccept} disabled={isAccepting || isRejecting}>
-                        {isAccepting ? (
-                            <div className="px-5 py-0.5">
-                                <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
-                            </div>  
-                        ) : (
-                            "Aceptar"
-                        )}
-                    </Button>
+                <div>
+                    <Separator color="bg-gray-2" marginY="my-2" />
+                    <div className="flex items-center gap-6 justify-end">
+                        
+                        <Button variant="outline" onClick={onReject} disabled={isAccepting || isRejecting}>
+                            {isRejecting ? (
+                                <div className="px-5 py-0.5">
+                                    <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
+                                </div> 
+                            ) : (
+                                "Rechazar"
+                            )}
+                        </Button>
+                        
+                        <Button variant="primary"  className="px-5" onClick={onAccept} disabled={isAccepting || isRejecting}>
+                            {isAccepting ? (
+                                <div className="px-5 py-0.5">
+                                    <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-2 border-t-transparent"></div>
+                                </div>  
+                            ) : (
+                                "Aceptar"
+                            )}
+                        </Button>
+                    </div>
                 </div>
-            </div>
-}
+            }
+
+            {reservation.state ==='ACCEPTED' && 
+                <div>
+                    <Separator color="bg-gray-2" marginY="my-2" />
+                    <div className="flex items-center gap-6 justify-end">
+                        
+                        <Button variant="outline" onClick={onDelete} disabled={isDeleting}
+                            className="
+                            flex! items-center! gap-2!
+                            px-3! py-2! rounded-lg! text-sm!
+                            text-red-500!
+                            bg-red-500/10!
+                            transition-none!
+                            ">
+                            {isDeleting ? (
+                                <div className="px-5 py-0.5">
+                                    <div className=" h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
+                                </div> 
+                            ) : (
+                                <>
+                                <UserX size={16} />
+                                Quitar pasajero
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

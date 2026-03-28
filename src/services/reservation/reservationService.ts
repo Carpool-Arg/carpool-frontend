@@ -1,5 +1,6 @@
 import { Reservation } from "@/models/reservation";
 import { ReservationResponse } from "@/modules/reservation/create/types/dto/reservationResponseDTO";
+import { DeleteTripPassengerDTO } from "@/modules/reservation/update/types/deleteTripPassenger";
 import { ReservationDTO } from "@/modules/reservation/update/types/reservation";
 import { ReservationUpdateDTO } from "@/modules/reservation/update/types/reservationUpdate";
 import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
@@ -98,6 +99,29 @@ export async function updateReservation(reservationUpdateRequest: ReservationUpd
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reservationUpdateRequest),
+      credentials: 'include'
+    });
+
+    const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  }catch(error: unknown){
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function deleteTripPassenger(request: DeleteTripPassengerDTO): Promise<VoidResponse>{
+  try{
+    const res = await fetchWithRefresh('/api/reservation/delete-trip-passenger',{
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
       credentials: 'include'
     });
 
