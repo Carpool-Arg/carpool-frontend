@@ -165,7 +165,6 @@ export default function TripReservationList({
       }
     } finally {
       setLoading(false);
-      setLoadingDeleteId(null)
       setDeleteReason(null);
     }
   };
@@ -271,7 +270,7 @@ export default function TripReservationList({
               text3="y será notificado."
               text4="Podrá volver a solicitar un lugar en el viaje."
               placeHolder="Ingresá un motivo (opcional)"
-              maxReasonLength={250}
+              maxReasonLength={100}
               requiredReason = {false}
               
               onConfirm={(reason) => {
