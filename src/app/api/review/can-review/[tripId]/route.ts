@@ -1,4 +1,4 @@
-import { CityResponseDTO } from "@/modules/city/types/dto/CityResponseDTO";
+import { BooleanResponse } from "@/shared/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -26,7 +26,7 @@ export async function GET(
       },
     });
 
-    const response: CityResponseDTO = await res.json();
+    const response: BooleanResponse = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

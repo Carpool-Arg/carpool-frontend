@@ -15,7 +15,7 @@ export default function MyTrips() {
     useEffect(() => {
         const fetchMyTrips = async () => {
             try{
-                const responseMyTrips = await getMyTrips();
+                const responseMyTrips = await getMyTrips(['CREATED', 'CLOSED']);
                 if(responseMyTrips.state === "ERROR"){
                     setError(responseMyTrips.messages[0])
                 }

@@ -27,7 +27,8 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isValid  },
-    watch
+    watch, 
+    trigger
   } = useForm<CompleteRegistrationData>({
     resolver: zodResolver(completeRegistrationSchema),
     mode: 'onChange',
@@ -51,22 +52,22 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "username" && value.username) {
-        if (!errors.username){
-          usernameValidation.validate(value.username);
-        }
-      }else if(name === "dni" && value.dni){
-        if(!errors.dni){
-          dniValidation.validate(value.dni)
-        }
-      }else if(name === "phone" && value.phone){
-        if(!errors.phone){
-          phoneValidation.validate(value.phone)
-        }
+        trigger("username").then((isValid) => {
+          if (isValid) usernameValidation.validate(value.username!);
+        });
+      } else if (name === "dni" && value.dni) {
+        trigger("dni").then((isValid) => {
+          if (isValid) dniValidation.validate(value.dni!);
+        });
+      } else if (name === "phone" && value.phone) {
+        trigger("phone").then((isValid) => {
+          if (isValid) phoneValidation.validate(value.phone!);
+        });
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch,errors, usernameValidation,dniValidation,phoneValidation]);
-
+  }, [watch, trigger, usernameValidation, dniValidation, phoneValidation]);   
+    
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
     if (validation.available === true) return <Check className="w-4 h-4 text-success" />;

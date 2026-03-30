@@ -74,33 +74,32 @@ export function RegisterForm() {
   useEffect(() => {
     const subscription = step1Form.watch((value, { name }) => {
       if (name === "username" && value.username) {
-        if (!step1Form.formState.errors.username){
-          usernameValidation.validate(value.username);
-        }
+        step1Form.trigger("username").then((isValid) => {
+          if (isValid) usernameValidation.validate(value.username!);
+        });
       } else if (name === "email" && value.email) {
-        if(!step1Form.formState.errors.email){
-          emailValidation.validate(value.email);
-        }
+        step1Form.trigger("email").then((isValid) => {
+          if (isValid) emailValidation.validate(value.email!);
+        });
       }
     });
     return () => subscription.unsubscribe();
   }, [step1Form, usernameValidation, emailValidation]);
 
-  // Watch para campo de step2Form: dni
   useEffect(() => {
     const subscription = step2Form.watch((value, { name }) => {
       if (name === "dni" && value.dni) {
-        if(!step2Form.formState.errors.dni){
-          dniValidation.validate(value.dni);
-        }
-      }else if(name === "phone" && value.phone){
-        if (!step2Form.formState.errors.phone){
-          phoneValidation.validate(value.phone)
-        }
+        step2Form.trigger("dni").then((isValid) => {
+          if (isValid) dniValidation.validate(value.dni!);
+        });
+      } else if (name === "phone" && value.phone) {
+        step2Form.trigger("phone").then((isValid) => {
+          if (isValid) phoneValidation.validate(value.phone!);
+        });
       }
     });
     return () => subscription.unsubscribe();
-  }, [step2Form, dniValidation,phoneValidation]);
+  }, [step2Form, dniValidation, phoneValidation]);
 
   const getRightIcon = (validation: ReturnType<typeof useFieldValidator>) => {
     if (validation.checking) return <Spinner size={16} />;
