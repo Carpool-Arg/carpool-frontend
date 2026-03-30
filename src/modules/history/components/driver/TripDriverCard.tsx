@@ -9,10 +9,10 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
 import { tripStateMap } from "@/shared/utils/trip";
-import { Ban, ChevronRight, Ellipsis, Loader2, Pencil } from "lucide-react";
+import { Ban, ChevronRight, Ellipsis, Loader2, LucideEye, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
 
@@ -24,8 +24,9 @@ interface TripCardProps {
   setOpenMenuTripId: (id: number | null) => void;
 }
 
+export type TripActionScope = "view" | "start" | "edit";
+
 export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOpenMenuTripId}: TripCardProps) {
-  const [state, setState] = useState('CREATED')
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
@@ -67,12 +68,6 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
   }
 
 
-  
-  useEffect(() => {
-    setState(trip.tripState)
-  }, [trip.tripState])
-
-
   const handleStartCancel = () => {
     if (trip.hasReservations) {
       setReasonModalOpen(true);
@@ -110,37 +105,43 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     }
   };
 
-  const handleClick = async () => {
-    if (disabled || loading) return;
+  const handleAction = async (scope: TripActionScope) => {
+    if (loading) return;
 
     setLoading(true);
 
     try {
-      const result = await onClick(trip.id.toString());
+      const result = await config.onClick(trip.id.toString(), scope);
 
       if (!result.ok) {
-        onSuccess?.(result.message);
+        setToast({
+          message: result.message ?? "Error",
+          type: "error",
+        });
         return;
       }
 
+      if (scope === "start") {
+        await refetchCurrentTrip();
+        router.push("/current-trip");
+        return;
+      }
 
-      switch (state) {
-        case "CLOSED":
-          await refetchCurrentTrip();
-          router.push(`/current-trip`);
-          break;
-        case "CREATED":
-          router.push(`/trip/edit/${trip.id}`);
-          break;
+      if (scope === "view") {
+        router.push(`/trip/details/driver/${trip.id}`);
+        return;
+      }
 
-        default:
-          console.warn("Estado no manejado", state);
+      if (scope === "edit") {
+        router.push(`/trip/edit/${trip.id}`);
       }
     } finally {
       setLoading(false);
     }
-    
   };
+    
+
+
 
   const handleEdit = () => {
     setEditDialogOpen(true);
@@ -148,7 +149,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
 
   const config =  tripButtonConfig[trip.tripState];
 
-  const { label, Icon, className, disabled, onClick} = config;
+  const { label, Icon, className, disabled} = config;
  
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
@@ -253,7 +254,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
               disabled={disabled || loading}
               onClick={() => {
                 setOpenMenuTripId(null);
-                handleClick();
+                handleAction(trip.tripState === "CLOSED" ? "start" : "view");
               }}
               className={`
                 w-full flex items-center gap-2
@@ -275,33 +276,58 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
             </button>
 
             {/* Editar */}
+            {trip.tripState === 'FINISHED' ? (
+              <button
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  handleAction("view")
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <LucideEye size={16} />
+                )}
+                  Visualizar
+              </button>
+            ):(
+              <button
+                className={`
+                  w-full flex items-center gap-2
+                  px-3 py-2 rounded-lg text-sm
+                  transition-all duration-200
+                  bg-gray-7 text-gray-6
+                  hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  cursor-pointer
+                `}
+                onClick={() => {
+                  setOpenMenuTripId(null);
+                  if (canEdit) {
+                    handleAction("edit");
+                  } else {
+                    handleEdit();
+                  }
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Pencil size={16} />
+                )}
+                  Editar
+              </button>
+            )}
             
-            <button
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
-                disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-              `}
-              onClick={() => {
-                setOpenMenuTripId(null);
-                if (canEdit) {
-                  handleClick();
-                } else {
-                  handleEdit();
-                }
-              }}
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Pencil size={16} />
-              )}
-                Editar
-            </button>
             
 
             {/* Cancelar */}
@@ -369,6 +395,14 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         isOpen={isReasonModalOpen}
         onClose={() => setReasonModalOpen(false)}
         loading={loading}
+        title="Motivo de cancelación"
+        text1="Al cancelar este viaje, "
+        text2="las reservas asociadas serán canceladas"
+        text3="y los pasajeros serán notificados."
+        text4="Te recomendamos cancelar solo si es realmente necesario."
+        placeHolder="Ingresá el motivo de cancelación"
+        requiredReason={true}
+        maxReasonLength={250}
         onConfirm={(reason) => {
           setCancelReason(reason);
           setCancelDialogOpen(true);  

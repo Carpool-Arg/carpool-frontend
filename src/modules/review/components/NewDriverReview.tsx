@@ -6,9 +6,9 @@ import { Rating } from "react-simple-star-rating";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DriverReviewForm, driverReviewSchema } from "../schemas/driverReviewSchema";
+import { ReviewForm, reviewSchema } from "../schemas/reviewSchema";
 import { ReviewRequestDTO } from "../types/dto/ReviewRequestDTO";
-import { createReview, canUserReview } from "@/services/review/reviewService";
+import { createDriverReview, canUserReview } from "@/services/review/reviewService";
 import { Toast } from "@/components/ux/Toast";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { ErrorMessage } from "@/components/ui/Error";
@@ -30,8 +30,8 @@ export default function NewDriverReview() {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<DriverReviewForm>({
-    resolver: zodResolver(driverReviewSchema),
+  } = useForm<ReviewForm>({
+    resolver: zodResolver(reviewSchema),
     mode: 'onChange',
     defaultValues: {
       rating: 0,
@@ -76,7 +76,7 @@ export default function NewDriverReview() {
     setValue("rating", rate, { shouldValidate: true });
   };
 
-  const onSubmit = async (data: DriverReviewForm) => {
+  const onSubmit = async (data: ReviewForm) => {
     const payload: ReviewRequestDTO = {
       stars: data.rating,
       description: data.comment,
@@ -84,7 +84,7 @@ export default function NewDriverReview() {
     };
 
     try {
-      const response = await createReview(payload);
+      const response = await createDriverReview(payload);
 
       if (response.state != 'OK') {
         setToast({ message: response.messages[0] ?? 'Error al crear la reseña', type: 'error' });

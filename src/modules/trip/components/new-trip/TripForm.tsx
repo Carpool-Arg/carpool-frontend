@@ -21,13 +21,13 @@ import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
 import { useEffect, useState } from 'react';
-import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
 import { TripDetail } from './TripDetail';
 import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 
 interface BaggageOption {
   value: string;

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const body = await req.json();
 
-    const res = await fetch(`${apiUrl}/review`, {
+    const res = await fetch(`${apiUrl}/review/driver`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json" ,

@@ -14,11 +14,11 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Rating } from "react-simple-star-rating";
-import { Button } from "../../../components//ux/Button";
-import { ErrorMessage } from "../../../components/ui/Error";
-import { AlertDialog } from "../../../components/ux/AlertDialog";
-import { TripDetailsData } from "../types/tripDetails";
-import { TripDetailSkeleton } from "./TripDetailSkeleton";
+import { Button } from "../../../../components/ux/Button";
+import { ErrorMessage } from "../../../../components/ui/Error";
+import { AlertDialog } from "../../../../components/ux/AlertDialog";
+import { TripDetailsData } from "../../types/tripDetails";
+import { TripDetailSkeleton } from "../TripDetailSkeleton";
 import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
 import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
 
@@ -129,7 +129,7 @@ export default function TripDetails() {
 
   const handleCloseModal = () => setIsModalOpen(false);
 
-  if (loading) return TripDetailSkeleton();
+  if (loading) return <TripDetailSkeleton/>;
   if (error) return (
     <div className="h-full my-auto">
       <ErrorMessage message={error} />

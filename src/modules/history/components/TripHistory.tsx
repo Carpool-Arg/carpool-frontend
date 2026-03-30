@@ -7,8 +7,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TripHistoryUserDTO } from "../types/TripHistoryUserDTO";
 import { TripDriverList } from "./driver/TripDriverList";
-import TripHistoryHeader from "./TripHistoryHeader";
 import { TripPassengerList } from "./passenger/TripPassengerList";
+import RoleSelectorHeader from "@/components/ux/RoleSelectorHeader";
 import { TripDriverCardSkeleton } from "./driver/TripDriverCardSkeleton";
 
 export default function TripHistory() { 
@@ -18,6 +18,7 @@ export default function TripHistory() {
   const role = searchParams.get("role") ?? "passenger";
 
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
+
   const [passengerTrips, setPassengerTrips]=useState<TripHistoryUserDTO[]>([])
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -34,7 +35,7 @@ export default function TripHistory() {
     setLoading(true);
     try {
       if (role==='driver'){
-        const response = await getMyTrips(["CREATED", "CLOSED"]);
+        const response = await getMyTrips(["CREATED", "CLOSED", "FINISHED"]);
         if(response.state === 'OK') {
           setDriverTrips(response.data?.trips ?? [])
           
@@ -70,7 +71,9 @@ export default function TripHistory() {
 
   return(
     <div className="w-full">
-      <TripHistoryHeader
+      <RoleSelectorHeader
+        title="Historial de viajes"
+        description="Acá podés ver tus viajes realizados y los que están por comenzar."
         role={role}
         onChangeRole={handleChangeRole}
       />

@@ -140,13 +140,14 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Image
-              src={trip.driverInfo.profileImageUrl}
-              alt={trip.driverInfo.fullName}
-              width={25}
-              height={25}
-              className="rounded-full object-cover border"
-            />
+            <div className="relative w-6.25 h-6.25 rounded-full overflow-hidden border">
+              <Image
+                src={trip.driverInfo.profileImageUrl}
+                alt={trip.driverInfo.fullName}
+                fill
+                className="object-cover"
+              />
+            </div>
             
             <p>{trip.driverInfo.fullName}</p>
           </div>

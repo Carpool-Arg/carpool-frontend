@@ -12,4 +12,6 @@ export interface User {
   roles: Array<'user' | 'driver' | null>;
   birthDate: string| null;
   debtUser?: boolean;
+  passengerRating: number;
+  driverRating?:number;
 }

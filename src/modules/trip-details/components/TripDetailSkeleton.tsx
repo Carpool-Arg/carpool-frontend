@@ -1,12 +1,10 @@
 'use client';
-
-export function TripDetailSkeleton() {
+interface TripDetailSkeletonProps {
+  reservationButton?: boolean;
+}
+export function TripDetailSkeleton({reservationButton = true}:TripDetailSkeletonProps) {
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto h-screen animate-pulse">
-      <div className="w-full">
-        <div className="h-6 w-40 bg-gray-300 dark:bg-gray-2 rounded mx-auto" />
-        <div className="h-1 w-full bg-gray-200 dark:bg-gray-5/75 rounded mt-2" />
-      </div>
 
       <div
         style={{
@@ -79,10 +77,14 @@ export function TripDetailSkeleton() {
         </div>
 
         {/* Botón Reservar */}
-        <div className="flex justify-center items-center col-span-9 row-span-1">
-          <div className="h-10 w-40 bg-gray-300 dark:bg-gray-2 rounded-lg" />
-        </div>
+        {reservationButton ?? 
+          <div className="flex justify-center items-center col-span-9 row-span-1">
+            <div className="h-10 w-40 bg-gray-300 dark:bg-gray-2 rounded-lg" />
+          </div> 
+        }
+        
       </div>
+
     </div>
   );
 }
