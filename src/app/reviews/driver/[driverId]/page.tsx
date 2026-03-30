@@ -1,4 +1,5 @@
-import DriverReviews from "@/modules/review/components/driver/driverReviews";
+import DriverReviews from "@/modules/review/components/driver/DriverReviews";
+
 
 
 export default function DriverReviewsPage(){
