@@ -9,6 +9,7 @@ import Reservation from "../../create/components/Reservation";
 import { ReservationDTO } from "../../create/types/reservation";
 import { CancelReasonModal } from "@/modules/history/components/CancelReasonModal";
 import { Toast } from "@/components/ux/Toast";
+import { hasMinimumHoursRemaining } from "@/shared/utils/date";
 
 
 
@@ -131,12 +132,8 @@ export default function TripReservationList({
 
   const handleDeleteTripPassenger = (reservation: ReservationDTO)=>{
 
-    const tripStart = new Date(reservation.tripStartDatetime);
-    const now = new Date();
-
-    const diffInMs = tripStart.getTime() - now.getTime();
-    const diffInHours = diffInMs / (1000 * 60 * 60);
-    if (diffInHours < 1) {
+    const has1Hour = hasMinimumHoursRemaining(reservation.tripStartDatetime, 1);
+    if (!has1Hour) {
       setIsAlertTimeDialogOpen(true)
       return
     }else{
