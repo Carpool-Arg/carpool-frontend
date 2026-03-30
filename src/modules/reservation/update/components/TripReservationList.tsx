@@ -1,12 +1,15 @@
 'use client'
 
-import { updateReservation } from "@/services/reservation/reservationService";
+import { deleteTripPassenger, updateReservation } from "@/services/reservation/reservationService";
 
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import { Loader2, TicketX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Reservation from "../../create/components/Reservation";
 import { ReservationDTO } from "../../create/types/reservation";
+import { CancelReasonModal } from "@/modules/history/components/CancelReasonModal";
+import { Toast } from "@/components/ux/Toast";
+import { hasMinimumHoursRemaining } from "@/shared/utils/date";
 
 
 
@@ -26,8 +29,16 @@ export default function TripReservationList({
     hasFilters
 }: TripReservationListProps) {
   const loaderRef = useRef<HTMLDivElement | null>(null);    
+  const [isReasonModalOpen, setReasonModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [deleteReason, setDeleteReason] = useState<string | null>(null);
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
+  const [isAlertTimeDialogOpen, setIsAlertTimeDialogOpen] = useState<boolean>(false)
+
   const [loadingAcceptId, setLoadingAcceptId] = useState<number | null>(null);
   const [loadingRejectId, setLoadingRejectId] = useState<number | null>(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
 
   const [alertData, setAlertData] = useState<{
     type: "success" | "error" | "info" | null;
@@ -117,7 +128,43 @@ export default function TripReservationList({
         }finally{
             setLoadingRejectId(null);
         }
+  }
+
+  const handleDeleteTripPassenger = (reservation: ReservationDTO)=>{
+
+    const has1Hour = hasMinimumHoursRemaining(reservation.tripStartDatetime, 1);
+    if (!has1Hour) {
+      setIsAlertTimeDialogOpen(true)
+      return
+    }else{
+      setLoadingDeleteId(reservation.id);
+      setReasonModalOpen(true);
     }
+  }
+
+  const handleConfirmDeletePassenger = async () => {
+    if (loading) return;
+
+
+    setLoading(true);
+
+    try {
+      const response = await deleteTripPassenger({reservationId:loadingDeleteId!,reason:deleteReason ?? null});
+
+      if (response.state === "ERROR") {
+        setToast({ message:response.messages[0] ?? 'Error al eliminar al pasajero', type: 'error' })
+        return;
+      }else{
+        if (isReasonModalOpen) {
+          setReasonModalOpen(false);  
+        }
+        window.location.reload()
+      }
+    } finally {
+      setLoading(false);
+      setDeleteReason(null);
+    }
+  };
 
   const handleConfirm = (scope: 'ACCEPT'|'REJECT',idReservation: number)=>{
     if(scope==="ACCEPT"){
@@ -162,8 +209,10 @@ export default function TripReservationList({
                           reservation={reservation}
                           onAccept={() => handleConfirm('ACCEPT', reservation.id)}
                           onReject={() => handleConfirm("REJECT", reservation.id)} 
+                          onDelete={()=>handleDeleteTripPassenger(reservation)}
                           isAccepting={loadingAcceptId === reservation.id}
                           isRejecting={loadingRejectId === reservation.id}
+                          isDeleting={loadingDeleteId === reservation.id}
                         /> 
                     </div>
                   </div>
@@ -192,6 +241,63 @@ export default function TripReservationList({
                   onConfirm={alertData.onConfirm}
               />
           )}
+
+          <AlertDialog
+            isOpen={isCancelDialogOpen}
+            onClose={() => setCancelDialogOpen(false)}
+            onConfirm={handleConfirmDeletePassenger}
+            type="info"
+            title="Quitar pasajero"
+            description="¿Estás seguro de que querés quitar a este pasajero del viaje?"
+            confirmText="Sí, quitar"
+            cancelText="Volver"
+            loading={loading}
+          />
+
+          <CancelReasonModal
+              isOpen={isReasonModalOpen}
+              onClose={() => {
+                setReasonModalOpen(false)
+                setLoadingDeleteId(null)
+              }}
+              loading={loading}
+              title="Quitar pasajero"
+              text1="Al quitar a este pasajero del viaje, "
+              text2="su reserva será cancelada "
+              text3="y será notificado."
+              text4="Podrá volver a solicitar un lugar en el viaje."
+              placeHolder="Ingresá un motivo (opcional)"
+              maxReasonLength={100}
+              requiredReason = {false}
+              
+              onConfirm={(reason) => {
+              setDeleteReason(reason);
+              setCancelDialogOpen(true);  
+            }}
+          />
+
+          {toast && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+              <div className="pointer-events-auto w-full">
+                <Toast
+                  message={toast.message}
+                  type={toast.type}
+                  onClose={() => setToast(null)}
+                />
+              </div>
+            </div>
+          )}
+
+          <AlertDialog
+            isOpen={isAlertTimeDialogOpen}
+            onClose={() => setIsAlertTimeDialogOpen(false)}
+            confirmText="Aceptar"
+            type="info"
+            title="Quitar pasajero"
+            description='No es posible quitar al pasajero porque falta menos de una hora para el inicio del viaje.'
+            loading={loading}
+            singleButton={true}
+          />
       </div>
   )
 }

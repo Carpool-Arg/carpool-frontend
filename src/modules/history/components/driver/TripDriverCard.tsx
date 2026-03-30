@@ -394,6 +394,14 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
         isOpen={isReasonModalOpen}
         onClose={() => setReasonModalOpen(false)}
         loading={loading}
+        title="Motivo de cancelación"
+        text1="Al cancelar este viaje, "
+        text2="las reservas asociadas serán canceladas"
+        text3="y los pasajeros serán notificados."
+        text4="Te recomendamos cancelar solo si es realmente necesario."
+        placeHolder="Ingresá el motivo de cancelación"
+        requiredReason={true}
+        maxReasonLength={250}
         onConfirm={(reason) => {
           setCancelReason(reason);
           setCancelDialogOpen(true);  
