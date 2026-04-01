@@ -4,7 +4,7 @@ import { AlertDialog } from '@/components/ux/AlertDialog';
 import Separator from '@/components/ux/Separator';
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 import { useAuth } from '@/contexts/authContext';
-import { Construction, Home, LogOut, LucideIcon, PlusCircle, Route, Search, Settings, Settings2, SlidersHorizontal, User } from 'lucide-react';
+import { Construction, Home, LogOut, LucideIcon, PlusCircle, Route, Search, Settings2, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

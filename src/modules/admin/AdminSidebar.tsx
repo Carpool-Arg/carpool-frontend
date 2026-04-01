@@ -1,17 +1,16 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
 import {
-  LayoutDashboard,
-  Users,
   FileText,
-  Settings,
+  IdCard,
+  LayoutDashboard,
   LogOut,
-  IdCard
+  Settings
 } from 'lucide-react'
 import Image from 'next/image'
-import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
   {
