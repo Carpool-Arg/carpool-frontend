@@ -49,15 +49,13 @@ export async function GET(request: NextRequest) {
     const roles = rawAuthorities
       .map((a) => {
         switch (a.authority) {
-          case 'ROLE_USER':
-            return 'user';
-          case 'ROLE_DRIVER':
-            return 'driver';
-          default:
-            return null;
+          case 'ROLE_USER':  return 'user';
+          case 'ROLE_DRIVER': return 'driver';
+          case 'ROLE_ADMIN': return 'admin';
+          default: return null;
         }
       })
-      .filter(Boolean);
+      .filter((r): r is 'user' | 'driver' | 'admin' => r !== null);
 
     // Armamos el objeto final del usuario combinando la info del backend y los roles del token
     const user = {

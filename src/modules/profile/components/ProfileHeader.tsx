@@ -4,7 +4,7 @@ import { Star } from 'lucide-react';
 import Image from 'next/image';
 
 interface ProfileHeaderProps{
-  role: string
+  role?: string
 }
 
 
@@ -24,18 +24,32 @@ export function ProfileHeader({role}:ProfileHeaderProps) {
           className="object-cover"
         />
       </div>
-      <div className=''>
-        <h2 className="text-xl font-semibold text-gray-2 mt-2 dark:text-gray-1">
-          {user?.username}
-        </h2>
-        <p className="text-sm inline-flex items-center gap-1 bg-gray-2 text-gray-1/75 rounded px-2">
-          <span>
-            <Star size={12} fill="currentColor" />
-          </span>
-          {role == 'conductor' ? (user?.driverRating ? user.driverRating : "0") : user?.passengerRating}
-        </p>
-      </div>
-
+      {role ?
+        <div>
+          <h2 className="text-xl font-semibold text-gray-2 mt-2 dark:text-gray-1">
+            {user?.username}
+          </h2>
+          
+          <p className="text-sm inline-flex items-center gap-1 bg-gray-2 text-gray-1/75 rounded px-2">
+            <span>
+              <Star size={12} fill="currentColor" />
+            </span>
+            {role == 'conductor' ? (user?.driverRating ? user.driverRating : "0") : user?.passengerRating}
+          </p> 
+          
+        </div>
+      :
+        <div>
+          <h2 className="text-xl font-semibold text-gray-2 mt-2 dark:text-gray-1">
+            {user?.name} {user?.lastname} 
+          </h2>
+          
+          <p className="text-sm inline-flex items-center gap-1 bg-gray-2 text-gray-1/75 rounded px-2">
+            @{user?.username}
+          </p> 
+          
+        </div>
+      }
       
     </div>
   );

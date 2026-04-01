@@ -56,7 +56,6 @@ export async function getCurrentTrip(): Promise<CurrentTripResponseDTO> {
 }
 
 export async function getTripPassengers(tripId: number): Promise<TripPassengersResponseDTO> {
-  console.log(tripId)
   try {
     const res = await fetch(`/api/trip/passengers?tripId=${tripId}`,{
       method: 'GET',

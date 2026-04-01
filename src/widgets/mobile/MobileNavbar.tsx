@@ -36,7 +36,7 @@ export default function MobileNavbar() {
   const userRoles = user?.roles || ['user'];
   
   // Filtramos los ítems según el rol del usuario
-  const filteredNavItems = navItems.filter(item => userRoles.includes(item.role));
+  const filteredNavItems = navItems.filter(item => userRoles.includes(item.role ?? 'user'));
 
   // Mostrar solo si la ruta empieza con una ruta permitida
   const shouldShowNavbar = allowedPaths.some((path) => pathname.startsWith(path));

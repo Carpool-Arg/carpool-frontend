@@ -56,11 +56,7 @@ export default async function RootLayout({
         <AppProviders>
         <NotificationProvider>
           <WebSocketProvider token={token}>
-            <ClientLayout>
-              <ServiceWorkerRegistration/>
-              {children}
-              <UnpaidPaymentModal />
-            </ClientLayout>
+            {children}
           </WebSocketProvider>
         </NotificationProvider>
         </AppProviders>

@@ -1,11 +1,13 @@
 'use client'
 
+import { DEBT_PATHS } from '@/constants/paths/debtPaths';
 import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
 import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
+import { canAccessRoute } from '@/shared/utils/helpers/permission';
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
@@ -23,7 +25,7 @@ interface AuthContextType {
   setPrevImage: (value: string | null) => void;
   profileViewRole: 'pasajero' | 'conductor';
   setProfileViewRole: (role: 'pasajero' | 'conductor') => void;
-  accessToken: string | null; // <--- NUEVO: Exponemos el token para el Socket
+  accessToken: string | null; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,22 +44,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const hasRun = useRef(false);
 
   const publicRoutes = [...PUBLIC_PATHS.pages];
-  const isPublicRoute = publicRoutes.some(route =>
-    route === '/' ? pathname === '/' : pathname.startsWith(route)
-  );
+
+  const isPublicRoute = publicRoutes.some(route => {
+    if (route === '/') return pathname === '/';
+    return pathname === route || pathname.startsWith(route + '/');
+  });
+
+
+  //Control de rutas y permisos
+  useEffect(() => {
+    if (!user) return;
+
+    if (debt?.debtUser) return;
+
+    // Si hay usuario y esta en una ruta publica, lo manda al home
+    if (isPublicRoute && user) {
+      router.replace('/home'); 
+      return;
+    }
+
+    const hasAccess = canAccessRoute(pathname, user.roles || []);
+
+    if (!hasAccess) {
+      router.replace('/home');
+    }
+  }, [user, pathname, debt?.debtUser, isPublicRoute]);
 
   useEffect(() => {
     if (!debt) return;
-    const debtRoutes = ['/debt', '/logout'];
     if (debt.debtUser === true) {
-      const isAllowed = debtRoutes.some(route => pathname.startsWith(route));
+      const isAllowed = DEBT_PATHS.some(route =>
+        pathname === route || pathname.startsWith(route + '/')
+      );
       if (!isAllowed) router.replace('/debt');
       return;
     }
     if (debt.debtUser === false && pathname.startsWith('/debt')) {
       router.replace('/home');
     }
-  }, [debt?.debtUser, pathname]);
+  }, [debt?.debtUser, pathname,]);
 
   const fetchUser = useCallback(async (): Promise<boolean> => {
     try {
@@ -130,13 +155,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initializeAuth = async () => {
       if (hasRun.current) return;
       hasRun.current = true;
+
       const hasUser = await fetchUser();
       if (hasUser) await fetchUserDebt();
+
       setLoading(false);
-      if (!hasUser && !isPublicRoute) router.replace('/login');
+
+      if (!hasUser && !isPublicRoute) {
+        router.replace('/login');
+      }
     };
+
     initializeAuth();
-  });
+  }, [isPublicRoute]); 
   
   const login = async (data: LoginData & { recaptchaToken?: string }) => {
     setLoading(true);
@@ -223,7 +254,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user, loading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
     prevImage, setPrevImage, profileViewRole, setProfileViewRole,
-    accessToken // Exponemos el valor
+    accessToken 
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
