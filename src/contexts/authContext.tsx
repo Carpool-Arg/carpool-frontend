@@ -51,14 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
 
-  //Control de rutas y permisos
   useEffect(() => {
-    if (!user) return;
+    if (!user || debt === null) return;
 
-    if (debt?.debtUser) return;
+    if (debt.debtUser) return;
 
-    // Si hay usuario y esta en una ruta publica, lo manda al home
-    if (isPublicRoute && user) {
+    if (isPublicRoute) {
       router.replace('/home'); 
       return;
     }
@@ -68,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!hasAccess) {
       router.replace('/home');
     }
-  }, [user, pathname, debt?.debtUser, isPublicRoute]);
+  }, [user, pathname, debt, isPublicRoute]);
 
   useEffect(() => {
     if (!debt) return;
@@ -134,14 +132,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-    if (user.id) return;
-    fetchFullUser();
-  }, [user, fetchFullUser]);
 
   useEffect(() => {
     if (!user?.id) return;
+
     const loadImage = async () => {
       try {
         const imgUrl = await getUserFile();
@@ -157,8 +151,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasRun.current = true;
 
       const hasUser = await fetchUser();
-      if (hasUser) await fetchUserDebt();
-
+      if (hasUser) {
+        await fetchFullUser();
+        await fetchUserDebt();
+        
+      }
       setLoading(false);
 
       if (!hasUser && !isPublicRoute) {
@@ -186,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (result.state === "OK") {
         await fetchUser();
+        await fetchFullUser();
         await fetchUserDebt();
 
         // Guardar el token en el state (Para que el WS lo vea)
@@ -193,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAccessToken(result.data.accessToken); 
         }
 
+        
         router.push('/home');
       } else {
         setUser(null);
@@ -214,8 +213,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await authWithGoogle(idToken);
       if (result.state === "OK" && result.data) {
         await fetchUser();
+        await fetchFullUser();
         await fetchUserDebt();
         
+
         // Guardar el token de google tambien
         if (result.data.accessToken) {
              setAccessToken(result.data.accessToken);

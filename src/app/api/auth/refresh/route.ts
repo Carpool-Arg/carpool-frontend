@@ -86,12 +86,17 @@ export async function POST(req: NextRequest) {
     }
 
     if (newRefreshToken) {
+      const decoded = parseJwt(newRefreshToken);
+      const iat = Number(decoded?.iat);
+      const exp = Number(decoded?.exp);
+      const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
+
       nextRes.cookies.set('refreshToken', newRefreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // por ejemplo 7 días
+        maxAge, // por ejemplo 7 días
       });
     }
 

@@ -80,12 +80,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (refreshToken) {
+      const decoded = parseJwt(refreshToken);
+      const iat = Number(decoded?.iat);
+      const exp = Number(decoded?.exp);
+      const maxAge = exp > iat ? exp - iat : 60 * 60 * 2;
       nextRes.cookies.set('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 días
+        maxAge,
       });
     }
 
