@@ -99,17 +99,22 @@ export function UpdateTripForm() {
     trip?.vehicle; 
   
   const exceedsVehicleSeats = !!currentVehicle && availableSeat >= currentVehicle.availableSeats;
-
   
-  useEffect(() => {
-    if (!startDateTime || !selectedVehicleId || startDateTime===trip?.startDateTime) {
+
+    useEffect(() => {
+    if (!startDateTime || !selectedVehicleId || startDateTime===trip?.startDateTime || !origin.cityId || !destination.cityId) {
       setDateError(null);
       return;
     }
 
     const timeoutId = setTimeout(async () => {
       try {
-        const response = await validateTripDateTime(startDateTime, trip?.id);
+        const response = await validateTripDateTime(
+          startDateTime,
+          origin.cityId,
+          destination.cityId
+        );
+
         if (response.state === 'ERROR') {
           setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
         } else {
@@ -119,11 +124,10 @@ export function UpdateTripForm() {
         setDateError('Error validando la fecha y hora');
         console.error(error);
       }
-    }, 500); // delay para no spamear el endpoint al tipear rápido
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [startDateTime, selectedVehicleId]);
-  
+  }, [startDateTime, selectedVehicleId, origin.cityId, destination.cityId]);
 
   useEffect(() => {
     // condiciones mínimas para calcular

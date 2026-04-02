@@ -121,14 +121,19 @@ export function TripForm() {
 
   
   useEffect(() => {
-    if (!startDateTime || !selectedVehicleId) {
+    if (!startDateTime || !selectedVehicleId || !origin.cityId || !destination.cityId) {
       setDateError(null);
       return;
-  }
+    }
 
     const timeoutId = setTimeout(async () => {
       try {
-        const response = await validateTripDateTime(startDateTime);
+        const response = await validateTripDateTime(
+          startDateTime,
+          origin.cityId,
+          destination.cityId
+        );
+
         if (response.state === 'ERROR') {
           setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
         } else {
@@ -138,10 +143,10 @@ export function TripForm() {
         setDateError('Error validando la fecha y hora');
         console.error(error);
       }
-    }, 500); // delay para no spamear el endpoint al tipear rápido
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [startDateTime, selectedVehicleId]);
+  }, [startDateTime, selectedVehicleId, origin.cityId, destination.cityId]);
 
   //Funcion "helper" para asignar delay
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

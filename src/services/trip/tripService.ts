@@ -143,12 +143,14 @@ export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>
 }
 
 
-export const validateTripDateTime = async(startDateTime: string, idTrip?: number) =>{
+export const validateTripDateTime = async(startDateTime: string,idOriginCty: number, idDestinationCity: number, idTrip?: number) =>{
   try {
     const formattedDateTime =  `${startDateTime}:00`
     
     const params = new URLSearchParams({
-      startDateTime: formattedDateTime
+      startDateTime: formattedDateTime,
+      idOriginCity: idOriginCty.toString(),
+      idDestinationCity: idDestinationCity.toString(),
     })
 
     if (idTrip) {
