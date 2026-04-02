@@ -13,7 +13,7 @@ export const ROUTE_PERMISSIONS: { path: string; roles: Role[] | 'all' }[] = [
   { path: '/trip/new', roles: ['driver'] },
   { path: '/trip/details', roles: 'all' },
   { path: '/trip/edit', roles: ['driver'] },
-  { path: '/trips', roles: ['driver'] },
+  { path: '/trips', roles: 'all' },
 
   { path: '/driver-review/trip', roles: 'all' },
   { path: '/passenger-review/trip', roles: 'all' },

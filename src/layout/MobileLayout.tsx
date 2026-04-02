@@ -14,15 +14,14 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const isLogoHeader = logoHeaderPaths.some(route => pathname.startsWith(route));
   
   return (
-    <div className="flex flex-col h-dvh overflow-hidden">
+    <div className="flex flex-col h-dvh overflow-y-auto">
       {showHeader && (
         <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
       )}
-      <main className="flex-1 overflow-y-auto px-8 pt-4 pb-16">
+      <main className="flex-1 overflow-y-auto px-6 sm:px-8 pt-4 pb-16 safe-area-inset-x">
         {children}
       </main>
 
-      <div className="h-16 md:hidden" /> {/* spacer */}
       <MobileNavbar />
     </div>
 
