@@ -29,6 +29,7 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
 
+
   if (!token) {
     return redirectToLogin(req);
   }
