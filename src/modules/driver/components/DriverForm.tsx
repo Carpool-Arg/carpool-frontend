@@ -223,10 +223,10 @@ export function DriverForm() {
           
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* FRONT */}
           <div
-            className="border-2 border-gray-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-gray-7 transition"
+            className="relative border-2 border-dashed border-white/[0.12] rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/[0.25] hover:bg-white/[0.02] transition-colors group"
             onClick={() => document.getElementById('frontInput')?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -244,19 +244,29 @@ export function DriverForm() {
             />
 
             {frontImage ? (
-              <p className="text-sm font-medium">{frontImage.name}</p>
+              <div className="flex flex-col items-center gap-1.5">
+                <div className="w-8 h-8 rounded-md bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
+                  <Image size={14} className="text-white/50" />
+                </div>
+                <p className="text-[12px] text-white/60 text-center max-w-[140px] truncate">{frontImage.name}</p>
+                <p className="text-[10px] text-white/25">click para cambiar</p>
+              </div>
             ) : (
-              <p className="flex flex-col items-center text-sm text-gray-9 gap-1">
-                <Image size={36}/>
-                Arrastrá o hacé click para subir <br />
-                <span className="font-medium">frente de la licencia</span>
-              </p>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.06] transition-colors">
+                  <Image size={14} className="text-white/30 group-hover:text-white/50 transition-colors" />
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <p className="text-[12px] text-white/40">Frente de la licencia</p>
+                  <p className="text-[10px] text-white/20">Arrastrá o hacé click</p>
+                </div>
+              </div>
             )}
           </div>
 
           {/* BACK */}
           <div
-            className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-gray-7 transition"
+            className="relative border-2 border-dashed border-white/[0.12] rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/[0.25] hover:bg-white/[0.02] transition-colors group"
             onClick={() => document.getElementById('backInput')?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -274,16 +284,25 @@ export function DriverForm() {
             />
 
             {backImage ? (
-              <p className="text-sm font-medium">{backImage.name}</p>
+              <div className="flex flex-col items-center gap-1.5">
+                <div className="w-8 h-8 rounded-md bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
+                  <Image size={14} className="text-white/50" />
+                </div>
+                <p className="text-[12px] text-white/60 text-center max-w-[140px] truncate">{backImage.name}</p>
+                <p className="text-[10px] text-white/25">click para cambiar</p>
+              </div>
             ) : (
-              <p className="flex flex-col items-center text-sm text-gray-9 gap-1">
-                <Image size={36}/>
-                Arrastrá o hacé click para subir <br />
-                <span className="font-medium">dorso de la licencia</span>
-              </p>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.06] transition-colors">
+                  <Image size={14} className="text-white/30 group-hover:text-white/50 transition-colors" />
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <p className="text-[12px] text-white/40">Dorso de la licencia</p>
+                  <p className="text-[10px] text-white/20">Arrastrá o hacé click</p>
+                </div>
+              </div>
             )}
           </div>
-
         </div>
 
         <Button
