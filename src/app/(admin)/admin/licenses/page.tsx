@@ -1,4 +1,5 @@
-import { DriversPendingList } from "@/modules/admin/licenses/components/Driverspendinglist";
+import { DriversPendingList } from "@/modules/admin/licenses/components/DriversPendingList";
+
 
 
 export default function LicensesPage() {
@@ -11,7 +12,7 @@ export default function LicensesPage() {
         </p>
       </div>
 
-      <DriversPendingList />
+      <DriversPendingList/>
     </div>
   );
 }

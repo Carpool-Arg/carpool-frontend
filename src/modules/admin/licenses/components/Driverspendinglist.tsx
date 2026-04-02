@@ -2,14 +2,23 @@
 
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
 import { useDriversPending } from "../hooks/useDriverPending";
-import { DriversPendingTable } from "./Driverspendingtable";
+
 import { IdCard } from "lucide-react";
+import { DriversPendingTable } from "./DriversPendingTable";
+import Spinner from "@/components/ux/Spinner";
+
 
 export function DriversPendingList() {
-  const { driversPending, loading, error, verifyLicense, refetch } = useDriversPending();
+  const { loading, error, verifyLicense, refetch } = useDriversPending();
+  const driversPending:any = []
 
-  if (loading) return <p className="text-gray-300">Cargando conductores...</p>;
-
+  if (loading)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 ml-55 mt-13">
+        <Spinner />
+      </div>
+    );
+  
   if (error)
     return (
       <div className="flex flex-col gap-2 text-gray-300">
@@ -22,7 +31,7 @@ export function DriversPendingList() {
 
   if (!driversPending || driversPending.length === 0)
     return (
-      <div className="bg-dark-5 h-48 rounded-2xl flex items-center border-2 border-dashed">
+      <div className="bg-dark-5 h-48 rounded-2xl flex items-center border border-gray-2/50">
         <EmptyAlert
           icon={<IdCard size={32} />}
           title="No hay licencias"

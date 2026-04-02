@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { User, Eye, FileSearchCorner } from "lucide-react";
-import { LicensePhotoGallery } from "./Licensephotogallery";
+import { LicensePhotoGallery } from "./LicenseGallery";
 import { DriverPendingDTO } from "../types/driverPending";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
-import { LicenseVerifyModal } from "./Licenseverifymodal";
+import { LicenseVerifyModal } from "./LicenseVerifyModal";
+
 
 
 interface DriversPendingTableProps {

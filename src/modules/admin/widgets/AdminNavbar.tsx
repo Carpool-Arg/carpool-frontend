@@ -5,17 +5,13 @@ import { Bell, PanelLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/authContext'
 
 const routeTitles: Record<string, string> = {
-  '/admin': 'Dashboard',
+  '/admin/dashboard': 'Dashboard',
   '/admin/licenses': 'Licencias',
   '/dashboard/reportes': 'Reportes',
   '/dashboard/ajustes': 'Ajustes',
 }
 
-function getInitials(name?: string | null, lastname?: string | null): string {
-  const first = name?.charAt(0) ?? ''
-  const last = lastname?.charAt(0) ?? ''
-  return (first + last).toUpperCase() || 'AD'
-}
+
 
 export default function AdminNavbar() {
   const pathname = usePathname()

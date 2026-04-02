@@ -1,6 +1,8 @@
 'use client'
 
+import { AlertDialog } from '@/components/ux/AlertDialog'
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
+import { useAuth } from '@/contexts/authContext'
 import {
   FileText,
   IdCard,
@@ -11,6 +13,7 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 const navItems = [
   {
@@ -30,7 +33,14 @@ const navItems = [
 ]
 
 export default function AdminSidebar() {
-  const pathname = usePathname()
+  const {logout} = useAuth();
+  const pathname = usePathname();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  const handleLogout = async () => {
+    await logout();
+    setIsDialogOpen(false);
+  };
 
   return (
     <aside className="w-55 shrink-0 bg-[#111] flex flex-col border-r border-white/6 h-screen sticky top-0">
@@ -79,11 +89,23 @@ export default function AdminSidebar() {
 
       {/* Logout */}
       <div className="border-t border-white/6 py-3">
-        <button className="flex items-center gap-2.5 px-5 py-2.5 text-[13px] text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
+        <button 
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-[13px] text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
           <LogOut size={15} strokeWidth={1.8} />
           Cerrar sesión
         </button>
       </div>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleLogout}
+        type="info"
+        title="Cerrar sesión"
+        description="¿Estás seguro de que querés cerrar sesión? Tendrás que volver a iniciar sesión para continuar usando la aplicación."
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+      />
     </aside>
   )
 }
