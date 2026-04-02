@@ -16,8 +16,8 @@ const navItems = [
   {
     section: 'General',
     items: [
-      { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-      { label: 'Licencias', href: '/admin/licences', icon: IdCard },
+      { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+      { label: 'Licencias', href: '/admin/licenses', icon: IdCard },
       { label: 'Reportes', href: '/dashboard/reportes', icon: FileText },
     ],
   },

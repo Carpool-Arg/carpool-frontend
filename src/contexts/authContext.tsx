@@ -15,6 +15,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  imageLoading: boolean;
   login: (data: LoginData & { recaptchaToken?: string }) => Promise<void>;
   logout: () => void;
   debt: UserDebtResponseDTO | null; 
@@ -34,8 +35,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [debt, setDebt] = useState<UserDebtResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
   const [prevImage, setPrevImage] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null); // <--- NUEVO ESTADO
+  const [accessToken, setAccessToken] = useState<string | null>(null); 
   
   const router = useRouter();
   const pathname = usePathname();
@@ -143,10 +145,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!user?.id) return;
     const loadImage = async () => {
+      setImageLoading(true);
       try {
         const imgUrl = await getUserFile();
         if (imgUrl?.data) setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
-      } catch (err) { console.warn("No se pudo cargar la imagen:", err); }
+      } catch (err) { 
+        console.warn("No se pudo cargar la imagen:", err); 
+      } finally {
+        setImageLoading(false)
+      }
     };
     loadImage();
   }, [user?.id]);
@@ -252,7 +259,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const value = {
-    user, loading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
+    user, loading, imageLoading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
     prevImage, setPrevImage, profileViewRole, setProfileViewRole,
     accessToken 
   };

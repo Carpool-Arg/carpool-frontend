@@ -19,15 +19,15 @@ export async function POST(req: NextRequest) {
   try {
     // Recibir el token de la petición
     const token = req.cookies.get('token')?.value;
-    const body = await req.json();
+    const formData = await req.formData();
 
     // Llamada al backend con interceptor para refresco de tokens
     const res = await fetchWithRefresh(`${apiUrl}/drivers`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" ,
+      headers: {
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(body),
+      body: formData,
     });
 
     const response: DriverResponse = await res.json();

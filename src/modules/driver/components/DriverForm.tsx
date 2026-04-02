@@ -5,11 +5,9 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAuth } from "@/contexts/authContext" 
 import { useRouter } from "next/navigation"
-
 import { registerDriver } from "@/services/driver/driverService"
 import { Alert } from "@/components/ux/Alert"
 import { Input } from "@/components/ux/Input"
-
 import { Button } from "@/components/ux/Button"
 import { DriverData, driverSchema } from "../schema/driverSchema"
 import { CityAutocomplete } from "@/modules/city/components/CityAutocomplete"
@@ -18,13 +16,19 @@ import { LicenseClassResponseDTO } from "../types/dto/licenseClassResponseDTO"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DriverFormSkeleton } from "./DriverSkeleton"
 import Separator from "@/components/ux/Separator"
+import { Camera, Image } from "lucide-react"
 
 
 export function DriverForm() {
-  const [error, setError] = useState<string | null>(null);
-  const [licenseClasses, setLicenseClasses] = useState<LicenseClassResponseDTO>();
   const router = useRouter();
   const {fetchUser} = useAuth();
+
+  const [error, setError] = useState<string | null>(null);
+
+  const [licenseClasses, setLicenseClasses] = useState<LicenseClassResponseDTO>();
+  const [frontImage, setFrontImage] = useState<File | null>(null);
+  const [backImage, setBackImage] = useState<File | null>(null);
+  
 
   useEffect(() => {
     const loadClasses = async () => {
@@ -69,17 +73,29 @@ export function DriverForm() {
 
   const onSubmit = async (data: DriverData) => {
     setError(null);
+
+    if (!frontImage || !backImage) {
+      setError("Debes subir ambas imágenes de la licencia");
+      return;
+    }
+
     try {
-       const payload = {
+      const payload = {
         ...data,
         licenseExpirationDate: formatDate(data.licenseExpirationDate),
       };
-      
-      const response = await registerDriver(payload)
+
+      const response = await registerDriver(
+        payload,
+        frontImage,
+        backImage
+      );
+
       if (response.state === "ERROR") {
         setError(response.messages?.[0] || "Error al registrar usuario");
-        return
+        return;
       }
+
       await fetchUser();
       router.push('/profile');
     } catch (error: unknown) {
@@ -88,9 +104,10 @@ export function DriverForm() {
       if (error instanceof Error) {
         message = error.message;
       }
+
       setError(message || 'Error al crear el perfil de conductor');
     }
-  }
+  };
 
   if (!licenseClasses && !error) {
     return <DriverFormSkeleton/>;
@@ -127,7 +144,7 @@ export function DriverForm() {
                     onValueChange={(value) => field.onChange(Number(value))}
                     value={field.value ? String(field.value) : undefined}
                   >
-                    <SelectTrigger className="h-[42px]">
+                    <SelectTrigger className="h-10.5">
                       <SelectValue placeholder="Seleccionar clase..." />
                     </SelectTrigger>
 
@@ -202,6 +219,71 @@ export function DriverForm() {
               error={errors.addressNumber?.message}
               />
           </div>
+
+          
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* FRONT */}
+          <div
+            className="border-2 border-gray-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-gray-7 transition"
+            onClick={() => document.getElementById('frontInput')?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file) setFrontImage(file);
+            }}
+          >
+            <input
+              id="frontInput"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setFrontImage(e.target.files?.[0] || null)}
+            />
+
+            {frontImage ? (
+              <p className="text-sm font-medium">{frontImage.name}</p>
+            ) : (
+              <p className="flex flex-col items-center text-sm text-gray-9 gap-1">
+                <Image size={36}/>
+                Arrastrá o hacé click para subir <br />
+                <span className="font-medium">frente de la licencia</span>
+              </p>
+            )}
+          </div>
+
+          {/* BACK */}
+          <div
+            className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-gray-7 transition"
+            onClick={() => document.getElementById('backInput')?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file) setBackImage(file);
+            }}
+          >
+            <input
+              id="backInput"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setBackImage(e.target.files?.[0] || null)}
+            />
+
+            {backImage ? (
+              <p className="text-sm font-medium">{backImage.name}</p>
+            ) : (
+              <p className="flex flex-col items-center text-sm text-gray-9 gap-1">
+                <Image size={36}/>
+                Arrastrá o hacé click para subir <br />
+                <span className="font-medium">dorso de la licencia</span>
+              </p>
+            )}
+          </div>
+
         </div>
 
         <Button
