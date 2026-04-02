@@ -112,7 +112,8 @@ export function UpdateTripForm() {
         const response = await validateTripDateTime(
           startDateTime,
           origin.cityId,
-          destination.cityId
+          destination.cityId,
+          trip?.id
         );
 
         if (response.state === 'ERROR') {
