@@ -118,7 +118,7 @@ export default function Results() {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 w-full">
-        <div className="border border-gray-2 rounded-2xl md:mt-4 p-2 flex items-center gap-3 px-3">
+        <div className="border border-gray-2 rounded-2xl p-2 flex items-center gap-3 px-3">
           <div className="flex flex-col items-center">
             <div className="h-2 w-2 bg-gray-2 rounded-full animate-pulse" />
             <div className="w-0.5 h-4 bg-gray-2 my-1 animate-pulse" />
@@ -147,7 +147,7 @@ export default function Results() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="md:mt-4 flex items-center gap-2">
+      <div className=" flex items-center gap-2">
         <CitySearch
           originCity={originCityId}
           destinationCity={destinationCityId}

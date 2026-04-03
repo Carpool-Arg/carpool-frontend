@@ -28,18 +28,15 @@ export function useDriversPending() {
     setLoading(false);
   };
 
-  // Nuevo: función para verificar licencia y actualizar la lista en vivo
   const verifyLicense = async (driverId: number, data: LicenseVerifyDTO) => {
     const res: VoidResponse = await driverVerifyLicense(driverId, data);
 
     if (res.state === "ERROR") {
-      return res; // el componente puede mostrar un toast/error
+      setError(res.messages?.[0] || "Error al validar la licencia");
+      return res; 
     }
 
-    // Actualizar la lista de conductores pendientes
-    setDriversPending((prev) =>
-      prev?.filter((d) => d.driverId !== driverId) || null
-    );
+    await fetchDrivers();
 
     return res;
   };

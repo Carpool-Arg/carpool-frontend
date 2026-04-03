@@ -1,10 +1,13 @@
 'use client'
 
-import React, { useState } from "react";
-import { User, Eye, FileSearchCorner } from "lucide-react";
-import { LicensePhotoGallery } from "./LicenseGallery";
+import { isLicenseExpired } from "@/shared/utils/admin/license";
+import { translateLicenseState } from "@/shared/utils/state";
+import { formatDate } from "@/shared/utils/string";
+import { Eye, FileSearchCorner, OctagonAlert, User } from "lucide-react";
+import { useState } from "react";
 import { DriverPendingDTO } from "../types/driverPending";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
+import { LicensePhotoGallery } from "./LicenseGallery";
 import { LicenseVerifyModal } from "./LicenseVerifyModal";
 
 
@@ -50,24 +53,31 @@ export function DriversPendingTable({ drivers, onVerify }: DriversPendingTablePr
                 <td className="px-5 py-3 text-gray-11/80">{driver.email}</td>
                 <td className="px-5 py-3 text-gray-11/80">{driver.phone}</td>
                 <td className="px-5 py-3 text-gray-11/80">{driver.licenseClass}</td>
-                <td className="px-5 py-3 text-gray-11/80">{driver.licenseExpirationDate}</td>
+                <td className="px-5 py-3 text-gray-11/80">
+                  <div className="flex items-center gap-1.5">
+                    {formatDate(driver.licenseExpirationDate)}
+                    {isLicenseExpired(driver.licenseExpirationDate) && (
+                      <OctagonAlert size={13} className="text-red-500" />
+                    )}
+                  </div>
+                </td>
                 <td className="px-5 py-3">
                   <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] bg-white/6 text-gray-11/80 border border-white/8">
-                    {driver.licenseStatus}
+                    {translateLicenseState(driver.licenseStatus)}
                   </span>
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setSelectedGallery(driver)}
-                      className="w-7 h-7 flex items-center justify-center rounded-md border border-white/8 hover:bg-white/6 hover:border-white/15 transition-colors group"
+                      className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-md border border-white/8 hover:bg-white/6 hover:border-white/15 transition-colors group"
                       title="Ver fotos de licencia"
                     >
                       <Eye size={14} className="text-white/40 group-hover:text-white/70 transition-colors" />
                     </button>
                     <button
                       onClick={() => setSelectedVerify(driver)}
-                      className="w-7 h-7 flex items-center justify-center rounded-md border border-white/8 hover:bg-white/6 hover:border-white/15 transition-colors group"
+                      className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-md border border-white/8 hover:bg-white/6 hover:border-white/15 transition-colors group"
                       title="Verificar licencia"
                     >
                       <FileSearchCorner size={14} className="text-white/40 group-hover:text-white/70 transition-colors" />

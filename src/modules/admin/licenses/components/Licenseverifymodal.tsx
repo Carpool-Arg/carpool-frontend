@@ -4,6 +4,7 @@ import { X, CircleCheck, CircleX } from "lucide-react";
 import { useState } from "react";
 import { LicensePhotoGallery } from "./LicenseGallery";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
+import { AlertDialog } from "@/components/ux/AlertDialog";
 
 
 interface LicenseVerifyModalProps {
@@ -29,6 +30,12 @@ export function LicenseVerifyModal({
   const [error, setError] = useState<string | null>(null);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryInitial, setGalleryInitial] = useState(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleConfirm = async () => {
+    await handleSubmit();
+    setIsDialogOpen(false);
+  };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
@@ -39,22 +46,27 @@ export function LicenseVerifyModal({
     setGalleryOpen(true);
   };
 
-  const handleSubmit = async () => {
-    if (approved === null) return;
+  const handleSubmit = async (): Promise<boolean> => {
+    if (approved === null) return false;
+
     if (!approved && !reason.trim()) {
       setError('Ingresá un motivo de rechazo.');
-      return;
+      return false;
     }
+
     setLoading(true);
     setError(null);
+
     try {
       await onVerify(driverId, {
         approved,
         rejectionReason: approved ? undefined : reason.trim(),
       });
-      onClose();
+
+      return true; 
     } catch {
       setError('Ocurrió un error al verificar la licencia.');
+      return false;
     } finally {
       setLoading(false);
     }
@@ -113,6 +125,7 @@ export function LicenseVerifyModal({
             {/* Selector aprobar / rechazar */}
             <div className="grid grid-cols-2 gap-2">
               <button
+                disabled={loading}
                 onClick={() => { setApproved(true); setReason(''); setError(null); }}
                 className={`flex items-center justify-center cursor-pointer gap-2 py-3 rounded-lg border text-sm transition-colors ${
                   approved === true
@@ -124,6 +137,7 @@ export function LicenseVerifyModal({
                 Aprobar
               </button>
               <button
+                disabled={loading}
                 onClick={() => { setApproved(false); setError(null); }}
                 className={`flex items-center justify-center cursor-pointer gap-2 py-3 rounded-lg border text-sm transition-colors ${
                   approved === false
@@ -162,16 +176,33 @@ export function LicenseVerifyModal({
           <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-2/40">
             <button
               onClick={onClose}
-              className="px-4 py-2 cursor-pointer rounded-lg text-sm text-gray-9 hover:text-gray-11 hover:bg-gray-7/40 border border-gray-2/50 transition-colors"
+              disabled={loading}
+              className="disabled:opacity-50 disabled:bg-gray-7 disabled:cursor-not-allowed px-4 py-2 cursor-pointer rounded-lg text-sm text-gray-9 hover:text-gray-11 hover:bg-gray-7/40 border border-gray-2/50 transition-colors"
             >
               Cancelar
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={() => setIsDialogOpen(true)}
               disabled={!canSubmit || loading}
-              className="px-4 py-2 cursor-pointer rounded-lg text-sm bg-white text-black font-medium hover:bg-gray-1/90 hover:text-black/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative overflow-hidden px-4 py-2 cursor-pointer rounded-lg text-sm font-medium border border-gray-2/50 bg-white  disabled:cursor-not-allowed"
             >
-              {loading ? 'Procesando...' : 'Confirmar'}
+              <span
+                className={`absolute inset-0 transition-all duration-700 ease-out
+                  ${loading ? 'w-full' : 'w-0'}
+                  ${approved === true ? 'bg-green-800' : ''}
+                  ${approved === false ? 'bg-red-600/80' : ''}
+                `}
+                style={{ width: loading ? '100%' : '0%' }}
+              />
+
+              {/* Texto */}
+              <span className={`relative z-10 ${loading ? 'text-white' : 'text-black'}`}>
+                {loading
+                  ? approved === true
+                    ? 'Aprobando'
+                    : 'Rechazando'
+                  : 'Confirmar'}
+              </span>
             </button>
           </div>
         </div>
@@ -187,6 +218,24 @@ export function LicenseVerifyModal({
           onClose={() => setGalleryOpen(false)}
         />
       )}
+      {isDialogOpen &&
+        <AlertDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onConfirm={handleConfirm}
+          type="info"
+          title="Confirmar verificación"
+          description={
+            approved
+              ? 'Vas a aprobar esta licencia. Esta acción es definitiva y no se puede revertir.'
+              : 'Vas a rechazar esta licencia. Esta acción es definitiva y no se puede revertir.'
+          }
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+        />
+      }
+      
+
     </>
   );
 }

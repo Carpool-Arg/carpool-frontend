@@ -4,7 +4,7 @@ import { AlertDialog } from '@/components/ux/AlertDialog'
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
 import { useAuth } from '@/contexts/authContext'
 import {
-  FileText,
+  CornerDownRight,
   IdCard,
   LayoutDashboard,
   LogOut,
@@ -21,13 +21,12 @@ const navItems = [
     items: [
       { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
       { label: 'Licencias', href: '/admin/licenses', icon: IdCard },
-      { label: 'Reportes', href: '/dashboard/reportes', icon: FileText },
     ],
   },
   {
     section: 'Configuración',
     items: [
-      { label: 'Ajustes', href: '/dashboard/ajustes', icon: Settings },
+      { label: 'Ajustes', href: '/admin/settings', icon: Settings },
     ],
   },
 ]
@@ -72,7 +71,7 @@ export default function AdminSidebar() {
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-2.5 px-5 py-2.5 text-[13px] transition-colors border-l-2 ${
+                  className={`flex items-center gap-2.5 px-5 py-2.5 text-sm transition-colors border-l-2 ${
                     isActive
                       ? 'text-white bg-white/6 border-white'
                       : 'text-white/50 hover:text-white/80 hover:bg-white/4 border-transparent'
@@ -87,11 +86,19 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
+      <Link href={'/home'} className="py-3">
+        <div 
+          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-sm text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
+          <CornerDownRight size={15} strokeWidth={1.8} />
+          Volver a Carpool
+        </div>
+      </Link>
+
       {/* Logout */}
       <div className="border-t border-white/6 py-3">
         <button 
           onClick={() => setIsDialogOpen(true)}
-          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-[13px] text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
+          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-sm text-white/50 hover:text-white/80 hover:bg-red-900/50 w-full transition-colors border-l-2 border-transparent">
           <LogOut size={15} strokeWidth={1.8} />
           Cerrar sesión
         </button>

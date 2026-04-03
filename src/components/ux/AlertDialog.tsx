@@ -55,7 +55,7 @@ export function AlertDialog({
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-2/50">
           <div className="flex items-center gap-2">
             {iconMap[type]}
-            <p className="text-sm font-medium text-white/80">{title}</p>
+            <p className="text-base font-medium text-white/80">{title}</p>
           </div>
           <button
             onClick={onClose}
@@ -67,7 +67,7 @@ export function AlertDialog({
 
         {/* Body */}
         <div className="px-5 py-4 flex flex-col gap-3">
-          <p className="text-[13px] text-gray-11 leading-relaxed">{description}</p>
+          <p className="text-sm text-gray-11 leading-relaxed">{description}</p>
           {children && <div>{children}</div>}
         </div>
 

@@ -2,15 +2,14 @@
 
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
 import { useDriversPending } from "../hooks/useDriverPending";
-
-import { IdCard } from "lucide-react";
+import { IdCard, OctagonX } from "lucide-react";
 import { DriversPendingTable } from "./DriversPendingTable";
 import Spinner from "@/components/ux/Spinner";
+import { ErrorAlert } from "@/components/ux/admin/ErrorAlert";
 
 
 export function DriversPendingList() {
-  const { loading, error, verifyLicense, refetch } = useDriversPending();
-  const driversPending:any = []
+  const {driversPending, loading, error, verifyLicense } = useDriversPending();
 
   if (loading)
     return (
@@ -21,11 +20,12 @@ export function DriversPendingList() {
   
   if (error)
     return (
-      <div className="flex flex-col gap-2 text-gray-300">
-        <p className="text-red-500">{error}</p>
-        <button onClick={refetch} className="text-sm underline text-gray-300">
-          Reintentar
-        </button>
+      <div className="bg-dark-5 h-48 rounded-2xl flex items-center border border-gray-2/50">
+        <ErrorAlert
+          icon={<OctagonX size={32} />}
+          title="Error"
+          description={error}
+        />
       </div>
     );
 

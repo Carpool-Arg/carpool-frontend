@@ -1,5 +1,5 @@
-import AdminNavbar from "@/modules/admin/widgets/AdminNavbar"
-import AdminSidebar from "@/modules/admin/widgets/AdminSidebar"
+import AdminNavbar from "@/widgets/admin/AdminNavbar"
+import AdminSidebar from "@/widgets/admin/AdminSidebar"
 
 
 export default function AdminLayout({

@@ -30,7 +30,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
       {showHeader && (
         <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
       )}
-      <div className="h-full overflow-auto">
+      <div className="h-full overflow-auto mt-4">
         {children}
       </div>
     </main>

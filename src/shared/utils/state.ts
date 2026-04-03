@@ -8,3 +8,11 @@ export function translateTripState(state: string): string {
 
   return map[state] ?? state;
 }
+
+export function translateLicenseState(state: string): string {
+  const map: Record<string, string> = {
+    PENDING: "PENDIENTE",
+  };
+
+  return map[state] ?? state;
+}
