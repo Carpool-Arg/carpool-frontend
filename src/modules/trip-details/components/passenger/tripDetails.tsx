@@ -102,7 +102,7 @@ export default function TripDetails() {
         // error de backend
         setAlertData({
           type: "error",
-          title: "Error al crear la reserva",
+          title: "Error al reservar",
           description: result?.messages?.[0] ?? "Ocurrió un error inesperado.",
         });
         setIsModalOpen(false);
