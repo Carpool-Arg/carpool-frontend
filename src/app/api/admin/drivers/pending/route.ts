@@ -15,9 +15,13 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get('token')?.value;
+    const { searchParams } = req.nextUrl;
 
-    const res = await fetch(`${apiUrl}/admin/drivers/pending`, {
+    const token = req.cookies.get('token')?.value;
+    const skip = searchParams.get("skip");
+    const orderBy = searchParams.get("orderBy");
+
+    const res = await fetch(`${apiUrl}/admin/drivers/pending?skip=${skip}&orderBy=${orderBy}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

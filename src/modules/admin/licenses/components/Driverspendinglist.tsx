@@ -6,10 +6,15 @@ import { IdCard, OctagonX } from "lucide-react";
 import { DriversPendingTable } from "./DriversPendingTable";
 import Spinner from "@/components/ux/Spinner";
 import { ErrorAlert } from "@/components/ux/admin/ErrorAlert";
+import { Pagination } from "@/components/ux/admin/Pagination";
+import { PAGE_LIMIT } from "@/constants/pagination";
 
 
 export function DriversPendingList() {
-  const {driversPending, loading, error, verifyLicense } = useDriversPending();
+  const {driversPending, loading, error, verifyLicense, setSkip, skip, total } = useDriversPending();
+
+  const handleNext = () => setSkip(prev => prev + PAGE_LIMIT);
+  const handlePrev = () => setSkip(prev => Math.max(prev - PAGE_LIMIT, 0));
 
   if (loading)
     return (
@@ -40,5 +45,21 @@ export function DriversPendingList() {
       </div>
     );
 
-  return <DriversPendingTable drivers={driversPending} onVerify={verifyLicense} />;
+  return (
+    <>
+      <DriversPendingTable
+        drivers={driversPending}
+        onVerify={verifyLicense}
+      />
+
+      <Pagination
+        total={total}
+        skip={skip}
+        onNext={handleNext}
+        onPrev={handlePrev}
+        hasNext={driversPending.length === PAGE_LIMIT}
+        hasPrev={skip > 0}
+      />
+    </>
+  );
 }

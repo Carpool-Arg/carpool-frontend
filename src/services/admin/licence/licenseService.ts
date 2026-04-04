@@ -1,12 +1,11 @@
-import { DriverPendingResponse } from "@/modules/admin/licences/types/dto/driverPendingResponse";
-import { LicenseVerifyDTO } from "@/modules/admin/licences/types/dto/licenseVerify";
+
+import { DriverPendingResponse } from "@/modules/admin/licenses/types/dto/driverPendingResponse";
+import { LicenseVerifyDTO } from "@/modules/admin/licenses/types/licenseVerify";
 import { VoidResponse } from "@/shared/types/response";
 
-
-
-export async function getDriversPending(): Promise<DriverPendingResponse> {
+export async function getDriversPending(skip:number, orderBy:string): Promise<DriverPendingResponse> {
   try {
-    const res = await fetch('/api/admin/drivers/pending',{
+    const res = await fetch(`/api/admin/drivers/pending?skip=${skip}&orderBy=${orderBy}`,{
       method: 'GET',
       credentials: 'include',
     })

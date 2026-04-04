@@ -5,24 +5,31 @@ import { driverVerifyLicense, getDriversPending } from "@/services/admin/licence
 import { DriverPendingResponse } from "../types/dto/driverPendingResponse";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { VoidResponse } from "@/shared/types/response";
-
+import { DriverPendingDTO } from "../types/driverPending";
 
 export function useDriversPending() {
-  const [driversPending, setDriversPending] = useState<DriverPendingResponse["data"]>(null);
+  const [driversPending, setDriversPending] = useState<DriverPendingDTO[]>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchDrivers = async () => {
+  // Paginado
+  const [skip, setSkip] = useState(0);
+  const [orderBy, setOrderBy] = useState<string>("");
+  const [total, setTotal] = useState<number>(0)
+
+  const fetchDrivers = async (customSkip = skip, customOrderBy = orderBy) => {
     setLoading(true);
     setError(null);
 
-    const res = await getDriversPending();
+    const res = await getDriversPending(customSkip, customOrderBy);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error al cargar conductores");
-      setDriversPending(null);
+      setDriversPending([]);
+      setTotal(0)
     } else {
-      setDriversPending(res.data);
+      setDriversPending(res.data?.drivers);
+      setTotal(res.data?.total ?? 0);
     }
 
     setLoading(false);
@@ -43,12 +50,17 @@ export function useDriversPending() {
 
   useEffect(() => {
     fetchDrivers();
-  }, []);
+  }, [skip, orderBy]);
 
   return {
     driversPending,
     loading,
     error,
+    skip,
+    setSkip,
+    orderBy,
+    total,
+    setOrderBy,
     refetch: fetchDrivers,
     verifyLicense, 
   };
