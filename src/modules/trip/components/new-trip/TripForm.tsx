@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/authContext';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { calculatePriceTrip, newTrip, validateTripDateTime } from '@/services/trip/tripService';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
+import { ChevronLeftCircle, Circle, CircleX, DollarSign, ShieldAlert, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -28,6 +28,7 @@ import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
 import { TripFormData, tripSchema } from '../../schemas/tripSchema';
+import InvalidDriverAlert from '@/components/ux/InvalidDriverAlert';
 
 interface BaggageOption {
   value: string;
@@ -47,7 +48,7 @@ export function TripForm() {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
   const router = useRouter()
-  const {user} = useAuth();
+  const {user,driver} = useAuth();
   const [tripStops, setTripStops] = useState<TripStop[]>([])
   const [origin, setOrigin] = useState<TripStop>({
     cityId: 0,
@@ -108,6 +109,8 @@ export function TripForm() {
   const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
 
   const hasTripstops = tripStops?.length > 0
+
+  const isValidDriver = driver?.licenseStatus === 'APPROVED'
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -295,6 +298,8 @@ export function TripForm() {
     )
   }
 
+  if (!isValidDriver) return <InvalidDriverAlert/>
+
   if (vehicles.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center w-full h-full">
@@ -338,6 +343,8 @@ export function TripForm() {
       </div>
     )
   }
+
+  
 
 
   return (

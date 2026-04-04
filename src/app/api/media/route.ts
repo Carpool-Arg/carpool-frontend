@@ -54,7 +54,6 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("token")?.value;
-    
 
     const res = await fetch(`${apiUrl}/media`, {
       headers: {

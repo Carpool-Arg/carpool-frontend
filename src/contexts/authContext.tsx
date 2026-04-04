@@ -2,6 +2,7 @@
 
 import { DEBT_PATHS } from '@/constants/paths/debtPaths';
 import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
+import { Driver } from '@/models/driver';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
 import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
@@ -14,6 +15,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 
 interface AuthContextType {
   user: User | null;
+  driver: Driver | null;
   loading: boolean;
   imageLoading: boolean;
   login: (data: LoginData & { recaptchaToken?: string }) => Promise<void>;
@@ -33,6 +35,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [driver, setDriver] = useState<Driver | null>(null);
   const [debt, setDebt] = useState<UserDebtResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
@@ -107,6 +110,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const fetchDriver = useCallback(async (): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/drivers', { method: 'GET', credentials: 'include' });
+      if (res.ok) {
+        const response = await res.json();
+        if (response.data) {
+          setDriver(response.data);
+          return true;
+        }
+      }
+      setDriver(null);
+      return false;
+    } catch (err) {
+      console.error('Error cargando conductor:', err);
+      setDriver(null);
+      return false;
+    }
+  }, []);
+
   const fetchUserDebt = useCallback(async () => {
     try {
       const res = await fetch('/api/users/debt', { method: 'GET', credentials: 'include' });
@@ -160,8 +182,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const hasUser = await fetchUser();
       if (hasUser) {
         await fetchFullUser();
+        await fetchDriver();
         await fetchUserDebt();
-        
       }
       setLoading(false);
 
@@ -260,7 +282,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const value = {
-    user, loading, imageLoading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
+    user, driver, loading, imageLoading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
     prevImage, setPrevImage, profileViewRole, setProfileViewRole,
     accessToken 
   };
