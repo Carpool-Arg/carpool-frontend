@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
-import { tripButtonConfig } from "../passenger/TripPassengerStateButton";
+import { tripButtonConfig } from "../driver/TripDriverStateButton";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -111,7 +111,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
     setLoading(true);
 
     try {
-      const result = await config.onClick(trip.id.toString(), scope);
+      const result = await config.onClick(trip.id.toString());
 
       if (!result.ok) {
         setToast({
