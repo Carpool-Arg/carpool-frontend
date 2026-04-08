@@ -1,11 +1,20 @@
-
-import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
 import { VoidResponse } from "@/shared/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
+/**
+ * Valida o rechaza la licencia de un chofer pendiente.
+ * 
+ * Realiza una llamada al backend para aprobar o denegar la licencia de un chofer,
+ * enviando su identificador junto con el estado de validación (booleano).
+ * 
+ * Devuelve una respuesta estandarizada de tipo `VoidResponse`.
+ * 
+ * @param req - Objeto de la petición entrante de Next.js.
+ * @param context - Contexto de la ruta (incluye parámetros dinámicos como el id).
+ * @returns {Promise<NextResponse>} Respuesta sin datos (`VoidResponse`).
+ */
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

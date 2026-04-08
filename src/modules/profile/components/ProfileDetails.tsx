@@ -12,29 +12,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SquarePen, Trash, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ProfileData, profileSchema } from '../schemas/profileSchema';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GENDERS } from '@/constants/genders';
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-const genders = [
-  { label: "Masculino", value: "MALE" },
-  { label: "Femenino", value: "FEMALE" },
-  { label: "Otro", value: "UNSPECIFIED" },
-];
-
 export default function ProfileDetails() {
-  const { user, fetchUser, setPrevImage, prevImage } = useAuth();
+  const { user, setPrevImage, prevImage, fetchFullUser,fetchUserImage } = useAuth();
   const router = useRouter();
+
+  console.log(user)
 
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [originalImage, setOriginalImage] = useState<string | null>(null);
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
-  
 
   const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024;
   const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
@@ -51,6 +47,7 @@ export default function ProfileDetails() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { isDirty, errors, isValid },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -103,6 +100,7 @@ export default function ProfileDetails() {
           setLoading(false)
           return
         }
+        await fetchUserImage();
       }
 
       // Actualizar datos
@@ -114,17 +112,16 @@ export default function ProfileDetails() {
         if (response.state === 'ERROR') {
           setToast({message: 'Error al actualizar los datos del perfil', type: 'error'});
           setLoading(false);
-          await fetchUser();
+          await fetchFullUser();
+          await fetchUserImage();
           reset(data)
           return
         }
       }
 
-
-      await fetchUser();
+      await fetchFullUser();
       setLoading(false);
       
-      // Reiniciamos el estado "dirty" del form con los nuevos valores
       reset(data); 
       setSelectedFile(null); // Limpiamos el archivo seleccionado
       
@@ -180,7 +177,7 @@ export default function ProfileDetails() {
         return
       }
 
-      await fetchUser();
+      await fetchUserImage();
       setPrevImage(null);
       setSelectedFile(null);
       setToast({ message: 'Foto eliminada correctamente', type: 'success' });
@@ -207,7 +204,7 @@ export default function ProfileDetails() {
   if (!user) return <p>Cargando usuario...</p>;
 
   return (
-    <div className="space-y-4 max-w-md">
+    <div className="space-y-4 max-w-lg">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            
@@ -296,20 +293,43 @@ export default function ProfileDetails() {
 
           {/* Campo Género Editable */}
           <div className="flex flex-col">
-            <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
-              Género
-            </label>
-            <select
-              {...register('gender')}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 dark:bg-dark-5 dark:border-gray-2 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              {genders.map(g => (
-                <option key={g.value} value={g.value}>{g.label}</option>
-              ))}
-            </select>
-            {errors.gender && (
-              <p className=" text-red-500 mt-1">{errors.gender.message}</p>
-            )}
+            <Controller
+              control={control}
+              name="gender"
+              render={({ field }) => (
+                <div className="flex flex-col">
+                  <label className="mb-1 text-dark-4 dark:text-gray-1 font-regular font-inter text-sm">
+                    Género
+                  </label>
+
+                  <Select
+                    key={field.value}
+                    onValueChange={field.onChange}
+                    value={field.value || "UNSPECIFIED"}
+                  >
+                    <SelectTrigger
+                      className={`w-full font-outfit dark:bg-dark-5 cursor-pointer h-10.5 text-base ${
+                        errors.gender ? "border-error" : ""
+                      }`}
+                    >
+                      <SelectValue placeholder="Seleccioná un género" />
+                    </SelectTrigger>
+
+                    <SelectContent className='cursor-pointer'>
+                      {GENDERS.map((g) => (
+                        <SelectItem key={g.value} value={g.value} className='cursor-pointer'>
+                          {g.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {errors.gender && (
+                    <p className="text-red-500 mt-1">{errors.gender.message}</p>
+                  )}
+                </div>
+              )}
+            />
           </div>
         </div>
 

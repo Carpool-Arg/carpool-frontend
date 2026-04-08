@@ -1,4 +1,3 @@
-
 import { DriverPendingResponse } from "@/modules/admin/licenses/types/dto/driverPendingResponse";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +10,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * y devuelve la respuesta estándar de tipo `DriverPendingResponse`.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
- * @returns {Promise<NextResponse>} - Respuesta JSON 
+ * @returns {Promise<NextResponse>} - Respuesta JSON del tipo DriverPendingResponse.
  */
 export async function GET(req: NextRequest) {
   try {

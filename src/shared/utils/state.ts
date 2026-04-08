@@ -16,3 +16,4 @@ export function translateLicenseState(state: string): string {
 
   return map[state] ?? state;
 }
+

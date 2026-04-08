@@ -22,8 +22,10 @@ interface AuthContextType {
   logout: () => void;
   debt: UserDebtResponseDTO | null; 
   authGoogle: (idToken: string) => Promise<void>;
-  fetchUser: () => Promise<boolean>;
+  fetchUser: () => Promise<User | null>;
+  fetchFullUser: () => Promise<void>;
   fetchUserDebt: () => Promise<void>;
+  fetchUserImage: () => Promise<void>;
   prevImage: string | null;
   setPrevImage: (value: string | null) => void;
   profileViewRole: 'pasajero' | 'conductor';
@@ -54,7 +56,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (route === '/') return pathname === '/';
     return pathname === route || pathname.startsWith(route + '/');
   });
-
 
   useEffect(() => {
     if (!user || debt === null) return;
@@ -87,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [debt?.debtUser, pathname,]);
 
-  const fetchUser = useCallback(async (): Promise<boolean> => {
+  const fetchUser = useCallback(async (): Promise<User | null> => {
     try {
       const res = await fetch('/api/me', { method: 'GET', credentials: 'include' });
       if (res.ok) {
@@ -98,15 +99,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             roles: response.data.roles,
             id: null, name: null, lastname: null, email: null, dni: null, phone: null, gender: null, status: null, birthDate: null, passengerRating:0
            });
-          return true;
+          return response.data;
         }
       }
       setUser(null);
-      return false;
+      return null;
     } catch (err) {
       console.error('Error cargando usuario:', err);
       setUser(null);
-      return false;
+      return null;
     }
   }, []);
 
@@ -156,23 +157,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-
-  useEffect(() => {
+  const fetchUserImage = useCallback(async () => {
     if (!user?.id) return;
 
-    const loadImage = async () => {
-      setImageLoading(true);
-      try {
-        const imgUrl = await getUserFile();
-        if (imgUrl?.data) setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
-      } catch (err) { 
-        console.warn("No se pudo cargar la imagen:", err); 
-      } finally {
-        setImageLoading(false)
+    setImageLoading(true);
+    try {
+      const imgUrl = await getUserFile();
+      if (imgUrl?.data) {
+        setUser(prev => prev ? { ...prev, profileImage: imgUrl.data } : prev);
       }
-    };
-    loadImage();
+    } catch (err) {
+      console.warn("No se pudo cargar la imagen:", err);
+    } finally {
+      setImageLoading(false);
+    }
   }, [user?.id]);
+
+
+  useEffect(() => {
+    fetchUserImage();
+  }, [fetchUserImage]);
+  
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -180,9 +185,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasRun.current = true;
 
       const hasUser = await fetchUser();
+      const isDriver = hasUser?.roles.includes('driver')
+      
       if (hasUser) {
         await fetchFullUser();
-        await fetchDriver();
+        
+        if (isDriver) {
+          await fetchDriver();
+        }
+        
         await fetchUserDebt();
       }
       setLoading(false);
@@ -211,13 +222,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (result.state === "OK") {
-        await fetchUser();
+        const hasUser = await fetchUser();
+        const isDriver = hasUser?.roles.includes('driver')
         await fetchFullUser();
+        if (isDriver)await fetchDriver();
         await fetchUserDebt();
 
         // Guardar el token en el state (Para que el WS lo vea)
         if (result.data?.accessToken) {
-            setAccessToken(result.data.accessToken); 
+          setAccessToken(result.data.accessToken); 
         }
 
         
@@ -241,8 +254,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const result = await authWithGoogle(idToken);
       if (result.state === "OK" && result.data) {
-        await fetchUser();
+        const hasUser = await fetchUser();
+        const isDriver = hasUser?.roles.includes('driver')
         await fetchFullUser();
+        if (isDriver)await fetchDriver();
         await fetchUserDebt();
         
 
@@ -282,8 +297,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const value = {
-    user, driver, loading, imageLoading, login, logout, debt, authGoogle, fetchUser, fetchUserDebt,
-    prevImage, setPrevImage, profileViewRole, setProfileViewRole,
+    user, driver, 
+    loading, imageLoading, 
+    login, logout, debt, authGoogle,
+    fetchUser, fetchFullUser, fetchUserDebt, fetchUserImage,
+    prevImage, setPrevImage, 
+    profileViewRole, setProfileViewRole,
     accessToken 
   };
 
