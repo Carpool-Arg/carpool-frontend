@@ -1,21 +1,16 @@
 'use client'
 
+import { ROUTE_TITLES } from '@/constants/paths/adminPaths'
 import { useAuth } from '@/contexts/authContext'
 import { PanelLeft } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
-const routeTitles: Record<string, string> = {
-  '/admin/dashboard': 'Dashboard',
-  '/admin/licenses': 'Licencias',
-  '/dashboard/reportes': 'Reportes',
-  '/dashboard/ajustes': 'Ajustes',
-}
 
 export default function AdminNavbar() {
   const pathname = usePathname()
   const { user, imageLoading } = useAuth()
 
-  const title = routeTitles[pathname] ?? 'Dashboard'
+  const title = ROUTE_TITLES[pathname] ?? 'Dashboard'
 
   return (
     <header className="h-13 bg-dark-5 flex items-center px-5 gap-3 border-b border-white/6 shrink-0">

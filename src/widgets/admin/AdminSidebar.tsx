@@ -2,34 +2,18 @@
 
 import { AlertDialog } from '@/components/ux/AlertDialog'
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
+import { NAV_ITEMS } from '@/constants/paths/adminPaths'
 import { useAuth } from '@/contexts/authContext'
 import {
   CornerDownRight,
-  IdCard,
-  LayoutDashboard,
-  LogOut,
-  Settings
+  LogOut
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const navItems = [
-  {
-    section: 'General',
-    items: [
-      { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-      { label: 'Licencias', href: '/admin/licenses', icon: IdCard },
-    ],
-  },
-  {
-    section: 'Configuración',
-    items: [
-      { label: 'Ajustes', href: '/admin/settings', icon: Settings },
-    ],
-  },
-]
+
 
 export default function AdminSidebar() {
   const {logout} = useAuth();
@@ -60,7 +44,7 @@ export default function AdminSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 py-3 overflow-y-auto">
-        {navItems.map((group) => (
+        {NAV_ITEMS.map((group) => (
           <div key={group.section}>
             <p className="text-[10px] font-medium text-white/30 uppercase tracking-widest px-5 pt-4 pb-1.5">
               {group.section}
