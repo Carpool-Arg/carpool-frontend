@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/authContext";
-import { ChevronDown, User, UserPen } from "lucide-react";
+import { ChevronDown, UserPen } from "lucide-react";
 import { translateGender } from "@/shared/utils/gender";
 import { useRouter } from "next/navigation";
+import { UserDetailsSkeleton } from "./UserDetailSkeleton";
 
 export default function UserDetails() {
-  const { user } = useAuth();
+  const { user, loading} = useAuth();
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
 
   if (!user) return null;
+
+  if (loading) return <UserDetailsSkeleton/>
 
   return (
     <div className="max-w-lg">

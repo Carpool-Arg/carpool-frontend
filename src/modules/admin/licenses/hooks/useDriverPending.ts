@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { driverVerifyLicense, getDriversPending } from "@/services/admin/licence/licenseService";
-import { DriverPendingResponse } from "../types/dto/driverPendingResponse";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { VoidResponse } from "@/shared/types/response";
 import { DriverPendingDTO } from "../types/driverPending";
@@ -50,7 +49,7 @@ export function useDriversPending() {
 
   useEffect(() => {
     fetchDrivers();
-  }, [skip, orderBy]);
+  }, [skip, orderBy,fetchDrivers]);
 
   return {
     driversPending,

@@ -9,7 +9,6 @@ import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
 import { canAccessRoute } from '@/shared/utils/helpers/permission';
-
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 

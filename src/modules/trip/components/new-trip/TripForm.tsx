@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/authContext';
 import { TripStop, TripStopExtended } from '@/models/tripStop';
 import { calculatePriceTrip, newTrip, validateTripDateTime } from '@/services/trip/tripService';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronLeftCircle, Circle, CircleX, DollarSign, ShieldAlert, Square, UsersRound } from 'lucide-react';
+import { ChevronLeftCircle, Circle, CircleX, DollarSign, Square, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -16,19 +16,19 @@ import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import { Button } from '@/components/ux/Button';
 import InfoTooltip from '@/components/ux/InfoTooltip';
+import InvalidDriverAlert from '@/components/ux/InvalidDriverAlert';
 import { Toast } from '@/components/ux/Toast';
 import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
 import { useEffect, useState } from 'react';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
 import { TripDetail } from './TripDetail';
 import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
-import { TripFormData, tripSchema } from '../../schemas/tripSchema';
-import InvalidDriverAlert from '@/components/ux/InvalidDriverAlert';
 
 interface BaggageOption {
   value: string;
@@ -111,6 +111,9 @@ export function TripForm() {
   const hasTripstops = tripStops?.length > 0
 
   const isValidDriver = driver?.licenseStatus === 'APPROVED'
+
+  const now = new Date()
+  const isExpiredLicense = new Date(driver?.licenseExpirationDate ?? '') < now
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -298,7 +301,7 @@ export function TripForm() {
     )
   }
 
-  if (!isValidDriver) return <InvalidDriverAlert/>
+  if (!isValidDriver || isExpiredLicense) return <InvalidDriverAlert expired={isExpiredLicense}/>
 
   if (vehicles.length === 0) {
     return (

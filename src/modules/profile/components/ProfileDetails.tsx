@@ -17,14 +17,13 @@ import { z } from 'zod';
 import { ProfileData, profileSchema } from '../schemas/profileSchema';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GENDERS } from '@/constants/genders';
+import { ProfileDetailsSkeleton } from './ProfileDetailsSkeleton';
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileDetails() {
-  const { user, setPrevImage, prevImage, fetchFullUser,fetchUserImage } = useAuth();
+  const { user, setPrevImage, prevImage, fetchFullUser, fetchUserImage, loading:authLoading} = useAuth();
   const router = useRouter();
-
-  console.log(user)
 
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -41,7 +40,6 @@ export default function ProfileDetails() {
     description?: string;
     onConfirm?: () => void;
   } | null>(null);
-
 
   const {
     register,
@@ -195,20 +193,17 @@ export default function ProfileDetails() {
     setPrevImage(originalImage);
   }
 
-  
-
-
   // Controlamos si el button debe estar o no deshabilitado
   const isButtonDisabled = !hasChanges || !isValid || loading;
 
-  if (!user) return <p>Cargando usuario...</p>;
+  if (authLoading) return <ProfileDetailsSkeleton/>;
 
   return (
     <div className="space-y-4 max-w-lg">
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            
-            <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors py-2">
+            <label className="px-4 text-sm flex items-center gap-1 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-2 transition-colors py-2">
               <SquarePen size={14} />
               Editar foto
               <input

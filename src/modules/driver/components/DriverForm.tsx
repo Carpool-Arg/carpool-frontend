@@ -16,7 +16,7 @@ import { LicenseClassResponseDTO } from "../types/dto/licenseClassResponseDTO"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DriverFormSkeleton } from "./DriverSkeleton"
 import Separator from "@/components/ux/Separator"
-import { Camera, Image } from "lucide-react"
+import { Image } from "lucide-react"
 
 
 export function DriverForm() {
@@ -226,7 +226,7 @@ export function DriverForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* FRONT */}
           <div
-            className="relative border-2 border-dashed border-white/[0.12] rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/[0.25] hover:bg-white/[0.02] transition-colors group"
+            className="relative border-2 border-dashed border-white/12 rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/25 hover:bg-white/2 transition-colors group"
             onClick={() => document.getElementById('frontInput')?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -245,15 +245,15 @@ export function DriverForm() {
 
             {frontImage ? (
               <div className="flex flex-col items-center gap-1.5">
-                <div className="w-8 h-8 rounded-md bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-md bg-white/6 border border-white/8 flex items-center justify-center">
                   <Image size={14} className="text-white/50" />
                 </div>
-                <p className="text-[12px] text-white/60 text-center max-w-[140px] truncate">{frontImage.name}</p>
+                <p className="text-[12px] text-white/60 text-center max-w-35 truncate">{frontImage.name}</p>
                 <p className="text-[10px] text-white/25">click para cambiar</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-8 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.06] transition-colors">
+                <div className="w-8 h-8 rounded-md bg-white/4 border border-white/8 flex items-center justify-center group-hover:bg-white/6 transition-colors">
                   <Image size={14} className="text-white/30 group-hover:text-white/50 transition-colors" />
                 </div>
                 <div className="flex flex-col items-center gap-0.5">
@@ -266,7 +266,7 @@ export function DriverForm() {
 
           {/* BACK */}
           <div
-            className="relative border-2 border-dashed border-white/[0.12] rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/[0.25] hover:bg-white/[0.02] transition-colors group"
+            className="relative border-2 border-dashed border-white/12 rounded-lg p-5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-white/25 hover:bg-white/2 transition-colors group"
             onClick={() => document.getElementById('backInput')?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -285,15 +285,15 @@ export function DriverForm() {
 
             {backImage ? (
               <div className="flex flex-col items-center gap-1.5">
-                <div className="w-8 h-8 rounded-md bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-md bg-white/6 border border-white/8 flex items-center justify-center">
                   <Image size={14} className="text-white/50" />
                 </div>
-                <p className="text-[12px] text-white/60 text-center max-w-[140px] truncate">{backImage.name}</p>
+                <p className="text-[12px] text-white/60 text-center max-w-35 truncate">{backImage.name}</p>
                 <p className="text-[10px] text-white/25">click para cambiar</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-8 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.06] transition-colors">
+                <div className="w-8 h-8 rounded-md bg-white/4 border border-white/8 flex items-center justify-center group-hover:bg-white/6 transition-colors">
                   <Image size={14} className="text-white/30 group-hover:text-white/50 transition-colors" />
                 </div>
                 <div className="flex flex-col items-center gap-0.5">

@@ -1,6 +1,7 @@
 'use client'
 
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 interface LicensePhotoGalleryProps {
@@ -57,7 +58,7 @@ export function LicensePhotoGallery({
 
         {/* Imagen */}
         <div className="relative bg-dark-5 flex items-center justify-center" style={{ minHeight: 280 }}>
-          <img
+          <Image
             key={current}
             src={photos[current].url}
             alt={photos[current].label}

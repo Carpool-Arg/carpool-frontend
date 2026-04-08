@@ -1,8 +1,8 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { Bell, PanelLeft } from 'lucide-react'
 import { useAuth } from '@/contexts/authContext'
+import { PanelLeft } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 const routeTitles: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
@@ -10,8 +10,6 @@ const routeTitles: Record<string, string> = {
   '/dashboard/reportes': 'Reportes',
   '/dashboard/ajustes': 'Ajustes',
 }
-
-
 
 export default function AdminNavbar() {
   const pathname = usePathname()

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LicensePhotoGallery } from "./LicenseGallery";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { AlertDialog } from "@/components/ux/AlertDialog";
+import Image from "next/image";
 
 
 interface LicenseVerifyModalProps {
@@ -108,7 +109,7 @@ export function LicenseVerifyModal({
                   className="cursor-pointer group relative rounded-lg overflow-hidden border border-gray-2/40 hover:border-gray-2 transition-colors bg-dark-5"
                   style={{ aspectRatio: '16/9' }}
                 >
-                  <img
+                  <Image
                     src={url}
                     alt={label}
                     className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity "

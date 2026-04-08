@@ -10,7 +10,7 @@ interface ProfileHeaderProps{
 
 export function ProfileHeader({role}:ProfileHeaderProps) {
 
-  const { user, prevImage, imageLoading } = useAuth();
+  const { user, prevImage, imageLoading, loading } = useAuth();
   const imageToShow = prevImage || user?.profileImage;
 
   return (
@@ -48,17 +48,25 @@ export function ProfileHeader({role}:ProfileHeaderProps) {
           
         </div>
       :
+        loading ? 
         <div>
-          <h2 className="text-xl font-semibold text-gray-2 mt-2 dark:text-gray-1">
-            {user?.name} {user?.lastname} 
-          </h2>
-          
-          <p className="text-sm inline-flex items-center gap-1 bg-gray-2 text-gray-1/75 rounded px-2">
-            @{user?.username}
-          </p> 
-          
+          <div className='bg-gray-2 h-5 w-36 rounded mt-2.5 animate-pulse'></div> 
+          <div className='bg-gray-2 h-4.5 w-24 rounded mt-2 animate-pulse'></div> 
         </div>
-      }
+          
+        :
+          <div>
+              <h2 className="text-xl font-semibold text-gray-2 mt-2 dark:text-gray-1">
+                {user?.name} {user?.lastname} 
+              </h2>
+              <p className="text-sm inline-flex items-center gap-1 bg-gray-2 text-gray-1/75 rounded px-2">
+                @{user?.username}
+              </p> 
+          </div>
+        }
+          
+          
+
       
     </div>
   );

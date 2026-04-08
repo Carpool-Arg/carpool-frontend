@@ -1,18 +1,17 @@
 'use client'
 
-import { useState } from "react";
 import { useAuth } from "@/contexts/authContext";
-import { capitalizeWords } from "@/shared/utils/string";
+import { LicensePhotoGallery } from "@/modules/admin/licenses/components/LicenseGallery";
+import { capitalizeWords, formatDate } from "@/shared/utils/string";
 import {
-  CreditCard,
-  MapPin,
   CheckCircle,
   Clock,
-  XCircle,
-  IdCard
+  IdCard,
+  XCircle
 } from "lucide-react";
+import { useState } from "react";
 import { Rating } from "react-simple-star-rating";
-import { LicensePhotoGallery } from "@/modules/admin/licenses/components/LicenseGallery";
+import { DriverProfileDetailsSkeleton } from "./DriverProfileSkeleton";
 
 
 const STATUS_CONFIG = {
@@ -31,12 +30,14 @@ function getInitials(name: string) {
 }
 
 export default function DriverProfileDetails() {
-  const { driver } = useAuth();
+  const { driver, loading} = useAuth();
 
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [initialIndex, setInitialIndex] = useState(0);
 
   if (!driver) return null;
+
+  if (loading) return <DriverProfileDetailsSkeleton/>
 
   const { label, icon: StatusIcon, color } =
     STATUS_CONFIG[driver.licenseStatus];
@@ -45,7 +46,6 @@ export default function DriverProfileDetails() {
     <div className="max-w-lg">
       <div className="rounded-xl border border-gray-7 overflow-hidden ">
 
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 bg-gray-8">
           <div className="flex flex-col">
             <span className="text-sm text-gray-11">
@@ -58,8 +58,6 @@ export default function DriverProfileDetails() {
         </div>
 
         <div className="p-5">
-
-          {/* Avatar + name */}
           <div className="flex items-center gap-4 mb-5">
             <div className="w-14 h-14 rounded-full bg-gray-9/50 flex items-center justify-center text-2xl font-medium text-white shrink-0">
               {getInitials(driver.fullName)}
@@ -85,13 +83,11 @@ export default function DriverProfileDetails() {
             </div>
           </div>
 
-          {/* Fields */}
           <div className="border-t border-gray-7 pt-4 grid grid-cols-2 gap-x-4 gap-y-3">
             <div>
-              <p className="text-sm text-gray-11 mb-0.5">Ciudad</p>
+              <p className="text-sm text-gray-11 mb-0.5">Dirección</p>
               <p className="flex items-center gap-1 text-sm font-medium text-foreground">
-                <MapPin size={14} className="text-gray-1" />
-                {capitalizeWords(driver.city)}
+                {capitalizeWords(driver.addressStreetAndNumber)}
               </p>
             </div>
 
@@ -105,9 +101,19 @@ export default function DriverProfileDetails() {
                 {label}
               </p>
             </div>
+
           </div>
 
-          {/* License images */}
+          <div className="border-t border-gray-7 mt-3 pt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+            <div>
+              <p className="text-sm text-gray-11 mb-0.5">Fecha de Vencimiento</p>
+              <p className="flex items-center gap-1 text-sm font-medium text-foreground">
+                {formatDate(driver.licenseExpirationDate)}
+              </p>
+            </div>
+
+          </div>
+
           <div className="border-t border-gray-7 mt-4 pt-4 flex gap-3">
             {[
               { label: 'Frente', index: 0 },

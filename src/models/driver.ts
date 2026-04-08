@@ -4,6 +4,8 @@ export interface Driver {
   fullName: string
   rating: number
   licenseStatus: 'PENDING' | 'APPROVED' | 'REJECTED'
+  licenseExpirationDate: string;
+  addressStreetAndNumber: string;
   frontLicenseUrl: string
   backLicenseUrl: string
   city: string
