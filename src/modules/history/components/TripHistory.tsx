@@ -45,7 +45,7 @@ export default function TripHistory() {
         }
       }
       if(role==='passenger'){
-        const response = await getHistoryTripUser(0,["CREATED", "CLOSED", "FINISHED"]);
+        const response = await getHistoryTripUser(0,["FINISHED"]);
         if(response.state === 'OK'){
           setPassengerTrips(response.data?.trips ?? [])
         }else{
@@ -73,7 +73,7 @@ export default function TripHistory() {
     <div className="w-full">
       <RoleSelectorHeader
         title="Historial de viajes"
-        description="Acá podés ver tus viajes realizados y los que están por comenzar."
+        description= {role == 'driver' ? "Acá podés ver tus viajes realizados y los que están por comenzar." : 'Acá podés ver tus viajes realizados.'}
         role={role}
         onChangeRole={handleChangeRole}
       />
