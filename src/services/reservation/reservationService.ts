@@ -65,6 +65,44 @@ export async function getReservations(data: ReservationDTO, size: number, page:n
   }
 }
 
+export async function getMyReservations(
+  skip: number,
+  orderBy: string,
+  fromDate?: Date,
+  toDate?: Date
+  ): Promise<ReservationResponse>{
+  try{
+    const params = new URLSearchParams();
+
+    params.append("skip", skip.toString());
+    params.append("orderBy", orderBy);
+
+    if (fromDate) params.append("fromDate", fromDate.toISOString().split("T")[0]);
+    if (toDate) params.append("toDate", toDate.toISOString().split("T")[0]);
+
+
+    const url = `/api/reservation/me?${params.toString()}`;
+
+    const res = await fetchWithRefresh(url, {
+      credentials: 'include',
+    });
+
+    const response: ReservationResponse = await res.json();
+
+    if(!res.ok){
+      throw new Error(response.messages?.[0] || "Error desconocido");
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+
 export async function calculateTotal(idTrip: number, idStartCity: number, idDestinationCity: number): Promise<NumberResponse>{
   try{
     const params = new URLSearchParams();

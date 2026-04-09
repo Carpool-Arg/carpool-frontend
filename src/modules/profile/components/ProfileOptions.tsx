@@ -54,7 +54,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           )}
 
           <Link
-            href={`${isDriver ? '/reservations' : '/reservations/p'}`}
+            href={`${isDriver ? '/reservations' : '/reservations/passenger'}`}
             className={linkClasses}
           >
             <div className="flex items-center gap-2">   
