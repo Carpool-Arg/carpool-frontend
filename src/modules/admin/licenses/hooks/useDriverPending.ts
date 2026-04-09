@@ -49,7 +49,7 @@ export function useDriversPending() {
 
   useEffect(() => {
     fetchDrivers();
-  }, [skip, orderBy,fetchDrivers]);
+  }, [skip, orderBy]);
 
   return {
     driversPending,

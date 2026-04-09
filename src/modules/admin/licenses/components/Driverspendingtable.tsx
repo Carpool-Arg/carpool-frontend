@@ -10,8 +10,6 @@ import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { LicensePhotoGallery } from "./LicenseGallery";
 import { LicenseVerifyModal } from "./LicenseVerifyModal";
 
-
-
 interface DriversPendingTableProps {
   drivers: DriverPendingDTO[];
   onVerify: (driverId: number, data: LicenseVerifyDTO) => Promise<unknown>;
@@ -53,11 +51,17 @@ export function DriversPendingTable({ drivers, onVerify }: DriversPendingTablePr
                 <td className="px-5 py-3 text-gray-11/80">{driver.email}</td>
                 <td className="px-5 py-3 text-gray-11/80">{driver.phone}</td>
                 <td className="px-5 py-3 text-gray-11/80">{driver.licenseClass}</td>
-                <td className="px-5 py-3 text-gray-11/80">
+                <td 
+                  className={`px-5 py-3
+                    ${isLicenseExpired(driver.licenseExpirationDate) ? 'text-red-400 font-medium' :'text-gray-11/80'}`}
+                >
                   <div className="flex items-center gap-1.5">
                     {formatDate(driver.licenseExpirationDate)}
                     {isLicenseExpired(driver.licenseExpirationDate) && (
-                      <OctagonAlert size={13} className="text-red-500" />
+                      <span 
+                        title="Licencia vencida">
+                        <OctagonAlert size={13} className="text-red-400" />
+                      </span>
                     )}
                   </div>
                 </td>

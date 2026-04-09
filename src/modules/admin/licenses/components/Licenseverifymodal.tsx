@@ -7,7 +7,6 @@ import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { AlertDialog } from "@/components/ux/AlertDialog";
 import Image from "next/image";
 
-
 interface LicenseVerifyModalProps {
   driverName: string;
   driverId: number;
@@ -112,7 +111,8 @@ export function LicenseVerifyModal({
                   <Image
                     src={url}
                     alt={label}
-                    className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity "
+                    fill
+                    className="object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-end p-2">
                     <span className="text-[10px] text-gray-4/80 group-hover:text-gray-4 transition-colors bg-gray-7/80 px-1.5 py-0.5 rounded">
@@ -185,23 +185,38 @@ export function LicenseVerifyModal({
             <button
               onClick={() => setIsDialogOpen(true)}
               disabled={!canSubmit || loading}
-              className="relative overflow-hidden px-4 py-2 cursor-pointer rounded-lg text-sm font-medium border border-gray-2/50 bg-white  disabled:cursor-not-allowed"
+              className="relative overflow-hidden px-4 py-2 cursor-pointer rounded-lg text-sm font-medium border border-gray-2/50 bg-white disabled:cursor-not-allowed transition-all duration-300"
             >
+              {/* Fondo animado */}
               <span
-                className={`absolute inset-0 transition-all duration-700 ease-out
-                  ${loading ? 'w-full' : 'w-0'}
-                  ${approved === true ? 'bg-green-800' : ''}
-                  ${approved === false ? 'bg-red-600/80' : ''}
+                className={`
+                  absolute inset-0 transition-all duration-700 ease-out
+                  ${loading ? 'w-full animate-pulse' : 'w-0'}
+                  ${approved === true ? 'shadow-[0_0_12px_rgba(22,163,74,0.5)]' : ''}
+                  ${approved === false ? 'shadow-[0_0_12px_rgba(239,68,68,0.5)]' : ''}
                 `}
-                style={{ width: loading ? '100%' : '0%' }}
+                style={{
+                  width: loading ? '100%' : '0%',
+                  background:
+                    approved === true
+                      ? 'linear-gradient(to right, #16a34a, #15803d)'
+                      : approved === false
+                      ? 'linear-gradient(to right, #ef4444, #dc2626)'
+                      : 'transparent',
+                }}
               />
 
               {/* Texto */}
-              <span className={`relative z-10 ${loading ? 'text-white' : 'text-black'}`}>
+              <span
+                className={`
+                  relative z-10 transition-colors duration-300
+                  ${loading ? 'text-white' : 'text-black'}
+                `}
+              >
                 {loading
                   ? approved === true
-                    ? 'Aprobando'
-                    : 'Rechazando'
+                    ? 'Aprobando...'
+                    : 'Rechazando...'
                   : 'Confirmar'}
               </span>
             </button>
@@ -219,6 +234,7 @@ export function LicenseVerifyModal({
           onClose={() => setGalleryOpen(false)}
         />
       )}
+
       {isDialogOpen &&
         <AlertDialog
           isOpen={isDialogOpen}
@@ -236,7 +252,6 @@ export function LicenseVerifyModal({
         />
       }
       
-
     </>
   );
 }

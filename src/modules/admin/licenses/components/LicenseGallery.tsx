@@ -61,8 +61,9 @@ export function LicensePhotoGallery({
           <Image
             key={current}
             src={photos[current].url}
-            alt={photos[current].label}
-            className="max-h-90 max-w-full object-contain"
+            alt={'Imagenes de licencia'}
+            fill
+            className="object-cover"
           />
           <button
             onClick={prev}

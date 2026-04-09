@@ -46,7 +46,7 @@ export function DriversPendingList() {
     );
 
   return (
-    <>
+    <div>
       <DriversPendingTable
         drivers={driversPending}
         onVerify={verifyLicense}
@@ -60,6 +60,6 @@ export function DriversPendingList() {
         hasNext={driversPending.length === PAGE_LIMIT}
         hasPrev={skip > 0}
       />
-    </>
+    </div>
   );
 }
