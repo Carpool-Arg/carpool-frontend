@@ -607,7 +607,7 @@ export function TripForm() {
                 variant="primary"
                 onClick={() => setStep(3)}
                 className='px-12 py-2 text-sm font-inter font-medium'
-                disabled={!isValid || !!priceCalculationError || calculatingPrice}
+                disabled={!isValid || !!priceCalculationError || calculatingPrice || !!dateError}
               >
                 Siguiente
               </Button>
