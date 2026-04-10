@@ -43,7 +43,7 @@ export default function SearchBar() {
 
   return (
     <div className="shadow-lg w-full flex flex-col gap-2">
-      <div className="flex items-center gap-4 md:mt-4">
+      <div className="flex items-center gap-4">
         {/* Origen y destino */}
         <CitySearch 
           originCity={originCity}

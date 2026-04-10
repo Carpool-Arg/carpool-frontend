@@ -2,8 +2,53 @@ import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 import { DriverResponse } from "@/modules/driver/types/dto/driverResponseDTO";
 
 import { NextRequest, NextResponse } from "next/server";
+import { DriverDetailsResponseDTO } from "@/modules/driver/types/dto/driverDetailsResponse";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+/**
+ * Obtiene los datos del conductor en sesion
+ * 
+ * @param {NextRequest} req - Objeto de la petición entrante de Next.js
+ * @returns {Promise<NextResponse>} - Respuesta JSON con el estado de la actualización
+ */
+export async function GET(req: NextRequest) {
+  // Obtenemos el token JWT desde las cookies
+  const token = req.cookies.get("token")?.value;
+
+  // Si no existe el token, devolvemos un error 400
+  if (!token) {
+    return NextResponse.json({ 
+      data: null, 
+      messages: ["Token inválido o expirado"], 
+      state: "ERROR" 
+    }, { status: 400 });
+  }
+
+  try {
+  
+    // Llamar al backend
+    const res = await fetch(`${apiUrl}/drivers`, {
+      method: "GET",
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    const response: DriverDetailsResponseDTO = await res.json();
+
+    // Devolver respuesta estandarizada
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    return NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" }, 
+      { status: 500 }
+    );
+  }
+}
+
 
 /**
  * Actualiza el perfil de un usuario.
@@ -19,15 +64,15 @@ export async function POST(req: NextRequest) {
   try {
     // Recibir el token de la petición
     const token = req.cookies.get('token')?.value;
-    const body = await req.json();
+    const formData = await req.formData();
 
     // Llamada al backend con interceptor para refresco de tokens
     const res = await fetchWithRefresh(`${apiUrl}/drivers`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" ,
+      headers: {
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(body),
+      body: formData,
     });
 
     const response: DriverResponse = await res.json();

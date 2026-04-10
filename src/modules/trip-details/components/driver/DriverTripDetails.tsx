@@ -46,7 +46,7 @@ export default function DriverTripDetails() {
     <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
       {trip &&
         <div
-          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4 mb-4"
+          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 mb-4"
         >
           
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
