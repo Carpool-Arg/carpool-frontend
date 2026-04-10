@@ -8,7 +8,6 @@ import { LoginData } from '@/modules/auth/schemas/loginSchema';
 import { UserDebtResponseDTO } from '@/modules/debt/types/UserDebtResponseDTO';
 import { loginUser, authWithGoogle, logoutUser } from '@/services/auth/authService';
 import { getUserFile } from '@/services/media/mediaService';
-import { canAccessRoute } from '@/shared/utils/helpers/permission';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
@@ -22,6 +21,7 @@ interface AuthContextType {
   debt: UserDebtResponseDTO | null; 
   authGoogle: (idToken: string) => Promise<void>;
   fetchUser: () => Promise<User | null>;
+  fetchDriver:  () => Promise<boolean>;
   fetchFullUser: () => Promise<void>;
   fetchUserDebt: () => Promise<void>;
   fetchUserImage: () => Promise<void>;
@@ -55,23 +55,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (route === '/') return pathname === '/';
     return pathname === route || pathname.startsWith(route + '/');
   });
-
-  useEffect(() => {
-    if (!user || debt === null) return;
-
-    if (debt.debtUser) return;
-
-    if (isPublicRoute) {
-      router.replace('/home'); 
-      return;
-    }
-
-    const hasAccess = canAccessRoute(pathname, user.roles || []);
-
-    if (!hasAccess) {
-      router.replace('/home');
-    }
-  }, [user, pathname, debt, isPublicRoute]);
 
   useEffect(() => {
     if (!debt) return;
@@ -299,7 +282,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user, driver, 
     loading, imageLoading, 
     login, logout, debt, authGoogle,
-    fetchUser, fetchFullUser, fetchUserDebt, fetchUserImage,
+    fetchUser, fetchDriver, fetchFullUser, fetchUserDebt, fetchUserImage,
     prevImage, setPrevImage, 
     profileViewRole, setProfileViewRole,
     accessToken 

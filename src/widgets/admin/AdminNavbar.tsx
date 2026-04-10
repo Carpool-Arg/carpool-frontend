@@ -3,6 +3,7 @@
 import { ROUTE_TITLES } from '@/constants/paths/adminPaths'
 import { useAuth } from '@/contexts/authContext'
 import { PanelLeft } from 'lucide-react'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 
@@ -27,10 +28,12 @@ export default function AdminNavbar() {
         {imageLoading ? (
           <div className="w-7 h-7 rounded-full bg-white/10 animate-pulse" />
         ) : user?.profileImage && (
-          <img
+          <Image
             src={user.profileImage}
-            alt={user.name ?? 'Avatar'}
-            className="w-7 h-7 rounded-full object-cover border border-white/20"
+            alt={user?.name ?? "Avatar"}
+            width={28}
+            height={28}
+            className="rounded-full object-cover border border-white/20"
           />
         )}
       </div>

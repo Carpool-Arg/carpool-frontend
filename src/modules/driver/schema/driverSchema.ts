@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
 export const driverSchema = z.object({
-  licenseClassId: z
-    .number()
-    .min(1, "Selecciona una clase de licencia"),
+  licenseClassId: z.number().min(1, "Selecciona una clase de licencia"),
 
   licenseExpirationDate: z
     .string()
@@ -13,25 +11,23 @@ export const driverSchema = z.object({
     .refine((date) => {
       const inputDate = new Date(date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Normalizar horas para comparar solo la fecha
+      today.setHours(0, 0, 0, 0);
       return inputDate >= today;
     }, {
       message: 'No puede ser una fecha pasada.',
     }),
-    
-  addressStreet: z
-    .string()
-    .min(1, 'La calle es obligatoria')
-    .max(100, 'La calle no puede tener más de 100 caracteres'),
 
-  addressNumber: z
-    .string()
-    .regex(/^\d+$/, 'El número de calle debe contener solo dígitos'),
+  addressStreet: z.string().min(1).max(100),
+  addressNumber: z.string().regex(/^\d+$/),
 
-  cityId: z.number({
-      required_error: 'La localidad es obligatoria',
-      invalid_type_error: 'La localidad es obligatoria',
-    }).min(1, 'La localidad es obligatoria')
-  });
+  cityId: z.number().min(1),
+
+
+  frontImage: z
+    .instanceof(File, { message: "La imagen frontal es obligatoria" }),
+
+  backImage: z
+    .instanceof(File, { message: "La imagen trasera es obligatoria" }),
+});
 
 export type DriverData = z.infer<typeof driverSchema>;
