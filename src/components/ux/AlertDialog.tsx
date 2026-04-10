@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Info, Loader2 } from "lucide-react"
+import { AlertCircle, CheckCircle, Info, Loader2, X } from "lucide-react"
 import { ReactNode } from "react"
 
 type AlertDialogProps = {
@@ -11,10 +11,10 @@ type AlertDialogProps = {
   confirmText?: string
   cancelText?: string
   children?: ReactNode
-  secondaryButton?: { text: string; onClick: () => void },
-  singleButton?: boolean,
-  loading?: boolean,
-  autoCloseOnConfirm?: boolean 
+  secondaryButton?: { text: string; onClick: () => void }
+  singleButton?: boolean
+  loading?: boolean
+  autoCloseOnConfirm?: boolean
 }
 
 export function AlertDialog({
@@ -35,33 +35,48 @@ export function AlertDialog({
   if (!isOpen) return null
 
   const iconMap = {
-    error: <AlertCircle className="text-error w-6 h-6" />,
-    success: <CheckCircle className="text-success w-6 h-6" />,
-    info: <Info className="text-gray-11 w-6 h-6" />,
+    error:   <AlertCircle size={16} className="text-red-400/80" />,
+    success: <CheckCircle size={16} className="text-emerald-400/80" />,
+    info:    <Info        size={16} className="text-gray-9" />,
   }
 
-  const confirmButtonStyle = {
-    error: "bg-white hover:bg-gray-6 text-gray-8",
-    success: "bg-white hover:bg-gray-6 text-gray-8",
-    info: "bg-white hover:bg-gray-6 text-gray-8",
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose()
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
-      <div className="bg-white dark:bg-dark-3 p-6 rounded-lg shadow-lg max-w-md w-full">
-        <div className="flex items-center gap-2 mb-4">
-          {iconMap[type]}
-          <h2 className="text-lg font-semibold">{title}</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-[#111] border border-gray-2/50 rounded-xl w-full max-w-md overflow-hidden">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-2/50">
+          <div className="flex items-center gap-2">
+            {iconMap[type]}
+            <p className="text-base font-medium text-white/80">{title}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 cursor-pointer flex items-center justify-center rounded-full hover:bg-gray-2/60 transition-colors"
+          >
+            <X size={14} className="text-white/40" />
+          </button>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-          {description}
-        </p>
-        {children && <div className="mb-4">{children}</div>}
-        <div className="flex justify-end gap-2">
+
+        {/* Body */}
+        <div className="px-5 py-4 flex flex-col gap-3">
+          <p className="text-sm text-gray-11 leading-relaxed">{description}</p>
+          {children && <div>{children}</div>}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-2/50">
           {!singleButton && (
             <button
               onClick={secondaryButton ? secondaryButton.onClick : onClose}
-              className="px-4 cursor-pointer py-2 rounded-md border border-gray-300 dark:border-gray-5"
+              className="px-4 py-2 cursor-pointer rounded-lg text-sm text-gray-9 hover:text-gray-11 hover:bg-gray-2/20 border border-gray-2/50 transition-colors"
             >
               {secondaryButton ? secondaryButton.text : cancelText}
             </button>
@@ -70,15 +85,14 @@ export function AlertDialog({
           <button
             onClick={() => {
               onConfirm?.()
-              if (autoCloseOnConfirm) {
-                onClose()
-              }
+              if (autoCloseOnConfirm) onClose()
             }}
-            className={`px-4 cursor-pointer py-2 rounded-md ${confirmButtonStyle[type]}`}
+            disabled={loading}
+            className="px-4 py-2 cursor-pointer rounded-lg text-sm bg-white text-black font-medium hover:bg-white/85 transition-colors disabled:opacity-30 disabled:cursor-not-allowed min-w-22.5 flex items-center justify-center"
           >
             {loading ? (
-              <Loader2 size={16} className="animate-spin" />
-            ): (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
               confirmText
             )}
           </button>

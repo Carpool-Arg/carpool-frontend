@@ -134,7 +134,7 @@ export default function DesktopSidebar() {
       <div className="text-sm flex flex-col gap-1">
         {isAdmin && 
           <Link 
-            href={'/admin'}
+            href={'/admin/dashboard'}
             className='flex items-center gap-2 px-4 py-1.5 border border-gray-2 rounded-xl
              hover:bg-gray-8 cursor-pointer'
           >

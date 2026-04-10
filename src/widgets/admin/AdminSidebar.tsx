@@ -1,36 +1,29 @@
 'use client'
 
+import { AlertDialog } from '@/components/ux/AlertDialog'
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
+import { NAV_ITEMS } from '@/constants/paths/adminPaths'
+import { useAuth } from '@/contexts/authContext'
 import {
-  FileText,
-  IdCard,
-  LayoutDashboard,
-  LogOut,
-  Settings
+  CornerDownRight,
+  LogOut
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
-const navItems = [
-  {
-    section: 'General',
-    items: [
-      { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-      { label: 'Licencias', href: '/admin/licences', icon: IdCard },
-      { label: 'Reportes', href: '/dashboard/reportes', icon: FileText },
-    ],
-  },
-  {
-    section: 'Configuración',
-    items: [
-      { label: 'Ajustes', href: '/dashboard/ajustes', icon: Settings },
-    ],
-  },
-]
+
 
 export default function AdminSidebar() {
-  const pathname = usePathname()
+  const {logout} = useAuth();
+  const pathname = usePathname();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  const handleLogout = async () => {
+    await logout();
+    setIsDialogOpen(false);
+  };
 
   return (
     <aside className="w-55 shrink-0 bg-[#111] flex flex-col border-r border-white/6 h-screen sticky top-0">
@@ -51,7 +44,7 @@ export default function AdminSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 py-3 overflow-y-auto">
-        {navItems.map((group) => (
+        {NAV_ITEMS.map((group) => (
           <div key={group.section}>
             <p className="text-[10px] font-medium text-white/30 uppercase tracking-widest px-5 pt-4 pb-1.5">
               {group.section}
@@ -62,7 +55,7 @@ export default function AdminSidebar() {
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-2.5 px-5 py-2.5 text-[13px] transition-colors border-l-2 ${
+                  className={`flex items-center gap-2.5 px-5 py-2.5 text-sm transition-colors border-l-2 ${
                     isActive
                       ? 'text-white bg-white/6 border-white'
                       : 'text-white/50 hover:text-white/80 hover:bg-white/4 border-transparent'
@@ -77,13 +70,33 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
+      <Link href={'/home'} className="py-3">
+        <div 
+          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-sm text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
+          <CornerDownRight size={15} strokeWidth={1.8} />
+          Volver a Carpool
+        </div>
+      </Link>
+
       {/* Logout */}
       <div className="border-t border-white/6 py-3">
-        <button className="flex items-center gap-2.5 px-5 py-2.5 text-[13px] text-white/50 hover:text-white/80 hover:bg-white/4 w-full transition-colors border-l-2 border-transparent">
+        <button 
+          onClick={() => setIsDialogOpen(true)}
+          className="flex items-center cursor-pointer gap-2.5 px-5 py-2.5 text-sm text-white/50 hover:text-white/80 hover:bg-red-900/50 w-full transition-colors border-l-2 border-transparent">
           <LogOut size={15} strokeWidth={1.8} />
           Cerrar sesión
         </button>
       </div>
+      <AlertDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleLogout}
+        type="info"
+        title="Cerrar sesión"
+        description="¿Estás seguro de que querés cerrar sesión? Tendrás que volver a iniciar sesión para continuar usando la aplicación."
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+      />
     </aside>
   )
 }

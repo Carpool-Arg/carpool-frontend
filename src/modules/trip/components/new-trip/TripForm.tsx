@@ -16,18 +16,19 @@ import { BsBackpack, BsSuitcase } from 'react-icons/bs';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import { Button } from '@/components/ux/Button';
 import InfoTooltip from '@/components/ux/InfoTooltip';
+import InvalidDriverAlert from '@/components/ux/InvalidDriverAlert';
 import { Toast } from '@/components/ux/Toast';
 import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
 import { useEffect, useState } from 'react';
+import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 import { TripPriceCalculationResponseDTO } from '../../types/dto/tripResponseDTO';
 import { TripDetail } from './TripDetail';
 import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
-import { TripFormData, tripSchema } from '../../schemas/tripSchema';
 
 interface BaggageOption {
   value: string;
@@ -47,7 +48,7 @@ export function TripForm() {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
   const router = useRouter()
-  const {user} = useAuth();
+  const {user,driver} = useAuth();
   const [tripStops, setTripStops] = useState<TripStop[]>([])
   const [origin, setOrigin] = useState<TripStop>({
     cityId: 0,
@@ -108,6 +109,11 @@ export function TripForm() {
   const exceedsVehicleSeats = !!selectedVehicle && availableSeat >= selectedVehicle.availableSeats;
 
   const hasTripstops = tripStops?.length > 0
+
+  const isValidDriver = driver?.licenseStatus === 'APPROVED'
+
+  const now = new Date()
+  const isExpiredLicense = new Date(driver?.licenseExpirationDate ?? '') < now
 
   useEffect(() => {
     if (selectedVehicle) {
@@ -300,6 +306,8 @@ export function TripForm() {
     )
   }
 
+  if (!isValidDriver || isExpiredLicense) return <InvalidDriverAlert expired={isExpiredLicense}/>
+
   if (vehicles.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center w-full h-full">
@@ -343,6 +351,8 @@ export function TripForm() {
       </div>
     )
   }
+
+  
 
 
   return (
@@ -602,7 +612,7 @@ export function TripForm() {
                 variant="primary"
                 onClick={() => setStep(3)}
                 className='px-12 py-2 text-sm font-inter font-medium'
-                disabled={!isValid || !!priceCalculationError || calculatingPrice}
+                disabled={!isValid || !!priceCalculationError || calculatingPrice || !!dateError}
               >
                 Siguiente
               </Button>

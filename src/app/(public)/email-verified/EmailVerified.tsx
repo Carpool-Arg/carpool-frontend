@@ -53,12 +53,11 @@ export default function EmailVerifiedPage() {
             <p className="text-left">Ya podés iniciar sesión con tu cuenta</p>
           </div>
         </div>
-        <button
+        <Button
           onClick={() => router.push("/login")}
-          className="mt-8 px-6 py-3 cursor-pointer bg-primary text-white rounded-lg font-medium hover:bg-primary-light transition-colors"
         >
           Ir al inicio de sesión
-        </button>
+        </Button>
       </div>
     );
   }
@@ -83,12 +82,11 @@ export default function EmailVerifiedPage() {
             <p className="text-left">El enlace ya fue utilizado anteriormente</p>
           </div>
         </div>
-        <button
+        <Button
           onClick={() => router.push("/email-verify")}
-          className="px-6 py-3 cursor-pointer bg-primary text-white rounded-lg font-medium hover:bg-primary-light transition-colors"
         >
           Solicitar nuevo enlace
-        </button>
+        </Button>
       </div>
     );
   }
@@ -109,12 +107,11 @@ export default function EmailVerifiedPage() {
       
       {showFallbackAction && (
         <div className="space-y-3 space-x-4">
-          <button
+          <Button
             onClick={() => router.push("/login")}
-            className="px-4 py-2 cursor-pointer bg-primary text-white rounded-lg font-medium hover:bg-primary-light transition-colors"
           >
             Ir al inicio de sesión
-          </button>
+          </Button>
           <Button
             onClick={() => router.push("/email-verify")}
             variant="outline"

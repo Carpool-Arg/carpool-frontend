@@ -1,28 +1,36 @@
 export const HEADER_PATHS = [
-  '/reservations/', 
-  '/search',
-  '/trip/edit',
-  '/trip/details',
-  '/trip/new',
-  '/trip', '/trips',
-  '/reviews/driver/',
-  '/reviews/from-me',
-  '/reviews/to-me',
+  // Nav
+  '/home','/search',
+
+  // Trip
+  '/trip/edit', '/trip/details',
+  '/trip/new',  '/trip',  '/trips',
+
+  // Review
+  '/reviews/driver/', '/reviews/from-me',
+  '/reviews/to-me', '/account/reviews',
+
+  // Reservation
   '/reservations',
-  '/vehicle/edit',
-  '/vehicle/new',
+
+  // Vehicle
+  '/vehicle/edit',  '/vehicle/new',
   '/vehicle',
-  '/profile/details',
+
+  // Profile
+  '/profile/details', '/profile/driver',
   '/profile',
+
+  // Driver
   '/register-driver',
   '/driver-review/trip/',
+
+  // Settings
   '/settings/account/update-password',
   '/settings/account/update-email',
   '/settings/account',
   '/settings/security',
   '/settings',
-  '/home',
-  '/account/reviews'
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
@@ -30,23 +38,32 @@ export const HEADER_TITLES: Record<string, string> = {
   '/trip/edit': 'Editar viaje',
   '/trip/new': 'Publicar viaje',
   '/trip/details': 'Detalles del viaje',
+
   '/reviews/driver/':'Reseñas',
   '/reviews/from-me':'Reseñas que has hecho',
   '/reviews/to-me': 'Reseñas que te han hecho',
+
   '/vehicle/edit': 'Editar Vehículo',
   '/vehicle/new': 'Registrar Vehículo',
   '/vehicle': 'Vehículos',
+
+  '/profile/driver': 'Perfil de conductor',
   '/profile/details': 'Perfil',
   '/profile': 'Perfil de usuario',
+
   '/register-driver': 'Registrar conductor',
+
   '/reservations/':'Reservas del viaje', 
   '/reservations':'Viajes',
+
   '/driver-review/trip/': 'Reseñar al chofer',
+
   '/settings/account/update-password': 'Contraseña',
   '/settings/account/update-email': 'Correo electrónico',
   '/settings/account': 'Cuenta',
   '/settings/security': 'Seguridad',
   '/settings': 'Configuración',
+
   '/account/reviews': 'Consulta de reseñas' 
 };
 

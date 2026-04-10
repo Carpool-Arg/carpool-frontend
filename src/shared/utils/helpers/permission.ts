@@ -9,8 +9,11 @@ export const canAccessRoute = (pathname: string, userRoles: string[]) => {
   );
 
   if (!match) return true;
-
   if (match.roles === 'all') return true;
 
+  // Si tiene algún rol excluido, no puede pasar
+  if (match.excludeRoles?.some(role => userRoles.includes(role))) return false;
+
+  // Alcanza con tener AL MENOS UNO de los roles requeridos
   return match.roles.some(role => userRoles.includes(role));
 };

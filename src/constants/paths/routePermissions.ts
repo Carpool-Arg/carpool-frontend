@@ -1,16 +1,21 @@
+
 type Role = 'user' | 'driver' | 'admin';
 
-export const ROUTE_PERMISSIONS: { path: string; roles: Role[] | 'all' }[] = [
+export const ROUTE_PERMISSIONS: { 
+  path: string; 
+  roles: Role[] | 'all';
+  excludeRoles?: Role[]; 
+}[] = [
   { path: '/home', roles: 'all' },
   { path: '/search', roles: 'all' },
   { path: '/profile', roles: 'all' },
-  { path: '/register-driver', roles: 'all' },
+  { path: '/register-driver', roles: ['user'], excludeRoles: ['driver'] },
   { path: '/settings', roles: 'all' },
 
   { path: '/vehicle', roles: ['driver'] },
-  { path: '/vehicle/new', roles:['driver'] },
+  { path: '/vehicle/new', roles: ['driver'] },
 
-  { path: '/trip/new', roles: ['driver'] },
+  { path: '/trip/new', roles: ['user', 'driver'] },
   { path: '/trip/details', roles: 'all' },
   { path: '/trip/edit', roles: ['driver'] },
   { path: '/trips', roles: 'all' },
@@ -26,5 +31,5 @@ export const ROUTE_PERMISSIONS: { path: string; roles: Role[] | 'all' }[] = [
 
   { path: '/account/reviews', roles: 'all' },
 
-  { path: '/admin', roles: ['admin']},
+  { path: '/admin', roles: ['admin'] },
 ];
