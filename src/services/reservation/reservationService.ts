@@ -1,5 +1,6 @@
 import { Reservation } from "@/models/reservation";
 import { ReservationResponse } from "@/modules/reservation/create/types/dto/reservationResponseDTO";
+import { cancelReservationByPassengerRequestDTO } from "@/modules/reservation/update/types/cancelReservationByPassenger";
 import { DeleteTripPassengerDTO } from "@/modules/reservation/update/types/deleteTripPassenger";
 import { ReservationDTO } from "@/modules/reservation/update/types/reservation";
 import { ReservationUpdateDTO } from "@/modules/reservation/update/types/reservationUpdate";
@@ -66,6 +67,7 @@ export async function getReservations(data: ReservationDTO, size: number, page:n
 }
 
 export async function getMyReservations(
+  state: string,
   skip: number,
   orderBy: string,
   fromDate?: Date,
@@ -74,6 +76,7 @@ export async function getMyReservations(
   try{
     const params = new URLSearchParams();
 
+    params.append("state", state);
     params.append("skip", skip.toString());
     params.append("orderBy", orderBy);
 
@@ -157,6 +160,29 @@ export async function updateReservation(reservationUpdateRequest: ReservationUpd
 export async function deleteTripPassenger(request: DeleteTripPassengerDTO): Promise<VoidResponse>{
   try{
     const res = await fetchWithRefresh('/api/reservation/delete-trip-passenger',{
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+      credentials: 'include'
+    });
+
+    const response: VoidResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  }catch(error: unknown){
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
+
+export async function cancelReservationByPassenger(request: cancelReservationByPassengerRequestDTO): Promise<VoidResponse>{
+  try{
+    const res = await fetchWithRefresh('/api/reservation/cancel',{
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request),

@@ -4,22 +4,25 @@ import { Circle, Square, Star, UserX } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineBackpack, MdOutlineNoBackpack } from "react-icons/md";
 import { ReservationDTO } from "../types/reservation";
-import { formatISOToShortDate } from "@/shared/utils/date";
+import { formatISOToDateTime, formatISOToShortDate } from "@/shared/utils/date";
 import { capitalizeWords } from "@/shared/utils/string";
 
-
+type ReservationVariant = 'DRIVER' | 'PASSENGER';
 export interface ReservationProps {
     reservation: ReservationDTO;
-    onAccept: ()=>void
-    onReject: ()=>void
-    onDelete: () => void
+    variant?: ReservationVariant;
+    onAccept?: () => void;
+    onReject?: () => void;
+    onDelete?: () => void;
+    onCancel?: () => void;
     isAccepting?: boolean;
     isRejecting?: boolean;
     isDeleting?: boolean;
+    isCanceling?: boolean;
 }
 
 
-export default function Reservation({ reservation,onAccept, onReject,onDelete, isAccepting,isRejecting, isDeleting}: ReservationProps) {
+export default function Reservation({ reservation,variant, onAccept, onReject,onDelete, onCancel, isAccepting,isRejecting, isDeleting, isCanceling}: ReservationProps) {
     return (
         <div className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-200">
             <div className="flex items-center gap-4 w-full justify-between">
@@ -45,7 +48,12 @@ export default function Reservation({ reservation,onAccept, onReject,onDelete, i
                         </p>
                     </div>
                 </div>
-                <p className=" text-sm">{formatISOToShortDate(reservation.createdAt)}</p>
+                <p className="text-sm">
+                    {variant === 'PASSENGER'
+                        ? formatISOToDateTime(reservation.tripStartDatetime)
+                        : formatISOToShortDate(reservation.createdAt)
+                    }
+                </p>
             </div>
 
 
@@ -81,7 +89,7 @@ export default function Reservation({ reservation,onAccept, onReject,onDelete, i
                     )}
                 </div>
             </div>
-            {reservation.state ==='PENDING' && 
+            {variant === 'DRIVER' && reservation.state ==='PENDING' && 
                 <div>
                     <Separator color="bg-gray-2" marginY="my-2" />
                     <div className="flex items-center gap-6 justify-end">
@@ -109,7 +117,7 @@ export default function Reservation({ reservation,onAccept, onReject,onDelete, i
                 </div>
             }
 
-            {reservation.state ==='ACCEPTED' && 
+            {variant === 'DRIVER' && reservation.state ==='ACCEPTED' && 
                 <div>
                     <Separator color="bg-gray-2" marginY="my-2" />
                     <div className="flex items-center gap-6 justify-end">
@@ -136,6 +144,28 @@ export default function Reservation({ reservation,onAccept, onReject,onDelete, i
                     </div>
                 </div>
             }
+
+            {variant === 'PASSENGER' && (
+                <div>
+                    <Separator color="bg-gray-2" marginY="my-2" />
+                    <div className="flex items-center gap-6 justify-end">
+                        <Button 
+                            variant="outline" 
+                            onClick={onCancel} 
+                            disabled={isCanceling}
+                            className="text-red-500 bg-red-500/10"
+                        >
+                            {isCanceling ? (
+                                <div className="px-5 py-0.5">
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-6 border-t-transparent"></div>
+                                </div>
+                            ) : (
+                                "Cancelar reserva"
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

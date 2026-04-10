@@ -10,14 +10,14 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get("token")?.value;
 
     const searchParams = req.nextUrl.searchParams;
-    const role = searchParams.get("role");
+    const state = searchParams.get("state");
     const skip = searchParams.get("skip");
     const orderBy = searchParams.get("orderBy");
 
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
 
-    if (!role || !skip || !orderBy) {
+    if (!skip || !orderBy || !state) {
       return NextResponse.json(
         {
           data: null,
@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
 
     const params = new URLSearchParams();
 
+    params.append("state", state);
     params.append("skip", skip);
     params.append("orderBy", orderBy);
-    params.append("role", role);
 
     if (fromDate) params.append("fromDate", fromDate);
     if (toDate) params.append("toDate", toDate);

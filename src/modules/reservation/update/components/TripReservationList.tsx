@@ -207,6 +207,7 @@ export default function TripReservationList({
                     <div className="cursor-pointer block">
                         <Reservation 
                           reservation={reservation}
+                          variant="DRIVER"
                           onAccept={() => handleConfirm('ACCEPT', reservation.id)}
                           onReject={() => handleConfirm("REJECT", reservation.id)} 
                           onDelete={()=>handleDeleteTripPassenger(reservation)}
