@@ -4,7 +4,7 @@ const SkeletonBlock = ({ className }: { className?: string }) => (
 
 const UpdateTripFormSkeleton = () => {
   return (
-    <div className="space-y-4 w-full md:mt-4">
+    <div className="space-y-4 w-full">
 
       {/* Vehicle Card */}
       <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">

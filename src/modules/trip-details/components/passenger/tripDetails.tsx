@@ -114,7 +114,7 @@ export default function TripDetails() {
 
         {/* Contenedor en grid */}
         <div
-          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4"
+          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2"
         >
           {/* Disponibilidad */}
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">

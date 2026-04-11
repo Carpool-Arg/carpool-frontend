@@ -1,5 +1,5 @@
-import AdminNavbar from "@/modules/admin/AdminNavbar"
-import AdminSidebar from "@/modules/admin/AdminSidebar"
+import AdminNavbar from "@/widgets/admin/AdminNavbar"
+import AdminSidebar from "@/widgets/admin/AdminSidebar"
 
 
 export default function AdminLayout({
@@ -8,7 +8,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-dvh overflow-hidden bg-neutral-950">
+    <div className="flex h-dvh overflow-hidden bg-gray-8/20">
       <AdminSidebar />
 
       <div className="flex flex-col flex-1 min-h-0">

@@ -325,7 +325,7 @@ export function UpdateTripForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       {step === 0 &&
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">

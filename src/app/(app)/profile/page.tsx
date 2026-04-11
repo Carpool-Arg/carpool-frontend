@@ -23,7 +23,7 @@ export default function ProfilePage() {
   return (
     
       <div className="max-w-lg mx-auto">
-        <div className='md:mt-8'>
+        <div className='md:mt-4'>
           <ProfileHeader role={profileViewRole} />
         </div>
         <div className='mt-4 flex justify-center'>

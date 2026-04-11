@@ -108,7 +108,7 @@ export function CityAutocomplete({
 
   return (
     <div className="relative w-full">
-      <label className={`block text-sm font-medium font-inter ${label && 'mb-1'}`}>{label}</label>
+      <label className={`block text-sm font-medium ${label && 'mb-1'}`}>{label}</label>
 
       <div className="relative">
         {icon && !loading && (
