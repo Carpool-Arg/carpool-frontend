@@ -3,11 +3,11 @@
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
 import { useDriversPending } from "../hooks/useDriverPending";
 import { IdCard, OctagonX } from "lucide-react";
-import { DriversPendingTable } from "./DriversPendingTable";
 import Spinner from "@/components/ux/Spinner";
 import { ErrorAlert } from "@/components/ux/admin/ErrorAlert";
 import { Pagination } from "@/components/ux/admin/Pagination";
 import { PAGE_LIMIT } from "@/constants/pagination";
+import { DriversPendingTable } from "./Driverspendingtable";
 
 
 export function DriversPendingList() {

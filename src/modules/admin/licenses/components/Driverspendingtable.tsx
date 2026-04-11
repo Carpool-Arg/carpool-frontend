@@ -8,7 +8,7 @@ import { useState } from "react";
 import { DriverPendingDTO } from "../types/driverPending";
 import { LicenseVerifyDTO } from "../types/licenseVerify";
 import { LicensePhotoGallery } from "./LicenseGallery";
-import { LicenseVerifyModal } from "./LicenseVerifyModal";
+import { LicenseVerifyModal } from "./Licenseverifymodal";
 
 interface DriversPendingTableProps {
   drivers: DriverPendingDTO[];

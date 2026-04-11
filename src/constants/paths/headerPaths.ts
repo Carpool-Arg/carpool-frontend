@@ -11,6 +11,8 @@ export const HEADER_PATHS = [
   '/reviews/to-me', '/account/reviews',
 
   // Reservation
+  '/reservations/passenger',
+  '/reservations/',
   '/reservations',
 
   // Vehicle
@@ -53,6 +55,7 @@ export const HEADER_TITLES: Record<string, string> = {
 
   '/register-driver': 'Registrar conductor',
 
+  '/reservations/passenger': 'Tus reservas',
   '/reservations/':'Reservas del viaje', 
   '/reservations':'Viajes',
 

@@ -1,5 +1,5 @@
 import HeaderPage from "@/components/ux/admin/HeaderPage";
-import { DriversPendingList } from "@/modules/admin/licenses/components/DriversPendingList";
+import { DriversPendingList } from "@/modules/admin/licenses/components/Driverspendinglist";
 
 
 
