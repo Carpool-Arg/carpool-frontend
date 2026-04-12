@@ -21,17 +21,16 @@ import { TripDetailsData } from "../../types/tripDetails";
 import { TripDetailSkeleton } from "../TripDetailSkeleton";
 import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
 import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
+import { useTripDetails } from "../../hooks/useTripDetails";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
 export default function TripDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchContext, setSearchContext] = useState<{ originId?: number; destinationId?: number } | null>(null);
-  const [trip, setTrip] = useState<TripDetailsData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
   const router = useRouter();
+  const { trip,loading,error } = useTripDetails(Number(id))
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -43,34 +42,6 @@ export default function TripDetails() {
   } | null>(null);
 
   useEffect(() => {
-    const loadTrip = async () => {
-      try {
-        setLoading(true);
-        if (!id) return
-        const creatorRes = await verifyIfUserIsCreator(Number(id));
-
-        if (creatorRes.data) {
-          setError("No puedes ver los detalles de este viaje.");
-          return;
-        }else{
-          const res = await getTripDetails(Number(id));
-          if (res.state === "ERROR") {
-            setError(res.messages[0]);
-          }
-          setTrip(res.data);
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Ocurrió un error inesperado.");
-        }
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     // Cargar el contexto de búsqueda del cliente
     const loadSearchContext = () => {
       const storedContext = sessionStorage.getItem(SEARCH_CONTEXT_KEY);
@@ -80,7 +51,6 @@ export default function TripDetails() {
     };
 
     if (id) {
-      loadTrip();
       loadSearchContext();
     }
   }, [id]);
@@ -140,7 +110,7 @@ export default function TripDetails() {
 
   if (trip) {
     return (
-      <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
+      <div className="flex flex-col items-center w-full max-w-lg mx-auto mt-2">
 
         {/* Contenedor en grid */}
         <div

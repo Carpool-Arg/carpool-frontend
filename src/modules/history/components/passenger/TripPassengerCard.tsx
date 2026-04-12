@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TripHistoryUserDTO } from "../../types/TripHistoryUserDTO";
+import { formatPrice } from "@/shared/utils/number";
 
 interface TripPassengerCardProps {
   trip: TripHistoryUserDTO;
@@ -38,6 +39,10 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
     router.push(`/driver-review/trip/${trip.tripId}`); 
   };
 
+    const handleView = () => {
+    router.push(`/trip/details/passenger/${trip.tripId}`); 
+  };
+
 
  
   return (
@@ -51,7 +56,7 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
            
         </div>
         <span className="text-base font-semibold">
-          ${trip.seatPrice}
+          ${formatPrice(trip.seatPrice)}
         </span>
       </div>
 
@@ -133,7 +138,7 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
                 disabled:opacity-60 disabled:cursor-not-allowed
                 cursor-pointer
               `}
-              onClick={()=>setLoading(true)}
+              onClick={handleView}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />

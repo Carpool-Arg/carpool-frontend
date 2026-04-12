@@ -5,7 +5,6 @@ import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
 import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
-import { useTripDetails } from "@/modules/trip/components/update-trip/hooks/useTripData";
 import { formatDomain } from "@/shared/utils/domain";
 import { formatPrice } from "@/shared/utils/number";
 import { capitalizeWords } from "@/shared/utils/string";
@@ -14,11 +13,12 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Rating } from "react-simple-star-rating";
 import { TripDetailSkeleton } from "../TripDetailSkeleton";
-import PassengersTrip from "./PassengersTrip";
+import { useTripDetails } from "../../hooks/useTripDetails";
 
-export default function DriverTripDetails() {
+export default function PassengerTripDetails() {
   const { id } = useParams();
-  const {trip, loading: tripLoading, error: tripError} = useTripDetails(Number(id));
+  const { trip,loading,error } = useTripDetails(Number(id))
+  
 
   const selectedBaggage = baggageOptions.find(
     (b) => b.value === trip?.availableBaggage
@@ -27,16 +27,16 @@ export default function DriverTripDetails() {
   const BaggageIcon = selectedBaggage?.icon;
 
 
-  if (tripLoading) 
+  if (loading) 
     return (
       <TripDetailSkeleton reservationButton={false}/>
     )
-  if (tripError) return (
+  if (error) return (
     <div className="my-50">
       <EmptyAlert
         icon={<CircleX size={32} />}
         title="Error inesperado"
-        description={tripError ?? "Lo sentimos ocurrió un error inesperado."}
+        description={error ?? "Lo sentimos ocurrió un error inesperado."}
       />
     </div>
 
@@ -46,7 +46,7 @@ export default function DriverTripDetails() {
     <div className="flex flex-col items-center w-full max-w-lg mx-auto mt-2">
       {trip &&
         <div
-          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 mb-4"
+          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4 mb-4"
         >
           
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">
@@ -155,12 +155,6 @@ export default function DriverTripDetails() {
           
         </div>
       } 
-
-      {trip && 
-        <div className="mb-4 w-full">
-          <PassengersTrip idTrip={Number(id) ?? null}/>
-        </div>
-      }
       
 
     </div>

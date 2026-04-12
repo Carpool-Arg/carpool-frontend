@@ -9,6 +9,7 @@ export const HEADER_PATHS = [
   // Review
   '/reviews/driver/', '/reviews/from-me',
   '/reviews/to-me', '/account/reviews',
+  '/passenger-review/trip/',
 
   // Reservation
   '/reservations/passenger',
@@ -42,6 +43,7 @@ export const HEADER_TITLES: Record<string, string> = {
   '/trip/details': 'Detalles del viaje',
 
   '/reviews/driver/':'Reseñas',
+  '/passenger-review/trip/':'Reseñar al pasajero',
   '/reviews/from-me':'Reseñas que has hecho',
   '/reviews/to-me': 'Reseñas que te han hecho',
 
