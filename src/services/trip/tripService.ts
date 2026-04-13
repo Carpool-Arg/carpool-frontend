@@ -8,7 +8,6 @@ import { VoidResponse } from "@/shared/types/response";
 import { TripHistoryUserResponse } from "@/modules/history/types/dto/TripHistoryUserResponseDTO";
 import { TripPassengersResponseDTO } from "@/modules/trip-details/types/dto/tripPassengersResponseDTO";
 
-
 export async function getTrips(filters: TripFilters): Promise<SearchTripResponse> {
   try {
     const res = await fetch('/api/trip/search',{

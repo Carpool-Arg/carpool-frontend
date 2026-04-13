@@ -1,7 +1,7 @@
 'use client'
 
 
-import { HEADER_PATHS } from "@/constants/paths/headerPaths";
+import { HEADER_PATHS } from "@/constants/paths/layout/headerPaths";
 import { PROTECTED_PATHS } from "@/constants/paths/protectedPaths";
 import { AppHeader } from "@/widgets/AppHeader";
 import DesktopSidebar from "@/widgets/desktop/DesktopSidebar";

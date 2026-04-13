@@ -26,7 +26,14 @@ export function TripPassengerList({ trips, onError, onSuccess }: TripPassengerLi
   return (
     <div className="flex flex-col">
       {trips.map((trip) => (
-        <TripPassengerCard key={trip.tripId} trip={trip} onError={onError}  onSuccess={onSuccess}  openMenuTripId={openMenuTripId} setOpenMenuTripId={setOpenMenuTripId} />
+        <TripPassengerCard 
+          key={trip.tripId} 
+          trip={trip} 
+          onError={onError}
+          onSuccess={onSuccess} 
+          openMenuTripId={openMenuTripId}
+          setOpenMenuTripId={setOpenMenuTripId}
+        />
       ))}
     </div>
   );

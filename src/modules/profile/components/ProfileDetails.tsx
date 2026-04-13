@@ -18,6 +18,8 @@ import { ProfileData, profileSchema } from '../schemas/profileSchema';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GENDERS } from '@/constants/genders';
 import { ProfileDetailsSkeleton } from './ProfileDetailsSkeleton';
+import { ProfileHeader } from './ProfileHeader';
+
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
@@ -199,7 +201,11 @@ export default function ProfileDetails() {
   if (authLoading) return <ProfileDetailsSkeleton/>;
 
   return (
-    <div className="space-y-4 max-w-lg">
+    <div className="space-y-4 ">
+      <div className=' md:py-8'>
+        <ProfileHeader />
+
+      </div>
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            

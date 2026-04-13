@@ -1,6 +1,6 @@
 'use client'
 
-import { ROUTE_TITLES } from '@/constants/paths/adminPaths'
+import { ROUTE_TITLES } from '@/constants/paths/admin/adminPaths'
 import { useAuth } from '@/contexts/authContext'
 import { PanelLeft } from 'lucide-react'
 import Image from 'next/image'

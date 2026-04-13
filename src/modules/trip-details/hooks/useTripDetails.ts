@@ -1,5 +1,5 @@
 import { TripResponseDTO } from "@/modules/trip/types/dto/tripResponseDTO";
-import { getTripDetails, getTripForUpdate, verifyIfUserIsCreator } from "@/services/trip/tripService";
+import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
 import { useCallback, useEffect, useState } from "react";
 
 

@@ -4,9 +4,9 @@ import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { Reservation } from "@/models/reservation";
 import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
-
+import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
+import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
 import { newReservation } from "@/services/reservation/reservationService";
-import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
 import { formatPrice } from "@/shared/utils/number";
 import { capitalizeWords } from "@/shared/utils/string";
 import { MessageCircleMore } from "lucide-react";
@@ -14,14 +14,11 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Rating } from "react-simple-star-rating";
-import { Button } from "../../../../components/ux/Button";
 import { ErrorMessage } from "../../../../components/ui/Error";
 import { AlertDialog } from "../../../../components/ux/AlertDialog";
-import { TripDetailsData } from "../../types/tripDetails";
-import { TripDetailSkeleton } from "../TripDetailSkeleton";
-import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
-import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
+import { Button } from "../../../../components/ux/Button";
 import { useTripDetails } from "../../hooks/useTripDetails";
+import { TripDetailSkeleton } from "../TripDetailSkeleton";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 

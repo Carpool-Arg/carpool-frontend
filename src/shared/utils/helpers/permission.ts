@@ -1,4 +1,4 @@
-import { ROUTE_PERMISSIONS } from "@/constants/paths/routePermissions";
+import { ROUTE_PERMISSIONS } from "@/constants/paths/permissions/routePermissions";
 
 const matchPath = (pathname: string, route: string) =>
   pathname === route || pathname.startsWith(route + '/');

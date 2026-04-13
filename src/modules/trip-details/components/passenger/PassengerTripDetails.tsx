@@ -1,7 +1,6 @@
 'use client'
 
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
-import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
 import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
@@ -12,8 +11,8 @@ import { CircleX } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Rating } from "react-simple-star-rating";
-import { TripDetailSkeleton } from "../TripDetailSkeleton";
 import { useTripDetails } from "../../hooks/useTripDetails";
+import { TripDetailSkeleton } from "../TripDetailSkeleton";
 
 export default function PassengerTripDetails() {
   const { id } = useParams();

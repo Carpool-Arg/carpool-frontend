@@ -2,7 +2,7 @@
 
 import { AlertDialog } from '@/components/ux/AlertDialog'
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2'
-import { NAV_ITEMS } from '@/constants/paths/adminPaths'
+import { NAV_ITEMS } from '@/constants/paths/admin/adminPaths'
 import { useAuth } from '@/contexts/authContext'
 import {
   CornerDownRight,

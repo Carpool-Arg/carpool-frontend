@@ -44,6 +44,7 @@ export const HEADER_TITLES: Record<string, string> = {
 
   '/reviews/driver/':'Reseñas',
   '/passenger-review/trip/':'Reseñar al pasajero',
+  '/driver-review/trip/': 'Reseñar al chofer',
   '/reviews/from-me':'Reseñas que has hecho',
   '/reviews/to-me': 'Reseñas que te han hecho',
 
@@ -60,8 +61,6 @@ export const HEADER_TITLES: Record<string, string> = {
   '/reservations/passenger': 'Tus reservas',
   '/reservations/':'Reservas del viaje', 
   '/reservations':'Viajes',
-
-  '/driver-review/trip/': 'Reseñar al chofer',
 
   '/settings/account/update-password': 'Contraseña',
   '/settings/account/update-email': 'Correo electrónico',
