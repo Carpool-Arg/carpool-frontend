@@ -7,8 +7,8 @@ export default function Page() {
   return (
     <div className="min-h-screen flex">
       {/* Panel lateral (solo desktop) */}
-      <div className="hidden md:flex fixed inset-y-0 left-0 w-2/5 bg-gradient-to-b from-dark-4 via-dark-3 to-dark-2 px-[156px] py-12 items-center justify-center z-10">
-        <div className="flex flex-col items-center text-center w-[200px]">
+      <div className="hidden md:flex fixed inset-y-0 left-0 w-1/2 bg-linear-to-b from-dark-4 via-dark-3 to-dark-2 px-39 py-12 items-center justify-center z-10">
+        <div className="flex flex-col items-center text-center w-50">
           <Image
             src={`${R2_PUBLIC_PREFIX}/carpool-wslogan.png`}
             alt="Imagen de login"
@@ -24,7 +24,7 @@ export default function Page() {
       </div>
 
       {/* Contenido principal */}
-      <div className="w-full md:ml-[40%] md:w-3/5 flex flex-col justify-around md:justify-center items-center min-h-screen md:px-[156px] md:py-12 gap-10">
+      <div className="w-full md:ml-[50%] md:w-1/2 flex flex-col justify-around md:justify-center items-center min-h-screen md:px-20 md:py-12 gap-10">
 
         {/* Logo mobile */}
         <div className="flex justify-center md:hidden">
@@ -40,11 +40,11 @@ export default function Page() {
 
         {/* Imagen grande */}
         <div className="hidden md:flex mb-6 justify-center w-full">
-          <div className="w-full max-w-[600px] flex justify-center">
+          <div className="w-full max-w-150 flex justify-center">
             <Image
               src={`${R2_PUBLIC_PREFIX}/home.svg`}
               alt="Logo"
-              width={600}
+              width={500}
               height={400}
               priority
               className="h-auto max-w-full"
@@ -64,8 +64,8 @@ export default function Page() {
         </div>
 
         {/* Botones Desktop */}
-        <div className="hidden md:flex w-full justify-center">
-          <div className="flex flex-row items-center gap-6 w-full max-w-[600px] mt-18">
+        <div className="hidden md:flex w-full justify-center items-center">
+          <div className="flex items-center gap-6 w-full mt-18">
             <HomeButtons mode="desktop" />
           </div>
         </div>

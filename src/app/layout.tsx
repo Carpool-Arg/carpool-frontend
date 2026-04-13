@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
-import localFont from 'next/font/local'
-import { AppProviders } from './providers';
-import ClientLayout from "@/layout/ClientLayout";
-import ServiceWorkerRegistration from '@/SWRegister'
-import "./globals.css";
-import { cookies } from "next/headers";
-import { WebSocketProvider } from "@/providers/WebSocketProvider";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-import { UnpaidPaymentModal } from "@/components/alerts/UnpaidPaymentModal";
+import { WebSocketProvider } from "@/providers/WebSocketProvider";
+import type { Metadata } from "next";
+import localFont from 'next/font/local';
+import { cookies } from "next/headers";
+import "./globals.css";
+import { AppProviders } from './providers';
 
 export const outfit = localFont({
   src: [
@@ -54,15 +51,11 @@ export default async function RootLayout({
     <html lang="es" className={`${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <body>
         <AppProviders>
-        <NotificationProvider>
-          <WebSocketProvider token={token}>
-            <ClientLayout>
-              <ServiceWorkerRegistration/>
+          <NotificationProvider>
+            <WebSocketProvider token={token}>
               {children}
-              <UnpaidPaymentModal />
-            </ClientLayout>
-          </WebSocketProvider>
-        </NotificationProvider>
+            </WebSocketProvider>
+          </NotificationProvider>
         </AppProviders>
       </body>
     </html>

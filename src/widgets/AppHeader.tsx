@@ -1,7 +1,7 @@
 'use client'
 
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
-import { getMatchingHeaderPath, HEADER_TITLES } from '@/constants/paths/headerPaths';
+import { getMatchingHeaderPath, HEADER_TITLES } from '@/constants/paths/layout/headerPaths';
 import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';

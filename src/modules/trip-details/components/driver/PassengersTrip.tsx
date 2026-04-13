@@ -22,7 +22,7 @@ export default function PassengersTrip({ idTrip }: PassengersTripProps) {
 
   if (loading) {
     return (
-      <div className="min-w-lg flex flex-col gap-2">
+      <div className="max-w-md flex flex-col gap-2 w-full">
         <div className="h-4.5 w-64 bg-gray-2 animate-pulse rounded"/>
         {[...Array(3)].map((_, i) => (
           <PassengerCardSkeleton key={i} />
@@ -35,16 +35,17 @@ export default function PassengersTrip({ idTrip }: PassengersTripProps) {
     return (
       <EmptyAlert
         icon={<UserRoundMinus size={32} />}
-        title="No hay pasajeros disponibles"
+        title="No hay pasajeros"
         description="No hay ningún pasajero en este viaje."
       />
     )
   }
 
   return (
-    <div className="flex flex-col gap-2 min-w-lg">
+    <div className="flex flex-col gap-2 w-full max-w-md mx-auto">
       {loading ? 
-        <div className="h-4.5 w-32 bg-gray-2 animate-pulse"/> :
+        <div className="h-4.5 w-32 bg-gray-2 animate-pulse"/> 
+      :
         <p className="text-lg">Pasajeros que viajaron con vos!</p>
       }
       

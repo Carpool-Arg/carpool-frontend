@@ -33,6 +33,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [arriveLoading, setArriveLoading] = useState(false)
   const [errorArrive, setErrorArrive] = useState<string | null>(null)
+  const [state, setState] = useState<string>('')
   const clearErrorArrive = () => setErrorArrive(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -55,7 +56,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     if (authLoading) return
     if (!user) return
 
-    if (!currentTrip && pathname === TRIP_ROUTE) {
+    if (!currentTrip && pathname === TRIP_ROUTE && state!=='FINISHED') {
       router.replace('/home')
     }
   }, [currentTrip, loading, authLoading, user, pathname])
@@ -113,6 +114,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     const isLastStop = nextStop?.tripStop.destination === true
 
     if (isLastStop) {
+      setState('FINISHED')
       setCurrentTrip(null)
       setArriveLoading(false)
       setTimeout(() => router.push(`/trip/details/driver/${currentTrip.idTrip}`), 2000)

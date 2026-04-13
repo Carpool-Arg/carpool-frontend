@@ -9,7 +9,7 @@ export interface User {
   phone: string| null;
   status?: string| null;
   profileImage?: string| null;
-  roles: Array<'user' | 'driver' | null>;
+  roles: Array<'user' | 'driver' | 'admin'>;
   birthDate: string| null;
   debtUser?: boolean;
   passengerRating: number;

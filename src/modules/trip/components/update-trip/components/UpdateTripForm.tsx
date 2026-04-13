@@ -99,17 +99,23 @@ export function UpdateTripForm() {
     trip?.vehicle; 
   
   const exceedsVehicleSeats = !!currentVehicle && availableSeat >= currentVehicle.availableSeats;
-
   
-  useEffect(() => {
-    if (!startDateTime || !selectedVehicleId || startDateTime===trip?.startDateTime) {
+
+    useEffect(() => {
+    if (!startDateTime || !selectedVehicleId || startDateTime===trip?.startDateTime || !origin.cityId || !destination.cityId) {
       setDateError(null);
       return;
     }
 
     const timeoutId = setTimeout(async () => {
       try {
-        const response = await validateTripDateTime(startDateTime, trip?.id);
+        const response = await validateTripDateTime(
+          startDateTime,
+          origin.cityId,
+          destination.cityId,
+          trip?.id
+        );
+
         if (response.state === 'ERROR') {
           setDateError(response.messages?.[0] || 'Ya existe un viaje en esta fecha y hora');
         } else {
@@ -119,11 +125,10 @@ export function UpdateTripForm() {
         setDateError('Error validando la fecha y hora');
         console.error(error);
       }
-    }, 500); // delay para no spamear el endpoint al tipear rápido
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [startDateTime, selectedVehicleId]);
-  
+  }, [startDateTime, selectedVehicleId, origin.cityId, destination.cityId]);
 
   useEffect(() => {
     // condiciones mínimas para calcular
@@ -242,6 +247,9 @@ export function UpdateTripForm() {
     handleSubmit(onSubmit)();
   };
 
+  const findExistingStop = (predicate: (s: TripStop) => boolean) =>
+    trip?.tripStops.find(predicate);
+
   const onSubmit = async (data: TripFormData) => {
     if (!origin || !destination) {
       setError("Debes seleccionar origen y destino");
@@ -251,6 +259,7 @@ export function UpdateTripForm() {
 
     const tripStopsPayload = [
       {
+        tripStopId: findExistingStop(s => s.start)?.tripStopId,
         cityId: data.originId,
         start: true,
         destination: false,
@@ -264,10 +273,11 @@ export function UpdateTripForm() {
         destination: false,
       }))),
       {
+        tripStopId: findExistingStop(s => s.destination)?.tripStopId,
         cityId: data.destinationId,
         start: false,
         destination: true,
-        order: (data.tripStops?.length || 0) + 2,
+        order: (tripStops?.length || 0) + 2,
         observation: data.destinationObservation
       }
     ];
@@ -315,7 +325,7 @@ export function UpdateTripForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full md:mt-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       {step === 0 &&
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-between p-4 bg-gray-7 rounded-lg">

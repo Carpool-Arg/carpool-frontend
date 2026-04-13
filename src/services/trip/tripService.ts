@@ -55,7 +55,6 @@ export async function getCurrentTrip(): Promise<CurrentTripResponseDTO> {
 }
 
 export async function getTripPassengers(tripId: number): Promise<TripPassengersResponseDTO> {
-  console.log(tripId)
   try {
     const res = await fetch(`/api/trip/passengers?tripId=${tripId}`,{
       method: 'GET',
@@ -123,7 +122,7 @@ export async function getTripDetails(tripId: number): Promise<TripResponseDTO>{
 
 export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>{
   try{
-    const res = await fetchWithRefresh(`/api/trip/edit/${tripId}`,{
+    const res = await fetchWithRefresh(`/api/trip/my-trip/${tripId}`,{
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     })
@@ -143,12 +142,14 @@ export async function getTripForUpdate(tripId: number): Promise<TripResponseDTO>
 }
 
 
-export const validateTripDateTime = async(startDateTime: string, idTrip?: number) =>{
+export const validateTripDateTime = async(startDateTime: string,idOriginCty: number, idDestinationCity: number, idTrip?: number) =>{
   try {
     const formattedDateTime =  `${startDateTime}:00`
     
     const params = new URLSearchParams({
-      startDateTime: formattedDateTime
+      startDateTime: formattedDateTime,
+      idOriginCity: idOriginCty.toString(),
+      idDestinationCity: idDestinationCity.toString(),
     })
 
     if (idTrip) {

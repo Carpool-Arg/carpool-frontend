@@ -4,9 +4,9 @@ import InfoTooltip from "@/components/ux/InfoTooltip";
 import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { Reservation } from "@/models/reservation";
 import ReservationModal from "@/modules/reservation/create/components/ReservationModal";
-
+import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
+import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
 import { newReservation } from "@/services/reservation/reservationService";
-import { getTripDetails, verifyIfUserIsCreator } from "@/services/trip/tripService";
 import { formatPrice } from "@/shared/utils/number";
 import { capitalizeWords } from "@/shared/utils/string";
 import { MessageCircleMore } from "lucide-react";
@@ -14,24 +14,20 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Rating } from "react-simple-star-rating";
-import { Button } from "../../../../components/ux/Button";
 import { ErrorMessage } from "../../../../components/ui/Error";
 import { AlertDialog } from "../../../../components/ux/AlertDialog";
-import { TripDetailsData } from "../../types/tripDetails";
+import { Button } from "../../../../components/ux/Button";
+import { useTripDetails } from "../../hooks/useTripDetails";
 import { TripDetailSkeleton } from "../TripDetailSkeleton";
-import { baggageOptions } from "@/modules/trip/components/new-trip/TripForm";
-import { TripRoutePreview } from "@/modules/trip/components/new-trip/TripRoutePreview";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
 export default function TripDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchContext, setSearchContext] = useState<{ originId?: number; destinationId?: number } | null>(null);
-  const [trip, setTrip] = useState<TripDetailsData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
   const router = useRouter();
+  const { trip,loading,error } = useTripDetails(Number(id))
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -43,34 +39,6 @@ export default function TripDetails() {
   } | null>(null);
 
   useEffect(() => {
-    const loadTrip = async () => {
-      try {
-        setLoading(true);
-        if (!id) return
-        const creatorRes = await verifyIfUserIsCreator(Number(id));
-
-        if (creatorRes.data) {
-          setError("No puedes ver los detalles de este viaje.");
-          return;
-        }else{
-          const res = await getTripDetails(Number(id));
-          if (res.state === "ERROR") {
-            setError(res.messages[0]);
-          }
-          setTrip(res.data);
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Ocurrió un error inesperado.");
-        }
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     // Cargar el contexto de búsqueda del cliente
     const loadSearchContext = () => {
       const storedContext = sessionStorage.getItem(SEARCH_CONTEXT_KEY);
@@ -80,7 +48,6 @@ export default function TripDetails() {
     };
 
     if (id) {
-      loadTrip();
       loadSearchContext();
     }
   }, [id]);
@@ -102,7 +69,7 @@ export default function TripDetails() {
         // error de backend
         setAlertData({
           type: "error",
-          title: "Error al crear la reserva",
+          title: "Error al reservar",
           description: result?.messages?.[0] ?? "Ocurrió un error inesperado.",
         });
         setIsModalOpen(false);
@@ -129,7 +96,7 @@ export default function TripDetails() {
 
   const handleCloseModal = () => setIsModalOpen(false);
 
-  if (loading) return TripDetailSkeleton();
+  if (loading) return <TripDetailSkeleton/>;
   if (error) return (
     <div className="h-full my-auto">
       <ErrorMessage message={error} />
@@ -140,11 +107,11 @@ export default function TripDetails() {
 
   if (trip) {
     return (
-      <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
+      <div className="flex flex-col items-center w-full max-w-lg mx-auto mt-2">
 
         {/* Contenedor en grid */}
         <div
-          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2 md:mt-4"
+          className="w-full h-full grid grid-cols-9 auto-rows-auto gap-2"
         >
           {/* Disponibilidad */}
           <div className="col-span-5 row-span-2 bg-gray-6 dark:bg-gray-8 flex flex-col justify-center text-center rounded-xl p-3">

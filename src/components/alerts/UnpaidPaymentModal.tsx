@@ -7,6 +7,7 @@ import { payReservation } from '@/services/reservation/reservationService';
 import { useAuth } from '@/contexts/authContext'; 
 import { AlertDialog } from '../ux/AlertDialog';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/shared/utils/number';
 
 
 export const UnpaidPaymentModal = () => {
@@ -229,7 +230,7 @@ export const UnpaidPaymentModal = () => {
               <div className="flex justify-between items-center gap-4">
                 <span className="text-gray-400 text-sm">Total a pagar</span>
                 <span className="text-white text-sm font-semibold">
-                  ARS ${' '}{unpaidNotification.data?.total}
+                  ARS ${' '}{formatPrice(unpaidNotification.data?.total ?? 0)}
                 </span>
               </div>
               
@@ -386,7 +387,7 @@ export const UnpaidPaymentModal = () => {
         onConfirm={handleConfirmPay}
         type="info"
         title="Confirmar pago"
-        description={`Vas a pagar ARS ${unpaidNotification.data?.total}. ¿Deseás continuar?`}
+        description={`Vas a pagar ARS ${formatPrice(unpaidNotification.data?.total ?? 0)}. ¿Deseás continuar?`}
         confirmText="Pagar"
         cancelText="Cancelar"
       />

@@ -138,7 +138,7 @@ export default function NewPassengerReview() {
       className="flex flex-col gap-4 w-full"
     >
       <span className="text-lg font-medium">
-        ¿Cómo calificarías al chofer?
+        ¿Cómo calificarías al pasajero?
       </span>
       {/* Rating */}
       <div className="flex flex-col gap-1 justify-center items-center">

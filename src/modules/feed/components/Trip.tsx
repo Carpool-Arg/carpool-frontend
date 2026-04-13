@@ -142,8 +142,8 @@ export default function Trip({ trip, currentCity, originSearch, destinationSearc
           <div className="flex items-center gap-2">
             <div className="relative w-6.25 h-6.25 rounded-full overflow-hidden border">
               <Image
-                src={trip.driverInfo.profileImageUrl}
-                alt={trip.driverInfo.fullName}
+                src={trip.driverInfo.profileImageUrl || '/default-profile.png'}
+                alt={trip.driverInfo.fullName ?? 'Imagen de perfil'}
                 fill
                 className="object-cover"
               />

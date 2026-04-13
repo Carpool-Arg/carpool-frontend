@@ -1,4 +1,5 @@
 export interface TripStop{
+  tripStopId?: number;
   tripId?: number;
   cityName?: string
   cityId: number;
