@@ -30,6 +30,9 @@ export const ROUTE_PERMISSIONS: {
   { path: '/vehicle/new', roles: ['driver'] },
   { path: '/vehicle/edit', roles: ['driver'] },
 
+  { path: '/current-trip', roles: ['driver'] },
+  { path: '/debt', roles: 'all' },
+
   { path: '/trip/new', roles: ['driver'] },
   { path: '/trip/details', roles: 'all' },
   { path: '/trip/edit', roles: ['driver'] },
@@ -43,7 +46,6 @@ export const ROUTE_PERMISSIONS: {
 
   { path: '/reservations/passenger', roles: 'all' },
   { path: '/reservations', roles: ['driver'] },
-  
 
   { path: '/account/reviews', roles: 'all' },
 

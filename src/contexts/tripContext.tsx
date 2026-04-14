@@ -47,7 +47,9 @@ export function TripProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (authLoading) return
     if (!user) return
-
+    if (currentTrip) {
+      router.replace('/current-trip')
+    }
     fetchTrip()
   }, [user, authLoading])
 

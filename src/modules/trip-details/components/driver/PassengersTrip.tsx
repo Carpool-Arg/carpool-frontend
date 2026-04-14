@@ -42,7 +42,7 @@ export default function PassengersTrip({ idTrip }: PassengersTripProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-md mx-auto">
+    <div className="flex flex-col gap-2 w-full max-w-lg mx-auto">
       {loading ? 
         <div className="h-4.5 w-32 bg-gray-2 animate-pulse"/> 
       :
