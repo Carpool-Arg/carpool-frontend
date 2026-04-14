@@ -201,11 +201,12 @@ export default function ProfileDetails() {
   if (authLoading) return <ProfileDetailsSkeleton/>;
 
   return (
-    <div className="space-y-4 ">
-      <div className=' md:py-8'>
+    <div className="flex flex-col items-center space-y-4 ">
+      <div className='md:mt-4'>
         <ProfileHeader />
-
       </div>
+      
+     
       {/* Botones para foto */}
       <div className="flex justify-center gap-4">
           {!selectedFile && (            

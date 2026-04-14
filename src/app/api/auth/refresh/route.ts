@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge, // por ejemplo 7 días
+        maxAge,
       });
     }
 
