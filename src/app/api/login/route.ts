@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { parseJwt } from "@/shared/utils/jwt";
 import { LoginResponse } from "@/modules/auth/types/dto/loginResponseDTO";
-import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest) {
     // Recibir el body de la petición
     const body = await req.json();
 
-    const res = await fetchWithRefresh(`${apiUrl}/login`, {
+    const res = await fetch(`${apiUrl}/login`, {
       method: "POST",
       headers: backendHeaders,
       body: JSON.stringify(body),
