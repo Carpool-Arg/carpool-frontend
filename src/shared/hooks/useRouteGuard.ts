@@ -3,6 +3,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import { PUBLIC_PATHS } from "@/constants/paths/publicPaths";
 import { canAccessRoute } from "../utils/helpers/permission";
+import { DEBT_PATHS } from "@/constants/paths/debtPaths";
 
 export function useRouteGuard() {
   const { user, loading, authRedirecting } = useAuth();

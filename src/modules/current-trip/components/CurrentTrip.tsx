@@ -9,14 +9,12 @@ import { ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
 
 export default function CurrentTrip() {
-  const {currentTrip, arriveNextStop,loading, arriveLoading } = useTrip();
+  const {currentTrip, arriveNextStop, loading, arriveLoading } = useTrip();
   const route = currentTrip?.tripStops ?? [];
   const nextStop = route.find(
     stop => !stop.tripStop.start && !stop.arrivalDateTime
   )
-
-
-
+  
   const arrivedCount = route.filter(s => s.arrivalDateTime).length - 1
   const totalSteps = route.length - 1
   const progressPercent = (arrivedCount / totalSteps) * 100
@@ -41,15 +39,14 @@ export default function CurrentTrip() {
 
   return (
 
-    <div className="rounded-xl p-6 space-y-4">
+    <div className="rounded-xl  space-y-4 w-full">
       {loading ? (
         <CurrentTripSkeleton />
       ) : (
-        <>
         <div className="relative flex flex-col h-full">
           {/* Content */}
-          <div className="relative z-10 flex flex-col justify-between h-full p-4">
-            <div/>
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div />
           
             <div className="flex flex-col gap-2">
               <div className="bg-gray-8/90 rounded-xl p-6 flex flex-col">
@@ -91,7 +88,9 @@ export default function CurrentTrip() {
 
                 <div className="w-full h-2 bg-gray-7 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-success transition-all duration-500 ease-out"
+                    className={`h-full bg-success transition-all rounded-full duration-500 ease-out ${
+                      progressPercent >= 100 ? 'animate-pulse' : ''
+                    }`}
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -155,7 +154,7 @@ export default function CurrentTrip() {
             </div>
           </div>
         </div>
-        </>
+
       )}
     </div>
     
