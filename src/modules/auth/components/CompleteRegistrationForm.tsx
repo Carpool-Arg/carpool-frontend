@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 
@@ -14,6 +14,13 @@ import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 import { GENDERS } from "@/constants/genders"
 import { Alert } from "@/components/ux/Alert"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CompleteRegistrationFormProps {
   email: string
@@ -27,6 +34,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting, isValid  },
     watch, 
     trigger
@@ -188,22 +196,48 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
-            <label htmlFor="gender" className="block mb-1 font-medium text-sm font-outfit">Género</label>
-            <select
-              id="gender"
-              {...register('gender', { required: "El género es obligatorio" })}
-              className={`w-full rounded-md border border-gray-2 px-3 py-2 font-outfit cursor-pointer dark:bg-dark-5`}
-              defaultValue=""
+            <label
+              htmlFor="gender"
+              className="block mb-1 font-medium text-sm font-outfit"
             >
-              <option value="" disabled >Seleccioná un género</option>
-              {GENDERS.map((gender) => (
-                <option key={gender.value} value={gender.value}>
-                  {gender.label}
-                </option>
-              ))}
-            </select>
+              Género
+            </label>
+
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger
+                    id="gender"
+                    className={`w-full font-outfit dark:bg-dark-5 ${
+                      errors.gender ? "border-error" : ""
+                    }`}
+                  >
+                    <SelectValue placeholder="Seleccioná un género" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {GENDERS.map((gender) => (
+                      <SelectItem
+                        key={gender.value}
+                        value={gender.value}
+                      >
+                        {gender.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+
             {errors.gender && (
-              <p className="text-error text-xs mt-1">{errors.gender.message}</p>
+              <p className="text-error text-xs mt-1">
+                {errors.gender.message}
+              </p>
             )}
           </div>
 
