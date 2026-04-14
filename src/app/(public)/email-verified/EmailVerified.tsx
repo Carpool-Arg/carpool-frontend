@@ -55,6 +55,7 @@ export default function EmailVerifiedPage() {
         </div>
         <Button
           onClick={() => router.push("/login")}
+          className="mt-4"
         >
           Ir al inicio de sesión
         </Button>

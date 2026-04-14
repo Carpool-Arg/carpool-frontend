@@ -24,11 +24,12 @@ export default function CompleteProfilePage({ queryEmail }: Props) {
     }
   }, [queryEmail, router]);
 
-  if (!email) return null; 
+  //if (!email) return null; 
 
   return (
-    <main className="p-8 flex items-center justify-center h-screen">
-      <div className="flex flex-col items-start w-full max-w-lg space-y-6">
+    
+      <div className="mx-auto w-full max-w-lg space-y-6">
+
         <Link
           href="/login"
           className="flex items-center text-sm hover:text-gray-3 mb-4 w-fit"
@@ -47,6 +48,6 @@ export default function CompleteProfilePage({ queryEmail }: Props) {
 
         <CompleteRegistrationForm email={email} />
       </div>
-    </main>
+
   );
 }

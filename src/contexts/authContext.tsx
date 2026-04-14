@@ -16,6 +16,7 @@ interface AuthContextType {
   driver: Driver | null;
   loading: boolean;
   imageLoading: boolean;
+  authRedirecting: boolean
   login: (data: LoginData & { recaptchaToken?: string }) => Promise<void>;
   logout: () => void;
   debt: UserDebtResponseDTO | null; 
@@ -38,8 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [driver, setDriver] = useState<Driver | null>(null);
   const [debt, setDebt] = useState<UserDebtResponseDTO | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
+  const [authRedirecting, setAuthRedirecting] = useState(false);
+  
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null); 
   
@@ -235,6 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await authWithGoogle(idToken);
+      console.log('result', result)
       if (result.state === "OK" && result.data) {
         const hasUser = await fetchUser();
         const isDriver = hasUser?.roles.includes('driver')
@@ -245,13 +250,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Guardar el token de google tambien
         if (result.data.accessToken) {
-             setAccessToken(result.data.accessToken);
+          setAccessToken(result.data.accessToken);
         }
-
+        
+        console.log('result.data.status',result.data.status)
         if (result.data.status === 'PENDING_PROFILE') {
+          setAuthRedirecting(true);
           router.push(`/complete-profile?email=${encodeURIComponent(result.data.email)}`);
+          return;
         } else if (result.data.status === 'ACTIVE') {
+          setAuthRedirecting(true);
           router.push('/home');
+          return;
         }
       } else {
         setUser(null);
@@ -280,7 +290,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value = {
     user, driver, 
-    loading, imageLoading, 
+    loading, imageLoading, authRedirecting,
     login, logout, debt, authGoogle,
     fetchUser, fetchDriver, fetchFullUser, fetchUserDebt, fetchUserImage,
     prevImage, setPrevImage, 

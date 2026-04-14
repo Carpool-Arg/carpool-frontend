@@ -1,14 +1,11 @@
-'use client'
-
-
 export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="px-8">
+    <div className="min-h-screen overflow-y-auto px-6 sm:px-8 py-4">
       {children}
     </div>
-  )
+  );
 }
