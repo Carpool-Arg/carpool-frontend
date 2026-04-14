@@ -30,7 +30,7 @@ export const ROUTE_PERMISSIONS: {
   { path: '/vehicle/new', roles: ['driver'] },
   { path: '/vehicle/edit', roles: ['driver'] },
 
-  { path: '/trip/new', roles: ['user', 'driver'] },
+  { path: '/trip/new', roles: ['driver'] },
   { path: '/trip/details', roles: 'all' },
   { path: '/trip/edit', roles: ['driver'] },
   { path: '/trips', roles: 'all' },
