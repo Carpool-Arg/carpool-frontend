@@ -188,3 +188,27 @@ export const hasMinimumHoursRemaining = (
 
   return diffMs >= requiredMs
 }
+
+
+/**
+ * Convierte una fecha ISO (yyyy-mm-ddTHH:mm:ss) a formato local con fecha y hora.
+ *
+ * @example
+ * formatISOToDateTime("2026-04-10T19:00:00")
+ * // → "10/04/2026, 19:00"
+ *
+ * @param isoDate Fecha en formato ISO (yyyy-mm-ddTHH:mm:ss)
+ * @returns String con formato "dd/mm/yyyy, HH:mm"
+ */
+export function formatISOToDateTime(isoDate: string): string {
+  const date = parseLocalDate(isoDate);
+
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(date);
+}

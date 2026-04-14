@@ -12,14 +12,20 @@ import { DriverResponse } from "@/modules/driver/types/dto/driverResponseDTO";
  * @param {DriverData} data - Datos del conductor
  * @returns {Promise<DriverResponse>} - Respuesta del backend
  */
-export async function registerDriver( data: DriverData): Promise<DriverResponse> {
+export async function registerDriver( data: DriverData, frontImage: File, backImage:File): Promise<DriverResponse> {
   try {
-    const body = { ...data};
+    const formData = new FormData();
+    formData.append(
+      "driverRequestDTO",
+      new Blob([JSON.stringify(data)], { type: "application/json" })
+    );
 
-    const res = await fetch(`/api/drivers`, {
+    formData.append("frontLicensePhoto", frontImage);
+    formData.append("backLicensePhoto", backImage);
+
+    const res = await fetch('/api/drivers', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: formData,
       credentials: 'include', 
     });
 

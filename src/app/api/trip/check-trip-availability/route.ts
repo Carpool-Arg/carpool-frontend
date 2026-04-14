@@ -17,18 +17,22 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const { searchParams } = new URL(req.url);
     const datetime = searchParams.get('startDateTime');
+    const idOriginCity = searchParams.get('idOriginCity');
+    const idDestinationCity = searchParams.get('idDestinationCity');
     const idTrip = searchParams.get('idTrip');
 
     
-    if (!datetime) {
+    if (!datetime || !idOriginCity || !idDestinationCity) {
         return NextResponse.json(
-            { data: null, messages: ["Fecha y hora no proporcionada"], state: "ERROR" },
+            { data: null, messages: ["Faltan algún dato"], state: "ERROR" },
             { status: 400 }
         );
     }
 
     const params = new URLSearchParams({
-      startDateTime: datetime
+      startDateTime: datetime,
+      idOriginCity: idOriginCity,
+      idDestinationCity: idDestinationCity
     });
 
     if (idTrip) {

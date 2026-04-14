@@ -1,7 +1,7 @@
 'use client'
 
 
-import { HEADER_PATHS } from "@/constants/paths/headerPaths";
+import { HEADER_PATHS } from "@/constants/paths/layout/headerPaths";
 import { PROTECTED_PATHS } from "@/constants/paths/protectedPaths";
 import { AppHeader } from "@/widgets/AppHeader";
 import DesktopSidebar from "@/widgets/desktop/DesktopSidebar";
@@ -30,7 +30,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
       {showHeader && (
         <AppHeader showBack={!isLogoHeader} variant={isLogoHeader ? "logo" : "default"} />
       )}
-      <div className="h-full overflow-auto">
+      <div className="h-full overflow-auto py-4">
         {children}
       </div>
     </main>

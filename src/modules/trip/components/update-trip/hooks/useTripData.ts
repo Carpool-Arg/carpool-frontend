@@ -14,7 +14,6 @@ export function useTripDetails(tripId?: number): UseTripDetailsResult {
   const [trip, setTrip] = useState<TripResponseDTO["data"]>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
   const fetchTrip = useCallback(async () => {
     if (!tripId) return;
 

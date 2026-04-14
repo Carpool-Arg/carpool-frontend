@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function HomeButtons({ mode = "desktop" }) {
   const router = useRouter();
 
-  const baseBtn = "text-lg w-full";
+  const baseBtn = "w-full";
   const desktopBtn = "flex-1";
   const mobileBtn = "max-w-md mx-auto";
 
@@ -23,7 +23,7 @@ export default function HomeButtons({ mode = "desktop" }) {
       </Button>
 
       <Button
-        variant="secondary"
+        variant="primary"
         className={`${baseBtn} ${mode === "desktop" ? desktopBtn : mobileBtn} ${loginOrder}`}
         onClick={() => router.push("/login")}
       >

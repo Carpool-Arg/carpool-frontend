@@ -12,7 +12,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-
   //RUTAS PÚBLICAS
   const isPublicPage = PUBLIC_PATHS.pages.some((p) =>
     p === "/" ? pathname === "/" : pathname.startsWith(p)
@@ -28,6 +27,7 @@ export async function middleware(req: NextRequest) {
   //TOKEN
   const token = req.cookies.get("token")?.value;
   const refreshToken = req.cookies.get("refreshToken")?.value;
+
 
   if (!token) {
     return redirectToLogin(req);
@@ -47,6 +47,7 @@ export async function middleware(req: NextRequest) {
     return redirectToLogin(req);
   }
 
+  // Controlar errores.
   const isValid = await verifyTokenWithServer(token);
   if (!isValid) {
     return redirectToLogin(req);

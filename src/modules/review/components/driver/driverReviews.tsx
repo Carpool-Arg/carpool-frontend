@@ -28,9 +28,6 @@ export default function DriverReviews(){
   const LIMIT = 10;
   const reviews = driverReviews ?? [];
 
-
-
-
   const loadReviews = useCallback( async (reset = false) => {
     try{
       if (!driverId || (!hasMore && !reset)) return;
@@ -97,9 +94,6 @@ export default function DriverReviews(){
     return () => observer.disconnect();
   }, [loadReviews, loading, hasMore]);
 
-
-
-  
   return(
     <div className="w-full">
       <div className="mb-3">

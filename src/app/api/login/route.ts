@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { parseJwt } from "@/shared/utils/jwt";
 import { LoginResponse } from "@/modules/auth/types/dto/loginResponseDTO";
+import { fetchWithRefresh } from "@/shared/lib/http/authInterceptor";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     // Recibir el body de la petición
     const body = await req.json();
 
-    const res = await fetch(`${apiUrl}/login`, {
+    const res = await fetchWithRefresh(`${apiUrl}/login`, {
       method: "POST",
       headers: backendHeaders,
       body: JSON.stringify(body),
@@ -60,8 +61,7 @@ export async function POST(req: NextRequest) {
 
     const nextRes = NextResponse.json(responseWithToken, { status: res.status });
 
-    // // Guardar nuevos tokens en cookies
-    // const nextRes = NextResponse.json(response, { status: res.status });
+    // Guardar nuevos tokens en cookies
 
     if (accessToken) {
       // Decodificar el token para calcular la duración
@@ -80,12 +80,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (refreshToken) {
+      const decoded = parseJwt(refreshToken);
+      const iat = Number(decoded?.iat);
+      const exp = Number(decoded?.exp);
+      const maxAge = exp > iat ? exp - iat : 60 * 60 * 2;
       nextRes.cookies.set('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 días
+        maxAge,
       });
     }
 

@@ -2,7 +2,7 @@ import { MediaResponse, VoidResponse } from "@/shared/types/response";
 
 export async function getUserFile(): Promise<MediaResponse> {
   try {
-    const res = await fetch(`/api/media`, {
+    const res = await fetch(`/api/media/profile`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -30,7 +30,7 @@ export async function uploadUserFile(file: File): Promise<VoidResponse> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`/api/media`, {
+    const res = await fetch(`/api/media/profile`, {
       method: 'POST',
       body: formData,
       credentials: 'include',
@@ -56,7 +56,7 @@ export async function uploadUserFile(file: File): Promise<VoidResponse> {
 export async function deleteUserFile(): Promise<VoidResponse> {
   try {
 
-    const res = await fetch(`/api/media`, {
+    const res = await fetch(`/api/media/profile`, {
       method: 'DELETE',
       credentials: 'include',
     });

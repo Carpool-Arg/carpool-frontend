@@ -20,8 +20,8 @@ export default function TripHistory() {
   const [driverTrips, setDriverTrips] = useState<TripDriverDTO[]>([]);
 
   const [passengerTrips, setPassengerTrips]=useState<TripHistoryUserDTO[]>([])
-  const [loading, setLoading] = useState<boolean>(false);
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
 
   const handleChangeRole = (value: string) => {
@@ -45,7 +45,7 @@ export default function TripHistory() {
         }
       }
       if(role==='passenger'){
-        const response = await getHistoryTripUser(0,["CREATED", "CLOSED", "FINISHED"]);
+        const response = await getHistoryTripUser(0,["FINISHED"]);
         if(response.state === 'OK'){
           setPassengerTrips(response.data?.trips ?? [])
         }else{
@@ -67,13 +67,15 @@ export default function TripHistory() {
   }, [role])
   
 
-  
-
   return(
     <div className="w-full">
       <RoleSelectorHeader
         title="Historial de viajes"
-        description="Acá podés ver tus viajes realizados y los que están por comenzar."
+        description= {
+          role == 'driver' ? 
+            "Acá podés ver tus viajes realizados y los que están por comenzar." 
+          : 
+            "Acá podés ver tus viajes realizados."}
         role={role}
         onChangeRole={handleChangeRole}
       />
@@ -88,24 +90,25 @@ export default function TripHistory() {
 
       {role === 'driver' && !loading && (
         <TripDriverList
-        trips={driverTrips}
-        onError={(message) =>
-          setToast({ message, type: 'error' })
-        }
-        onSuccess={(message) =>
-          setToast({ message, type: 'success' })
-        }
+          trips={driverTrips}
+          onError={(message) =>
+            setToast({ message, type: 'error' })
+          }
+          onSuccess={(message) =>
+            setToast({ message, type: 'success' })
+          }
         />
       )}
+
       {role === 'passenger' && !loading && (
         <TripPassengerList
-        trips={passengerTrips}
-        onError={(message) =>
-          setToast({ message, type: 'error' })
-        }
-        onSuccess={(message) =>
-          setToast({ message, type: 'success' })
-        }
+          trips={passengerTrips}
+          onError={(message) =>
+            setToast({ message, type: 'error' })
+          }
+          onSuccess={(message) =>
+            setToast({ message, type: 'success' })
+          }
         />
       )}
 

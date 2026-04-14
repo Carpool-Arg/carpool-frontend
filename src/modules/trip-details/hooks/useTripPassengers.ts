@@ -14,7 +14,6 @@ export function useTripPassengers(tripId: number): UseTripPassengerResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  console.log(tripId)
   
   const fetchTrip = useCallback(async () => {
     if (!tripId) return;

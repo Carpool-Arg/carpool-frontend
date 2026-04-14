@@ -3,8 +3,9 @@ import { R2_PUBLIC_PREFIX } from "@/constants/imagesR2";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { formatDomain } from "@/shared/utils/domain";
 import { getClockIcon } from "@/shared/utils/getTimeIcon";
+import { formatPrice } from "@/shared/utils/number";
 import { translateTripState } from "@/shared/utils/state";
-import { ChevronRight, Ellipsis, Loader2, LogOut, LucideEye, Star } from "lucide-react";
+import { ChevronRight, Ellipsis, LogOut, LucideEye, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,13 +19,13 @@ interface TripPassengerCardProps {
   setOpenMenuTripId: (id: number | null) => void;
 }
 
-export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
+export function TripPassengerCard({ trip, openMenuTripId, setOpenMenuTripId}: TripPassengerCardProps) {
+  const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
 
   const startDate = new Date(trip.startDateTime);
   const ClockIcon = getClockIcon(startDate);
   const router = useRouter();
-  const [toast, setToast] = useState<{ message: string, type: 'error' | 'warning' } | null>(null);
-  const [loading, setLoading] = useState(false);
+  
   
   const isMenuOpen = openMenuTripId === trip.tripId;
 
@@ -32,14 +33,14 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
   const canLeave = (trip.tripState === "CLOSED" || trip.tripState == 'CREATED' );
   
 
-
-
   const handleReview = () => {
     router.push(`/driver-review/trip/${trip.tripId}`); 
   };
 
+  const handleView = () => {
+    router.push(`/trip/details/passenger/${trip.tripId}`); 
+  };
 
- 
   return (
     <div  className="trip-card mb-4 p-4 border border-gray-2 rounded-lg shadow-sm transition-all duration-20">
       {/* Ruta */}
@@ -51,7 +52,7 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
            
         </div>
         <span className="text-base font-semibold">
-          ${trip.seatPrice}
+          ${formatPrice(trip.seatPrice)}
         </span>
       </div>
 
@@ -121,26 +122,15 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
             "
             onClick={(e) => e.stopPropagation()}
           >
-            
-
             <button
-              className={`
-                w-full flex items-center gap-2
-                px-3 py-2 rounded-lg text-sm
-                transition-all duration-200
-                bg-gray-7 text-gray-6
-                hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
+              onClick={handleView}
+              className='w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200
+                bg-gray-7 text-gray-6 hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
                 disabled:opacity-60 disabled:cursor-not-allowed
-                cursor-pointer
-              `}
-              onClick={()=>setLoading(true)}
+                cursor-pointer' 
             >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <LucideEye size={16} />
-              )}
-                Visualizar
+              <LucideEye size={16} />
+              Visualizar
             </button>
             
             
@@ -156,12 +146,8 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
                   cursor-pointer
                 "
               >
-                {loading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <LogOut size={16} />
-                )}
-                  Abandonar viaje
+                <LogOut size={16} />
+                Abandonar viaje
               </button>
             )}
 
@@ -171,7 +157,7 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
                 onClick={() => {
                   handleReview();
                 }}
-                className={`
+                className='
                   w-full flex items-center gap-2
                   px-3 py-2 rounded-lg text-sm
                   transition-all duration-200
@@ -179,7 +165,7 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
                   hover:bg-gray-6 hover:text-gray-8 hover:font-semibold
                   disabled:opacity-60 disabled:cursor-not-allowed
                   cursor-pointer
-                `}
+                '
               >
                 <Star size={16} />
                 Reseñar al chofer
@@ -191,15 +177,15 @@ export function TripPassengerCard({ trip ,openMenuTripId, setOpenMenuTripId}: Tr
       </div>
 
       {toast && (
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
-              <div className="pointer-events-auto w-full">
-                  <Toast
-                      message={toast.message}
-                      type={toast.type}
-                      onClose={() => setToast(null)}
-                  />
-              </div>
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 w-full max-w-[90%] sm:max-w-md pointer-events-none flex justify-center">
+          <div className="pointer-events-auto w-full">
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
           </div>
+        </div>
       )}
 
     </div>

@@ -33,10 +33,13 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
       <div>
         <p className='px-6 text-sm mb-0.5 text-white/75'>Cuenta</p>
         <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl">
-          <Link href="/profile/details" className={linkClasses}>
+          <Link 
+            href={`${isDriver ? '/profile/driver' : '/profile/details'}`}
+            className={linkClasses}
+          >
             <div className="flex items-center gap-2">   
               <UserRoundPen size={18}/>
-              <span>Perfil</span>
+              <span>{isDriver ? 'Perfil de conductor' : 'Perfil'}</span>
             </div>
             
             <ChevronRight size={18} />
@@ -54,7 +57,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           )}
 
           <Link
-            href={`${isDriver ? '/reservations' : '/reservations/p'}`}
+            href={`${isDriver ? '/reservations' : '/reservations/passenger'}`}
             className={linkClasses}
           >
             <div className="flex items-center gap-2">   
