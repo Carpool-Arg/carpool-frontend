@@ -13,6 +13,7 @@ import { completeRegistration } from "@/services/auth/authService"
 import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 import { GENDERS } from "@/constants/genders"
+import { Alert } from "@/components/ux/Alert"
 
 interface CompleteRegistrationFormProps {
   email: string
@@ -110,7 +111,7 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
   return (
     <div className="flex flex-col gap-4 w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        
+        {error && <Alert message={error} />}
         {/* Nombre de usuario solo */}
         <div>        
           <Input
@@ -234,15 +235,21 @@ export function CompleteRegistrationForm({email}:CompleteRegistrationFormProps) 
           />
         </div>
 
-        <Button variant="primary" type="submit" className="w-full mt-4" disabled={loading || isSubmitting || !allValidationsPassed() || !isValid}>
+        <Button 
+          variant="primary" 
+          type="submit" 
+          className="w-full mt-4" 
+          disabled={loading || isSubmitting || !allValidationsPassed() || !isValid}>
           {loading ?                             
             <div className="flex items-center justify-center gap-2">
               <Spinner size={20} />
                 <span>Cargando...</span>
-              </div> : "Registrarse"}
+            </div> 
+          : 
+            "Registrarse"
+          }
         </Button>
 
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </form>
     </div>
   )

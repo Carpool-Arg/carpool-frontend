@@ -5,7 +5,7 @@ import { PUBLIC_PATHS } from "@/constants/paths/publicPaths";
 import { canAccessRoute } from "../utils/helpers/permission";
 
 export function useRouteGuard() {
-  const { user, loading } = useAuth();
+  const { user, loading, authRedirecting } = useAuth();
   const router = useRouter();
   const pathname = usePathname() || '';
 
@@ -15,8 +15,11 @@ export function useRouteGuard() {
     pathname as typeof PUBLIC_PATHS.pages[number]
   );
 
+  // Ruta publica que esta logeado pero no debe ser redireccionado a /home
+  const allowWhenLogged = ['/complete-profile'];
+
   useEffect(() => {
-    if (loading) return;
+    if (loading || authRedirecting) return;
 
     // no logueado
     if (!user && !isPublicRoute) {
@@ -25,7 +28,7 @@ export function useRouteGuard() {
     }
 
     // logueado en ruta pública
-    if (user && isPublicRoute) {
+    if (user && isPublicRoute && !allowWhenLogged.includes(pathname)) {
       router.replace('/home');
       return;
     }

@@ -297,8 +297,8 @@ export function RegisterForm() {
           <p className="flex justify-start items-center text-sm font-inter gap-1">
             ¿Ya tenes cuenta?
             <Link href="/login" className="hover:underline cursor-pointer font-medium">
-             Iniciar sesión
-          </Link>
+              Iniciar sesión
+            </Link>
           </p>
          
 
@@ -358,7 +358,7 @@ export function RegisterForm() {
                 {...step2Form.register('dni')}
                 error={step2Form.formState.errors.dni?.message}
                 rightIcon={!step2Form.formState.errors.dni?.message ?getRightIcon(dniValidation):undefined}
-                />
+              />
               {(dniValidation.message && !step2Form.formState.errors.dni?.message) && (
                 <p className={`text-xs font-inter mt-1 ${
                   dniValidation.messageType === 'success' ? 'text-success' : 'text-error'
@@ -375,13 +375,11 @@ export function RegisterForm() {
               autoComplete="birthDate"
               {...step2Form.register('birthDate')}
               error={step2Form.formState.errors.birthDate?.message}
-              />
-            <div>
-          </div>
+            />
 
           </div>
-          <div>
 
+          <div className="">
             <Input
               label="Teléfono"
               type="tel"
@@ -396,8 +394,8 @@ export function RegisterForm() {
                 {phoneValidation.message}
               </p>
             )}
-            
           </div>
+          
 
           <div>
             <label
@@ -439,7 +437,7 @@ export function RegisterForm() {
           </div>
 
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 mt-4">
             <Button type="button" variant="outline" className="w-full" onClick={handlePrev}>
               Atrás
             </Button>
