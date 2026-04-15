@@ -1,7 +1,7 @@
 export function CurrentTripSkeleton() {
   return (
     <div className="relative flex flex-col h-full animate-pulse">
-      <div className="relative z-10 flex flex-col justify-between h-full p-4">
+      <div className="relative z-10 flex flex-col justify-between h-full">
         <div />
 
         <div className="flex flex-col gap-2">

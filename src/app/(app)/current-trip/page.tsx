@@ -8,18 +8,20 @@ export default function DriverTripPage() {
   const { errorArrive, clearErrorArrive } = useTrip()
 
   return (
-    <div className="min-h-dvh flex items-center justify-center">
-      <div className="max-w-lg w-full relative">
-        <CurrentTrip />
+    <div className="max-w-lg mx-auto h-full w-full">
+      <div className="flex items-end justify-center h-full w-full">
 
-        {errorArrive && (
-          <Toast
-            message={errorArrive}
-            type="error"
-            onClose={clearErrorArrive}
-          />
-        )}
+        <CurrentTrip />
       </div>
+
+      {errorArrive && (
+        <Toast
+          message={errorArrive}
+          type="error"
+          onClose={clearErrorArrive}
+        />
+      )}
     </div>
+
   )
 }
