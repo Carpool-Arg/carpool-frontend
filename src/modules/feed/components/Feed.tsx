@@ -22,7 +22,8 @@ export default function Feed() {
   const hasMoreRef = useRef(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' } | null>(null);
-
+  const loadingRef = useRef(false);
+  
   useEffect(() => {
     const initNotifications = async () => {
       if (typeof window === "undefined" || !("Notification" in window)) return;
@@ -51,6 +52,7 @@ export default function Feed() {
   const loadFeed = useCallback(async (reset = false) => {
     try{
       if (!hasMoreRef.current && !reset) return;
+      loadingRef.current = true;
       setLoading(true);
   
       const currentSkip = reset ? 0 : skipRef.current;
@@ -81,6 +83,7 @@ export default function Feed() {
         setToast({message: 'Ocurrió un error inesperado', type: 'error'})
       }
     }finally{
+      loadingRef.current = false;
       setLoading(false);
     }
 
@@ -89,13 +92,13 @@ export default function Feed() {
   useEffect(() => {
     if (!loaderRef.current) return;
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading && hasMoreRef.current) {
+      if (entries[0].isIntersecting && !loadingRef.current && hasMoreRef.current) {
         loadFeed();
       }
     });
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [loadFeed, loading]);
+  }, [loadFeed]);
 
   return (
     <div className="w-full">

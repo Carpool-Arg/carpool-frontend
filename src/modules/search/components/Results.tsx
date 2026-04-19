@@ -50,12 +50,14 @@ export default function Results() {
   const skipRef = useRef(0);
   const hasMoreRef = useRef(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const loadingRef = useRef(false);
   
   const fetchTrips = useCallback(async (reset = false) => {
     if (!originCityId || !destinationCityId) return;
     if (!hasMoreRef.current && !reset) return;
 
     try {
+      loadingRef.current = true;
       setLoading(true)
 
       const currentSkip = reset ? 0 : skipRef.current;
@@ -105,6 +107,7 @@ export default function Results() {
         setFeed([])
       }
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   }, [
@@ -138,13 +141,13 @@ export default function Results() {
   useEffect(() => {
     if (!loaderRef.current) return;
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading && hasMoreRef.current) {
+      if (entries[0].isIntersecting && !loadingRef.current && hasMoreRef.current) {
         fetchTrips();
       }
     });
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [fetchTrips, loading]);
+  }, [fetchTrips]);
 
   // --- Limpiar filtros ---
   const clearFilters = () => {
