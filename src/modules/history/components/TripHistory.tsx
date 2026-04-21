@@ -73,7 +73,7 @@ export default function TripHistory() {
       }
 
       if (role === 'passenger') {
-        const response = await getHistoryTripUser(currentSkip, ["FINISHED"]);
+        const response = await getHistoryTripUser(currentSkip, ["COMPLETED"]);
         if (response.state === 'OK') {
           const newTrips = response.data?.trips ?? [];
           if (reset) {
