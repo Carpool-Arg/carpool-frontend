@@ -103,7 +103,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
           >
             <div className="flex items-center gap-2"> 
               <ChartSpline size={18}/>
-              <span>Actividad como {isDriver ? 'conductor' : 'pasajero'}</span>
+              <span>Estadísticas como {isDriver ? 'conductor' : 'pasajero'}</span>
             </div>
             
             <ChevronRight size={18} />
