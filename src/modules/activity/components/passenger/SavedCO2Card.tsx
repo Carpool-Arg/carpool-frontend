@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Leaf } from "lucide-react";
-import { DATA_PASSENGER } from "./PassengerActivity";
 
 export default function SavedCO2() {
   return(
@@ -11,7 +10,7 @@ export default function SavedCO2() {
           <span className='text-sm uppercase tracking-[0.2em] text-gray-11'>Impacto Ambiental</span>
         </div>
         <h1 className='text-3xl md:text-4xl font-semibold tracking-tight text-white'>
-          {DATA_PASSENGER.savedCO2Kg} kg
+          0 kg
         </h1>
         <p className='text-gray-11 mt-2 text-sm'>Total estimado CO₂ ahorrado por compartir viajes.</p>
       </CardContent>

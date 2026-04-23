@@ -60,7 +60,11 @@ export function getRangeForFilter(filter: string): { from: Date; to: Date } {
   switch (filter) {
     case '7d':   return { from: subDays(now, 7), to: now }
     case 'month': return { from: startOfMonth(now), to: now }
-    case 'year': return { from: subYears(now, 1), to: now }
+    case 'year':
+      return {
+        from: new Date(now.getFullYear(), 0, 1),
+        to: now
+      }
     default:     return { from: startOfMonth(now), to: now }
   }
 }

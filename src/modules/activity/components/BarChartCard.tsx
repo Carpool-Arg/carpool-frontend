@@ -1,20 +1,24 @@
 'use client'
 
-import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { LucideIcon } from "lucide-react"
+import { useState } from "react"
 import { DateRange } from "react-day-picker"
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { mapFilterToOrderBy } from "../helpers/stats"
+import { getRangeForFilter } from "./agregateData"
 import BarChartFilters from "./BarChartFilters"
-import { DataPoint } from "./mockData"
-import { aggregateByRange, getRangeForFilter } from "./agregateData"
+import { Stat } from "../types/Stat"
 
 
 interface BarChartCardProps {
   title: string
   desc?: string
   icon: LucideIcon
-  rawData: DataPoint[]
+  data: Stat[]
+  loading: boolean
+  filter: string
+  onFilterChange: (value: string) => void
   unit?: string
 }
 
@@ -29,15 +33,16 @@ function CustomTooltip({ active, payload, unit }: any) {
   )
 }
 
-export default function BarChartCard({ title, desc, icon: Icon, rawData, unit = 'viajes' }: BarChartCardProps) {
-  const [filter, setFilter] = useState("month")
+export default function BarChartCard({ title, desc, icon: Icon, data, unit = 'viajes', filter, onFilterChange }: BarChartCardProps) {
   const [customRange, setCustomRange] = useState<DateRange | undefined>()
 
   const { from, to } = filter === 'custom' && customRange?.from && customRange?.to
     ? { from: customRange.from, to: customRange.to }
     : getRangeForFilter(filter)
 
-  const chartData = aggregateByRange(rawData, from, to)
+
+  const orderBy = mapFilterToOrderBy(filter);
+
 
   return (
     <Card className="bg-gray-8 border-gray-2/50 rounded-2xl shadow-lg">
@@ -56,16 +61,14 @@ export default function BarChartCard({ title, desc, icon: Icon, rawData, unit = 
 
         <BarChartFilters
           selected={filter}
-          onChange={setFilter}
-          range={customRange}
-          onRangeChange={setCustomRange}
+          onChange={onFilterChange}
         />
 
         <div className="h-60 py-2 px-2 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               key={`${filter}-${from.getTime()}`}
-              data={chartData}
+              data={data}
               margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
               barCategoryGap="15%"
             >

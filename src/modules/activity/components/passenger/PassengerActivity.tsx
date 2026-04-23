@@ -1,35 +1,44 @@
 'use client'
 
-import { Car, Route } from 'lucide-react'
-import BarChartCard from '../BarChartCard'
-import SavedCO2 from './SavedCO2Card'
-import { RAW_KM_DATA, RAW_TRIP_DATA } from '../mockData'
+import { useState } from "react";
+import { Car } from "lucide-react";
+import BarChartCard from "../BarChartCard";
+import SavedCO2 from "./SavedCO2Card";
+import { getRangeForFilter } from "../agregateData";
+import { useTripsStats } from "../../hooks/passenger/useTripsStats";
+import { mapFilterToOrderBy } from "../../helpers/stats";
 
-export const DATA_PASSENGER = {
-  totalKilometers: 1248,
-  completedTrips: 87,
-  savedCO2Kg: 156.4,
+export function formatLocalDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
 }
 
+
 export default function PassengerActivity() {
+  const [tripFilter, setTripFilter] = useState("month");
+
+  const { from, to } = getRangeForFilter(tripFilter);
+  
+ 
+  const { data, loading } = useTripsStats(formatLocalDate(from),  formatLocalDate(to), mapFilterToOrderBy(tripFilter));
+
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       <SavedCO2 />
 
       <BarChartCard
         title="Viajes realizados"
         desc="Total de viajes como pasajero"
         icon={Car}
-        rawData={RAW_TRIP_DATA}
+        data={data?.historialByPeriod ?? []}
+        loading={loading}
+        filter={tripFilter}
+        onFilterChange={setTripFilter}
         unit="viajes"
       />
-
-      <BarChartCard
-        title="Kilómetros recorridos"
-        icon={Route}
-        rawData={RAW_KM_DATA}
-        unit="km"
-      />
     </div>
-  )
+  );
 }
