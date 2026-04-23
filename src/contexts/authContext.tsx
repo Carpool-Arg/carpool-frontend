@@ -239,7 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const result = await authWithGoogle(idToken);
-      console.log('result', result)
+
       if (result.state === "OK" && result.data) {
         const hasUser = await fetchUser();
         const isDriver = hasUser?.roles.includes('driver')
@@ -253,7 +253,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setAccessToken(result.data.accessToken);
         }
         
-        console.log('result.data.status',result.data.status)
         if (result.data.status === 'PENDING_PROFILE') {
           setAuthRedirecting(true);
           router.push(`/complete-profile?email=${encodeURIComponent(result.data.email)}`);
