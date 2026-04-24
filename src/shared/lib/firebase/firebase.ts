@@ -45,20 +45,10 @@ export const getFCMToken = async (): Promise<string | null> => {
       localStorage.setItem('sw-version', SW_VERSION);
     }
 
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      console.warn('Permiso de notificaciones denegado.');
-      return null;
-    }
-
     let registration: ServiceWorkerRegistration | undefined;
 
     if ('serviceWorker' in navigator) {
-      registration = await navigator.serviceWorker.getRegistration('/');
-
-      if (!registration) {
-        registration = await navigator.serviceWorker.ready;
-      }
+      registration = await navigator.serviceWorker.ready;
     }
 
     if (!registration) {
@@ -89,4 +79,11 @@ export const onMessageListener = (
       });
     }
   });
+};
+
+export const getMessagingInstance = async () => {
+  const supported = await isSupported();
+  if (!supported || typeof window === 'undefined') return null;
+
+  return getMessaging(app);
 };
