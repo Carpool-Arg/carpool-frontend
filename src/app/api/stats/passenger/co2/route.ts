@@ -1,5 +1,4 @@
-import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
-import { DriverPendingResponse } from "@/modules/admin/licenses/types/dto/driverPendingResponse";
+import { PassengerCO2StatResponse, PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -14,23 +13,16 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = req.nextUrl;
-
     const token = req.cookies.get('token')?.value;
-    const fromDate = searchParams.get("fromDate");
-    const toDate = searchParams.get("toDate");
-    const groupBy = searchParams.get("groupBy");
-
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
 
 
-    const res = await fetch(`${apiUrl}/passenger/stats/trips${query}`, {
+    const res = await fetch(`${apiUrl}/passenger/stats/co2`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: PassengerStatResponse = await res.json();
+    const response: PassengerCO2StatResponse = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

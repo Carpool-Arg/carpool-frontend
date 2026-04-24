@@ -1,5 +1,4 @@
 import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
-import { DriverPendingResponse } from "@/modules/admin/licenses/types/dto/driverPendingResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -23,8 +22,7 @@ export async function GET(req: NextRequest) {
 
     const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
 
-
-    const res = await fetch(`${apiUrl}/passenger/stats/trips${query}`, {
+    const res = await fetch(`${apiUrl}/passenger/stats/km${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

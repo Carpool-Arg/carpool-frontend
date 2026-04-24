@@ -1,8 +1,8 @@
 import { Stat } from "./Stat"
 
 
-export interface TripStat {
+export interface PassengerStat {
   historialTotal: number
-  kmFiltered: number //filtered total
+  totalFiltered: number 
   historialByPeriod: Stat[]
 }

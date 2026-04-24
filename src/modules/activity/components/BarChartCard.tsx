@@ -2,50 +2,63 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
-import { useState } from "react"
 import { DateRange } from "react-day-picker"
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { mapFilterToOrderBy } from "../helpers/stats"
+import { Stat } from "../types/Stat"
 import { getRangeForFilter } from "./agregateData"
 import BarChartFilters from "./BarChartFilters"
-import { Stat } from "../types/Stat"
 
 
 interface BarChartCardProps {
   title: string
-  desc?: string
+  desc?: React.ReactNode
   icon: LucideIcon
   data: Stat[]
   loading: boolean
   filter: string
   onFilterChange: (value: string) => void
+  customRange?: DateRange
+  onCustomRangeChange: (range: DateRange | undefined) => void
   unit?: string
 }
 
-function CustomTooltip({ active, payload, unit }: any) {
+function CustomTooltip({ active, payload, unit}: any) {
   if (!active || !payload?.length) return null
   const item = payload[0].payload
   return (
     <div className="bg-gray-8/98 border border-gray-7 rounded-xl p-3">
       <p className="text-xs text-gray-11">{item.label}</p>
-      <p className="text-sm font-medium text-white">{item.value} {unit}</p>
+      <p className="text-sm font-medium text-white">{(item.value).toFixed(2)} {unit}</p>
     </div>
   )
 }
 
-export default function BarChartCard({ title, desc, icon: Icon, data, unit = 'viajes', filter, onFilterChange }: BarChartCardProps) {
-  const [customRange, setCustomRange] = useState<DateRange | undefined>()
+export default function BarChartCard({ 
+  title, 
+  desc, 
+  icon: Icon, 
+  data, 
+  unit = 'viajes', 
+  filter, 
+  onFilterChange,
+  customRange,
+  onCustomRangeChange,
+  loading,
+}: BarChartCardProps) {
+  
 
   const { from, to } = filter === 'custom' && customRange?.from && customRange?.to
     ? { from: customRange.from, to: customRange.to }
     : getRangeForFilter(filter)
 
 
-  const orderBy = mapFilterToOrderBy(filter);
+  
+
+  const isSingleBar = data.length === 1
 
 
   return (
-    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl shadow-lg">
+    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl shadow-lg w-full">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-2">
@@ -62,6 +75,8 @@ export default function BarChartCard({ title, desc, icon: Icon, data, unit = 'vi
         <BarChartFilters
           selected={filter}
           onChange={onFilterChange}
+          range={customRange}
+          onRangeChange={onCustomRangeChange}
         />
 
         <div className="h-60 py-2 px-2 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
@@ -71,14 +86,40 @@ export default function BarChartCard({ title, desc, icon: Icon, data, unit = 'vi
               data={data}
               margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
               barCategoryGap="15%"
-            >
-              <XAxis dataKey="month" stroke="#c9c9c9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-              <YAxis stroke="#c9c9c9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+            > 
+              <XAxis
+                dataKey="label"
+                stroke="#c9c9c9"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10 }}
+                padding={{
+                  left: isSingleBar ? 80 : 0,
+                  right: isSingleBar ? 80 : 0,
+                }}
+                ticks={loading ? [] : undefined}
+              />
+              
+              <YAxis
+                stroke="#c9c9c9"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10 }}
+                domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.05)]}
+              />
               <Tooltip
                 cursor={{ fill: "rgba(255,255,255,0.03)" }}
                 content={<CustomTooltip unit={unit} />}
               />
-              <Bar dataKey="value" radius={[8, 8, 0, 0]} fill="#ffffff" isAnimationActive animationDuration={450} animationEasing="ease-out" />
+              <Bar
+                dataKey="value"
+                radius={[8, 8, 0, 0]}
+                fill="#ffffff"
+                barSize={isSingleBar ? 80 : undefined}
+                isAnimationActive
+                animationDuration={450}
+                animationEasing="ease-out"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
