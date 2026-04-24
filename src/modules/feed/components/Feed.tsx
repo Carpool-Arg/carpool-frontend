@@ -26,7 +26,9 @@ export default function Feed() {
   
   useEffect(() => {
     const initNotifications = async () => {
+
       if (typeof window === "undefined" || !("Notification" in window)) return;
+
       try {
         if (Notification.permission === 'default') {
           await requestPermission();
