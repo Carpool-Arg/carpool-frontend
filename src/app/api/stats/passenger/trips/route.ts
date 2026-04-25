@@ -1,13 +1,14 @@
 import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
-import { DriverPendingResponse } from "@/modules/admin/licenses/types/dto/driverPendingResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Recupera las estadisticas.
+ * Obtiene las estadísticas de viajes realizados por el pasajero
+ * dentro de un período determinado, agrupadas según el criterio indicado.
  * 
- * 
+ * Permite consultar la cantidad de viajes entre dos fechas (`fromDate` y `toDate`)
+ * y agrupar los resultados por día, semana, mes o año según `groupBy`.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo PassengerStatResponse.

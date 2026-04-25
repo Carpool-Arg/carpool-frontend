@@ -10,25 +10,20 @@ export function useCO2Stats() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    
+    setLoading(true);
+    setError(null);
 
-      const res = await getCO2Stats();
+    const res = await getCO2Stats();
 
-      if (res.state === "ERROR") {
-        setError(res.messages?.[0] || "Error");
-        setData(null);
-        return;
-      }
-
-      setData(res.data ?? null);
-    } catch (err) {
-      setError("Ocurrió un error al obtener estadísticas");
+    if (res.state === "ERROR") {
+      setError(res.messages?.[0] || "Error");
       setData(null);
-    } finally {
-      setLoading(false);
+    } else {
+      setData(res.data ?? null);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {

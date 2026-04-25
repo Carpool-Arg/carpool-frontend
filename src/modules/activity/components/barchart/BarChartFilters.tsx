@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { formatShortDateText, formatShortDateTextWithYear } from "@/shared/utils/date"
 import { DateRange } from "react-day-picker"
-import DateRangeModal from "./DateRangeModal"
+import DateRangeModal from './DateRangeModal'
+import { CalendarDays } from 'lucide-react'
 
 const FILTERS = [
   { label: 'Últimos 7 días', value: '7d' },
   { label: 'Último mes', value: 'month' },
   { label: 'Último año', value: 'year' },
-  { label: 'Personalizado', value: 'custom' },
+  { label: 'Elegir período', value: 'custom', icon: CalendarDays},
 ]
 
 type Props = {
@@ -44,6 +45,7 @@ export default function BarChartFilters({ selected, onChange, range, onRangeChan
       <div className="w-full">
         <div className="flex gap-2 justify-center flex-wrap">
           {FILTERS.map((filter) => (
+            
             <button
               key={filter.value}
               onClick={() => {
@@ -51,14 +53,16 @@ export default function BarChartFilters({ selected, onChange, range, onRangeChan
                   setModalOpen(true)
                 } else {
                   onChange(filter.value)
+                  onRangeChange?.(undefined)
                 }
-              }}
-              className={`px-2 md:px-3 py-1 border rounded-xl text-xs md:text-sm duration-200 ease-out cursor-pointer ${
+            }}
+              className={`flex items-center gap-1 px-2 md:px-3 py-1 border rounded-xl text-xs md:text-sm duration-200 ease-out cursor-pointer ${
                 selected === filter.value
                   ? 'bg-white border-white text-black font-medium'
                   : 'border-gray-2 hover:bg-gray-2'
               }`}
-            >
+            > 
+              {filter.icon && <filter.icon size={13} />}
               {filter.label}
             </button>
           ))}
@@ -66,8 +70,7 @@ export default function BarChartFilters({ selected, onChange, range, onRangeChan
 
         {selected === 'custom' && range?.from && range?.to ? (
           <div
-            className="text-xs text-gray-11 flex items-center justify-center mt-4 gap-1 cursor-pointer hover:underline"
-            onClick={() => setModalOpen(true)}
+            className="text-xs text-gray-11 flex items-center justify-center mt-4 gap-1 cursor-pointer"
           >
             {formatShortDateTextWithYear(range.from)} {' - '} {formatShortDateTextWithYear(range.to)}
           </div>

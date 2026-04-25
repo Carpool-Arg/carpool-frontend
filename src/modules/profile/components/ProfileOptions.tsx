@@ -1,6 +1,6 @@
 'use client'
 import { AlertDialog } from '@/components/ux/AlertDialog';
-import { ChartLine, ChartPie, ChartSpline, ChevronRight, CircleStar, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
+import { ChartSpline, ChevronRight, CircleStar, Flag, Headset, History, Info, LogOut, Settings, Tickets, UserRoundPen } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaCarAlt } from 'react-icons/fa';
@@ -98,7 +98,7 @@ export function ProfileOptions({ role, logout }: ProfileOptionsProps) {
         <p className='px-6 text-sm mb-0.5 text-white/75'>Actividad</p>
         <div className="flex flex-col gap-1 p-2 bg-white dark:bg-gray-2/50 rounded-xl">
           <Link
-            href={`/activity?role=${isDriver ? 'driver' : 'passenger'}`}
+            href={`/activity/${isDriver ? 'driver' : 'passenger'}`}
             className={linkClasses}
           >
             <div className="flex items-center gap-2"> 

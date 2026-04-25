@@ -1,5 +1,11 @@
-import { PassengerStat } from "../types/PassengerStat";
+import { startOfMonth, subDays } from 'date-fns';
 
+export type GroupByType = "DAY" | "WEEK" | "MONTH" | "YEAR"
+
+/**
+ * Convierte el filtro seleccionado del frontend
+ * en el tipo de agrupación utilizado por el backend.
+ */
 export function mapFilterToOrderBy(filter: string): string {
   switch (filter) {
     case "7d":
@@ -13,27 +19,31 @@ export function mapFilterToOrderBy(filter: string): string {
   }
 }
 
-type Stat = {
-  label: string
-  value: number
+/**
+ * Devuelve el rango de fechas correspondiente
+ * según el filtro seleccionado.
+ */
+export function getRangeForFilter(filter: string): { from: Date; to: Date } {
+  const now = new Date()
+  switch (filter) {
+    case '7d':   return { from: subDays(now, 7), to: now }
+    case 'month': return { from: startOfMonth(now), to: now }
+    case 'year':
+      return {
+        from: new Date(now.getFullYear(), 0, 1),
+        to: now
+      }
+    default:     return { from: startOfMonth(now), to: now }
+  }
 }
 
-export function mapTripStatToChartData(tripStat: PassengerStat | null): Stat[] {
-  if (!tripStat) return [];
-
-  return tripStat.historialByPeriod.map(item => ({
-    label: item.label,
-    value: item.value,
-  }));
-}
-
+/**
+ * Determina automáticamente el tipo de agrupación
+ * para un rango personalizado según su duración.
+ */
 export function getDynamicGroupBy(from: Date, to: Date) {
   const diffMs = to.getTime() - from.getTime()
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-
-  const diffMonths =
-    (to.getFullYear() - from.getFullYear()) * 12 +
-    (to.getMonth() - from.getMonth())
 
   const diffYears = to.getFullYear() - from.getFullYear()
 
@@ -44,6 +54,10 @@ export function getDynamicGroupBy(from: Date, to: Date) {
   return "MONTH"
 }
 
+/**
+ * Convierte una fecha en formato string
+ * a un objeto Date local.
+ */
 function parseLocalDate(label: string): Date {
   const separator = label.includes("/") ? "/" : "-"
 
@@ -54,9 +68,13 @@ function parseLocalDate(label: string): Date {
   return new Date(year, month - 1, day)
 }
 
+/**
+ * Formatea la etiqueta corta que se muestra
+ * en el eje X del gráfico.
+ */
 export function formatLabelByGroup(
   label: string,
-  groupBy: "DAY" | "WEEK" | "MONTH" | "YEAR"
+  groupBy: GroupByType
 ): string {
   const currentYear = new Date().getFullYear()
 
@@ -122,14 +140,65 @@ export function formatLabelByGroup(
   }
 }
 
-export type GroupByType = "DAY" | "WEEK" | "MONTH" | "YEAR"
+/**
+ * Formatea la etiqueta completa que se muestra
+ * dentro del tooltip del gráfico.
+ */
+export function formatTooltipLabelByGroup(
+  label: string,
+  groupBy: GroupByType
+): string {
+  const fullMonth = (date: Date) =>
+    date.toLocaleDateString("es-AR", {
+      month: "long",
+    })
 
+  switch (groupBy) {
+    case "DAY": {
+      const date = parseLocalDate(label)
+
+      return date.toLocaleDateString("es-AR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    }
+
+    case "WEEK": {
+      const start = parseLocalDate(label)
+      const end = new Date(start)
+
+      end.setDate(start.getDate() + 6)
+
+      return `${start.toLocaleDateString("es-AR")} - ${end.toLocaleDateString("es-AR")}`
+    }
+
+    case "MONTH": {
+      const [month, year] = label.split("/").map(Number)
+      const date = new Date(year, month - 1)
+
+      return `${fullMonth(date)} ${year}`
+    }
+
+    case "YEAR":
+      return label
+
+    default:
+      return label
+  }
+}
+
+/**
+ * Adapta los datos recibidos del backend para el gráfico,
+ * agregando labels formateados y tooltipLabel.
+ */
 export function formatChartData<T extends { label: string }>(
   data: T[] = [],
   groupBy: GroupByType
-): T[] {
+) {
   return data.map((item) => ({
     ...item,
+    tooltipLabel: formatTooltipLabelByGroup(item.label, groupBy),
     label: formatLabelByGroup(item.label, groupBy),
   }))
 }

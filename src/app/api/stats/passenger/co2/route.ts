@@ -1,15 +1,16 @@
-import { PassengerCO2StatResponse, PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
+import { PassengerCO2StatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Recupera las estadisticas.
+ * Obtiene las estadísticas de CO2 ahorrado por el pasajero.
  * 
- * 
+ * Devuelve el total estimado de emisiones de CO₂ evitadas,
+ * calculado en función del uso compartido de viajes.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
- * @returns {Promise<NextResponse>} - Respuesta JSON del tipo PassengerStatResponse.
+ * @returns {Promise<NextResponse>} - Respuesta JSON del tipo PassengerCO2StatResponse.
  */
 export async function GET(req: NextRequest) {
   try {

@@ -1,24 +1,15 @@
 'use client'
 
+import { Car, Route } from "lucide-react";
 import { useState } from "react";
-import { Car } from "lucide-react";
-import BarChartCard from "../BarChartCard";
-import SavedCO2 from "./SavedCO2Card";
-import { getRangeForFilter } from "../agregateData";
-import { useTripsStats } from "../../hooks/passenger/useTripsStats";
-import { formatChartData, formatLabelByGroup, getDynamicGroupBy, GroupByType, mapFilterToOrderBy } from "../../helpers/stats";
+import BarChartCard from "../barchart/BarChartCard";
+import SavedCO2 from "../SavedCO2Card";
 import { DateRange } from "react-day-picker";
-import { useKmStats } from "../../hooks/passenger/useKmStats";
+import { formatChartData, getDynamicGroupBy, getRangeForFilter, GroupByType, mapFilterToOrderBy } from "../../helpers/stats";
 import { useCO2Stats } from "../../hooks/passenger/useCO2Stats";
-
-export function formatLocalDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${day}-${month}-${year}`;
-}
-
+import { useKmStats } from "../../hooks/passenger/useKmStats";
+import { useTripsStats } from "../../hooks/passenger/useTripsStats";
+import { formatLocalDate } from "@/shared/utils/date";
 
 export default function PassengerActivity() {
   const [tripFilter, setTripFilter] = useState("month");
@@ -27,42 +18,55 @@ export default function PassengerActivity() {
   const [kmFilter, setKmFilter] = useState("month");
   const [kmCustomRange, setKmCustomRange] = useState<DateRange>()
 
-
-  const { from, to } =
+  const { from: tripFrom, to: tripTo } =
   tripFilter === "custom" && tripCustomRange?.from && tripCustomRange?.to
     ? {
         from: tripCustomRange.from,
         to: tripCustomRange.to,
       }
     : getRangeForFilter(tripFilter)
-  
-  const groupBy =
-  tripFilter === "custom"
-    ? getDynamicGroupBy(from, to)
-    : mapFilterToOrderBy(tripFilter)
+
+  const tripGroupBy =
+    tripFilter === "custom"
+      ? getDynamicGroupBy(tripFrom, tripTo)
+      : mapFilterToOrderBy(tripFilter)
+
+  const { from: kmFrom, to: kmTo } =
+    kmFilter === "custom" && kmCustomRange?.from && kmCustomRange?.to
+      ? {
+          from: kmCustomRange.from,
+          to: kmCustomRange.to,
+        }
+      : getRangeForFilter(kmFilter)
+
+  const kmGroupBy =
+    kmFilter === "custom"
+      ? getDynamicGroupBy(kmFrom, kmTo)
+      : mapFilterToOrderBy(kmFilter)
  
   const { data: tripData, loading: loadingTrip } = useTripsStats(
-    formatLocalDate(from),  
-    formatLocalDate(to), 
-    groupBy.toUpperCase()
+    formatLocalDate(tripFrom),  
+    formatLocalDate(tripTo), 
+    tripGroupBy.toUpperCase()
   );
 
   const { data: kmData, loading: loadingKm } = useKmStats(
-    formatLocalDate(from),  
-    formatLocalDate(to), 
-    groupBy.toUpperCase()
+    formatLocalDate(kmFrom),  
+    formatLocalDate(kmTo), 
+    kmGroupBy.toUpperCase()
   );
 
   const {data: CO2Data, loading: loadingCO2} = useCO2Stats()
 
   const formattedTrips = formatChartData(
     tripData?.historialByPeriod,
-    groupBy as GroupByType
+    tripGroupBy as GroupByType
   )
+ 
 
   const formattedKm = formatChartData(
     kmData?.historialByPeriod,
-    groupBy as GroupByType
+    kmGroupBy as GroupByType
   )
 
   return (
@@ -76,7 +80,7 @@ export default function PassengerActivity() {
         title="Viajes realizados"
         desc={
           <>
-            Hiciste un total de{" "}
+            Fuiste pasajero en {" "}
             <span className="font-semibold">
               {tripData?.historialTotal} viajes
             </span>{" "}
@@ -84,6 +88,7 @@ export default function PassengerActivity() {
         }
         icon={Car}
         data={formattedTrips ?? []}
+        totalFiltered={tripData?.totalFiltered ?? 0}
         loading={loadingTrip}
         filter={tripFilter}
         onFilterChange={setTripFilter}
@@ -102,8 +107,9 @@ export default function PassengerActivity() {
             </span>{" "}
           </>
         }
-        icon={Car}
+        icon={Route}
         data={formattedKm ?? []}
+        totalFiltered={kmData?.totalFiltered ?? 0}
         loading={loadingKm}
         filter={kmFilter}
         onFilterChange={setKmFilter}

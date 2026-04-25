@@ -37,7 +37,8 @@ export const HEADER_PATHS = [
   '/settings',
 
   // Activity
-  '/activity',
+  '/activity/passenger',
+  '/activity/driver',
 ] as const;
 
 export const HEADER_TITLES: Record<string, string> = {
@@ -74,7 +75,8 @@ export const HEADER_TITLES: Record<string, string> = {
 
   '/account/reviews': 'Consulta de reseñas',
 
-  '/activity': 'Actividad',
+  '/activity/passenger': 'Actividad como pasajero',
+  '/activity/driver': 'Actividad como conductor',
 };
 
 export const getMatchingHeaderPath = (pathname: string) => {

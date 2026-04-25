@@ -39,7 +39,8 @@ export const PROTECTED_PATHS = [
 
   '/account/reviews',
 
-  '/activity',
+  '/activity/passenger',
+  '/activity/driver',
 
   '/admin',
 ];
