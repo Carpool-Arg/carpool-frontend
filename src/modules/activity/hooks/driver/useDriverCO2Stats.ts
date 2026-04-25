@@ -1,23 +1,21 @@
 'use client'
 
-import { getKmStats } from "@/services/stats/passengerStatsService";
-import { useEffect, useState } from "react";
-import { PassengerStat } from "../../types/PassengerStat";
 
-export function useKmStats(
-  fromDate: string,
-  toDate: string,
-  orderBy: string
-) {
-  const [data, setData] = useState<PassengerStat | null>(null);
+import { useEffect, useState } from "react";
+import { CO2Stat } from "../../types/CO2Stat";
+import { getDriverCO2Stats } from "@/services/stats/driverStatsService";
+
+export function useDriverCO2Stats() {
+  const [data, setData] = useState<CO2Stat | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = async () => {
+    
     setLoading(true);
     setError(null);
 
-    const res = await getKmStats(fromDate, toDate, orderBy);
+    const res = await getDriverCO2Stats();
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error");
@@ -30,10 +28,8 @@ export function useKmStats(
   };
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      fetchStats();
-    }
-  }, [fromDate, toDate, orderBy]);
+    fetchStats();
+  }, []);
 
   return {
     data,

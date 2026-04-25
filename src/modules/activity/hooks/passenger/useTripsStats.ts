@@ -1,6 +1,6 @@
 'use client'
 
-import { getTripsStats } from "@/services/stats/statsService";
+import { getTripsStats } from "@/services/stats/passengerStatsService";
 import { useEffect, useState } from "react";
 import { PassengerStat } from "../../types/PassengerStat";
 

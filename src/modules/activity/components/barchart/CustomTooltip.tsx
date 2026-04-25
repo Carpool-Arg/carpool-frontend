@@ -1,3 +1,4 @@
+import { formatPrice } from "@/shared/utils/number"
 import { TooltipProps } from "recharts"
 
 type TooltipPayloadData = {
@@ -28,12 +29,19 @@ export default function CustomTooltip({
         {item.tooltipLabel}
       </p>
 
-      <p className="text-sm font-medium text-white">
-        {Number.isInteger(item.value)
-          ? item.value
-          : item.value.toFixed(2)}{" "}
-        {unit}
-      </p>
+      {unit === 'pesos' ? 
+        <p className="text-sm font-medium text-white">
+          ${formatPrice(item.value)} <span className="text-xs">ARS</span>
+        </p>
+      :
+        <p className="text-sm font-medium text-white">
+          {Number.isInteger(item.value)
+            ? item.value
+            : item.value.toFixed(2)}{" "}
+          {unit}
+        </p>
+      }
+      
     </div>
   )
 }

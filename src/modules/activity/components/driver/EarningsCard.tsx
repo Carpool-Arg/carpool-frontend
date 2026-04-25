@@ -1,16 +1,17 @@
 'use client'
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Leaf } from "lucide-react"
+import { formatPrice } from "@/shared/utils/number"
+import { DollarSign } from "lucide-react"
 import { useEffect, useState } from "react"
 
 interface SavedCO2Props {
-  totalSaved: number
+  total: number
   loading: boolean
 }
 
-export default function SavedCO2({
-  totalSaved,
+export default function EarningsCard({
+  total,
   loading
 }: SavedCO2Props) {
   const [displayValue, setDisplayValue] = useState(0)
@@ -24,14 +25,14 @@ export default function SavedCO2({
     let start = 0
     const duration = 1500
     const steps = 60
-    const increment = totalSaved / steps
+    const increment = total / steps
     const intervalTime = duration / steps
 
     const interval = setInterval(() => {
       start += increment
 
-      if (start >= totalSaved) {
-        setDisplayValue(totalSaved)
+      if (start >= total) {
+        setDisplayValue(total)
         clearInterval(interval)
       } else {
         setDisplayValue(start)
@@ -39,24 +40,24 @@ export default function SavedCO2({
     }, intervalTime)
 
     return () => clearInterval(interval)
-  }, [totalSaved, loading])
+  }, [total, loading])
 
   return (
     <Card className="bg-gray-8 border-gray-2/50 rounded-3xl">
       <CardContent className="px-8 py-4">
         <div className="flex items-center gap-2 text-success/85 mb-3">
-          <Leaf size={20} />
+          <DollarSign size={20} />
           <span className="text-sm uppercase tracking-[0.2em] text-gray-11">
-            Impacto Ambiental
+            Ganancias Acumuladas
           </span>
         </div>
 
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
-          {displayValue.toFixed(2)} <span className="text-2xl md:text-3xl">kg</span>
+          ${formatPrice(displayValue)} <span className="text-2xl md:text-3xl">ARS</span>
         </h1>
 
         <p className="text-gray-11 mt-2 text-sm">
-          Total estimado CO₂ ahorrado por compartir viajes.
+          Total generado por compartir viajes como conductor
         </p>
       </CardContent>
     </Card>

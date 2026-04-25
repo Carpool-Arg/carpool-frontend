@@ -9,6 +9,7 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recha
 import { Stat } from "../../types/Stat"
 import BarChartFilters from "./BarChartFilters"
 import CustomTooltip from "./CustomTooltip"
+import { formatPrice } from "@/shared/utils/number"
 
 interface BarChartCardProps {
   title: string
@@ -41,7 +42,7 @@ export default function BarChartCard({
   const isSingleBar = data.length === 1
 
   return (
-    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl shadow-lg w-full">
+    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl w-full">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-2">
@@ -129,11 +130,20 @@ export default function BarChartCard({
             Total en el período seleccionado
           </p>
 
-          <p className="font-semibold text-white">
-            {Number.isInteger(totalFiltered)
-              ? totalFiltered
-              : totalFiltered.toFixed(2)} {unit}
-          </p>
+          
+            {unit === 'pesos' ? 
+              <p className="font-semibold text-white">
+                ${formatPrice(totalFiltered)} <span className="text-sm">ARS</span>
+              </p>
+            :
+              <p className="font-semibold text-white">
+                {Number.isInteger(totalFiltered)
+                ? totalFiltered
+                : totalFiltered.toFixed(2)} {unit}
+              </p>
+            }
+            
+         
         </div>
       </CardContent>
       

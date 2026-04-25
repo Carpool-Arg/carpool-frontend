@@ -1,10 +1,10 @@
 'use client'
 
-import { getKmStats } from "@/services/stats/passengerStatsService";
 import { useEffect, useState } from "react";
 import { PassengerStat } from "../../types/PassengerStat";
+import { getDriverTripsStats } from "@/services/stats/driverStatsService";
 
-export function useKmStats(
+export function useDriverTripsStats(
   fromDate: string,
   toDate: string,
   orderBy: string
@@ -17,7 +17,7 @@ export function useKmStats(
     setLoading(true);
     setError(null);
 
-    const res = await getKmStats(fromDate, toDate, orderBy);
+    const res = await getDriverTripsStats(fromDate, toDate, orderBy);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error");
