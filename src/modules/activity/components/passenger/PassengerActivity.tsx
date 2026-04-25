@@ -44,19 +44,19 @@ export default function PassengerActivity() {
       ? getDynamicGroupBy(kmFrom, kmTo)
       : mapFilterToOrderBy(kmFilter)
  
-  const { data: tripData, loading: loadingTrip } = useTripsStats(
+  const { data: tripData, loading: loadingTrip, error: errorTrip } = useTripsStats(
     formatLocalDate(tripFrom),  
     formatLocalDate(tripTo), 
     tripGroupBy.toUpperCase()
   );
 
-  const { data: kmData, loading: loadingKm } = useKmStats(
+  const { data: kmData, loading: loadingKm, error: errorKm } = useKmStats(
     formatLocalDate(kmFrom),  
     formatLocalDate(kmTo), 
     kmGroupBy.toUpperCase()
   );
 
-  const {data: CO2Data, loading: loadingCO2} = useCO2Stats()
+  const {data: CO2Data, loading: loadingCO2, error: errorCO2} = useCO2Stats()
 
   const formattedTrips = formatChartData(
     tripData?.historialByPeriod,
@@ -74,6 +74,7 @@ export default function PassengerActivity() {
       <SavedCO2 
         totalSaved={Number(CO2Data?.totalCo2Saved) ?? 0}
         loading={loadingCO2}
+        error={errorCO2}
       />
 
       <BarChartCard
@@ -90,6 +91,7 @@ export default function PassengerActivity() {
         data={formattedTrips ?? []}
         totalFiltered={tripData?.totalFiltered ?? 0}
         loading={loadingTrip}
+        error={errorTrip}
         filter={tripFilter}
         onFilterChange={setTripFilter}
         customRange={tripCustomRange}
@@ -111,6 +113,7 @@ export default function PassengerActivity() {
         data={formattedKm ?? []}
         totalFiltered={kmData?.totalFiltered ?? 0}
         loading={loadingKm}
+        error={errorKm}
         filter={kmFilter}
         onFilterChange={setKmFilter}
         customRange={kmCustomRange}

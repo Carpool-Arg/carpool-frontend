@@ -19,6 +19,25 @@ export function mapFilterToOrderBy(filter: string): string {
   }
 }
 
+export function formatFilterLabel(filter: string): string {
+  switch (filter) {
+    case "7d":
+      return "últimos 7 días"
+
+    case "month":
+      return "último mes"
+
+    case "year":
+      return "último año"
+
+    case "custom":
+      return "período personalizado"
+
+    default:
+      return filter
+  }
+}
+
 /**
  * Devuelve el rango de fechas correspondiente
  * según el filtro seleccionado.

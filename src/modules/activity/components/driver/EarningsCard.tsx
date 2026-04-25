@@ -2,18 +2,20 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { formatPrice } from "@/shared/utils/number"
-import { DollarSign } from "lucide-react"
+import { AlertCircle, DollarSign } from "lucide-react"
 import { useEffect, useState } from "react"
 
-interface SavedCO2Props {
+interface EarningsProps {
   total: number
   loading: boolean
+  error: string | null
 }
 
 export default function EarningsCard({
   total,
-  loading
-}: SavedCO2Props) {
+  loading,
+  error
+}: EarningsProps) {
   const [displayValue, setDisplayValue] = useState(0)
 
   useEffect(() => {
@@ -52,13 +54,30 @@ export default function EarningsCard({
           </span>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
-          ${formatPrice(displayValue)} <span className="text-2xl md:text-3xl">ARS</span>
-        </h1>
+        {error ? (
+          <div className="">
+            <h1 className="flex items-center gap-2 text-lg font-semibold text-white/95">
+              <span className="text-gray-11 flex items-center">
+                <AlertCircle size={16} />
+              </span>
+              Lo sentimos, no se pudo cargar
+            </h1>
 
-        <p className="text-gray-11 mt-2 text-sm">
-          Total generado por compartir viajes como conductor
-        </p>
+            <p className="text-sm text-gray-11 mt-2">
+              {error}
+            </p>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
+              ${formatPrice(displayValue)} <span className="text-2xl md:text-3xl">ARS</span>
+            </h1>
+
+            <p className="text-gray-11 mt-2 text-sm">
+              Total generado por compartir viajes como conductor
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   )

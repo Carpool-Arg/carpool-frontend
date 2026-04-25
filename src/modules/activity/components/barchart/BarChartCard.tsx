@@ -1,15 +1,18 @@
 'use client'
 
 import { Card, CardContent } from "@/components/ui/card"
+import { ErrorAlertY } from "@/components/ux/admin/ErrorAlert"
 import { EmptyAlertY } from "@/components/ux/EmptyAlert"
 import Spinner from "@/components/ux/Spinner"
-import { ChartColumnDecreasing, LucideIcon } from "lucide-react"
+import { formatPrice } from "@/shared/utils/number"
+import { ChartColumnDecreasing, LucideIcon, OctagonX } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { formatFilterLabel } from "../../helpers/stats"
 import { Stat } from "../../types/Stat"
 import BarChartFilters from "./BarChartFilters"
 import CustomTooltip from "./CustomTooltip"
-import { formatPrice } from "@/shared/utils/number"
+import BarChartHeader from "./BarChartHeader"
 
 interface BarChartCardProps {
   title: string
@@ -18,6 +21,7 @@ interface BarChartCardProps {
   data: Stat[]
   totalFiltered: number
   loading: boolean
+  error: string | null
   filter: string
   onFilterChange: (value: string) => void
   customRange?: DateRange
@@ -32,6 +36,7 @@ export default function BarChartCard({
   data, 
   totalFiltered,
   loading,
+  error,
   filter, 
   onFilterChange,
   customRange,
@@ -44,17 +49,11 @@ export default function BarChartCard({
   return (
     <Card className="bg-gray-8 border-gray-2/50 rounded-2xl w-full">
       <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <div className="p-3 bg-gray-10/60 border border-gray-9/20 rounded-lg flex items-center justify-center">
-              <Icon size={20} />
-            </div>
-            <div className="flex flex-col justify-center">
-              <h1 className="font-medium text-lg leading-tight mb-0.5">{title}</h1>
-              {desc && <p className="text-xs text-gray-11/80 leading-none">{desc}</p>}
-            </div>
-          </div>
-        </div>
+        <BarChartHeader
+          title={title}
+          desc={desc}
+          icon={Icon}
+        />
         
         <BarChartFilters
           selected={filter}
@@ -63,19 +62,27 @@ export default function BarChartCard({
           onRangeChange={onCustomRangeChange}
         />
 
-        
-
         <div className="h-60 py-2 px-2 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
           {loading ? (
             <div className="h-full flex items-center justify-center">
               <Spinner />
+            </div>
+          ) : error ? (
+            <div className="h-full flex items-center justify-center">
+              <ErrorAlertY
+                icon={<OctagonX size={32} />}
+                title="Ocurrió un error"
+                description={error}
+              />
             </div>
           ) : data.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <EmptyAlertY
                 icon={<ChartColumnDecreasing size={32} />}
                 title="No hay datos para mostrar"
-                description="No se encontraron estadísticas para el período seleccionado."
+                description={`No se encontraron estadísticas para 
+                  ${filter === '7d' ? 'los ' : 'el '}${formatFilterLabel(filter)}.`
+                }
               />
             </div>
           ) : (
@@ -127,10 +134,9 @@ export default function BarChartCard({
         </div>
         <div className="mt-2 text-center flex items-center justify-between ">
           <p className="text-sm text-gray-11">
-            Total en el período seleccionado
+            Total {filter === '7d' ? 'en los ' : 'en el '}{formatFilterLabel(filter)}
           </p>
-
-          
+  
             {unit === 'pesos' ? 
               <p className="font-semibold text-white">
                 ${formatPrice(totalFiltered)} <span className="text-sm">ARS</span>
@@ -142,8 +148,7 @@ export default function BarChartCard({
                 : totalFiltered.toFixed(2)} {unit}
               </p>
             }
-            
-         
+
         </div>
       </CardContent>
       

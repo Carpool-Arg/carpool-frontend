@@ -65,25 +65,25 @@ export default function DriverActivity() {
       ? getDynamicGroupBy(earningFrom, earningTo)
       : mapFilterToOrderBy(earningFilter)
  
-  const { data: tripData, loading: loadingTrip } = useDriverTripsStats(
+  const { data: tripData, loading: loadingTrip, error: errorTrip } = useDriverTripsStats(
     formatLocalDate(tripFrom),  
     formatLocalDate(tripTo), 
     tripGroupBy.toUpperCase()
   );
 
-  const { data: kmData, loading: loadingKm } = useDriverKmStats(
+  const { data: kmData, loading: loadingKm, error: errorKm } = useDriverKmStats(
     formatLocalDate(kmFrom),  
     formatLocalDate(kmTo), 
     kmGroupBy.toUpperCase()
   );
 
-  const { data: earningData, loading: loadingEarning } = useDriverEarningsStats(
+  const { data: earningData, loading: loadingEarning, error: errorEarning } = useDriverEarningsStats(
     formatLocalDate(earningFrom),  
     formatLocalDate(earningTo), 
     earningGroupBy.toUpperCase()
   );
 
-  const {data: CO2Data, loading: loadingCO2} = useDriverCO2Stats()
+  const {data: CO2Data, loading: loadingCO2, error: errorC02} = useDriverCO2Stats()
 
   const formattedTrips = formatChartData(
     tripData?.historialByPeriod,
@@ -105,11 +105,13 @@ export default function DriverActivity() {
       key="co2"
       totalSaved={Number(CO2Data?.totalCo2Saved) ?? 0}
       loading={loadingCO2}
+      error={errorC02}
     />,
     <EarningsCard
       key="earnings"
       total={earningData?.historialTotal ?? 0}
       loading={loadingEarning}
+      error={errorEarning}
     />
   ]
 
@@ -124,7 +126,7 @@ export default function DriverActivity() {
         <div className="relative z-10">
           <button
             onClick={handleNext}
-            className="w-full text-left"
+            className="w-full text-left cursor-pointer"
           >
             {cards[activeCard]}
           </button>
@@ -141,7 +143,7 @@ export default function DriverActivity() {
             <button
               key={index}
               onClick={() => setActiveCard(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
+              className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
                 activeCard === index
                   ? "bg-white"
                   : "bg-white/30 hover:bg-white/50"
@@ -166,6 +168,7 @@ export default function DriverActivity() {
         data={formattedEarnings ?? []}
         totalFiltered={earningData?.totalFiltered ?? 0}
         loading={loadingEarning}
+        error={errorEarning}
         filter={earningFilter}
         onFilterChange={setEarningFilter}
         customRange={earningCustomRange}
@@ -187,6 +190,7 @@ export default function DriverActivity() {
         data={formattedTrips ?? []}
         totalFiltered={tripData?.totalFiltered ?? 0}
         loading={loadingTrip}
+        error={errorTrip}
         filter={tripFilter}
         onFilterChange={setTripFilter}
         customRange={tripCustomRange}
@@ -208,6 +212,7 @@ export default function DriverActivity() {
         data={formattedKm ?? []}
         totalFiltered={kmData?.totalFiltered ?? 0}
         loading={loadingKm}
+        error={errorKm}
         filter={kmFilter}
         onFilterChange={setKmFilter}
         customRange={kmCustomRange}
