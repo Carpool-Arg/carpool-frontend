@@ -2,6 +2,7 @@
 
 import { DEBT_PATHS } from '@/constants/paths/debtPaths';
 import { PUBLIC_PATHS } from '@/constants/paths/publicPaths';
+import { disconnectWebSocket } from '@/lib/websocket';
 import { Driver } from '@/models/driver';
 import { User } from '@/models/user';
 import { LoginData } from '@/modules/auth/schemas/loginSchema';
@@ -280,6 +281,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {
+      disconnectWebSocket();
       setUser(null);
       setAccessToken(null);
       router.push('/login');
