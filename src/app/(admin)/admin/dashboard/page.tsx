@@ -1,4 +1,5 @@
 import HeaderPage from "@/components/ux/admin/HeaderPage";
+import Dashboard from "@/modules/admin/dashboard/components/Dashboard";
 
 export default function DashboardPage() {
   return (
@@ -8,6 +9,7 @@ export default function DashboardPage() {
         desc=""
       />
 
+      <Dashboard/>
     </div>
   );
 }
