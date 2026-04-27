@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, TrendingUp } from "lucide-react"
+import { LucideIcon, MapPin, TrendingUp } from "lucide-react"
 import { TopCityStat } from "../../types/topCity"
 
 interface TopCityCardProps {
@@ -10,19 +10,19 @@ interface TopCityCardProps {
   cities: TopCityStat[]
   loading: boolean
   error: string | null
+  icon: LucideIcon
 }
 
-export function TopCityCard({ title, desc, cities, loading, error }: TopCityCardProps) {
+export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }: TopCityCardProps) {
   const maxReservations = cities[0]?.reservationCount || 1
 
   return (
-    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl overflow-hidden">
-      <CardContent className="p-0 min-h-55 flex flex-col">
-
+    <div className="bg-gray-8  rounded-2xl overflow-hidden">
+      <div className="p-0 min-h-55 flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-9/20">
+        <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-2/40">
           <div className="p-2.5 bg-gray-10/60 border border-gray-9/20 rounded-xl">
-            <MapPin size={18} className="text-gray-11" />
+            <Icon size={18} className="text-gray-11" />
           </div>
           <div>
             <h2 className="font-semibold text-base leading-tight">{title}</h2>
@@ -110,7 +110,7 @@ export function TopCityCard({ title, desc, cities, loading, error }: TopCityCard
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

@@ -1,17 +1,17 @@
 import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
+import { AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Obtiene las estadísticas de viajes realizados por el pasajero
- * dentro de un período determinado, agrupadas según el criterio indicado.
+ * 
  * 
  * Permite consultar la cantidad de viajes entre dos fechas (`fromDate` y `toDate`)
  * y agrupar los resultados por día, semana, mes o año según `groupBy`.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
- * @returns {Promise<NextResponse>} - Respuesta JSON del tipo PassengerStatResponse.
+ * @returns {Promise<NextResponse>} - Respuesta JSON del tipo AdminStatsSimpleResponse.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -25,13 +25,13 @@ export async function GET(req: NextRequest) {
     const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
 
 
-    const res = await fetch(`${apiUrl}/stats/passenger/trips${query}`, {
+    const res = await fetch(`${apiUrl}/admin/stats/users/new${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: PassengerStatResponse = await res.json();
+    const response: AdminStatsSimpleResponse = await res.json();
 
 
     if (!res.ok || response.state === "ERROR") {

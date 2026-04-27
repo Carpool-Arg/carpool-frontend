@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
 
 
-    const res = await fetch(`${apiUrl}/passenger/stats/co2`, {
+    const res = await fetch(`${apiUrl}/stats/passenger/co2`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

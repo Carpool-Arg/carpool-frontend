@@ -2,13 +2,10 @@
 
 import { getDriversPercentage } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { DriversPercentageResponseDTO } from "../types/dto/driversPercentageResponse";
+import { DriversPercentageResponseDTO } from "../../types/dto/driversPercentageResponse";
 
 
-export function useDriversPercentage(
-  fromDate: string,
-  toDate: string,
-) {
+export function useDriversPercentage() {
   const [data, setData] = useState<DriversPercentageResponseDTO | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +14,7 @@ export function useDriversPercentage(
     setLoading(true);
     setError(null);
 
-    const res = await getDriversPercentage(fromDate, toDate);
+    const res = await getDriversPercentage();
 
 
     if (res.state === "ERROR") {
@@ -32,10 +29,9 @@ export function useDriversPercentage(
 
   
   useEffect(() => {
-    if (fromDate && toDate) {
       fetchDriversPercentage();
-    }
-  }, [fromDate, toDate]);
+
+  }, []);
 
   return {
     data,

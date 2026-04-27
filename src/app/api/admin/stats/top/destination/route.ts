@@ -14,10 +14,14 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = req.nextUrl;
+
     const token = req.cookies.get('token')?.value;
+    const limit = searchParams.get("limit");
 
+    const query = `?limit=${limit}`;
 
-    const res = await fetch(`${apiUrl}/stats/admin/top/destination`, {
+    const res = await fetch(`${apiUrl}/admin/stats/top/destination${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

@@ -2,9 +2,10 @@
 
 import { getTopDestinationCities, getTopOriginCities } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { TopCityStatResponseDTO } from "../types/dto/topCityStatResponse";
+import { TopCityStatResponseDTO } from "../../types/dto/topCityStatResponse";
 
-export function useTopOrigin() {
+
+export function useTopOrigin(limit:number) {
   const [topOrigin, setTopOrigin] = useState<TopCityStatResponseDTO | null>();
   const [topDestination, setTopDestination] = useState<TopCityStatResponseDTO | null>();
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ export function useTopOrigin() {
     setLoading(true);
     setError(null);
 
-    const res = await getTopOriginCities();
+    const res = await getTopOriginCities(limit);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error inesperado");
@@ -30,7 +31,7 @@ export function useTopOrigin() {
     setLoading(true);
     setError(null);
 
-    const res = await getTopDestinationCities();
+    const res = await getTopDestinationCities(limit);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error inesperado");
@@ -46,7 +47,7 @@ export function useTopOrigin() {
   useEffect(() => {
     fetchTopOrigin();
     fetchTopDestination();
-  }, []);
+  }, [limit]);
 
   return {
     topOrigin,

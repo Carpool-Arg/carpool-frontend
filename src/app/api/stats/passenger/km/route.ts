@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
 
-    const res = await fetch(`${apiUrl}/passenger/stats/km${query}`, {
+    const res = await fetch(`${apiUrl}/stats/passenger/km${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
