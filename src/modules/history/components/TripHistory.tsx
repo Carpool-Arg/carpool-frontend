@@ -29,6 +29,7 @@ export default function TripHistory() {
   const hasMoreRef = useRef(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const LIMIT = 10;
+  const loadingRef = useRef(false);
 
   const handleChangeRole = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -39,8 +40,9 @@ export default function TripHistory() {
 
   const fetchTrips = useCallback(async (reset = false) => {
     if (!hasMoreRef.current && !reset) return;
-    
+    if (loadingRef.current) return; 
     try {
+      loadingRef.current = true;
       if (reset) {
         setInitialLoading(true); 
       } else {
@@ -98,6 +100,7 @@ export default function TripHistory() {
       setToast({ message, type: 'error' })
       console.error('Error al obtener viajes:', error);
     } finally {
+      loadingRef.current = false;
       setInitialLoading(false);
       setLoadingMore(false);
     }
@@ -112,7 +115,7 @@ export default function TripHistory() {
   useEffect(() => {
     if (!loaderRef.current) return;
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loadingMore && !initialLoading && hasMoreRef.current) {
+      if (entries[0].isIntersecting && !loadingRef.current && hasMoreRef.current) {
         fetchTrips();
       }
     });
