@@ -143,7 +143,10 @@ export default function TripHistory() {
     <TripDriverList
       trips={driverTrips}
       onError={(message) => setToast({ message, type: 'error' })}
-      onSuccess={(message) => setToast({ message, type: 'success' })}
+      onSuccess={(message) => {
+        setToast({ message, type: 'success' })
+        fetchTrips(true); 
+      }}
     />
   )}
 
