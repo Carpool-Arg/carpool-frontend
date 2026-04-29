@@ -1,16 +1,18 @@
 'use client'
 
-import { getSeatsPercentage } from "@/services/admin/stats/adminStatsService";
+import { getAppEarnings, getSeatsPercentage } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
+import { AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
 import { TakenSeatsStatResponseDTO } from "../../types/dto/takenSeatsStatResponse";
-import { getMonthRange, getPreviousMonthRange } from "../../helpers/stats";
 
-
-
-export function useSeatsAnalytics(fromDate: string, toDate: string) {
+export function useSeatsPercentage(
+  fromDate: string,
+  toDate: string,
+  previousFromDate: string,
+  previousToDate: string
+) {
   const [filtered, setFiltered] = useState<TakenSeatsStatResponseDTO | null>(null);
-  const [currentMonth, setCurrentMonth] = useState<TakenSeatsStatResponseDTO | null>(null);
-  const [previousMonth, setPreviousMonth] = useState<TakenSeatsStatResponseDTO | null>(null);
+  const [previousPeriod, setPreviousPeriod] = useState<TakenSeatsStatResponseDTO | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,27 +22,25 @@ export function useSeatsAnalytics(fromDate: string, toDate: string) {
     setError(null);
 
     try {
-      const current = getMonthRange();
-      const previous = getPreviousMonthRange();
-
-      const [filteredRes, currentRes, previousRes] = await Promise.all([
-        getSeatsPercentage(fromDate, toDate), // gráfico
-        getSeatsPercentage(current.fromDate, current.toDate), //  card actual
-        getSeatsPercentage(previous.fromDate, previous.toDate), //  comparación
+      const [filteredRes, previousRes] = await Promise.all([
+        getSeatsPercentage(fromDate, toDate),
+        getSeatsPercentage(previousFromDate, previousToDate),
       ]);
 
       if (
-        filteredRes.state === "ERROR" ||
-        currentRes.state === "ERROR" ||
-        previousRes.state === "ERROR"
+        filteredRes.state === 'ERROR' ||
+        previousRes.state === 'ERROR'
       ) {
-        setError("Error al obtener estadísticas");
+        setError(
+          filteredRes.messages?.[0] ||
+          previousRes.messages?.[0] ||
+          "Error al obtener estadísticas"
+        );
         return;
       }
 
       setFiltered(filteredRes.data ?? null);
-      setCurrentMonth(currentRes.data ?? null);
-      setPreviousMonth(previousRes.data ?? null);
+      setPreviousPeriod(previousRes.data ?? null);
     } catch {
       setError("Error inesperado");
     } finally {
@@ -49,22 +49,25 @@ export function useSeatsAnalytics(fromDate: string, toDate: string) {
   };
 
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (
+      fromDate &&
+      toDate &&
+      previousFromDate &&
+      previousToDate
+    ) {
       fetchAll();
     }
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, previousFromDate, previousToDate]);
 
   const delta =
-    currentMonth && previousMonth
-      ? currentMonth.takenPercentageFiltered -
-        previousMonth.takenPercentageFiltered
+    filtered && previousPeriod
+      ? filtered.takenPercentageFiltered - previousPeriod.takenPercentageFiltered
       : null;
 
   return {
-    filtered,        // gráfico de barras
-    currentMonth,    // card principal
-    previousMonth,   // referencia
-    delta,           // comparación
+    filtered,
+    previousPeriod,
+    delta,
     loading,
     error,
     refetch: fetchAll,

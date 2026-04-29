@@ -1,9 +1,11 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+import { DriversPercentageResponseDTO } from "../../types/dto/driversPercentageResponse"
+import { IdCard, UserRoundCheck, UserRoundX } from "lucide-react"
 
 interface DriversPercentageProps {
-  driverPercentage: number
+  data: DriversPercentageResponseDTO | null
   loading: boolean
   error: string | null
 }
@@ -30,13 +32,16 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 }
 
 export default function DriversPercentage({
-  driverPercentage,
+  data,
   loading,
   error,
 }: DriversPercentageProps) {
-  const passengerPercentage = Math.round((100 - driverPercentage) * 10) / 10
+  const driverPercentage = data?.driverPercentage
+  const passengerPercentage = Math.round((100 - (driverPercentage ?? 0)) * 10) / 10
 
-  const data = [
+  const activeDiff = (data?.totalDrivers ?? 0) - (data?.totalActiveDrivers ?? 0)
+
+  const dataLeyend = [
     { name: "Conductores", value: driverPercentage },
     { name: "Pasajeros", value: passengerPercentage },
   ]
@@ -53,20 +58,21 @@ export default function DriversPercentage({
       ) : (
         <>
           {/* Gráfico */}
-          <div className="relative w-44 h-44">
+          <div className="relative w-52 h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data}
+                  data={dataLeyend}
                   cx="50%"
                   cy="50%"
-                  innerRadius={52}
-                  outerRadius={72}
+                  innerRadius={60}
+                  outerRadius={90}
                   paddingAngle={3}
                   dataKey="value"
                   strokeWidth={0}
+                  isAnimationActive={true}
                 >
-                  {data.map((entry, index) => (
+                  {dataLeyend.map((entry, index) => (
                     <Cell
                       key={entry.name}
                       fill={index === 0 ? COLORS.drivers : COLORS.passengers}
@@ -88,7 +94,7 @@ export default function DriversPercentage({
 
           {/* Leyenda */}
           <div className="flex items-center gap-5">
-            {data.map((entry, index) => (
+            {dataLeyend.map((entry, index) => (
               <div key={entry.name} className="flex items-center gap-2">
                 <span
                   className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -100,6 +106,55 @@ export default function DriversPercentage({
                 </span>
               </div>
             ))}
+          </div>
+          <div className="w-full max-w-md rounded-2xl  mt-2">
+            <p className="text-sm text-gray-11 mb-2">
+              Actualmente hay{" "}
+              <span className="font-semibold text-white">
+                {data?.totalDrivers}
+              </span>{" "}
+              {(data?.totalDrivers ?? 0) === 1
+                ? "conductor registrado"
+                : "conductores registrados"}
+            </p>
+
+            <div className="flex items-center w-full gap-4">
+              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40 backdrop-blur-sm ">
+                
+                {/* Icon section */}
+                <div className="flex items-center rounded-l-2xl justify-center self-stretch px-5 bg-green-400/15 ">
+                  <UserRoundCheck className="text-green-400/80" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 px-2 py-1">
+                  <p className="text-xs uppercase tracking-wide text-gray-11 font-medium">
+                    Activos
+                  </p>
+                  <p className="text-xl font-semibold text-white tabular-nums">
+                    {data?.totalActiveDrivers}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40 backdrop-blur-sm ">
+                
+                {/* Icon section */}
+                <div className="flex items-center justify-center self-stretch px-5 bg-red-400/15">
+                  <UserRoundX className="text-red-400/80" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 px-2 py-1">
+                  <p className="text-xs uppercase tracking-wide text-gray-11 font-medium">
+                    Inactivos
+                  </p>
+                  <p className="text-xl font-semibold text-white tabular-nums">
+                    {activeDiff}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </>
       )}

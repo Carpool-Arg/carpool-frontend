@@ -47,22 +47,24 @@ export default function BarChartCard({
   const isSingleBar = data.length === 1
 
   return (
-    <Card className="bg-gray-8 border-gray-2/50 rounded-2xl w-full">
-      <CardContent className="p-5">
+    <div className="bg-gray-8 border border-gray-2/50 rounded-2xl h-full flex flex-col">
+      
         <BarChartHeader
           title={title}
           desc={desc}
           icon={Icon}
         />
-        
-        <BarChartFilters
-          selected={filter}
-          onChange={onFilterChange}
-          range={customRange}
-          onRangeChange={onCustomRangeChange}
-        />
 
-        <div className="h-60 py-2 px-2 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
+        <div className="mt-4">
+          <BarChartFilters
+            selected={filter}
+            onChange={onFilterChange}
+            range={customRange}
+            onRangeChange={onCustomRangeChange}
+          />
+        </div>
+
+        <div className="h-60  py-2 px-5 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
           {loading ? (
             <div className="h-full flex items-center justify-center">
               <Spinner />
@@ -129,10 +131,9 @@ export default function BarChartCard({
                 />
               </BarChart>
             </ResponsiveContainer>
-          )}
-          
+          )} 
         </div>
-        <div className="mt-2 text-center flex items-center justify-between ">
+        <div className="mt-2 px-5 text-center flex items-center justify-between mb-2">
           <p className="text-sm text-gray-11">
             Total {filter === '7d' ? 'en los ' : 'en el '}{formatFilterLabel(filter)}
           </p>
@@ -148,10 +149,7 @@ export default function BarChartCard({
                 : totalFiltered.toFixed(2)} {unit}
               </p>
             }
-
         </div>
-      </CardContent>
-      
-    </Card>
+    </div>
   )
 }

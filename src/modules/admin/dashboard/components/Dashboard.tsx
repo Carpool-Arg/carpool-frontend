@@ -5,27 +5,51 @@ import TripSection from "./trips/TripSection"
 import SectionTabs from "./SectionsTabs"
 import UserSection from "./users/UserSection"
 import GeneralSection from "./generals/GeneralSection"
+import BarChartFilters from "@/modules/activity/components/barchart/BarChartFilters"
+import { DateRange } from "react-day-picker"
 
 
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("general")
+  const [filter, setFilter] = useState("month")
+  const [customRange, setCustomRange] = useState<DateRange | undefined>()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
        
       <SectionTabs
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
 
+      <BarChartFilters
+        selected={filter}
+        onChange={setFilter}
+        range={customRange}
+        onRangeChange={setCustomRange}
+      />
+
       <div>
-        {activeSection === "trips" && <TripSection />}
         {activeSection === "general" && (
-          <GeneralSection/>
+          <GeneralSection
+            filter={filter}
+            customRange={customRange}
+          />
         )}
+
+        {activeSection === "trips" && (
+          <TripSection 
+            filter={filter}
+            customRange={customRange}
+          />
+        )}
+        
         {activeSection === "users" && (
-          <UserSection/>
+          <UserSection
+            filter={filter}
+            customRange={customRange}
+          />
         )}
       </div>
     </div>

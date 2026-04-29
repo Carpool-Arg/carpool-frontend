@@ -4,119 +4,219 @@ import { CircleDashed, MapPin, MapPinHouse, TrendingDown, TrendingUp } from "luc
 
 import StatCard from "../StatCard"
 import { TopCityCard } from "./TopCityCard"
-import { useSeatsAnalytics } from "../../hooks/trip/useSeatsPercentage"
+
 import { useTopOrigin } from "../../hooks/trip/useTopCity"
-import { useCompletedTrips } from "../../hooks/general/useCompletedTrips"
+import { useCompletedTrips } from "../../hooks/trip/useCompletedTrips"
 import { formatPercentageDelta, getStatusDelta } from "../../helpers/stats"
+import { usePublishedTrips } from "../../hooks/trip/usePublishedTrips"
+import { useSeatsPercentage } from "../../hooks/trip/useSeatsPercentage"
+import { SectionProps } from "../generals/GeneralSection"
+import { formatFilterLabel, formatFilterLabelPrevious, getPreviousRangeForFilter, getRangeForFilter } from "@/modules/activity/helpers/stats"
+import { formatLocalDate } from "@/shared/utils/date"
+import DashboardSeparator from "../DashboardSeparator"
+import { StatCardSkeleton } from "../skeletons/StatCardSkeleton"
+import { useState } from "react"
+import { capitalize } from "@/shared/utils/string"
 
 
 
-export default function TripSection() {
-  const limit = 3
+export default function TripSection({filter, customRange}:SectionProps) {
+  const [limitOrigin, setLimitOrigin] = useState(3)
+  const [limitDestination, setLimitDestination] = useState(3)
+  const { from: fromDate, to: toDate } =
+    filter === "custom" && customRange?.from && customRange?.to
+      ? {
+          from: customRange.from,
+          to: customRange.to,
+        }
+      : getRangeForFilter(filter)
+  
+  const {
+    from: previousFromDate,
+    to: previousToDate,
+  } = getPreviousRangeForFilter(
+    filter,
+    fromDate,
+    toDate
+  )
+
+  
   const {
     topOrigin,
     topDestination,
-    loading,
+    loading: topLoading,
     error,
-  } = useTopOrigin(limit)
+  } = useTopOrigin(limitOrigin, limitDestination)
 
-  const fromDate = '01-04-2026'
-  const toDate = '26-04-2026'
+  
 
   const {
-    currentMonth: currentMonthSeats, 
-    previousMonth: previousMonthSeats, 
     filtered: filteredSeats,
+    previousPeriod: previousPeriodSeats,
     delta: deltaSeats,
     loading: loadingSeats, 
     error: errorSeats
-  } = useSeatsAnalytics(fromDate, toDate);
+  } = useSeatsPercentage(
+    formatLocalDate(fromDate), 
+    formatLocalDate(toDate),
+    formatLocalDate(previousFromDate),
+    formatLocalDate(previousToDate)
+  );
 
-  const {
-    currentMonth: currentMonthTrips, 
-    previousMonth : previousMonthTrips, 
+  const { 
     filtered: filteredTrips,
+    previousPeriod: previousPeriodTrips,
     delta: deltaTrips, 
     error: errorTrips, 
     loading: loadingTrips
-  } = useCompletedTrips(fromDate, toDate);
+  } = useCompletedTrips(
+    formatLocalDate(fromDate), 
+    formatLocalDate(toDate),
+    formatLocalDate(previousFromDate),
+    formatLocalDate(previousToDate)
+  );
+
+  const {
+    filtered: filteredPublished, 
+    previousPeriod: previousPeriodPublished,
+    delta: deltaPublished,
+    error: errorPublished, 
+    loading: loadingPublished
+  } = usePublishedTrips(
+    formatLocalDate(fromDate), 
+    formatLocalDate(toDate),
+    formatLocalDate(previousFromDate),
+    formatLocalDate(previousToDate)
+  )
+
+  const globalLoading = loadingPublished || loadingTrips || loadingSeats
   
-  const seatsStatus = getStatusDelta(deltaSeats ?? 0)
+  const seatsStatus = getStatusDelta(
+    deltaSeats?? 0, 
+    previousPeriodSeats?.takenPercentageFiltered ?? 0
+  )
   const seatsDeltaPercentage = formatPercentageDelta(
     deltaSeats?? 0, 
-    previousMonthSeats?.takenPercentageFiltered ?? 0
+    previousPeriodSeats?.takenPercentageFiltered ?? 0
   )
-  
 
-  const tripsStatus = getStatusDelta(deltaTrips ?? 0)
+  const tripsStatus = getStatusDelta(
+    deltaTrips ?? 0, 
+    previousPeriodTrips?.totalFiltered ?? 0
+  )
   const tripsDeltaPercentage = formatPercentageDelta(
     deltaTrips ?? 0, 
-    previousMonthTrips?.totalFiltered ?? 0
+    previousPeriodTrips?.totalFiltered ?? 0
+  )
+
+
+  const publishedStatus = getStatusDelta(deltaPublished ?? 0, previousPeriodPublished?.totalFiltered ?? 0)
+  const publishedDeltaPercentage = formatPercentageDelta(
+    deltaPublished ?? 0, 
+    previousPeriodPublished?.totalFiltered ?? 0
   )
   
   return (
-    <div className="space-y-6 ">
+    <div className="space-y-4 ">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard
-          title="Viajes publicados"
-          value="1203"
-          description="Últimos 30 días"
-          icon={<TrendingUp size={18} />}
-          trend={<span className="text-green-500">+4% vs anterior</span>}
-          variant="default"
-        />
-        <StatCard
-          title="Viajes completados"
-          value={`${currentMonthTrips?.totalFiltered ?? 0}`}
-          description="Últimos 30 días"
-          icon={
-            tripsStatus === 'increase' ? (
-              <TrendingUp size={18} />
-            ) : tripsStatus === 'decrease' ? (
-              <TrendingDown size={18} />
-            ) : (
-              <CircleDashed size={14} />
-            )
-          }
-          trend={
-            <span>
-              <span className="font-medium">
-                {tripsStatus === 'increase' ? '+' :  ''}
-                {tripsDeltaPercentage}% 
-              </span>
-              {' '}
-              respecto mes anterior
-            </span>
-            }
-          variant={tripsStatus}
-        />
-        <StatCard
-          title="Ocupación total"
-          value={`${currentMonthSeats?.takenPercentageFiltered}%`}
-          description="Este mes"
-          icon={
-            seatsStatus === 'increase' ? (
-              <TrendingUp size={18} />
-            ) : seatsStatus === 'decrease' ? (
-              <TrendingDown size={18} />
-            ) : (
-              <CircleDashed size={14} />
-            )
-          }
-          trend={
-            <span>
-              <span className="font-medium">
-                {seatsStatus === 'increase' ? '+' :  ''}
-                {seatsDeltaPercentage}% 
-              </span>
-              {' '}
-              respecto mes anterior
-            </span>
-            }
-          variant={seatsStatus}
-        />
+        {globalLoading ?
+          <>
+            <StatCardSkeleton/>
+            <StatCardSkeleton/>
+            <StatCardSkeleton/>
+          </>
+        :
+          <>
+            <StatCard
+              title="Viajes publicados"
+              value={`${filteredPublished?.totalFiltered}`}
+              description={capitalize(formatFilterLabel(filter))}
+              icon={ 
+                publishedStatus === 'increase' || 
+                publishedStatus === 'new' ? (
+                  <TrendingUp size={18} />
+                ) : publishedStatus === 'decrease' ? (
+                  <TrendingDown size={18} />
+                ) : (
+                  <CircleDashed size={14} />
+                )
+              }
+              trend={
+                <span>
+                  <span className="font-medium">
+                    {publishedStatus === 'increase' || publishedStatus === 'new' ? '+' :  ''}
+                    {publishedStatus === 'new' ? 
+                      `${publishedDeltaPercentage}` : 
+                      `${publishedDeltaPercentage}%`}
+                  </span>
+                  {' '}
+                  {!globalLoading && formatFilterLabelPrevious(filter)}
+                </span>
+              }
+              variant={publishedStatus}
+            />
+            <StatCard
+              title="Viajes completados"
+              value={`${filteredTrips?.totalFiltered ?? 0}`}
+              description="Últimos 30 días"
+              icon={
+                tripsStatus === 'increase' || tripsStatus === 'new' ? (
+                  <TrendingUp size={18} />
+                ) : tripsStatus === 'decrease' ? (
+                  <TrendingDown size={18} />
+                ) : (
+                  <CircleDashed size={14} />
+                )
+              }
+              trend={
+                <span>
+                  <span className="font-medium">
+                    {tripsStatus === 'increase' || tripsStatus === 'new' ? '+' :  ''}
+                    {tripsStatus === 'new' ? 
+                      `${tripsDeltaPercentage}` : 
+                      `${tripsDeltaPercentage}%`}
+                  </span>
+                  {' '}
+                  {formatFilterLabelPrevious(filter)}
+                </span>
+              }
+              variant={tripsStatus}
+            />
+            <StatCard
+              title="Ocupación total"
+              value={`${filteredSeats?.takenPercentageFiltered}%`}
+              description="Este mes"
+              icon={
+                seatsStatus === 'increase' || seatsStatus === 'new' ? (
+                  <TrendingUp size={18} />
+                ) : seatsStatus === 'decrease' ? (
+                  <TrendingDown size={18} />
+                ) : (
+                  <CircleDashed size={14} />
+                )
+              }
+              trend={
+                <span>
+                  <span className="font-medium">
+                    {seatsStatus === 'increase' || seatsStatus === 'new' ? '+' :  ''}
+                    
+                      {seatsDeltaPercentage}%
+                  </span>
+                  {' '}
+                  {formatFilterLabelPrevious(filter)}
+                </span>
+              }
+              variant={seatsStatus}
+            />
+          </>
+        }
+        
       </div>
       
+      <DashboardSeparator 
+        title="Preferencias de viaje"
+        desc="Datos históricos no afectados por el filtro seleccionado"
+      />
     
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -125,8 +225,10 @@ export default function TripSection() {
           desc={`Entre ${topOrigin?.totalReservationsCount} viajes realizados`}
           icon={MapPin}
           cities={topOrigin?.cities ?? []}
-          loading={loading}
+          loading={topLoading}
           error={error}
+          limit={limitOrigin}
+          onLimitChange={setLimitOrigin}
         />
 
         <TopCityCard
@@ -134,8 +236,10 @@ export default function TripSection() {
           desc={`Entre ${topOrigin?.totalReservationsCount} viajes realizados`}
           icon={MapPinHouse}
           cities={topDestination?.cities ?? []}
-          loading={loading}
+          loading={topLoading}
           error={error}
+          limit={limitDestination}
+          onLimitChange={setLimitDestination}
         />
       </div>
     </div>

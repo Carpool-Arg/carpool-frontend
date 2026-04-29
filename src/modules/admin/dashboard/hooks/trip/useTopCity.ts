@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { TopCityStatResponseDTO } from "../../types/dto/topCityStatResponse";
 
 
-export function useTopOrigin(limit:number) {
+export function useTopOrigin(limitOrigin:number, limitDestination:number) {
   const [topOrigin, setTopOrigin] = useState<TopCityStatResponseDTO | null>();
   const [topDestination, setTopDestination] = useState<TopCityStatResponseDTO | null>();
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export function useTopOrigin(limit:number) {
     setLoading(true);
     setError(null);
 
-    const res = await getTopOriginCities(limit);
+    const res = await getTopOriginCities(limitOrigin);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error inesperado");
@@ -31,7 +31,7 @@ export function useTopOrigin(limit:number) {
     setLoading(true);
     setError(null);
 
-    const res = await getTopDestinationCities(limit);
+    const res = await getTopDestinationCities(limitDestination);
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error inesperado");
@@ -47,7 +47,7 @@ export function useTopOrigin(limit:number) {
   useEffect(() => {
     fetchTopOrigin();
     fetchTopDestination();
-  }, [limit]);
+  }, [limitOrigin,limitDestination]);
 
   return {
     topOrigin,

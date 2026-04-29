@@ -1,8 +1,9 @@
 'use client'
 
 import { Card, CardContent } from "@/components/ui/card"
-import { LucideIcon, MapPin, TrendingUp } from "lucide-react"
+import { LucideIcon, TrendingUp, Trophy } from "lucide-react"
 import { TopCityStat } from "../../types/topCity"
+import { capitalizeWords } from "@/shared/utils/string"
 
 interface TopCityCardProps {
   title: string
@@ -11,34 +12,73 @@ interface TopCityCardProps {
   loading: boolean
   error: string | null
   icon: LucideIcon
+  limit?: number
+  onLimitChange?: (limit: number) => void
 }
 
-export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }: TopCityCardProps) {
-  const maxReservations = cities[0]?.reservationCount || 1
+const LIMIT_OPTIONS = [1, 3, 5]
+
+export function TopCityCard({
+  title,
+  desc,
+  cities,
+  loading,
+  error,
+  icon: Icon,
+  limit = 5,
+  onLimitChange,
+}: TopCityCardProps) {
+  const visibleCities = cities.slice(0, limit)
+  const maxReservations = visibleCities[0]?.reservationCount || 1
+  const ghostCount = Math.max(0, limit - visibleCities.length)
+
+  const isSingle = limit === 1 || cities.length ===1
 
   return (
-    <div className="bg-gray-8  rounded-2xl overflow-hidden">
+    <div className="bg-gray-8 rounded-2xl overflow-hidden min-h-93.5">
       <div className="p-0 min-h-55 flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-2/40">
           <div className="p-2.5 bg-gray-10/60 border border-gray-9/20 rounded-xl">
             <Icon size={18} className="text-gray-11" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-base leading-tight">{title}</h2>
             {!loading && !error && cities.length > 0 && (
-              <p className="text-xs text-gray-11 mt-0.5">
-                {desc}
-              </p>
+              <p className="text-xs text-gray-11 mt-0.5">{desc}</p>
             )}
           </div>
+
+          {/* Limit selector */}
+          {onLimitChange && (
+            <div className="flex items-center gap-1 shrink-0">
+              <Trophy size={14} className="mr-1 text-amber-400/80" />
+              <p className="text-xs mr-1">TOP</p>
+              {LIMIT_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => onLimitChange(option)}
+                  className={`
+                    h-6 w-7 cursor-pointer rounded-md text-xs font-medium transition-all duration-150
+                    ${
+                      limit === option
+                        ? "bg-gray-10 text-amber-400/80 border border-gray-9/40"
+                        : "text-gray-11 hover:text-gray-12 hover:bg-gray-10/50"
+                    }
+                  `}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Body */}
-        <div className="px-5 py-4 flex-1 flex flex-col justify-center">
+        <div className={`px-5 ${isSingle ? 'pt-4' : 'py-4'} flex flex-col justify-center`}>
           {loading ? (
-            <div className="space-y-3">
-              {[...Array(3)].map((_, i) => (
+            <div className="space-y-6">
+              {[...Array(limit)].map((_, i) => (
                 <div key={i} className="space-y-2 animate-pulse">
                   <div className="flex justify-between">
                     <div className="h-3.5 bg-gray-9/40 rounded w-28" />
@@ -53,18 +93,19 @@ export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }:
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
               {error}
             </div>
-          ) : cities.length === 0 ? (
+          ) : visibleCities.length === 0 ? (
             <p className="text-sm text-gray-11">No hay datos disponibles</p>
           ) : (
             <div className="space-y-4">
-              {cities.map((city, index) => {
+              {/* Real rows */}
+              {visibleCities.map((city, index) => {
                 const percentage = Math.round(
                   (city.reservationCount / maxReservations) * 100
                 )
                 const isTop = index === 0
 
                 return (
-                  <div key={`${city.cityName}-${index}`} className="space-y-1.5">
+                  <div key={`${city.cityName}-${index}`} className="space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <span
@@ -79,7 +120,7 @@ export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }:
                             isTop ? "text-white font-semibold" : "text-gray-12 font-medium"
                           }`}
                         >
-                          {city.cityName}
+                          {capitalizeWords(city.cityName)}
                         </p>
                         {isTop && (
                           <TrendingUp size={12} className="text-green-600 shrink-0" />
@@ -91,7 +132,7 @@ export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }:
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="w-4 shrink-0" /> {/* spacer for index alignment */}
+                      <span className="w-4 shrink-0" />
                       <div className="flex-1 h-1.5 bg-gray-10 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-700 ease-out ${
@@ -103,6 +144,38 @@ export function TopCityCard({ title, desc, cities, loading, error, icon: Icon }:
                       <span className="text-xs text-gray-11/60 w-8 text-right tabular-nums">
                         {percentage}%
                       </span>
+                    </div>
+                  </div>
+                )
+              })}
+
+              {/* Ghost rows */}
+              {[...Array(ghostCount)].map((_, i) => {
+                const ghostIndex = visibleCities.length + i
+                // Widths decrecientes para que parezcan naturales
+                const ghostWidth = Math.max(10, 45 - ghostIndex * 12)
+
+                return (
+                  <div key={`ghost-${i}`} className="space-y-4.5 opacity-25">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs font-mono shrink-0 w-4 text-right text-gray-11">
+                          {ghostIndex + 1}
+                        </span>
+                        <div className="h-3 bg-gray-9/50 rounded w-24" />
+                      </div>
+                     
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 shrink-0" />
+                      <div className="flex-1 h-1.5 bg-gray-10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-gray-11/30"
+                          style={{ width: `${ghostWidth}%` }}
+                        />
+                      </div>
+                      
                     </div>
                   </div>
                 )

@@ -1,14 +1,17 @@
 'use client'
 
-import { getAppEarnings, getTotalTransacted } from "@/services/admin/stats/adminStatsService";
+import { getTotalTransacted } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
 import { AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
-import { getMonthRange, getPreviousMonthRange } from "../../helpers/stats";
 
-export function useTotalTransacted(fromDate: string, toDate: string) {
+export function useTotalTransacted(
+  fromDate: string,
+  toDate: string,
+  previousFromDate: string,
+  previousToDate: string
+) {
   const [filtered, setFiltered] = useState<AdminStatSimpleDTO | null>(null);
-  const [currentMonth, setCurrentMonth] = useState<AdminStatSimpleDTO | null>(null);
-  const [previousMonth, setPreviousMonth] = useState<AdminStatSimpleDTO | null>(null);
+  const [previousPeriod, setPreviousPeriod] = useState<AdminStatSimpleDTO | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,19 +21,17 @@ export function useTotalTransacted(fromDate: string, toDate: string) {
     setError(null);
 
     try {
-      const current = getMonthRange();
-      const previous = getPreviousMonthRange();
-
-      const [filteredRes, currentRes, previousRes] = await Promise.all([
+      const [filteredRes, previousRes] = await Promise.all([
         getTotalTransacted(fromDate, toDate),
-        getTotalTransacted(current.fromDate, current.toDate),
-        getTotalTransacted(previous.fromDate, previous.toDate),
+        getTotalTransacted(previousFromDate, previousToDate),
       ]);
 
-      if (filteredRes.state === 'ERROR' || currentRes.state === 'ERROR' || previousRes.state === 'ERROR') {
+      if (
+        filteredRes.state === 'ERROR' ||
+        previousRes.state === 'ERROR'
+      ) {
         setError(
           filteredRes.messages?.[0] ||
-          currentRes.messages?.[0]||
           previousRes.messages?.[0] ||
           "Error al obtener estadísticas"
         );
@@ -38,8 +39,7 @@ export function useTotalTransacted(fromDate: string, toDate: string) {
       }
 
       setFiltered(filteredRes.data ?? null);
-      setCurrentMonth(currentRes.data ?? null);
-      setPreviousMonth(previousRes.data ?? null);
+      setPreviousPeriod(previousRes.data ?? null);
     } catch {
       setError("Error inesperado");
     } finally {
@@ -48,20 +48,24 @@ export function useTotalTransacted(fromDate: string, toDate: string) {
   };
 
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (
+      fromDate &&
+      toDate &&
+      previousFromDate &&
+      previousToDate
+    ) {
       fetchAll();
     }
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, previousFromDate, previousToDate]);
 
   const delta =
-    currentMonth && previousMonth
-      ? currentMonth.totalFiltered - previousMonth.totalFiltered
+    filtered && previousPeriod
+      ? filtered.totalFiltered - previousPeriod.totalFiltered
       : null;
 
   return {
     filtered,
-    currentMonth,
-    previousMonth,
+    previousPeriod,
     delta,
     loading,
     error,

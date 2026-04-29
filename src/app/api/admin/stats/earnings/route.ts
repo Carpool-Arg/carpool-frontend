@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
 
     const response: AdminStatsSimpleResponse = await res.json();
 
-
     if (!res.ok || response.state === "ERROR") {
       const messages =
         response.messages?.length > 0

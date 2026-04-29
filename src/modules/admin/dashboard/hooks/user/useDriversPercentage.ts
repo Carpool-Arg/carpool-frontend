@@ -15,7 +15,7 @@ export function useDriversPercentage() {
     setError(null);
 
     const res = await getDriversPercentage();
-
+    console.log(res)
 
     if (res.state === "ERROR") {
       setError(res.messages?.[0] || "Error inesperado");
@@ -29,8 +29,7 @@ export function useDriversPercentage() {
 
   
   useEffect(() => {
-      fetchDriversPercentage();
-
+    fetchDriversPercentage();
   }, []);
 
   return {

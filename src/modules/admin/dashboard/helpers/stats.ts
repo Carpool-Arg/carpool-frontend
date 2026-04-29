@@ -18,23 +18,42 @@ export function getPreviousMonthRange(date = new Date()) {
   };
 }
 
-export function getStatusDelta (delta: number) {
-  if (delta > 0) return 'increase'
-  if (delta < 0) return 'decrease'
-  return 'default'
-}
-
-export function formatPercentageDelta (
+export function getStatusDelta(
   delta: number,
   previousValue: number
-): number {
-  if (!previousValue) return 0
+) {
+  if (delta === 0) return "default"
+
+  if (previousValue === 0 && delta > 0) {
+    return "new"
+  }
+
+  if (delta > 0) return "increase"
+
+  if (delta < 0) return "decrease"
+
+  return "default"
+}
+
+export function formatPercentageDelta(
+  delta: number,
+  previousValue: number
+): number | string {
+  if (delta === 0) return 0
+
+  // si antes era 0, no se puede calcular porcentaje real
+  // devolvemos la diferencia absoluta
+  if (previousValue === 0) {
+    return delta > 0 ? `${delta}` : `${delta}`
+  }
 
   const value = (delta * 100) / previousValue
 
-  return Number.isInteger(value)
+  const formatted = Number.isInteger(value)
     ? value
     : Number(value.toFixed(2))
+
+  return formatted
 }
 
 export function formatFixedDouble ( value : number) {

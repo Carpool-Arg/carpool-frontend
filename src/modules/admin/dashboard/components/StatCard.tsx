@@ -1,6 +1,5 @@
 'use client'
 
-import { Card, CardContent } from "@/components/ui/card"
 import { ReactNode } from "react"
 
 interface StatCardProps {
@@ -9,7 +8,7 @@ interface StatCardProps {
   description?: string
   icon?: ReactNode
   trend?: ReactNode
-  variant?: "default" | "increase" | "decrease" | "custom"
+  variant?: "default" | "increase" | "decrease" | "custom" | "new"
 }
 
 export default function StatCard({
@@ -34,7 +33,7 @@ export default function StatCard({
           {icon && 
             <div 
               className={` 
-                ${variant=== 'increase' ?
+                ${variant === "increase" || variant === "new" ?
                   'text-green-300' 
                 : (variant === 'decrease' ? 
                   'text-red-300'
@@ -55,10 +54,10 @@ export default function StatCard({
 
         {/* Footer */}
         {(description || trend) && (
-          <div className="flex items-center justify-between text-xs text-gray-11">
+          <div className="flex items-center justify-between text-xs text-gray-11 truncate gap-2">
             <span>{description}</span>
-            {trend && <div className={`
-              ${variant=== 'increase' ? 'text-green-400' : (variant === 'decrease' ? 'text-red-400':'text-gray-11') }`}>
+            {trend && <div className={` truncate
+              ${variant === "increase" || variant === "new"  ? 'text-green-400' : (variant === 'decrease' ? 'text-red-400':'text-gray-11') }`}>
               {trend}
             </div>}
           </div>

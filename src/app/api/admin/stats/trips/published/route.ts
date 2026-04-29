@@ -1,4 +1,5 @@
-import { TakenSeatsStatResponse } from "@/modules/admin/dashboard/types/dto/takenSeatsStatResponse";
+
+import { AdminStatsResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -6,8 +7,10 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 /**
  * 
  * 
+ * 
+ * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
- * @returns {Promise<NextResponse>} - Respuesta JSON del tipo TakenSeatsStatResponse.
+ * @returns {Promise<NextResponse>} - Respuesta JSON del tipo AdminCO2StatResponse.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -19,14 +22,14 @@ export async function GET(req: NextRequest) {
 
     const query = `?fromDate=${fromDate}&toDate=${toDate}`;
 
-
-    const res = await fetch(`${apiUrl}/admin/stats/seats-percentage${query}`, {
+    
+    const res = await fetch(`${apiUrl}/admin/stats/trips/published${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
     });
 
-    const response: TakenSeatsStatResponse = await res.json();
+    const response: AdminStatsResponse = await res.json();
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

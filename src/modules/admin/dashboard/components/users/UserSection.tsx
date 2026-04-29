@@ -1,120 +1,218 @@
 'use client'
 
-import { Card, CardContent } from "@/components/ui/card"
-import { BadgeCheck, CircleDashed, CircleUserRound, TrendingDown, TrendingUp, Users } from "lucide-react"
-import { useDriversPercentage } from "../../hooks/user/useDriversPercentage"
-import DriversPercentage from "./DriversPercentage"
-import StatCard from "../StatCard"
-import { useNewUsers } from "../../hooks/user/useNewUsers"
+import BarChartCard from "@/modules/activity/components/barchart/BarChartCard"
+import BarChartHeader from "@/modules/activity/components/barchart/BarChartHeader"
+import { formatChartData, formatFilterLabel, formatFilterLabelPrevious, getDynamicGroupBy, getPreviousRangeForFilter, getRangeForFilter, GroupByType, mapFilterToOrderBy } from "@/modules/activity/helpers/stats"
+import { formatLocalDate } from "@/shared/utils/date"
+import { formatPrice } from "@/shared/utils/number"
+import { capitalize } from "@/shared/utils/string"
+import { BadgeCheck, CircleDashed, CircleUserRound, TrendingDown, TrendingUp, User, Users } from "lucide-react"
+import { useState } from "react"
+import { DateRange } from "react-day-picker"
 import { formatPercentageDelta, getStatusDelta } from "../../helpers/stats"
+import { useDriversPercentage } from "../../hooks/user/useDriversPercentage"
+import { useNewUsers } from "../../hooks/user/useNewUsers"
 import { useVerifiedUsers } from "../../hooks/user/useVerifiedUsers"
+import DashboardSeparator from "../DashboardSeparator"
+import { SectionProps } from "../generals/GeneralSection"
+import { StatCardSkeleton } from "../skeletons/StatCardSkeleton"
+import StatCard from "../StatCard"
+import DriversPercentage from "./DriversPercentage"
 
+export default function UserSection({filter, customRange}:SectionProps) {
+  const [newUsersFilter, setNewUsersFilter] = useState("month");
+  const [newUsersCustomRange, setNewUsersCustomRange] = useState<DateRange>()
 
+  const { from: fromDate, to: toDate } =
+    filter === "custom" && customRange?.from && customRange?.to
+      ? {
+          from: customRange.from,
+          to: customRange.to,
+        }
+      : getRangeForFilter(filter)
+  
+  const {
+    from: previousFromDate,
+    to: previousToDate,
+  } = getPreviousRangeForFilter(
+    filter,
+    fromDate,
+    toDate
+  )
+  
+  const { from: newUsersFrom, to: newUsersTo } =
+    newUsersFilter === "custom" && newUsersCustomRange?.from && newUsersCustomRange?.to
+      ? {
+          from: newUsersCustomRange.from,
+          to: newUsersCustomRange.to,
+        }
+      : getRangeForFilter(newUsersFilter)
+      
+  const newUsersGroupBy =
+    filter === "custom"
+      ? getDynamicGroupBy(newUsersFrom, newUsersTo)
+      : mapFilterToOrderBy(filter)
 
-export default function UserSection() {
-  const fromDate = '01-04-2026'
-  const toDate = '26-04-2026'
-
-  const { data, loading, error } = useDriversPercentage()
+  const newUsersChartGroupBy =
+    newUsersFilter === "custom"
+      ? getDynamicGroupBy(newUsersFrom, newUsersTo)
+      : mapFilterToOrderBy(newUsersFilter)
 
   const { 
-    currentMonth: currentMonthUsers,
-    previousMonth: previousMonthUsers,
     filtered: filteredUsers,
+    previousPeriod: previousPeriodUsers,
     delta: deltaUsers,
     error: errorUsers,
     loading: loadingUsers
-  } = useNewUsers(fromDate,toDate,'MONTH')
+  } = useNewUsers(
+    formatLocalDate(fromDate),
+    formatLocalDate(toDate),
+    newUsersGroupBy,
+    formatLocalDate(previousFromDate),
+    formatLocalDate(previousToDate),
+  )
 
+  const { 
+    filtered: filteredChartUsers,
+    error: errorChartUsers,
+    loading: loadingChartUsers
+  } = useNewUsers(
+    formatLocalDate(newUsersFrom),
+    formatLocalDate(newUsersTo),
+    newUsersChartGroupBy
+  )
+
+  const formattedNewUsers = formatChartData(
+    filteredChartUsers?.historialByPeriod,
+    newUsersChartGroupBy as GroupByType
+  )
+
+  console.log('filteredChartUsers', filteredChartUsers)
+  console.log('formattedNewUsers', formattedNewUsers)
+
+  const { data, loading: loadingDrivers, error } = useDriversPercentage()
+  
+  
   const {
     data: dataVerified, 
     loading: loadingVerified, 
     error: errorVerified
   } = useVerifiedUsers()
 
-  
-  const newUsersStatus = getStatusDelta(deltaUsers ?? 0)
+  const globalLoading = loadingUsers || loadingVerified || loadingDrivers
+
+  const newUsersStatus = getStatusDelta(
+    deltaUsers ?? 0, 
+    previousPeriodUsers?.totalFiltered ?? 0
+  )
   const newUsersPercentage = formatPercentageDelta(
     deltaUsers ?? 0, 
-    previousMonthUsers?.totalFiltered ?? 0
+    previousPeriodUsers?.totalFiltered ?? 0
   )
 
+  
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard
-          title="Nuevos usuarios"
-          value={`+${currentMonthUsers?.totalFiltered ?? 0}`}
-          description="Últimos 30 días"
-          icon={
-            newUsersStatus === 'increase' ? (
-              <TrendingUp size={18} />
-            ) : newUsersStatus === 'decrease' ? (
-              <TrendingDown size={18} />
-            ) : (
-              <CircleDashed size={14} />
-            )
-          }
-          trend={
-            <span>
-              <span className="font-medium">
-                {newUsersStatus === 'increase' ? '+' :  ''}
-                {newUsersPercentage}% 
-              </span>
-              {' '}
-              respecto mes anterior
-            </span>
-          }
-          variant={newUsersStatus}
-        />
-        <StatCard
-          title="Usuarios verificados"
-          value={`${dataVerified?.totalVerified ?? 0}`}
-          description="Total de usuarios verificados"
-          icon={<BadgeCheck size={18}/>}
-          variant={"increase"}
-        />
-        <StatCard
-          title="Conductores"
-          value={`${123}`}
-          description="Total de conductores"
-          icon={<CircleUserRound size={18}/>}
-          variant={"default"}
-        />
+        {globalLoading ?
+          <>
+            <StatCardSkeleton/>
+            <StatCardSkeleton/>
+            <StatCardSkeleton/>
+          </>
+        :
+          <>
+            <StatCard
+              title="Nuevos usuarios"
+              value={`+${filteredUsers?.totalFiltered ?? 0}`}
+              description={capitalize(formatFilterLabel(filter))}
+              icon={
+                newUsersStatus === 'increase' || newUsersStatus === 'new' ? (
+                  <TrendingUp size={18} />
+                ) : newUsersStatus === 'decrease' ? (
+                  <TrendingDown size={18} />
+                ) : (
+                  <CircleDashed size={14} />
+                )
+              }
+              trend={
+                <span>
+                  <span className="font-medium">
+                    {newUsersStatus === 'increase' || newUsersStatus === 'new' ? '+' :  ''}
+                    {newUsersStatus === 'new' ? 
+                      `${formatPrice(newUsersPercentage)}` : 
+                      `${newUsersPercentage}%`}
+                  </span>
+                  {' '}
+                  {formatFilterLabelPrevious(filter)}
+                </span>
+              }
+              variant={newUsersStatus}
+            />
+            <StatCard
+              title="Usuarios verificados"
+              value={`${dataVerified?.totalVerified ?? 0}`}
+              description="Total de usuarios verificados"
+              icon={<BadgeCheck size={18}/>}
+              variant={"increase"}
+            />
+            <StatCard
+              title="Conductores"
+              value={`${data?.totalDrivers}`}
+              description="Total de conductores"
+              icon={<CircleUserRound size={18}/>}
+              variant={"default"}
+            />
+          </>
+        }
+        
       </div>
-      <div className="grid gap-4">
-        <Card className="bg-gray-8 border-gray-2/50 rounded-2xl w-1/2">
-          <CardContent className="p-0">
+      <DashboardSeparator 
+        title="Análisis de usuarios"
+        desc="Evolución de registros y distribución de usuarios"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+        <BarChartCard
+          title="Usuarios registrados"
+          desc={
+            <>
+              Se registraron {" "}
+              <span className="font-semibold">
+                {filteredUsers?.historicalTotal ?? 0}
+              </span>{" "}
+              usuarios en total
+            </>
+          }
+          icon={User}
+          data={formattedNewUsers ?? []}
+          totalFiltered={filteredUsers?.totalFiltered ?? 0}
+          loading={loadingChartUsers}
+          error={errorChartUsers}
+          filter={newUsersFilter}
+          onFilterChange={setNewUsersFilter}
+          customRange={newUsersCustomRange}
+          onCustomRangeChange={setNewUsersCustomRange}
+          unit="usuarios"
+        />
+        <div className="bg-gray-8 border border-gray-2/50 rounded-2xl h-full flex flex-col">
+          {/* Header */}
+          <BarChartHeader
+            title="Distribución de usuarios"
+            desc="Conductores vs pasajeros"
+            icon={Users}
+          />
 
-            {/* Header */}
-            <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-9/20">
-              <div className="p-2.5 bg-gray-10/60 border border-gray-9/20 rounded-xl">
-                <Users size={18} className="text-gray-11" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-base leading-tight">
-                  Distribución de usuarios
-                </h2>
-                <p className="text-xs text-gray-11 mt-0.5">
-                  Conductores vs pasajeros
-                </p>
-              </div>
-            </div>
-
-            {/* Filtros */}
-            
-
-            {/* Body */}
-            <div className="px-5 py-6">
-              <DriversPercentage
-                driverPercentage={data?.driverPercentage ?? 0}
-                loading={loading}
-                error={error}
-              />
-            </div>
-
-          </CardContent>
-        </Card>
+          {/* Body */}
+          <div className="px-5 py-6 flex-1 flex flex-col items-center ">
+            <DriversPercentage
+              data={data ?? null}
+              loading={loadingDrivers}
+              error={error}
+            />
+          </div>          
+        </div>
+        
       </div>
     </div>
   )

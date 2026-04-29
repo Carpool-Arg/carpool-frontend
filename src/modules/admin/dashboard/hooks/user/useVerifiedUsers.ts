@@ -1,8 +1,7 @@
 'use client'
 
-import { getTotalCO2Saved, getVerifiedUsers } from "@/services/admin/stats/adminStatsService";
+import { getVerifiedUsers } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { AdminCO2StatDTO } from "../../types/dto/adminCO2Response";
 import { VerifiedUserDTO } from "../../types/dto/verifiedUsersResponse";
 
 

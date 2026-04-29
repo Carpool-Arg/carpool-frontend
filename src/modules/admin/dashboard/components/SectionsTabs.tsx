@@ -23,7 +23,7 @@ export default function SectionTabs({
             key={section.key}
             onClick={() => setActiveSection(section.key)}
             className={`
-              px-8 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+              px-8 py-1.5 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200
               ${
                 isActive
                   ? "bg-gray-10 text-white shadow-sm border border-gray-9/40"

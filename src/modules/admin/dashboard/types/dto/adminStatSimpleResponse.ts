@@ -7,4 +7,10 @@ export interface AdminStatSimpleDTO {
   historialByPeriod: Stat[]
 }
 
+export interface AdminStatDTO {
+  historicalTotal: number
+  totalFiltered: number
+}
+
 export type AdminStatsSimpleResponse = BaseResponse<AdminStatSimpleDTO>
+export type AdminStatsResponse = BaseResponse<AdminStatDTO>

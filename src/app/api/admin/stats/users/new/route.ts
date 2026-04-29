@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
 
-
+    console.log(query)
     const res = await fetch(`${apiUrl}/admin/stats/users/new${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`

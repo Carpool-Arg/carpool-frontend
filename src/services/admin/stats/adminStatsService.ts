@@ -1,5 +1,6 @@
 import { AdminCO2StatDTO, AdminCO2StatResponse } from "@/modules/admin/dashboard/types/dto/adminCO2Response";
-import { AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
+import { AdminStatsResponse, AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
+import { AdminTripsMonthlyResponse } from "@/modules/admin/dashboard/types/dto/adminTripsMonthlyResponse";
 import { DriversPercentageResponse } from "@/modules/admin/dashboard/types/dto/driversPercentageResponse";
 import { TakenSeatsStatResponse } from "@/modules/admin/dashboard/types/dto/takenSeatsStatResponse";
 import { TopCityStatResponse } from "@/modules/admin/dashboard/types/dto/topCityStatResponse";
@@ -188,6 +189,30 @@ export async function getSeatsPercentage(
   }
 }
 
+export async function getPublicatedTrips(
+  fromDate: string, 
+  toDate: string
+): Promise<AdminStatsResponse> {
+  try {
+    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const res = await fetch(`/api/admin/stats/trips/published${query}`,{
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    const response: AdminStatsResponse = await res.json()
+
+    if (!res.ok) {
+      throw new Error(response.messages?.[0] || 'Error desconocido');
+    }
+
+    return response;
+  } catch (error: unknown) {
+    let message = "Error desconocido";
+    if (error instanceof Error) message = error.message;
+    return { data: null, messages: [message], state: "ERROR" };
+  }
+}
 /**
  * -------------------------------------------------------------------------
  * CATEGORIA USUARIOS

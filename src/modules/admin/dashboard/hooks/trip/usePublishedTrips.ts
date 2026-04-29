@@ -1,17 +1,17 @@
 'use client'
 
-import { getAppEarnings } from "@/services/admin/stats/adminStatsService";
+import { getCompletedTrips, getPublicatedTrips } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
+import { AdminStatDTO, AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
 
-export function useAppEarnings(
+export function usePublishedTrips(
   fromDate: string,
   toDate: string,
   previousFromDate: string,
   previousToDate: string
 ) {
-  const [filtered, setFiltered] = useState<AdminStatSimpleDTO | null>(null);
-  const [previousPeriod, setPreviousPeriod] = useState<AdminStatSimpleDTO | null>(null);
+  const [filtered, setFiltered] = useState<AdminStatDTO | null>(null);
+  const [previousPeriod, setPreviousPeriod] = useState<AdminStatDTO | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +22,8 @@ export function useAppEarnings(
 
     try {
       const [filteredRes, previousRes] = await Promise.all([
-        getAppEarnings(fromDate, toDate),
-        getAppEarnings(previousFromDate, previousToDate),
+        getPublicatedTrips(fromDate, toDate),
+        getPublicatedTrips(previousFromDate, previousToDate),
       ]);
 
       if (

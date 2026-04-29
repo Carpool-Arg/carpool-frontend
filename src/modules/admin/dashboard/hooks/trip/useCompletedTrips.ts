@@ -1,10 +1,10 @@
 'use client'
 
-import { getAppEarnings } from "@/services/admin/stats/adminStatsService";
+import { getCompletedTrips } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
 import { AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
 
-export function useAppEarnings(
+export function useCompletedTrips(
   fromDate: string,
   toDate: string,
   previousFromDate: string,
@@ -22,8 +22,8 @@ export function useAppEarnings(
 
     try {
       const [filteredRes, previousRes] = await Promise.all([
-        getAppEarnings(fromDate, toDate),
-        getAppEarnings(previousFromDate, previousToDate),
+        getCompletedTrips(fromDate, toDate),
+        getCompletedTrips(previousFromDate, previousToDate),
       ]);
 
       if (

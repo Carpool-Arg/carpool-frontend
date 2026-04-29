@@ -1,4 +1,4 @@
-import { startOfMonth, subDays } from 'date-fns';
+import { endOfMonth, startOfMonth, subDays } from 'date-fns';
 
 export type GroupByType = "DAY" | "WEEK" | "MONTH" | "YEAR"
 
@@ -25,16 +25,35 @@ export function formatFilterLabel(filter: string): string {
       return "últimos 7 días"
 
     case "month":
-      return "último mes"
+      return "últimos 30 días"
 
     case "year":
       return "último año"
 
     case "custom":
-      return "período personalizado"
+      return "período seleccionado"
 
     default:
       return filter
+  }
+}
+
+export function formatFilterLabelPrevious(filter: string): string {
+  switch (filter) {
+    case "7d":
+      return "vs sem. pasada"
+
+    case "month":
+      return "vs mes pasado"
+
+    case "year":
+      return "vs año pasado"
+
+    case "custom":
+      return "vs período anterior"
+
+    default:
+      return "vs período anterior"
   }
 }
 
@@ -53,6 +72,54 @@ export function getRangeForFilter(filter: string): { from: Date; to: Date } {
         to: now
       }
     default:     return { from: startOfMonth(now), to: now }
+  }
+}
+
+export function getPreviousRangeForFilter(
+  filter: string,
+  currentFrom: Date,
+  currentTo: Date
+): { from: Date; to: Date } {
+  switch (filter) {
+    case "7d": {
+      const to = subDays(currentFrom, 1)
+      const from = subDays(to, 6)
+
+      return { from, to }
+    }
+
+    case "month": {
+      const previousMonth = new Date(
+        currentFrom.getFullYear(),
+        currentFrom.getMonth() - 1,
+        1
+      )
+
+      const from = startOfMonth(previousMonth)
+      const to = endOfMonth(previousMonth)
+
+      return { from, to }
+    }
+
+    case "year": {
+      return {
+        from: new Date(currentFrom.getFullYear() - 1, 0, 1),
+        to: new Date(currentTo.getFullYear() - 1, currentTo.getMonth(), currentTo.getDate())
+      }
+    }
+
+    case "custom":
+    default: {
+      const diffInMs = currentTo.getTime() - currentFrom.getTime()
+      const diffInDays = Math.ceil(
+        diffInMs / (1000 * 60 * 60 * 24)
+      )
+
+      const to = subDays(currentFrom, 1)
+      const from = subDays(to, diffInDays)
+
+      return { from, to }
+    }
   }
 }
 
