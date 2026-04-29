@@ -23,7 +23,7 @@ export default function TripHistory() {
 
   const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
-  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'warning' | 'success', cancel?:boolean } | null>(null);
 
   const skipRef = useRef(0);
   const hasMoreRef = useRef(true);
@@ -144,8 +144,7 @@ export default function TripHistory() {
       trips={driverTrips}
       onError={(message) => setToast({ message, type: 'error' })}
       onSuccess={(message) => {
-        setToast({ message, type: 'success' })
-        fetchTrips(true); 
+        setToast({ message, type: 'success', cancel: true })
       }}
     />
   )}
@@ -169,7 +168,10 @@ export default function TripHistory() {
         type={toast.type}
         onClose={() => {
           setToast(null);
-          fetchTrips(); 
+
+          if (toast.cancel) {
+            fetchTrips(true); 
+          }
         }}
       />
     )}
