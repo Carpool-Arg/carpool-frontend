@@ -1,8 +1,11 @@
 'use client'
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+
+import { OctagonX, UserRoundCheck, UserRoundX } from "lucide-react"
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { DriversPercentageResponseDTO } from "../../types/dto/driversPercentageResponse"
-import { IdCard, UserRoundCheck, UserRoundX } from "lucide-react"
+import { ErrorAlert } from "@/components/ux/admin/ErrorAlert"
+import DriversPercentageSkeleton from "../skeletons/DriversPercentageSkeleton"
 
 interface DriversPercentageProps {
   data: DriversPercentageResponseDTO | null
@@ -11,8 +14,8 @@ interface DriversPercentageProps {
 }
 
 const COLORS = {
-  drivers: "#e5e5e5",   // blanco roto — conductores
-  passengers: "#3f3f3f", // gris oscuro — pasajeros
+  drivers: "#e5e5e5", 
+  passengers: "#3f3f3f", 
 }
 
 interface CustomTooltipProps {
@@ -47,13 +50,17 @@ export default function DriversPercentage({
   ]
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-4 w-full h-full">
       {loading ? (
-        <div className="w-40 h-40 rounded-full bg-gray-9/40 animate-pulse" />
+        <DriversPercentageSkeleton/>
       ) : error ? (
-        <div className="flex items-center gap-2 text-sm text-gray-11">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-          {error}
+        <div className="flex items-center h-full w-full gap-2 text-sm text-gray-11">
+          <ErrorAlert
+            icon={<OctagonX size={32} />}
+            title="Error inesperado"
+            description={error}
+            variant="Y"
+          />
         </div>
       ) : (
         <>
@@ -79,7 +86,7 @@ export default function DriversPercentage({
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />}  offset={10} />
               </PieChart>
             </ResponsiveContainer>
 

@@ -26,7 +26,6 @@ export function useVerifiedUsers() {
     setLoading(false);
   };
 
-  
   useEffect(() => {
     fetchVerifiedUsers();
   }, []);

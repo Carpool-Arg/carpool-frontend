@@ -1,5 +1,6 @@
 
 import { PassengerCO2StatResponse, PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
+import { buildQuery } from "@/shared/utils/query";
 
 
 export async function getTripsStats(
@@ -8,7 +9,7 @@ export async function getTripsStats(
   groupBy:string
 ): Promise<PassengerStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/stats/passenger/trips${query}`,{
       method: 'GET',
@@ -35,7 +36,7 @@ export async function getKmStats(
   groupBy:string
 ): Promise<PassengerStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/stats/passenger/km${query}`,{
       method: 'GET',

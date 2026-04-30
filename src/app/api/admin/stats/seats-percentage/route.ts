@@ -1,10 +1,14 @@
 import { TakenSeatsStatResponse } from "@/modules/admin/dashboard/types/dto/takenSeatsStatResponse";
+import { buildQuery } from "@/shared/utils/query";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * 
+ * Obtiene el porcentaje de ocupación de los viajes.
+ *
+ * Calcula la ocupación promedio de asientos en los viajes,
+ * permitiendo filtrar por un rango de fechas.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo TakenSeatsStatResponse.
@@ -17,8 +21,7 @@ export async function GET(req: NextRequest) {
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
 
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
-
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`${apiUrl}/admin/stats/seats-percentage${query}`, {
       headers: {

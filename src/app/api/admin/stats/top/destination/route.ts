@@ -1,13 +1,15 @@
 
 import { TopCityStatResponse } from "@/modules/admin/dashboard/types/dto/topCityStatResponse";
+import { buildQuery } from "@/shared/utils/query";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Obtiene el top 3 de ciudades como Destino
- * 
- * 
+ * Obtiene el top de ciudades como destino.
+ *
+ * Devuelve un ranking de las ciudades más elegidas como destino de viaje,
+ * permitiendo filtrar por un límite de resultados.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo TopCityStatResponse.
@@ -19,7 +21,7 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const limit = searchParams.get("limit");
 
-    const query = `?limit=${limit}`;
+    const query = buildQuery({limit})
 
     const res = await fetch(`${apiUrl}/admin/stats/top/destination${query}`, {
       headers: {

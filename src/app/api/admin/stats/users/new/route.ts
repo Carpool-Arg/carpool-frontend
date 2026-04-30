@@ -1,14 +1,15 @@
-import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
 import { AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
+import { buildQuery } from "@/shared/utils/query";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
+ * Obtiene la cantidad de usuarios nuevos registrados por período.
+ *
+ * Devuelve el total de usuarios registrados en la plataforma,
+ * permitiendo filtrar por un rango de fechas.
  * 
- * 
- * Permite consultar la cantidad de viajes entre dos fechas (`fromDate` y `toDate`)
- * y agrupar los resultados por día, semana, mes o año según `groupBy`.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo AdminStatsSimpleResponse.
@@ -22,9 +23,8 @@ export async function GET(req: NextRequest) {
     const toDate = searchParams.get("toDate");
     const groupBy = searchParams.get("groupBy");
 
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
-    console.log(query)
     const res = await fetch(`${apiUrl}/admin/stats/users/new${query}`, {
       headers: {
         'Authorization': `Bearer ${token}`

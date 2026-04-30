@@ -4,10 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * 
- * 
- * Permite consultar la cantidad de viajes entre dos fechas (`fromDate` y `toDate`)
- * y agrupar los resultados por día, semana, mes o año según `groupBy`.
+ * Obtiene la cantidad de usuarios verificados.
+ *
+ * Devuelve el total de usuarios que han validado su correo electrónico.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo VerifiedUserResponse.
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest) {
     });
 
     const response: VerifiedUserResponse = await res.json();
-
 
     if (!res.ok || response.state === "ERROR") {
       const messages =

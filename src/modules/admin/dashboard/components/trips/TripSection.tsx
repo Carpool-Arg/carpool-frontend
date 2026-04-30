@@ -1,10 +1,8 @@
 'use client'
 
 import { CircleDashed, MapPin, MapPinHouse, TrendingDown, TrendingUp } from "lucide-react"
-
 import StatCard from "../StatCard"
 import { TopCityCard } from "./TopCityCard"
-
 import { useTopOrigin } from "../../hooks/trip/useTopCity"
 import { useCompletedTrips } from "../../hooks/trip/useCompletedTrips"
 import { formatPercentageDelta, getStatusDelta } from "../../helpers/stats"
@@ -23,6 +21,7 @@ import { capitalize } from "@/shared/utils/string"
 export default function TripSection({filter, customRange}:SectionProps) {
   const [limitOrigin, setLimitOrigin] = useState(3)
   const [limitDestination, setLimitDestination] = useState(3)
+
   const { from: fromDate, to: toDate } =
     filter === "custom" && customRange?.from && customRange?.to
       ? {
@@ -39,23 +38,21 @@ export default function TripSection({filter, customRange}:SectionProps) {
     fromDate,
     toDate
   )
-
-  
+ 
   const {
     topOrigin,
     topDestination,
-    loading: topLoading,
+    originLoading,
+    destinationLoading,
     error,
   } = useTopOrigin(limitOrigin, limitDestination)
 
-  
-
   const {
-    filtered: filteredSeats,
-    previousPeriod: previousPeriodSeats,
-    delta: deltaSeats,
-    loading: loadingSeats, 
-    error: errorSeats
+    filtered: seatsFiltered,
+    previousPeriod: seatsPreviousPeriod,
+    delta: seatsDelta,
+    loading: seatsLoading, 
+    error: seatsError
   } = useSeatsPercentage(
     formatLocalDate(fromDate), 
     formatLocalDate(toDate),
@@ -64,11 +61,11 @@ export default function TripSection({filter, customRange}:SectionProps) {
   );
 
   const { 
-    filtered: filteredTrips,
-    previousPeriod: previousPeriodTrips,
-    delta: deltaTrips, 
-    error: errorTrips, 
-    loading: loadingTrips
+    filtered: tripsFiltered,
+    previousPeriod: tripsPreviousPeriod,
+    delta: tripsDelta, 
+    error: tripsError, 
+    loading: tripsLoading
   } = useCompletedTrips(
     formatLocalDate(fromDate), 
     formatLocalDate(toDate),
@@ -77,11 +74,11 @@ export default function TripSection({filter, customRange}:SectionProps) {
   );
 
   const {
-    filtered: filteredPublished, 
-    previousPeriod: previousPeriodPublished,
-    delta: deltaPublished,
-    error: errorPublished, 
-    loading: loadingPublished
+    filtered: publishedFiltered, 
+    previousPeriod: publishedPreviousPeriod,
+    delta: publishedDelta,
+    error: publishedError, 
+    loading: publishedLoading
   } = usePublishedTrips(
     formatLocalDate(fromDate), 
     formatLocalDate(toDate),
@@ -89,31 +86,35 @@ export default function TripSection({filter, customRange}:SectionProps) {
     formatLocalDate(previousToDate)
   )
 
-  const globalLoading = loadingPublished || loadingTrips || loadingSeats
+  const globalLoading = publishedLoading || tripsLoading || seatsLoading
   
   const seatsStatus = getStatusDelta(
-    deltaSeats?? 0, 
-    previousPeriodSeats?.takenPercentageFiltered ?? 0
+    seatsDelta?? 0, 
+    seatsPreviousPeriod?.takenPercentageFiltered ?? 0
   )
   const seatsDeltaPercentage = formatPercentageDelta(
-    deltaSeats?? 0, 
-    previousPeriodSeats?.takenPercentageFiltered ?? 0
+    seatsDelta?? 0, 
+    seatsPreviousPeriod?.takenPercentageFiltered ?? 0
   )
 
   const tripsStatus = getStatusDelta(
-    deltaTrips ?? 0, 
-    previousPeriodTrips?.totalFiltered ?? 0
+    tripsDelta ?? 0, 
+    tripsPreviousPeriod?.totalFiltered ?? 0
   )
   const tripsDeltaPercentage = formatPercentageDelta(
-    deltaTrips ?? 0, 
-    previousPeriodTrips?.totalFiltered ?? 0
+    tripsDelta ?? 0, 
+    tripsPreviousPeriod?.totalFiltered ?? 0
   )
 
 
-  const publishedStatus = getStatusDelta(deltaPublished ?? 0, previousPeriodPublished?.totalFiltered ?? 0)
+  const publishedStatus = getStatusDelta(
+    publishedDelta ?? 0, 
+    publishedPreviousPeriod?.totalFiltered ?? 0
+  )
+
   const publishedDeltaPercentage = formatPercentageDelta(
-    deltaPublished ?? 0, 
-    previousPeriodPublished?.totalFiltered ?? 0
+    publishedDelta ?? 0, 
+    publishedPreviousPeriod?.totalFiltered ?? 0
   )
   
   return (
@@ -129,7 +130,7 @@ export default function TripSection({filter, customRange}:SectionProps) {
           <>
             <StatCard
               title="Viajes publicados"
-              value={`${filteredPublished?.totalFiltered}`}
+              value={`${publishedFiltered?.totalFiltered}`}
               description={capitalize(formatFilterLabel(filter))}
               icon={ 
                 publishedStatus === 'increase' || 
@@ -154,10 +155,11 @@ export default function TripSection({filter, customRange}:SectionProps) {
                 </span>
               }
               variant={publishedStatus}
+              error={publishedError}
             />
             <StatCard
               title="Viajes completados"
-              value={`${filteredTrips?.totalFiltered ?? 0}`}
+              value={`${tripsFiltered?.totalFiltered ?? 0}`}
               description="Últimos 30 días"
               icon={
                 tripsStatus === 'increase' || tripsStatus === 'new' ? (
@@ -181,10 +183,11 @@ export default function TripSection({filter, customRange}:SectionProps) {
                 </span>
               }
               variant={tripsStatus}
+              error={tripsError}
             />
             <StatCard
               title="Ocupación total"
-              value={`${filteredSeats?.takenPercentageFiltered}%`}
+              value={`${seatsFiltered?.takenPercentageFiltered}%`}
               description="Este mes"
               icon={
                 seatsStatus === 'increase' || seatsStatus === 'new' ? (
@@ -207,6 +210,7 @@ export default function TripSection({filter, customRange}:SectionProps) {
                 </span>
               }
               variant={seatsStatus}
+              error={seatsError}
             />
           </>
         }
@@ -225,7 +229,7 @@ export default function TripSection({filter, customRange}:SectionProps) {
           desc={`Entre ${topOrigin?.totalReservationsCount} viajes realizados`}
           icon={MapPin}
           cities={topOrigin?.cities ?? []}
-          loading={topLoading}
+          loading={originLoading}
           error={error}
           limit={limitOrigin}
           onLimitChange={setLimitOrigin}
@@ -236,7 +240,7 @@ export default function TripSection({filter, customRange}:SectionProps) {
           desc={`Entre ${topOrigin?.totalReservationsCount} viajes realizados`}
           icon={MapPinHouse}
           cities={topDestination?.cities ?? []}
-          loading={topLoading}
+          loading={destinationLoading}
           error={error}
           limit={limitDestination}
           onLimitChange={setLimitDestination}

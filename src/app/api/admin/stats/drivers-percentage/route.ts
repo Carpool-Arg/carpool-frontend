@@ -5,8 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Obtiene el porcentaje de usuarios que son conductores
- * 
+ * Obtiene estadísticas de los conductores.
+ *
+ * Devuelve el total de usuarios registrados como conductores,
+ * el porcentaje respecto al total de usuarios y la cantidad de conductores activos.
  * 
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js

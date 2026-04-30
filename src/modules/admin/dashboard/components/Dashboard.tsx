@@ -8,8 +8,6 @@ import GeneralSection from "./generals/GeneralSection"
 import BarChartFilters from "@/modules/activity/components/barchart/BarChartFilters"
 import { DateRange } from "react-day-picker"
 
-
-
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("general")
   const [filter, setFilter] = useState("month")

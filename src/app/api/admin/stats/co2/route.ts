@@ -1,23 +1,23 @@
 
-import { AdminCO2StatDTO, AdminCO2StatResponse } from "@/modules/admin/dashboard/types/dto/adminCO2Response";
-import { DriversPercentageResponse } from "@/modules/admin/dashboard/types/dto/driversPercentageResponse";
+import { AdminCO2StatResponse } from "@/modules/admin/dashboard/types/dto/adminCO2Response";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * Obtiene el porcentaje de usuarios que son conductores
+ * Obtiene las estadísticas de CO2 total ahorrado en la plataforma.
  * 
- * 
+ * Devuelve el total estimado de emisiones de CO₂ evitadas,
+ * calculado en función del uso compartido de viajes.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo AdminCO2StatResponse.
  */
 export async function GET(req: NextRequest) {
   try {
+    
     const token = req.cookies.get('token')?.value;
 
-    
     const res = await fetch(`${apiUrl}/admin/stats/co2`, {
       headers: {
         'Authorization': `Bearer ${token}`

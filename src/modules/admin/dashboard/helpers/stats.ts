@@ -41,8 +41,6 @@ export function formatPercentageDelta(
 ): number | string {
   if (delta === 0) return 0
 
-  // si antes era 0, no se puede calcular porcentaje real
-  // devolvemos la diferencia absoluta
   if (previousValue === 0) {
     return delta > 0 ? `${delta}` : `${delta}`
   }

@@ -1,8 +1,7 @@
 'use client'
 
-import { getAppEarnings, getSeatsPercentage } from "@/services/admin/stats/adminStatsService";
+import { getSeatsPercentage } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
 import { TakenSeatsStatResponseDTO } from "../../types/dto/takenSeatsStatResponse";
 
 export function useSeatsPercentage(

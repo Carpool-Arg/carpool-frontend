@@ -1,10 +1,10 @@
-import { AdminCO2StatDTO, AdminCO2StatResponse } from "@/modules/admin/dashboard/types/dto/adminCO2Response";
+import { AdminCO2StatResponse } from "@/modules/admin/dashboard/types/dto/adminCO2Response";
 import { AdminStatsResponse, AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
-import { AdminTripsMonthlyResponse } from "@/modules/admin/dashboard/types/dto/adminTripsMonthlyResponse";
 import { DriversPercentageResponse } from "@/modules/admin/dashboard/types/dto/driversPercentageResponse";
 import { TakenSeatsStatResponse } from "@/modules/admin/dashboard/types/dto/takenSeatsStatResponse";
 import { TopCityStatResponse } from "@/modules/admin/dashboard/types/dto/topCityStatResponse";
-import { VerifiedUserDTO, VerifiedUserResponse } from "@/modules/admin/dashboard/types/dto/verifiedUsersResponse";
+import { VerifiedUserResponse } from "@/modules/admin/dashboard/types/dto/verifiedUsersResponse";
+import { buildQuery } from "@/shared/utils/query";
 
 /**
  * -------------------------------------------------------------------------
@@ -17,7 +17,7 @@ export async function getAppEarnings(
   toDate: string, 
 ): Promise<AdminStatsSimpleResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`/api/admin/stats/earnings${query}`,{
       method: 'GET',
@@ -43,7 +43,7 @@ export async function getTotalTransacted(
   toDate: string, 
 ): Promise<AdminStatsSimpleResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`/api/admin/stats/transacted${query}`,{
       method: 'GET',
@@ -69,7 +69,7 @@ export async function getCompletedTrips(
   toDate: string, 
 ): Promise<AdminStatsSimpleResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`/api/admin/stats/trips${query}`,{
       method: 'GET',
@@ -119,7 +119,7 @@ export async function getTotalCO2Saved(): Promise<AdminCO2StatResponse> {
  */
 export async function getTopOriginCities(limit: number): Promise<TopCityStatResponse> {
   try {
-    const query = `?limit=${limit}`
+    const query = buildQuery({limit})
 
     const res = await fetch(`/api/admin/stats/top/origin${query}`,{
       method: 'GET',
@@ -142,7 +142,7 @@ export async function getTopOriginCities(limit: number): Promise<TopCityStatResp
 
 export async function getTopDestinationCities(limit:number): Promise<TopCityStatResponse> {
   try {
-    const query = `?limit=${limit}`
+    const query = buildQuery({limit})
 
     const res = await fetch(`/api/admin/stats/top/destination${query}`,{
       method: 'GET',
@@ -168,7 +168,7 @@ export async function getSeatsPercentage(
   toDate: string, 
 ): Promise<TakenSeatsStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`/api/admin/stats/seats-percentage${query}`,{
       method: 'GET',
@@ -189,12 +189,13 @@ export async function getSeatsPercentage(
   }
 }
 
-export async function getPublicatedTrips(
+export async function getPublishedTrips(
   fromDate: string, 
   toDate: string
 ): Promise<AdminStatsResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
+
     const res = await fetch(`/api/admin/stats/trips/published${query}`,{
       method: 'GET',
       credentials: 'include',
@@ -247,7 +248,7 @@ export async function getNewUsers(
   groupBy: string
 ): Promise<AdminStatsSimpleResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/admin/stats/users/new${query}`,{
       method: 'GET',

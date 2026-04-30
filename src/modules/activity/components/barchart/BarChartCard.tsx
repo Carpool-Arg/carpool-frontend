@@ -1,7 +1,6 @@
 'use client'
 
-import { Card, CardContent } from "@/components/ui/card"
-import { ErrorAlertY } from "@/components/ux/admin/ErrorAlert"
+import { ErrorAlert } from "@/components/ux/admin/ErrorAlert"
 import { EmptyAlertY } from "@/components/ux/EmptyAlert"
 import Spinner from "@/components/ux/Spinner"
 import { formatPrice } from "@/shared/utils/number"
@@ -11,8 +10,8 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recha
 import { formatFilterLabel } from "../../helpers/stats"
 import { Stat } from "../../types/Stat"
 import BarChartFilters from "./BarChartFilters"
-import CustomTooltip from "./CustomTooltip"
 import BarChartHeader from "./BarChartHeader"
+import CustomTooltip from "./CustomTooltip"
 
 interface BarChartCardProps {
   title: string
@@ -71,10 +70,11 @@ export default function BarChartCard({
             </div>
           ) : error ? (
             <div className="h-full flex items-center justify-center">
-              <ErrorAlertY
+              <ErrorAlert
                 icon={<OctagonX size={32} />}
                 title="Ocurrió un error"
                 description={error}
+                variant="Y"
               />
             </div>
           ) : data.length === 0 ? (

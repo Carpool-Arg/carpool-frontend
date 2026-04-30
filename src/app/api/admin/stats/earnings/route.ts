@@ -1,10 +1,13 @@
 import { AdminStatsSimpleResponse } from "@/modules/admin/dashboard/types/dto/adminStatSimpleResponse";
+import { buildQuery } from "@/shared/utils/query";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 /**
+ * Obtiene las estadísticas de ingresos de la plataforma
  * 
+ * Devuelve el total acumulado de ingresos generados.
  * 
  * @param req {NextRequest} - Objeto de la petición entrante de Next.js
  * @returns {Promise<NextResponse>} - Respuesta JSON del tipo AdminStatsSimpleResponse.
@@ -17,7 +20,7 @@ export async function GET(req: NextRequest) {
     const fromDate = searchParams.get("fromDate");
     const toDate = searchParams.get("toDate");
 
-    const query = `?fromDate=${fromDate}&toDate=${toDate}`;
+    const query = buildQuery({fromDate, toDate})
 
     const res = await fetch(`${apiUrl}/admin/stats/earnings${query}`, {
       headers: {

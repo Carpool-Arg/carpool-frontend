@@ -1,4 +1,5 @@
 import { PassengerStatResponse } from "@/modules/activity/types/dto/PassengerStatResponse";
+import { buildQuery } from "@/shared/utils/query";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
     const toDate = searchParams.get("toDate");
     const groupBy = searchParams.get("groupBy");
 
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`${apiUrl}/stats/passenger/km${query}`, {
       headers: {

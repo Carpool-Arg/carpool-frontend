@@ -1,9 +1,10 @@
 'use client'
 
-import { Card, CardContent } from "@/components/ui/card"
-import { LucideIcon, TrendingUp, Trophy } from "lucide-react"
-import { TopCityStat } from "../../types/topCity"
+import { ErrorAlert } from "@/components/ux/admin/ErrorAlert"
 import { capitalizeWords } from "@/shared/utils/string"
+import { LucideIcon, OctagonX, TrendingUp, Trophy } from "lucide-react"
+import { TopCityStat } from "../../types/topCity"
+import TopCitySkeleton from "../skeletons/TopCitySkeleton"
 
 interface TopCityCardProps {
   title: string
@@ -32,11 +33,9 @@ export function TopCityCard({
   const maxReservations = visibleCities[0]?.reservationCount || 1
   const ghostCount = Math.max(0, limit - visibleCities.length)
 
-  const isSingle = limit === 1 || cities.length ===1
-
   return (
-    <div className="bg-gray-8 rounded-2xl overflow-hidden min-h-93.5">
-      <div className="p-0 min-h-55 flex flex-col">
+    <div className="bg-gray-8 rounded-2xl overflow-hidden h-93.5 border border-gray-9/20 flex flex-col">
+      <div className="flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-2/40">
           <div className="p-2.5 bg-gray-10/60 border border-gray-9/20 rounded-xl">
@@ -75,23 +74,17 @@ export function TopCityCard({
         </div>
 
         {/* Body */}
-        <div className={`px-5 ${isSingle ? 'pt-4' : 'py-4'} flex flex-col justify-center`}>
+        <div className={`px-5 py-4 flex flex-col justify-start flex-1`}>
           {loading ? (
-            <div className="space-y-6">
-              {[...Array(limit)].map((_, i) => (
-                <div key={i} className="space-y-2 animate-pulse">
-                  <div className="flex justify-between">
-                    <div className="h-3.5 bg-gray-9/40 rounded w-28" />
-                    <div className="h-3.5 bg-gray-9/40 rounded w-16" />
-                  </div>
-                  <div className="h-1.5 bg-gray-9/40 rounded-full w-full" />
-                </div>
-              ))}
-            </div>
+            <TopCitySkeleton limit={limit}/>
           ) : error ? (
-            <div className="flex items-center gap-2 text-sm text-gray-11">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-              {error}
+            <div className="flex-1 flex items-center justify-center">
+              <ErrorAlert
+                icon={<OctagonX size={32} />}
+                title="Ocurrió un error"
+                description={error}
+                variant="Y"
+              />
             </div>
           ) : visibleCities.length === 0 ? (
             <p className="text-sm text-gray-11">No hay datos disponibles</p>
@@ -156,7 +149,7 @@ export function TopCityCard({
                 const ghostWidth = Math.max(10, 45 - ghostIndex * 12)
 
                 return (
-                  <div key={`ghost-${i}`} className="space-y-4.5 opacity-25">
+                  <div key={`ghost-${i}`} className="space-y-4 opacity-25">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-xs font-mono shrink-0 w-4 text-right text-gray-11">

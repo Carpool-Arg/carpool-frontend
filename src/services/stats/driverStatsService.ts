@@ -1,4 +1,5 @@
 import { DriverCO2StatResponse, DriverStatResponse } from "@/modules/activity/types/dto/DriverStatResponse";
+import { buildQuery } from "@/shared/utils/query";
 
 
 export async function getDriverTripsStats(
@@ -7,7 +8,7 @@ export async function getDriverTripsStats(
   groupBy:string
 ): Promise<DriverStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/stats/driver/trips${query}`,{
       method: 'GET',
@@ -34,7 +35,7 @@ export async function getDriverKmStats(
   groupBy:string
 ): Promise<DriverStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/stats/driver/km${query}`,{
       method: 'GET',
@@ -61,7 +62,7 @@ export async function getDriverEarningStats(
   groupBy:string
 ): Promise<DriverStatResponse> {
   try {
-    const query = `?fromDate=${fromDate}&toDate=${toDate}&groupBy=${groupBy}`;
+    const query = buildQuery({fromDate, toDate, groupBy})
 
     const res = await fetch(`/api/stats/driver/earnings${query}`,{
       method: 'GET',

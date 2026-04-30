@@ -8,11 +8,12 @@ import { TopCityStatResponseDTO } from "../../types/dto/topCityStatResponse";
 export function useTopOrigin(limitOrigin:number, limitDestination:number) {
   const [topOrigin, setTopOrigin] = useState<TopCityStatResponseDTO | null>();
   const [topDestination, setTopDestination] = useState<TopCityStatResponseDTO | null>();
-  const [loading, setLoading] = useState(true);
+  const [originLoading, setOriginLoading] = useState(true);
+  const [destinationLoading, setdestinationLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTopOrigin = async () => {
-    setLoading(true);
+    setOriginLoading(true);
     setError(null);
 
     const res = await getTopOriginCities(limitOrigin);
@@ -24,11 +25,11 @@ export function useTopOrigin(limitOrigin:number, limitDestination:number) {
       setTopOrigin(res.data ?? null);
     }
 
-    setLoading(false);
+    setOriginLoading(false);
   };
 
   const fetchTopDestination = async () => {
-    setLoading(true);
+    setdestinationLoading(true);
     setError(null);
 
     const res = await getTopDestinationCities(limitDestination);
@@ -40,19 +41,23 @@ export function useTopOrigin(limitOrigin:number, limitDestination:number) {
       setTopDestination(res.data ?? null);
     }
 
-    setLoading(false);
+    setdestinationLoading(false);
   };
 
   
   useEffect(() => {
     fetchTopOrigin();
+  }, [limitOrigin]);
+
+  useEffect(() => {
     fetchTopDestination();
-  }, [limitOrigin,limitDestination]);
+  }, [limitDestination]);
 
   return {
     topOrigin,
     topDestination,
-    loading,
+    originLoading,
+    destinationLoading,
     error,
     refetch: fetchTopOrigin
   };

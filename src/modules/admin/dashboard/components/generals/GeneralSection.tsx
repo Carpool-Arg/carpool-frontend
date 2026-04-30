@@ -35,11 +35,11 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
   )
 
   const {
-    filtered: filteredEarnings,
-    previousPeriod: previousPeriodFiltered,
-    delta: deltaEarnings, 
-    error: errorEarnings, 
-    loading: loadingEarnings
+    filtered: earningsFiltered,
+    previousPeriod: earningsPreviousPeriod,
+    delta: earningsDelta, 
+    error: earningsError, 
+    loading: earnignsLoading
   } = useAppEarnings(
     formatLocalDate(fromDate),
     formatLocalDate(toDate),
@@ -48,11 +48,11 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
   )
 
   const {
-    filtered: filteredTransacted,
-    previousPeriod: previousPeriodTransacted,
-    delta: deltaTransacted, 
-    error: errorTransacted, 
-    loading: loadingTransacted
+    filtered: transactedFiltered,
+    previousPeriod: transactedPreviousPeriod,
+    delta: transactedDelta, 
+    error: transactedError, 
+    loading: transactedLoading
   } = useTotalTransacted(
     formatLocalDate(fromDate),
     formatLocalDate(toDate),
@@ -61,12 +61,12 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
   )
 
   const {
-    data: dataCO2, 
-    error: errorCO2, 
-    loading: loadingCO2
+    data: CO2Data, 
+    error: CO2Error, 
+    loading: CO2Loading
   } = useTotalCO2()
 
-  const globalLoading = loadingTransacted || loadingEarnings || loadingCO2
+  const globalLoading = transactedLoading || earnignsLoading || CO2Loading
 
 
   if (globalLoading) {
@@ -80,29 +80,29 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
   }
 
   const earningsStatus =  getStatusDelta(
-    deltaEarnings ?? 0, 
-    previousPeriodFiltered?.totalFiltered ?? 0
+    earningsDelta ?? 0, 
+    earningsPreviousPeriod?.totalFiltered ?? 0
   ) 
   const earningsDeltaPercentage = formatPercentageDelta(
-    deltaEarnings ?? 0, 
-    previousPeriodFiltered?.totalFiltered ?? 0
+    earningsDelta ?? 0, 
+    earningsPreviousPeriod?.totalFiltered ?? 0
   ) 
   
   const transactedStatus = getStatusDelta(
-    deltaTransacted ?? 0, 
-    previousPeriodTransacted?.totalFiltered ?? 0
+    transactedDelta ?? 0, 
+    transactedPreviousPeriod?.totalFiltered ?? 0
   ) 
   const transactedDeltaPercentage = formatPercentageDelta(
-    deltaTransacted ?? 0, 
-    previousPeriodTransacted?.totalFiltered ?? 0
+    transactedDelta ?? 0, 
+    transactedPreviousPeriod?.totalFiltered ?? 0
   ) 
   
   return (
-    <div className="space-y-6 "> 
+    <div className="space-y-4 "> 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           title="Ganancias recaudadas"
-          value={`$${formatPrice(filteredEarnings?.totalFiltered ?? 0)} ARS`}
+          value={`$${formatPrice(earningsFiltered?.totalFiltered ?? 0)} ARS`}
           description={capitalize(formatFilterLabel(filter))}
           icon={ 
             earningsStatus === 'increase' || 
@@ -127,10 +127,11 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
             </span>
           }
           variant={earningsStatus}
+          error={earningsError}
         />
         <StatCard
           title="Monto transaccionado"
-          value={`$${formatPrice(filteredTransacted?.totalFiltered ?? 0)} ARS`}
+          value={`$${formatPrice(transactedFiltered?.totalFiltered ?? 0)} ARS`}
           description={capitalize(formatFilterLabel(filter))}
           icon={
             transactedStatus === 'increase' || transactedStatus === 'new' ? (
@@ -154,16 +155,16 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
             </span>
           }
           variant={transactedStatus}
+          error={transactedError}
         />
         <StatCard
           title="Impacto ambiental"
-          value={`${formatFixedDouble(dataCO2?.totalC02Saved ?? 0)} kg`}
+          value={`${formatFixedDouble(CO2Data?.totalC02Saved ?? 0)} kg`}
           description="Total estimado de CO₂ ahorrado"
           icon={<Leaf size={14} />}
           variant={'increase'}
+          error={CO2Error}
         />
-
-
       </div>
     </div>
   )

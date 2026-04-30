@@ -1,3 +1,5 @@
+'use client'
+
 interface SectionTabsProps {
   activeSection: string
   setActiveSection: (value: string) => void
@@ -13,8 +15,19 @@ export default function SectionTabs({
     { key: "users", label: "Usuarios" },
   ]
 
+  const activeIndex = sections.findIndex(s => s.key === activeSection)
+
   return (
-    <div className="inline-flex items-center gap-4 p-1 bg-gray-8 border border-gray-2/50 rounded-xl w-full">
+    <div className="relative inline-flex items-center p-1 bg-gray-8 border border-gray-2/50 rounded-xl w-full">
+      
+      <div
+        className="absolute top-1 bottom-1 left-1 rounded-lg bg-dark-5/50 border border-gray-9/20 transition-all duration-300 ease-out"
+        style={{
+          width: `calc((100% - 0.5rem) / ${sections.length})`,
+          transform: `translateX(${activeIndex * 100}%)`,
+        }}
+      />
+
       {sections.map((section) => {
         const isActive = activeSection === section.key
 
@@ -23,12 +36,8 @@ export default function SectionTabs({
             key={section.key}
             onClick={() => setActiveSection(section.key)}
             className={`
-              px-8 py-1.5 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200
-              ${
-                isActive
-                  ? "bg-gray-10 text-white shadow-sm border border-gray-9/40"
-                  : "text-gray-11 hover:text-gray-12 hover:bg-gray-9/40"
-              }
+              relative z-10 flex-1 px-8 py-1.5 cursor-pointer rounded-lg text-sm font-medium transition-colors duration-200
+              ${isActive ? "text-white" : "text-gray-11 hover:text-white"}
             `}
           >
             {section.label}

@@ -19,8 +19,8 @@ export function useNewUsersChart(
     setError(null)
 
     try {
+      
       const res = await getNewUsers(fromDate, toDate, groupBy)
-
 
       if (
         res.state === "ERROR" 

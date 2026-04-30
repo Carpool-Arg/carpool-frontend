@@ -59,11 +59,11 @@ export default function UserSection({filter, customRange}:SectionProps) {
       : mapFilterToOrderBy(newUsersFilter)
 
   const { 
-    filtered: filteredUsers,
-    previousPeriod: previousPeriodUsers,
-    delta: deltaUsers,
-    error: errorUsers,
-    loading: loadingUsers
+    filtered: usersFiltered,
+    previousPeriod: usersPreviousPeriod,
+    delta: usersDelta,
+    error: usersError,
+    loading: usersLoading
   } = useNewUsers(
     formatLocalDate(fromDate),
     formatLocalDate(toDate),
@@ -87,30 +87,29 @@ export default function UserSection({filter, customRange}:SectionProps) {
     newUsersChartGroupBy as GroupByType
   )
 
-  console.log('filteredChartUsers', filteredChartUsers)
-  console.log('formattedNewUsers', formattedNewUsers)
-
-  const { data, loading: loadingDrivers, error } = useDriversPercentage()
-  
+  const { 
+    data: driversData, 
+    loading: driversLoading, 
+    error: driversError 
+  } = useDriversPercentage()
   
   const {
-    data: dataVerified, 
-    loading: loadingVerified, 
-    error: errorVerified
+    data: verifiedData, 
+    loading: verifiedLoading, 
+    error: verifiedError
   } = useVerifiedUsers()
 
-  const globalLoading = loadingUsers || loadingVerified || loadingDrivers
+  const globalLoading = usersLoading || verifiedLoading || driversLoading
 
   const newUsersStatus = getStatusDelta(
-    deltaUsers ?? 0, 
-    previousPeriodUsers?.totalFiltered ?? 0
-  )
-  const newUsersPercentage = formatPercentageDelta(
-    deltaUsers ?? 0, 
-    previousPeriodUsers?.totalFiltered ?? 0
+    usersDelta ?? 0, 
+    usersPreviousPeriod?.totalFiltered ?? 0
   )
 
-  
+  const newUsersPercentage = formatPercentageDelta(
+    usersDelta ?? 0, 
+    usersPreviousPeriod?.totalFiltered ?? 0
+  )
 
   return (
     <div className="space-y-4">
@@ -125,7 +124,7 @@ export default function UserSection({filter, customRange}:SectionProps) {
           <>
             <StatCard
               title="Nuevos usuarios"
-              value={`+${filteredUsers?.totalFiltered ?? 0}`}
+              value={`+${usersFiltered?.totalFiltered ?? 0}`}
               description={capitalize(formatFilterLabel(filter))}
               icon={
                 newUsersStatus === 'increase' || newUsersStatus === 'new' ? (
@@ -149,20 +148,23 @@ export default function UserSection({filter, customRange}:SectionProps) {
                 </span>
               }
               variant={newUsersStatus}
+              error={usersError}
             />
             <StatCard
               title="Usuarios verificados"
-              value={`${dataVerified?.totalVerified ?? 0}`}
+              value={`${verifiedData?.totalVerified ?? 0}`}
               description="Total de usuarios verificados"
               icon={<BadgeCheck size={18}/>}
               variant={"increase"}
+              error={verifiedError}
             />
             <StatCard
               title="Conductores"
-              value={`${data?.totalDrivers}`}
+              value={`${driversData?.totalDrivers}`}
               description="Total de conductores"
               icon={<CircleUserRound size={18}/>}
               variant={"default"}
+              error={driversError}
             />
           </>
         }
@@ -179,14 +181,14 @@ export default function UserSection({filter, customRange}:SectionProps) {
             <>
               Se registraron {" "}
               <span className="font-semibold">
-                {filteredUsers?.historicalTotal ?? 0}
+                {filteredChartUsers?.historicalTotal ?? 0}
               </span>{" "}
               usuarios en total
             </>
           }
           icon={User}
           data={formattedNewUsers ?? []}
-          totalFiltered={filteredUsers?.totalFiltered ?? 0}
+          totalFiltered={filteredChartUsers?.totalFiltered ?? 0}
           loading={loadingChartUsers}
           error={errorChartUsers}
           filter={newUsersFilter}
@@ -206,9 +208,9 @@ export default function UserSection({filter, customRange}:SectionProps) {
           {/* Body */}
           <div className="px-5 py-6 flex-1 flex flex-col items-center ">
             <DriversPercentage
-              data={data ?? null}
-              loading={loadingDrivers}
-              error={error}
+              data={driversData ?? null}
+              loading={driversLoading}
+              error={driversError}
             />
           </div>          
         </div>

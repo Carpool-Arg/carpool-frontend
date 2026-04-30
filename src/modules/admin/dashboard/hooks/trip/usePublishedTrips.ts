@@ -1,8 +1,8 @@
 'use client'
 
-import { getCompletedTrips, getPublicatedTrips } from "@/services/admin/stats/adminStatsService";
+import { getPublishedTrips } from "@/services/admin/stats/adminStatsService";
 import { useEffect, useState } from "react";
-import { AdminStatDTO, AdminStatSimpleDTO } from "../../types/dto/adminStatSimpleResponse";
+import { AdminStatDTO } from "../../types/dto/adminStatSimpleResponse";
 
 export function usePublishedTrips(
   fromDate: string,
@@ -22,8 +22,8 @@ export function usePublishedTrips(
 
     try {
       const [filteredRes, previousRes] = await Promise.all([
-        getPublicatedTrips(fromDate, toDate),
-        getPublicatedTrips(previousFromDate, previousToDate),
+        getPublishedTrips(fromDate, toDate),
+        getPublishedTrips(previousFromDate, previousToDate),
       ]);
 
       if (
