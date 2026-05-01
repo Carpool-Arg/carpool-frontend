@@ -5,7 +5,7 @@ import TripSection from "./trips/TripSection"
 import SectionTabs from "./SectionsTabs"
 import UserSection from "./users/UserSection"
 import GeneralSection from "./generals/GeneralSection"
-import BarChartFilters from "@/modules/activity/components/barchart/BarChartFilters"
+import ChartFilters from "@/modules/activity/components/ChartFilters"
 import { DateRange } from "react-day-picker"
 
 export default function Dashboard() {
@@ -21,7 +21,7 @@ export default function Dashboard() {
         setActiveSection={setActiveSection}
       />
 
-      <BarChartFilters
+      <ChartFilters
         selected={filter}
         onChange={setFilter}
         range={customRange}

@@ -5,6 +5,7 @@ import { capitalizeWords } from "@/shared/utils/string"
 import { LucideIcon, OctagonX, TrendingUp, Trophy } from "lucide-react"
 import { TopCityStat } from "../../types/topCity"
 import TopCitySkeleton from "../skeletons/TopCitySkeleton"
+import { LIMIT_OPTIONS } from "@/constants/stats"
 
 interface TopCityCardProps {
   title: string
@@ -16,8 +17,6 @@ interface TopCityCardProps {
   limit?: number
   onLimitChange?: (limit: number) => void
 }
-
-const LIMIT_OPTIONS = [1, 3, 5]
 
 export function TopCityCard({
   title,

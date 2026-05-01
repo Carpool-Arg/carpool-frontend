@@ -1,5 +1,7 @@
 'use client'
 
+import { SECTIONS } from "@/constants/stats"
+
 interface SectionTabsProps {
   activeSection: string
   setActiveSection: (value: string) => void
@@ -9,13 +11,9 @@ export default function SectionTabs({
   activeSection,
   setActiveSection,
 }: SectionTabsProps) {
-  const sections = [
-    { key: "general", label: "Generales" },
-    { key: "trips", label: "Viajes" },
-    { key: "users", label: "Usuarios" },
-  ]
+  
 
-  const activeIndex = sections.findIndex(s => s.key === activeSection)
+  const activeIndex = SECTIONS.findIndex(s => s.key === activeSection)
 
   return (
     <div className="relative inline-flex items-center p-1 bg-gray-8 border border-gray-2/50 rounded-xl w-full">
@@ -23,12 +21,12 @@ export default function SectionTabs({
       <div
         className="absolute top-1 bottom-1 left-1 rounded-lg bg-dark-5/50 border border-gray-9/20 transition-all duration-300 ease-out"
         style={{
-          width: `calc((100% - 0.5rem) / ${sections.length})`,
+          width: `calc((100% - 0.5rem) / ${SECTIONS.length})`,
           transform: `translateX(${activeIndex * 100}%)`,
         }}
       />
 
-      {sections.map((section) => {
+      {SECTIONS.map((section) => {
         const isActive = activeSection === section.key
 
         return (

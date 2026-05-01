@@ -65,7 +65,7 @@ export default function DriversPercentage({
       ) : (
         <>
           {/* Gráfico */}
-          <div className="relative w-52 h-52">
+          <div className="relative w-52 h-52 [&_*:focus]:outline-none">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -86,7 +86,11 @@ export default function DriversPercentage({
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />}  offset={10} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  offset={20}
+                  wrapperStyle={{ zIndex: 20 }}
+                />
               </PieChart>
             </ResponsiveContainer>
 
@@ -126,7 +130,7 @@ export default function DriversPercentage({
             </p>
 
             <div className="flex items-center w-full gap-4">
-              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40 backdrop-blur-sm ">
+              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40 ">
                 
                 {/* Icon section */}
                 <div className="flex items-center rounded-l-2xl justify-center self-stretch px-5 bg-green-400/15 ">
@@ -144,7 +148,7 @@ export default function DriversPercentage({
                 </div>
               </div>
 
-              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40 backdrop-blur-sm ">
+              <div className="flex items-center w-full rounded-2xl overflow-hidden bg-gray-2/40">
                 
                 {/* Icon section */}
                 <div className="flex items-center justify-center self-stretch px-5 bg-red-400/15">

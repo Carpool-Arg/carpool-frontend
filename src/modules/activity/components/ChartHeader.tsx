@@ -1,15 +1,15 @@
 import {LucideIcon } from "lucide-react"
 
-export interface BarChartHeaderProps {
+export interface ChartHeaderProps {
   title: string
   desc?: React.ReactNode | string
   icon: LucideIcon
 }
-export default function BarChartHeader({
+export default function ChartHeader({
   title,
   desc,
   icon: Icon,
-}: BarChartHeaderProps) {
+}: ChartHeaderProps) {
   return(
     <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-9/20">
       <div className="flex items-center gap-3">

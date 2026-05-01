@@ -2,15 +2,15 @@
 
 import { ErrorAlert } from "@/components/ux/admin/ErrorAlert"
 import { EmptyAlertY } from "@/components/ux/EmptyAlert"
-import Spinner from "@/components/ux/Spinner"
 import { formatPrice } from "@/shared/utils/number"
 import { ChartColumnDecreasing, LucideIcon, OctagonX } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { formatFilterLabel } from "../../helpers/stats"
 import { Stat } from "../../types/Stat"
-import BarChartFilters from "./BarChartFilters"
-import BarChartHeader from "./BarChartHeader"
+import ChartHeader from "../ChartHeader"
+import ChartFilters from "../ChartFilters"
+import { BarChartSkeleton } from "./BarChartSkeleton"
 import CustomTooltip from "./CustomTooltip"
 
 interface BarChartCardProps {
@@ -48,14 +48,14 @@ export default function BarChartCard({
   return (
     <div className="bg-gray-8 border border-gray-2/50 rounded-2xl h-full flex flex-col">
       
-        <BarChartHeader
+        <ChartHeader
           title={title}
           desc={desc}
           icon={Icon}
         />
 
         <div className="mt-4">
-          <BarChartFilters
+          <ChartFilters
             selected={filter}
             onChange={onFilterChange}
             range={customRange}
@@ -66,7 +66,7 @@ export default function BarChartCard({
         <div className="h-60  py-2 px-5 mt-4 transition-all duration-300 [&_*:focus]:outline-none [&_*:focus]:ring-0">
           {loading ? (
             <div className="h-full flex items-center justify-center">
-              <Spinner />
+              <BarChartSkeleton />
             </div>
           ) : error ? (
             <div className="h-full flex items-center justify-center">

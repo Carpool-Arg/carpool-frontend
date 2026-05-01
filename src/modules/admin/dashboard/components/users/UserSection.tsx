@@ -1,7 +1,6 @@
 'use client'
 
 import BarChartCard from "@/modules/activity/components/barchart/BarChartCard"
-import BarChartHeader from "@/modules/activity/components/barchart/BarChartHeader"
 import { formatChartData, formatFilterLabel, formatFilterLabelPrevious, getDynamicGroupBy, getPreviousRangeForFilter, getRangeForFilter, GroupByType, mapFilterToOrderBy } from "@/modules/activity/helpers/stats"
 import { formatLocalDate } from "@/shared/utils/date"
 import { formatPrice } from "@/shared/utils/number"
@@ -18,6 +17,7 @@ import { SectionProps } from "../generals/GeneralSection"
 import { StatCardSkeleton } from "../skeletons/StatCardSkeleton"
 import StatCard from "../StatCard"
 import DriversPercentage from "./DriversPercentage"
+import ChartHeader from "@/modules/activity/components/ChartHeader"
 
 export default function UserSection({filter, customRange}:SectionProps) {
   const [newUsersFilter, setNewUsersFilter] = useState("month");
@@ -199,7 +199,7 @@ export default function UserSection({filter, customRange}:SectionProps) {
         />
         <div className="bg-gray-8 border border-gray-2/50 rounded-2xl h-full flex flex-col">
           {/* Header */}
-          <BarChartHeader
+          <ChartHeader
             title="Distribución de usuarios"
             desc="Conductores vs pasajeros"
             icon={Users}

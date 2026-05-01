@@ -3,24 +3,17 @@
 import { useState } from 'react'
 import { formatShortDateText, formatShortDateTextWithYear } from "@/shared/utils/date"
 import { DateRange } from "react-day-picker"
-import DateRangeModal from './DateRangeModal'
-import { CalendarDays } from 'lucide-react'
+import DateRangeModal from './barchart/DateRangeModal'
+import { FILTERS } from '@/constants/stats'
 
-const FILTERS = [
-  { label: 'Últimos 7 días', value: '7d' },
-  { label: 'Último mes', value: 'month' },
-  { label: 'Último año', value: 'year' },
-  { label: 'Elegir período', value: 'custom', icon: CalendarDays},
-]
-
-type Props = {
+interface ChartFiltersProps {
   selected: string
   onChange: (value: string) => void
   range?: DateRange
   onRangeChange?: (range: DateRange | undefined) => void
 }
 
-export default function BarChartFilters({ selected, onChange, range, onRangeChange }: Props) {
+export default function ChartFilters({ selected, onChange, range, onRangeChange }: ChartFiltersProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const now = new Date()
   const from = new Date(now)

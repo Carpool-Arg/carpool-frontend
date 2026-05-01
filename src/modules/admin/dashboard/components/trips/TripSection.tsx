@@ -17,7 +17,6 @@ import { useState } from "react"
 import { capitalize } from "@/shared/utils/string"
 
 
-
 export default function TripSection({filter, customRange}:SectionProps) {
   const [limitOrigin, setLimitOrigin] = useState(3)
   const [limitDestination, setLimitDestination] = useState(3)

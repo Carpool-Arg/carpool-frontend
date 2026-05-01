@@ -6,7 +6,7 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <HeaderPage
         title="Dashboard" 
-        desc=""
+        desc="Visualizá métricas clave y el estado general de la plataforma."
       />
 
       <Dashboard/>

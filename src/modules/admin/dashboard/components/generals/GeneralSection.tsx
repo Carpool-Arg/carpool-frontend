@@ -11,7 +11,7 @@ import { useTotalTransacted } from "../../hooks/general/useTotalTransacted";
 import { StatCardSkeleton } from "../skeletons/StatCardSkeleton";
 import StatCard from "../StatCard";
 
-export type SectionProps = {
+export interface SectionProps {
   filter: string
   customRange?: DateRange
 }
@@ -67,7 +67,6 @@ export default function GeneralSection({filter, customRange}:SectionProps) {
   } = useTotalCO2()
 
   const globalLoading = transactedLoading || earnignsLoading || CO2Loading
-
 
   if (globalLoading) {
     return(
