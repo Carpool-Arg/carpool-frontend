@@ -356,26 +356,25 @@ export function TripForm() {
 
 
   return (
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-start gap-4 h-full w-full max-w-md mx-auto md:py-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1">
         {step === 1 && (
           // === PASO 1: Seleccionar vehículo ===
-          <div className='flex flex-col justify-between h-full'>
-            <div>
-              <div className='text-center mb-4'>
-                <h2 className="text-2xl"><span className='font-semibold'>{user?.name}</span>, ¿con qué vehículo 
-                  deseas viajar hoy? 
-                </h2>
+            <div className='flex flex-col flex-1 justify-between'>
+              <div>
+                <div className='text-center mb-4'>
+                  <h2 className="text-2xl"><span className='font-semibold'>{user?.name}</span>, ¿con qué vehículo 
+                    deseas viajar hoy? 
+                  </h2>
+                </div>
+
+                {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
+
+                <VehicleSelector
+                  selectedVehicleId={selectedVehicleId}
+                  onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
+                />
               </div>
-
-              {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
-
-              <VehicleSelector
-                selectedVehicleId={selectedVehicleId}
-                onSelect={(vehicle) => setValue('idVehicle', vehicle.id)}
-              />
-            </div>
-
-            <div className="flex justify-center gap-2 mt-12">
+              
               <Button
                 type="button"
                 variant="primary"
@@ -385,14 +384,15 @@ export function TripForm() {
               >
                 Siguiente
               </Button>
+              
             </div>
-          </div>
+          
         )}
 
         {step === 2 && (
           // === PASO 2: Datos viaje ===
-          <div className="flex flex-col justify-between flex-1 pb-8">
-            <div className='space-y-3'>
+          <div className="flex flex-col justify-between overflow-y-auto">
+            <div className='space-y-3 h-full'>
               
               <h2 className="text-2xl font-medium">Nuevo viaje</h2>
                 
@@ -599,20 +599,21 @@ export function TripForm() {
             </div>
 
 
-            <div className="flex justify-center gap-7.5 mt-8">
+            <div className="flex gap-4 mt-8 w-full">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setStep(1)}
-                className='px-15 py-2 text-sm font-inter font-medium'
+                className="flex-1 py-2 text-sm font-inter font-medium"
               >
                 Atrás
               </Button>
+
               <Button
                 type="button"
                 variant="primary"
                 onClick={() => setStep(3)}
-                className='px-12 py-2 text-sm font-inter font-medium'
+                className="flex-1 py-2 text-sm font-inter font-medium"
                 disabled={!isValid || !!priceCalculationError || calculatingPrice || !!dateError}
               >
                 Siguiente

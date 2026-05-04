@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
 
 
   if (!token) {
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
 
@@ -44,27 +44,27 @@ export async function middleware(req: NextRequest) {
         return response;
       }
     }
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
   // Controlar errores.
   const isValid = await verifyTokenWithServer(token);
   if (!isValid) {
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
   //ROLES
   const payload = parseJwt(token);
-  if (!payload) return redirectToLogin(req);
+  if (!payload) return redirectToHome(req);
 
   return NextResponse.next();
 }
 
 //HELPERS
 
-function redirectToLogin(req: NextRequest) {
+function redirectToHome(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = "/login";
+  url.pathname = "/";
   return NextResponse.redirect(url);
 }
 

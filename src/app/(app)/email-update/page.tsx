@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import EmailUpdatePage from "./EmailUpdate";
+import Spinner from "@/components/ux/Spinner";
 
 export default function EmailUpdate() {
     return(
-        <Suspense fallback={<div>Cargando...</div>}>
+        <Suspense fallback={<Spinner/>}>
             <EmailUpdatePage/>
         </Suspense>
         
