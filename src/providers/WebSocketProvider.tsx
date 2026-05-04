@@ -46,22 +46,28 @@ export function WebSocketProvider({
   const { showNotification } = useNotification();
   const { user, accessToken } = useAuth(); // Token que viene del Login
 
-  const connect = useCallback((tokenToConnect: string) => {
+  const connect = useCallback(async (tokenToConnect: string) => {
     if (!tokenToConnect) return;
-    
-    disconnectWebSocket(); // limpiar el ws antes
 
-    connectWebSocket(tokenToConnect, (payload: unknown) => {
-      const wsPayload = payload as WebSocketPayload;
-      showNotification({
-        type: NotificationType.PAYMENT_PENDING,
-        title: wsPayload.pushTitle,
-        message: wsPayload.pushBody,
-        data: wsPayload.data,
+    try {
+      await disconnectWebSocket();
+
+      await connectWebSocket(tokenToConnect, (payload: unknown) => {
+        const wsPayload = payload as WebSocketPayload;
+
+        showNotification({
+          type: NotificationType.PAYMENT_PENDING,
+          title: wsPayload.pushTitle,
+          message: wsPayload.pushBody,
+          data: wsPayload.data,
+        });
       });
-    });
 
-    setIsConnected(true);
+      setIsConnected(true);
+    } catch (error) {
+      console.error("Error conectando WS:", error);
+      setIsConnected(false);
+    }
   }, [showNotification]);
 
   const reconnect = useCallback((newToken: string) => {
@@ -74,16 +80,16 @@ export function WebSocketProvider({
     // 2. Si no, usa el initialToken (f5).
     const effectiveToken = accessToken || initialToken;
 
-    if (user && effectiveToken && !isConnected) {
+    if (user && effectiveToken) {
       connect(effectiveToken);
     }
 
     // Si el usuario hace logout, desconectar el ws
-    if (!user && isConnected) {
+    if (!user) {
       disconnectWebSocket();
       setIsConnected(false);
     }
-  }, [user, accessToken, initialToken, isConnected, connect]);
+  }, [user, accessToken, initialToken, connect]);
 
   return (
     <WebSocketContext.Provider value={{ isConnected, reconnect }}>

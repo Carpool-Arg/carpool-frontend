@@ -23,7 +23,6 @@ export default function ServiceWorkerRegister() {
               navigator.serviceWorker.controller
             ) {
               // Solo avisar, no forzar nada
-              console.log('[SW] Nueva versión disponible');
             }
           });
         });

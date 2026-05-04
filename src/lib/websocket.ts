@@ -5,31 +5,44 @@ let stompClient: Stomp.Client | null = null;
 
 export const connectWebSocket = (
   token: string,
-   onMessage: (payload: unknown) => void
-) => {  
-  const socket = new SockJS(
-    `${process.env.NEXT_PUBLIC_API_URL}/ws`
-  );
+  onMessage: (payload: unknown) => void
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const socket = new SockJS(
+      `${process.env.NEXT_PUBLIC_API_URL}/ws`
+    );
 
-  stompClient = Stomp.over(socket);
-  stompClient.debug = () => {};
+    stompClient = Stomp.over(socket);
+    stompClient.debug = () => {};
 
-  stompClient.connect(
-    { Authorization: `Bearer ${token}` },
-    () => {
-      stompClient?.subscribe('/user/queue/notification', (message) => {
-        const payload = JSON.parse(message.body);
-        onMessage(payload);
-      });
-    }
-  );
+    stompClient.connect(
+      { Authorization: `Bearer ${token}` },
+      () => {
+        stompClient?.subscribe('/user/queue/notification', (message) => {
+          const payload = JSON.parse(message.body);
+          onMessage(payload);
+        });
+
+        resolve(); 
+      },
+      (error) => {
+        console.error("WS connection error:", error);
+        reject(error);
+      }
+    );
+  });
 };
 
-// AGREGAR ESTA FUNCIÓN
-export const disconnectWebSocket = () => {
-  if (stompClient && stompClient.connected) {
-    stompClient.disconnect(() => {
-    });
-    stompClient = null;
-  }
+
+export const disconnectWebSocket = (): Promise<void> => {
+  return new Promise((resolve) => {
+    if (stompClient && stompClient.connected) {
+      stompClient.disconnect(() => {
+        stompClient = null;
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
 };
