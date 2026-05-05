@@ -159,7 +159,7 @@ export default function TripSection({filter, customRange}:SectionProps) {
             <StatCard
               title="Viajes completados"
               value={`${tripsFiltered?.totalFiltered ?? 0}`}
-              description="Últimos 30 días"
+              description={capitalize(formatFilterLabel(filter))}
               icon={
                 tripsStatus === 'increase' || tripsStatus === 'new' ? (
                   <TrendingUp size={18} />
