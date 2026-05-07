@@ -94,26 +94,33 @@ function setTokenCookies(
 ) {
   const { accessToken, refreshToken } = tokens;
 
-  const decoded = JSON.parse(
-    Buffer.from(accessToken.split(".")[1], "base64").toString()
-  );
-  const maxAge = decoded.exp - decoded.iat;
 
-  response.cookies.set("token", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge,
-  });
+  if(accessToken ) {
+    const decoded = parseJwt(accessToken);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
+    const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
+    response.cookies.set("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge,
+    });
+  }
+ 
 
   if (refreshToken) {
+    const decoded = parseJwt(refreshToken);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
+    const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge,
     });
   }
 }

@@ -29,6 +29,7 @@ import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
+import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 
 interface BaggageOption {
   value: string;
@@ -312,7 +313,7 @@ export function TripForm() {
     return (
       <div className="flex flex-col justify-center items-center w-full h-full">
         <Image
-          src="/vehicles.svg"
+          src={`${R2_PUBLIC_PREFIX}/vehicles.svg`}
           alt="Imagen de vehículo claro"
           width={200}
           height={166}
@@ -320,7 +321,7 @@ export function TripForm() {
         />
 
         <Image
-          src="/vehicles-dark.svg"
+          src={`${R2_PUBLIC_PREFIX}/vehicles-dark.svg`}
           alt="Imagen de vehículo oscuro"
           width={200}
           height={166}
@@ -680,7 +681,7 @@ export function TripForm() {
           {/* Parte superior (centrada) */}
           <div className="flex flex-col items-center gap-8 justify-center flex-1">
             <Image 
-              src="/map-pin-2.svg"
+              src={`${R2_PUBLIC_PREFIX}/map-pin-2.svg`}
               alt="Imagen MapPin"
               width={121}
               height={0}
