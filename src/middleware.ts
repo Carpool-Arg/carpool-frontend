@@ -68,6 +68,21 @@ function redirectToHome(req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
+function clearAuthCookies(res: NextResponse): NextResponse {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path: '/',
+    maxAge: 0,
+  };
+
+  res.cookies.set('token', '', cookieOptions);
+  res.cookies.set('refreshToken', '', cookieOptions);
+
+  return res;
+}
+
 async function refreshAccessToken(refreshToken: string) {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
