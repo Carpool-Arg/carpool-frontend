@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
 
 
   if (!token) {
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
 
@@ -44,44 +44,27 @@ export async function middleware(req: NextRequest) {
         return response;
       }
     }
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
   // Controlar errores.
   const isValid = await verifyTokenWithServer(token);
   if (!isValid) {
-    const response = redirectToLogin(req);
-    clearAuthCookies(response);
-    return response;
+    return redirectToHome(req);
   }
 
   //ROLES
   const payload = parseJwt(token);
-  if (!payload) return redirectToLogin(req);
+  if (!payload) return redirectToHome(req);
 
   return NextResponse.next();
 }
 
 //HELPERS
 
-function clearAuthCookies(res: NextResponse): NextResponse {
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
-    path: '/',
-    maxAge: 0,
-  };
-
-  res.cookies.set('token', '', cookieOptions);
-  res.cookies.set('refreshToken', '', cookieOptions);
-
-  return res;
-}
-
-function redirectToLogin(req: NextRequest) {
+function redirectToHome(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = "/login";
+  url.pathname = "/";
   return NextResponse.redirect(url);
 }
 
