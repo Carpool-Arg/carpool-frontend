@@ -21,8 +21,8 @@ export function EmptyAlert({
       </div>
       <div className="border border-gray-6 h-12"></div>
       <div>
-        <p className="text-lg font-medium leading-tight">{title}</p>
-        <p className="text-sm text-gray-9 font-inter" >
+        <p className="text-base font-medium mb-1">{title}</p>
+        <p className="text-xs text-gray-9 font-inter leading-4" >
           {description}
         </p>
       </div>
@@ -42,8 +42,8 @@ export function EmptyAlertY({
       </div>
       <div className="border border-gray-6 w-12"></div>
       <div className="text-center">
-        <p className="text-lg font-medium leading-tight">{title}</p>
-        <p className="text-sm text-gray-9 font-inter" >
+        <p className="text-base font-medium mb-1">{title}</p>
+        <p className="text-xs text-gray-9 font-inter leading-4" >
           {description}
         </p>
       </div>
