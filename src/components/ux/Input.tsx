@@ -43,7 +43,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer"
+              className="absolute inset-y-0 right-3 flex items-center text-gray-11 cursor-pointer"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

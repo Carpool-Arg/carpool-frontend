@@ -375,7 +375,7 @@ export const UnpaidPaymentModal = () => {
               className="w-full mt-3 bg-[#1f2937] hover:bg-[#273449] text-white font-semibold py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 no-print"
             >
               <Star className="w-5 h-5 text-yellow-400" />
-              Reseñar al chofer
+              Reseñar al conductor
             </button>
           </div>
         </div>

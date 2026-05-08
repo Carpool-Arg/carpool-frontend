@@ -30,6 +30,7 @@ import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
 import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
+import { DateTimePicker } from '@/components/ux/DateTimePicker';
 
 interface BaggageOption {
   value: string;
@@ -305,10 +306,10 @@ export function TripForm() {
 
   if (vehiclesLoading) {
     return (
-      <div className="flex flex-col justify-start gap-4 w-full md:py-8">
+      <div className="flex flex-col justify-start gap-4 w-full">
         <div className='h-6 w-2/3 bg-gray-2 animate-pulse rounded'></div>
         {Array.from({ length: Math.max(vehicles.length, 3) }).map((_, idx) => (
-            <VehicleCardSkeleton key={idx} />
+          <VehicleCardSkeleton key={idx} />
         ))}
       </div>
     )
@@ -441,7 +442,7 @@ export function TripForm() {
                     setOrigin({ ...origin, observation: e.target.value });
                     setValue("originObservation", e.target.value, { shouldValidate: true });
                   }}
-                  className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
+                  className="w-full p-2 mt-1 rounded-b-lg bg-gray-7"
                 />
                 {errors.originObservation && (
                   <p className="text-xs text-red-500 mt-1">
@@ -487,8 +488,7 @@ export function TripForm() {
                     setDestination({ ...destination, observation: e.target.value });
                     setValue("destinationObservation", e.target.value, { shouldValidate: true });
                   }}
-    
-                  className="w-full p-2 mt-2 rounded border border-gray-5 dark:border-gray-2"
+                  className="w-full p-2 mt-1 rounded-b-lg bg-gray-7"
                 />
                 {errors.destinationObservation && (
                   <p className="text-xs text-red-500 mt-1">
@@ -498,20 +498,12 @@ export function TripForm() {
 
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium font-inter">Fecha y hora de salida</label>
-                <input
-                  type="datetime-local"
-                {...register('startDateTime')}
-                  className="w-full p-2 rounded border border-gray-5 dark:border-gray-2"
-                  step="60"
+              <div>
+                <DateTimePicker
+                  value={watch('startDateTime')}
+                  onChange={(val) => setValue('startDateTime', val, { shouldValidate: true })}
+                  error={errors.startDateTime?.message || dateError || undefined}
                 />
-                {errors.startDateTime && (
-                  <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
-                )}
-                {dateError && (
-                  <p className="text-red-500 text-sm mt-1">{dateError}</p>
-                )}
               </div>
 
               <div className="grid grid-cols-2 gap-6">

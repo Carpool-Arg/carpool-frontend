@@ -18,7 +18,7 @@ export function TripDriverList({ trips, onError, onSuccess }: TripDriverListProp
         <EmptyAlert
           icon={<MapPinOff size={32} />}
           title="No hay viajes disponibles"
-          description="Todavía no tenés viajes asociados como chofer."
+          description="Todavía no tenés viajes asociados como conductor."
         />
     );
   }
