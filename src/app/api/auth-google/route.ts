@@ -17,7 +17,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function POST(req: NextRequest) {
   try {
-    // Extraer el client id token de la cookie
     const { idToken } = await req.json();
 
     if (!idToken) {
@@ -28,7 +27,6 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Llamar al backend
     const res = await fetch(`${apiUrl}/auth-google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -37,11 +35,9 @@ export async function POST(req: NextRequest) {
 
     if (!res.ok) {
       const errorJson: GoogleLoginResponse = await res.json();
-
       const errorRes = NextResponse.json(errorJson, { status: res.status });
       errorRes.cookies.delete("token");
       errorRes.cookies.delete("refreshToken");
-
       return errorRes;
     }
 
@@ -55,48 +51,47 @@ export async function POST(req: NextRequest) {
       }, { status: 401 });
     }
 
-    const accessToken = response.data?.accessToken;
-    const refreshToken = response.data?.refreshToken;
-
     const nextRes = NextResponse.json(response, { status: res.status });
 
-    // Guardar ambos tokens en la cookie
-    if (accessToken) {
-      // Decodificar el token para calcular la duración
-      const decoded = parseJwt(accessToken);
-      const iat = Number(decoded?.iat);
-      const exp = Number(decoded?.exp);
-      const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
+    if (response.data.status === 'ACTIVE') {
+      const { accessToken, refreshToken } = response.data;
+
+      const decodedAccess = parseJwt(accessToken);
+      const iat = Number(decodedAccess?.iat);
+      const exp = Number(decodedAccess?.exp);
+      const maxAgeAccess = exp > iat ? exp - iat : 60 * 60 * 2;
+
+      const decodedRefresh = parseJwt(refreshToken);
+      const iatR = Number(decodedRefresh?.iat);
+      const expR = Number(decodedRefresh?.exp);
+      const maxAgeRefresh = expR > iatR ? expR - iatR : 60 * 60 * 2;
 
       nextRes.cookies.set('token', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge, // Setear la duración
-      })
-    }
+        maxAge: maxAgeAccess,
+      });
 
-    if (refreshToken) {
       nextRes.cookies.set('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 días
+        maxAge: maxAgeRefresh,
       });
     }
-    // Devolver respuesta estandarizada
+
     return nextRes;
   } catch (error: unknown) {
-    // Manejo de errores inesperados
     const message = error instanceof Error ? error.message : "Error desconocido";
-    const errorRes = NextResponse.json(
+    const errorRes = NextResponse.json(      
       { data: null, messages: [message], state: "ERROR" },
       { status: 500 }
     );
-    errorRes.cookies.delete('token');
+    errorRes.cookies.delete('token');         
     errorRes.cookies.delete('refreshToken');
-    return errorRes;
+    return errorRes; 
   }
 }

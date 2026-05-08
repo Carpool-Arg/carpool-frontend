@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
 
 
   if (!token) {
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
 
@@ -44,28 +44,45 @@ export async function middleware(req: NextRequest) {
         return response;
       }
     }
-    return redirectToLogin(req);
+    return redirectToHome(req);
   }
 
   // Controlar errores.
   const isValid = await verifyTokenWithServer(token);
   if (!isValid) {
-    return redirectToLogin(req);
+    const response = redirectToHome(req);
+    clearAuthCookies(response);
+    return response;
   }
 
   //ROLES
   const payload = parseJwt(token);
-  if (!payload) return redirectToLogin(req);
+  if (!payload) return redirectToHome(req);
 
   return NextResponse.next();
 }
 
 //HELPERS
 
-function redirectToLogin(req: NextRequest) {
+function redirectToHome(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = "/login";
+  url.pathname = "/";
   return NextResponse.redirect(url);
+}
+
+function clearAuthCookies(res: NextResponse): NextResponse {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path: '/',
+    maxAge: 0,
+  };
+
+  res.cookies.set('token', '', cookieOptions);
+  res.cookies.set('refreshToken', '', cookieOptions);
+
+  return res;
 }
 
 async function refreshAccessToken(refreshToken: string) {
@@ -94,26 +111,33 @@ function setTokenCookies(
 ) {
   const { accessToken, refreshToken } = tokens;
 
-  const decoded = JSON.parse(
-    Buffer.from(accessToken.split(".")[1], "base64").toString()
-  );
-  const maxAge = decoded.exp - decoded.iat;
 
-  response.cookies.set("token", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge,
-  });
+  if(accessToken ) {
+    const decoded = parseJwt(accessToken);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
+    const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
+    response.cookies.set("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge,
+    });
+  }
+ 
 
   if (refreshToken) {
+    const decoded = parseJwt(refreshToken);
+    const iat = Number(decoded?.iat);
+    const exp = Number(decoded?.exp);
+    const maxAge = exp > iat ? exp - iat : 60 * 60 * 2; // 2 horas por defecto
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge,
     });
   }
 }
