@@ -50,7 +50,9 @@ export async function middleware(req: NextRequest) {
   // Controlar errores.
   const isValid = await verifyTokenWithServer(token);
   if (!isValid) {
-    return redirectToHome(req);
+    const response = redirectToHome(req);
+    clearAuthCookies(response);
+    return response;
   }
 
   //ROLES
@@ -66,6 +68,21 @@ function redirectToHome(req: NextRequest) {
   const url = req.nextUrl.clone();
   url.pathname = "/";
   return NextResponse.redirect(url);
+}
+
+function clearAuthCookies(res: NextResponse): NextResponse {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path: '/',
+    maxAge: 0,
+  };
+
+  res.cookies.set('token', '', cookieOptions);
+  res.cookies.set('refreshToken', '', cookieOptions);
+
+  return res;
 }
 
 async function refreshAccessToken(refreshToken: string) {
