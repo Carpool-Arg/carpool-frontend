@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/authContext';
 import { AlertDialog } from '../ux/AlertDialog';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/shared/utils/number';
-
+import { downloadPaymentReceipt } from '@/services/reservation/reservationService';
 
 export const UnpaidPaymentModal = () => {
   const { unpaidNotification, clearNotification } = useNotification();
@@ -20,6 +20,8 @@ export const UnpaidPaymentModal = () => {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
   const router = useRouter()
+  const [isDownloading, setIsDownloading] = useState(false);
+
   // Agregar estilos de impresión - DEBE estar antes del early return
   useEffect(() => {
     const style = document.createElement('style');
@@ -179,8 +181,14 @@ export const UnpaidPaymentModal = () => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    if (!unpaidNotification.data?.reservationId || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await downloadPaymentReceipt(unpaidNotification.data.reservationId);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleCloseSuccess = () => {
@@ -364,10 +372,20 @@ export const UnpaidPaymentModal = () => {
             {/* Botón imprimir */}
             <button
               onClick={handlePrint}
-              className="w-full mt-6 bg-[#252525] hover:bg-[#2a2a2a] text-white font-semibold py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 no-print"
+              disabled={isDownloading}
+              className="w-full mt-6 bg-[#252525] hover:bg-[#2a2a2a] text-white font-semibold py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 no-print cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Printer className="w-5 h-5" />
-              Imprimir comprobante
+              {isDownloading ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Generando comprobante…</span>
+                </>
+              ) : (
+                <>
+                  <Printer className="w-5 h-5" />
+                  Imprimir comprobante
+                </>
+              )}
             </button>
 
             <button
