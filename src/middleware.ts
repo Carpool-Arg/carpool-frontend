@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PUBLIC_PATHS } from "./constants/paths/publicPaths";
 import {verifyTokenWithServer} from './services/auth/authService'
 import { isTokenExpired, parseJwt } from "./shared/utils/jwt";
+import { API_URL } from "./constants/api";
 
 
 export async function middleware(req: NextRequest) {
@@ -87,8 +88,8 @@ function clearAuthCookies(res: NextResponse): NextResponse {
 
 async function refreshAccessToken(refreshToken: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${apiUrl}/auth/refresh`, {
+    
+    const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
       headers: { Authorization: `Bearer ${refreshToken}` },
     });

@@ -4,7 +4,7 @@ import { RegisterData } from "@/modules/auth/schemas/registerSchema";
 import { GoogleLoginResponse } from "@/modules/auth/types/dto/googleAuthResponseDTO";
 import { LoginResponse } from "@/modules/auth/types/dto/loginResponseDTO";
 import { VoidResponse } from "@/shared/types/response";
-
+import { API_URL } from "@/constants/api";
 
 /**
  * Inicia sesión con email y contraseña.
@@ -159,8 +159,8 @@ export async function logoutUser(): Promise<VoidResponse> {
  */
 export async function verifyTokenWithServer(token: string): Promise<boolean> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/auth/verify-token`, {
+
+    const response = await fetch(`${API_URL}/auth/verify-token`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
