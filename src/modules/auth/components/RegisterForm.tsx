@@ -8,7 +8,7 @@ import { registerUser } from "@/services/auth/authService"
 import { useRouter } from "next/navigation"
 
 
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google"
+import { CredentialResponse, GoogleLogin, useGoogleLogin } from "@react-oauth/google"
 import { useAuth } from "@/contexts/authContext"
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Check, X } from 'lucide-react'
@@ -22,6 +22,7 @@ import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GENDERS } from "@/constants/genders"
+import { FcGoogle } from "react-icons/fc";
 
 
 export function RegisterForm() {
@@ -189,28 +190,22 @@ export function RegisterForm() {
     }
   }
 
-  const onGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-    if (!credentialResponse.credential) {
-      setError('Error: no se recibió credencial de Google')
-      return
-    }
+  const googleLogin = useGoogleLogin({
+    flow: 'implicit',
 
-    setError(null)
-    try {
-      await authGoogle(credentialResponse.credential)
-    } catch (error: unknown) {
-      let message = "Error desconocido";
-
-      if (error instanceof Error) {
-        message = error.message;
+    onSuccess: async (tokenResponse) => {
+      try {
+        await authGoogle(tokenResponse.access_token)
+      } catch (error) {
+        console.error(error)
       }
-      setError(message || 'Error al iniciar sesión con Google')
-    }
-  }
+    },
 
-  const onGoogleError = () => {
-    setError('Error en autenticación con Google')
-  }
+    onError: () => {
+      setError('Error en autenticación con Google')
+    }
+  })
+  
   
   return (
     <div className="flex flex-col gap-4 md:py-6 w-full">
@@ -302,21 +297,23 @@ export function RegisterForm() {
           </p>
          
 
-          <div className="flex items-center gap-2 text-gray-500">
+          <div className="flex items-center gap-2 text-gray-4/50">
             <div className="flex-1 h-px bg-gray-4/50" />
             <span className="text-sm font-inter">o</span>
             <div className="flex-1 h-px bg-gray-4/50" />
           </div>
 
           
-          <GoogleLogin
-            onSuccess={onGoogleSuccess}
-            onError={onGoogleError}
-            text="signup_with"
-            shape="rectangular"
-            size="large"
-            width="100%"
-          />
+          <button
+            type="button"
+            className="flex items-center justify-center gap-3 py-3 w-full 
+              rounded-full border bg-gray-8 border-gray-2/80 text-sm font-medium
+              text-gray-11 hover:bg-gray-7 hover:text-white transition cursor-pointer"
+            onClick={() => googleLogin()}
+          >
+            <FcGoogle size={20} />
+            Continuar con Google
+          </button>
           
 
           <p className="w-full text-center text-sm text-gray-4 font-inter">

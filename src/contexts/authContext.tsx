@@ -82,11 +82,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch('/api/me', { method: 'GET', credentials: 'include' });
       if (res.ok) {
         const response = await res.json();
+        console.log('response user', response)
         if (response.data) {
           setUser({ 
             username: response.data.username,
             roles: response.data.roles,
-            id: null, name: null, lastname: null, email: null, dni: null, phone: null, gender: null, status: null, birthDate: null, passengerRating:0
+            id: null, 
+            name: null, 
+            lastname: null, 
+            email: null, 
+            dni: null, 
+            phone: null, 
+            gender: null, 
+            status: null, 
+            birthDate: null, 
+            passengerRating:0
            });
           return response.data;
         }
@@ -133,9 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchFullUser = useCallback(async () => {
+    setLoading(true)
     try {
       const res = await fetch("/api/users", { method: "GET", credentials: "include" });
       const response = await res.json();
+      console.log('response full user', response)
       if (response.state !== "OK") return;
       setUser(prev => {
         if (!prev) return response.data;
@@ -143,6 +155,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (err) {
       console.error("Error cargando datos completos:", err);
+    } finally {
+      setLoading(false)
     }
   }, []);
 
@@ -238,10 +252,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const authGoogle = async (idToken: string) => {
+  const authGoogle = async (accessToken: string) => {
     setLoading(true);
     try {
-      const result = await authWithGoogle(idToken);
+      const result = await authWithGoogle(accessToken);
       if (result.state === "OK" && result.data) {
         const hasUser = await fetchUser();
         const isDriver = hasUser?.roles.includes('driver')

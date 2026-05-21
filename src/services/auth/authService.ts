@@ -45,16 +45,16 @@ export const loginUser = async (data: LoginData & { recaptchaToken?: string }): 
 /**
  * Autentica al usuario usando Google Sign-In.
  *
- * @param {string} idToken - Token de Google generado en el cliente.
+ * @param {string} accessToken - Token de Google generado en el cliente.
  * @returns {Promise<GoogleLoginResponse>} - Respuesta estándar.
  */
-export const authWithGoogle = async (idToken: string): Promise<GoogleLoginResponse> => {
+export const authWithGoogle = async (accessToken: string): Promise<GoogleLoginResponse> => {
   try {
     const res = await fetch('/api/auth-google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify({ accessToken }),
     });
 
     const response: GoogleLoginResponse = await res.json();

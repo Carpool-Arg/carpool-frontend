@@ -17,9 +17,9 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  */
 export async function POST(req: NextRequest) {
   try {
-    const { idToken } = await req.json();
+    const { accessToken } = await req.json();
 
-    if (!idToken) {
+    if (!accessToken) {
       return NextResponse.json({ 
         data: null, 
         messages: ["Client token no encontrado"], 
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(`${apiUrl}/auth-google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify({ accessToken }),
     });
 
     if (!res.ok) {
