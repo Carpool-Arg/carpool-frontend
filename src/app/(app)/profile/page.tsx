@@ -1,12 +1,11 @@
 'use client';
 
-import { Alert } from '@/components/ux/Alert';
 import { AlertDialog } from '@/components/ux/AlertDialog';
 import { useAuth } from '@/contexts/authContext';
 import { ProfileHeader } from '@/modules/profile/components/ProfileHeader';
 import { ProfileOptions } from '@/modules/profile/components/ProfileOptions';
 import { RoleSwithcer } from '@/modules/profile/components/RoleSwitcher';
-import { CarFront, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

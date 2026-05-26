@@ -14,7 +14,7 @@ export const UnpaidPaymentModal = () => {
   const { unpaidNotification, clearNotification } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { fetchUserDebt } = useAuth();
+  const { fetchUserDebt, fetchUserImage} = useAuth();
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -169,7 +169,10 @@ export const UnpaidPaymentModal = () => {
         return;
       }
 
+
       await fetchUserDebt();
+      await fetchUserImage();
+
       setShowSuccess(true);
     } catch{
       setPaymentError("Error inesperado al procesar el pago");

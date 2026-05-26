@@ -82,7 +82,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch('/api/me', { method: 'GET', credentials: 'include' });
       if (res.ok) {
         const response = await res.json();
-        console.log('response user', response)
         if (response.data) {
           setUser({ 
             username: response.data.username,
@@ -147,7 +146,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await fetch("/api/users", { method: "GET", credentials: "include" });
       const response = await res.json();
-      console.log('response full user', response)
       if (response.state !== "OK") return;
       setUser(prev => {
         if (!prev) return response.data;

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "simplebar-react/dist/simplebar.min.css";
 
 /* ======= Variables base ======= */
 :root {
@@ -228,4 +228,21 @@ input[type=number] {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+/* thumb */
+.simplebar-scrollbar::before {
+  background-color: #363635 !important;
+  opacity: 1 !important;
+}
+
+/* hover */
+.simplebar-scrollbar:hover::before {
+  background-color: #4a4a49  !important;
+}
+
+/* track */
+.simplebar-track.simplebar-vertical {
+  width: 8px;
 }

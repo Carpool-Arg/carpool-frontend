@@ -1,28 +1,24 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { registerUser } from "@/services/auth/authService"
-
-import { useRouter } from "next/navigation"
-
-
-import { CredentialResponse, GoogleLogin, useGoogleLogin } from "@react-oauth/google"
-import { useAuth } from "@/contexts/authContext"
+import { registerUser } from "@/services/auth/authService";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/authContext";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Check, X } from 'lucide-react';
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
-import { Check, X } from 'lucide-react'
-
-import Link from "next/link"
-import { RegisterData, RegisterStep1Data, registerStep1Schema, RegisterStep2Data, registerStep2Schema } from "../schemas/registerSchema"
-import { useFieldValidator } from "@/shared/hooks/useFieldValidator"
-import Spinner from "@/components/ux/Spinner"
-import { Alert } from "@/components/ux/Alert"
-import { Input } from "@/components/ux/Input"
-import { Button } from "@/components/ux/Button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { GENDERS } from "@/constants/genders"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert } from "@/components/ux/Alert";
+import { Button } from "@/components/ux/Button";
+import { Input } from "@/components/ux/Input";
+import Spinner from "@/components/ux/Spinner";
+import { GENDERS } from "@/constants/genders";
+import { useFieldValidator } from "@/shared/hooks/useFieldValidator";
+import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { RegisterData, RegisterStep1Data, registerStep1Schema, RegisterStep2Data, registerStep2Schema } from "../schemas/registerSchema";
 
 
 export function RegisterForm() {

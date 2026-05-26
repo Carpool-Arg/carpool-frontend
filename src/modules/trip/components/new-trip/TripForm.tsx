@@ -18,6 +18,7 @@ import { Button } from '@/components/ux/Button';
 import InfoTooltip from '@/components/ux/InfoTooltip';
 import InvalidDriverAlert from '@/components/ux/InvalidDriverAlert';
 import { Toast } from '@/components/ux/Toast';
+import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
 import { CityAutocomplete } from '@/modules/city/components/CityAutocomplete';
 import { VehicleCardSkeleton } from '@/modules/vehicle/components/VehicleSkeleton';
 import { useUserVehicles } from '@/modules/vehicle/hooks/useUserVehicles';
@@ -29,8 +30,6 @@ import { TripPriceSummary } from './TripPriceSummary';
 import { TripRoutePreview } from './TripRoutePreview';
 import { TripStopForm } from './tripStop/TripStopsForm';
 import { VehicleSelector } from './VehicleSelector';
-import { R2_PUBLIC_PREFIX } from '@/constants/imagesR2';
-import { DateTimePicker } from '@/components/ux/DateTimePicker';
 
 interface BaggageOption {
   value: string;
@@ -365,7 +364,7 @@ export function TripForm() {
 
 
   return (
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 mb-4">
         {step === 1 && (
           // === PASO 1: Seleccionar vehículo ===
             <div className='flex flex-col flex-1 justify-between'>
@@ -376,7 +375,7 @@ export function TripForm() {
                   </h2>
                 </div>
 
-                {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>}
+                {vehiclesError && <p className="text-xs text-red-500">{vehiclesError}</p>}
 
                 <VehicleSelector
                   selectedVehicleId={selectedVehicleId}
@@ -389,7 +388,7 @@ export function TripForm() {
                 variant="primary"
                 onClick={() => setStep(2)}
                 disabled={!selectedVehicleId}
-                className='px-12 py-2 text-sm font-inter font-medium'
+                className='text-sm font-medium'
               >
                 Siguiente
               </Button>
@@ -498,18 +497,29 @@ export function TripForm() {
 
               </div>
 
-              <div>
-                <DateTimePicker
-                  value={watch('startDateTime')}
-                  onChange={(val) => setValue('startDateTime', val, { shouldValidate: true })}
-                  error={errors.startDateTime?.message || dateError || undefined}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium ">Fecha y hora de salida</label>
+                <input
+                  type="datetime-local"
+                  {...register('startDateTime')}
+                  className="w-full p-2 rounded border border-gray-5 dark:border-gray-2 cursor-pointer"
+                  min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .slice(0, 16)}
+                  step="60"
                 />
+                {errors.startDateTime && (
+                  <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
+                )}
+                { dateError && (
+                  <p className="text-red-500 text-sm mt-1">{dateError}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 {/* Asientos disponibles */}
                 <div>
-                  <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
+                  <label className="flex mb-1 items-center text-sm font-medium gap-1">
                     <span className="truncate">Asientos disponibles</span>
                     <InfoTooltip text="Cantidad de asientos disponibles para pasajeros"></InfoTooltip>
                   </label>
@@ -544,7 +554,7 @@ export function TripForm() {
 
                 {/* Precio por asiento */}
                 <div>
-                  <label className="flex mb-1 items-center text-sm font-medium font-inter gap-1">
+                  <label className="flex mb-1 items-center text-sm font-medium gap-1">
                     <span className="truncate">Precio por asiento</span>
                     <InfoTooltip text="El precio ingresado corresponde al valor antes de comisiones. El monto que recibirás será menor una vez aplicadas las tarifas de la plataforma"></InfoTooltip>
                   </label>
@@ -857,7 +867,10 @@ export function TripForm() {
         />
         <AlertDialog
           isOpen={isSuccessDialogOpen}
-          onClose={() => setIsSuccessDialogOpen(false)}
+          onClose={() => {
+            setIsSuccessDialogOpen(false)
+            router.push('/home')
+          }}
           secondaryButton={{
             text: "Inicio",
             onClick: () => {
@@ -873,6 +886,7 @@ export function TripForm() {
           description="Podrás ver y gestionar tus viajes en la sección 'Mis Viajes'."
           confirmText="Mis viajes"
           cancelText="Inicio"
+          autoCloseOnConfirm={false}
         />
         {toast && (
           <Toast

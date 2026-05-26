@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     if (refreshToken) {
       const decoded = parseJwt(refreshToken);
-      console.log('decoded',decoded)
+
       const iat = Number(decoded?.iat);
       const exp = Number(decoded?.exp);
       const maxAge = exp > iat ? exp - iat : 60 * 60 * 2;

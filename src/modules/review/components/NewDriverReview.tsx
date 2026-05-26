@@ -68,8 +68,6 @@ export default function NewDriverReview() {
     }
   }, [tripId]);
 
-
-
   const handleRating = (rate: number) => {
     if (isSubmitting) return;
     setRating(rate);
@@ -121,7 +119,7 @@ export default function NewDriverReview() {
 
   if (isChecking) {
     return (
-      <div className="h-full my-auto w-lg">
+      <div className="h-full my-auto w-full">
         <NewDriverReviewSkeleton/>
       </div>
     );

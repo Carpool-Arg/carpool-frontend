@@ -274,9 +274,6 @@ export function DateTimePicker({
     });
   }
 
-  function changeHour(dir: number) { setHour(h => (h + dir + 24) % 24); }
-  function changeMinute(dir: number) { setMinute(m => (m + dir * 15 + 60) % 60); }
-
   function handleConfirm() {
     if (!selDate) return;
     onChange(toDateTimeLocal(selDate, hour, minute));

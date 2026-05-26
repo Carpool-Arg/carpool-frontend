@@ -49,7 +49,7 @@ export default function InfoTooltip({ text }: { text: string }) {
         {icon}
       </button>
       </TooltipTrigger>
-      <TooltipContent className="bg-gray-900 text-white rounded-md px-3 py-2 shadow-lg" side="top">{text}</TooltipContent>
+      <TooltipContent className="bg-gray-8 text-white rounded-md px-3 py-2 shadow-lg" side="top">{text}</TooltipContent>
     </Tooltip>
   );
 }
