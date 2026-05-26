@@ -14,7 +14,7 @@ export const UnpaidPaymentModal = () => {
   const { unpaidNotification, clearNotification } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { fetchUserDebt } = useAuth();
+  const { fetchUserDebt, fetchUserImage} = useAuth();
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -171,7 +171,10 @@ export const UnpaidPaymentModal = () => {
         return;
       }
 
+
       await fetchUserDebt();
+      await fetchUserImage();
+
       setShowSuccess(true);
     } catch{
       setPaymentError("Error inesperado al procesar el pago");
@@ -393,7 +396,7 @@ export const UnpaidPaymentModal = () => {
               className="w-full mt-3 bg-[#1f2937] hover:bg-[#273449] text-white font-semibold py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 no-print"
             >
               <Star className="w-5 h-5 text-yellow-400" />
-              Reseñar al chofer
+              Reseñar al conductor
             </button>
           </div>
         </div>
