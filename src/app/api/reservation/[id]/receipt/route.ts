@@ -1,3 +1,4 @@
+import { API_URL } from "@/constants/api";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -12,15 +13,21 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
  * @param params - Parámetros de ruta, contiene el id de la reserva
  * @returns PDF como stream binario o respuesta de error en JSON
  */
+
+type Props = {
+  params: Promise<{
+    id: string;
+  }>;
+};
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Props
 ) {
   try {
     const token = req.cookies.get("token")?.value;
     const { id } = await params;
 
-    const res = await fetch(`${apiUrl}/reservation/${id}/receipt`, {
+    const res = await fetch(`${API_URL}/reservation/${id}/receipt`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
