@@ -1,7 +1,6 @@
 import { API_URL } from "@/constants/api";
 import { NextRequest, NextResponse } from "next/server";
 
-
 /**
  * Descarga el comprobante PDF de una reserva completada del usuario en sesión.
  *
