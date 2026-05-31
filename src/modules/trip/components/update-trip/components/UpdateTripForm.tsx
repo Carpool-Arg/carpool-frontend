@@ -309,6 +309,8 @@ export function UpdateTripForm() {
     }
   };
 
+  const startDateError = errors.startDateTime?.message || dateError;
+
   if (loading) return <UpdateTripFormSkeleton/>;
 
   if (tripError) {
@@ -514,11 +516,8 @@ export function UpdateTripForm() {
               className="w-full p-2 rounded border border-gray-5 dark:border-gray-2"
               step="60"
             />
-            {errors.startDateTime && (
-              <p className="text-red-500 text-xs mt-1">{errors.startDateTime.message}</p>
-            )}
-            {dateError && (
-              <p className="text-red-500 text-xs mt-1">{dateError}</p>
+            {startDateError && (
+              <p className="text-red-500 text-xs mt-1">{startDateError}</p>
             )}
             
           </div>
