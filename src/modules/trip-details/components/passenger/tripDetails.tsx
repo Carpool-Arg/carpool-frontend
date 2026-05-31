@@ -19,6 +19,7 @@ import { AlertDialog } from "../../../../components/ux/AlertDialog";
 import { Button } from "../../../../components/ux/Button";
 import { useTripDetails } from "../../hooks/useTripDetails";
 import { TripDetailSkeleton } from "../TripDetailSkeleton";
+import { formatDomain } from "@/shared/utils/domain";
 
 const SEARCH_CONTEXT_KEY = 'carpool_search_context';
 
@@ -214,8 +215,15 @@ export default function TripDetails() {
                   {capitalizeWords(trip.vehicle.brand)}{" "}
                   {capitalizeWords(trip.vehicle.model)}
                 </span>
-                <span>{trip.vehicle.domain}</span>
-                <span>Color: {capitalizeWords(trip.vehicle.color)}</span>
+                <span className="text-sm">{formatDomain(trip.vehicle.domain)}</span>
+                <p className="flex items-center text-sm gap-2">
+                  Color: 
+                  <span
+                  className="inline-block w-4 h-4 rounded-full border border-gray-11/30"
+                  style={{
+                    backgroundColor: trip.vehicle.color,
+                  }}
+                /></p>
               </div>
             </div>
           </div>

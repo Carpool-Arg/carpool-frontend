@@ -1,6 +1,8 @@
 "use client";
 
-import { BrushCleaning, ListFilter, Star, X } from "lucide-react";
+import { formatDateUTC } from "@/shared/utils/string";
+import { BrushCleaning, Calendar, ListFilter, Star, X } from "lucide-react";
+import { useRef } from "react";
 
 interface FilterBarProps {
   selectedDate?: string; // fecha seleccionada en formato ISO (yyyy-mm-dd)
@@ -18,12 +20,27 @@ export default function FilterBar({
   onClearFilters,
 }: FilterBarProps) {
 
-
+  const today = new Date();
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const hasActiveFilters = selectedDate || sortByRating;
+
+  const minDate = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join("-");
 
   const handleClearFilterDate = () => {
     onDateChange?.(undefined)
   }
+
+  const handleOpenDatePicker = () => {
+    if (dateInputRef.current?.showPicker) {
+      dateInputRef.current.showPicker();
+    } else {
+      dateInputRef.current?.click();
+    }
+  };
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -34,23 +51,40 @@ export default function FilterBar({
       {/* FILTRO FECHA */}
       <div className={`flex items-center border border-gray-2  hover:bg-gray-2 rounded-lg px-1
           ${selectedDate && 'border-gray-6'}
-        `}>
-        <input 
-          type="date" 
-          value={selectedDate ?? ''} 
-          onChange={(e) => onDateChange?.(e.target.value)} 
-          min={new Date().toISOString().split("T")[0]} 
-          className="border-gray-2 w-30 hover:bg-gray-2 cursor-pointer rounded-lg text-sm p-1 outline-none focus:border-gray-6" 
-          placeholder="Seleccione fecha"
-        /> 
-        {selectedDate && 
-          <button 
-            className="rounded-full hover:bg-gray-2 p-1 cursor-pointer"
-            onClick={handleClearFilterDate}
+        `}
+      >
+        <button
+            type="button"
+            onClick={handleOpenDatePicker}
+            className="flex items-center gap-2 text-sm p-1 cursor-pointer"
           >
-            <X size={14}/>
+            <Calendar size={14} />
+            <span>
+              {
+                selectedDate
+                  ? formatDateUTC(selectedDate)
+                  : "Seleccionar fecha"
+              }
+            </span>
           </button>
-        }
+
+          {selectedDate && (
+            <button
+              className="rounded-full hover:bg-gray-2 p-1 cursor-pointer"
+              onClick={handleClearFilterDate}
+            >
+              <X size={14} />
+            </button>
+          )}
+
+          <input
+            ref={dateInputRef}
+            type="date"
+            value={selectedDate ?? ""}
+            onChange={(e) => onDateChange?.(e.target.value)} 
+            min={minDate}
+            className="absolute opacity-0 pointer-events-none"
+          />
       </div>
       
 

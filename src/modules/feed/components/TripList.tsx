@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Trip from "./Trip";
 import { SearchData } from "@/modules/search/types/search";
 import { City } from "@/models/city";
-import { formatFullDate, formatFullDateWithYear, parseLocalDate } from "@/shared/utils/date";
+import { formatFullDate, formatFullDateWithYear, isToday, isTomorrow, parseLocalDate } from "@/shared/utils/date";
 import { EmptyAlert } from "@/components/ux/EmptyAlert";
 
 interface TripListProps {
@@ -97,11 +97,13 @@ export default function TripList({ feed, currentCity, originSearch, destinationS
           <div key={index}>
             {showDateHeader && (
               <h1 className="font-semibold mb-2 text-lg">
-                {
-                  isThisYear(tripDate)
-                  ? formatFullDate(tripDate)
-                  : formatFullDateWithYear(tripDate)
-                }
+                {isToday(tripDate)
+                  ? `Hoy, ${formatFullDate(tripDate)}`
+                  : isTomorrow(tripDate)
+                    ? `Mañana, ${formatFullDate(tripDate)}`
+                    : isThisYear(tripDate)
+                      ? formatFullDate(tripDate)
+                      : formatFullDateWithYear(tripDate)}
               </h1>
             )}
             <div 

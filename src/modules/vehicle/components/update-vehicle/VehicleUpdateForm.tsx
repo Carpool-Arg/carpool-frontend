@@ -91,7 +91,7 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
         brand: values.brand,
         model: values.model,
         year: values.year,
-        color: values.color.replace("#", "").toLowerCase(),
+        color: values.color.toLowerCase(),
         availableSeats: values.availableSeats,
         domain: values.domain,
         vehicleTypeId: values.vehicleTypeId,
@@ -236,7 +236,7 @@ export function VehicleUpdateForm({ vehicle }: { vehicle?: Vehicle }) {
           </div>
 
           {errors.color?.message && (
-            <p className="text-sm text-red-500">
+            <p className="text-xs text-red-500">
               {errors.color.message}
             </p>
           )}

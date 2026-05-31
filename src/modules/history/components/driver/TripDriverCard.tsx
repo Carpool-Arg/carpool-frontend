@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { CancelReasonModal } from "../CancelReasonModal";
 import { tripButtonConfig } from "../driver/TripDriverStateButton";
+import { formatPrice } from "@/shared/utils/number";
 
 interface TripCardProps {
   trip: TripDriverDTO;
@@ -171,7 +172,7 @@ export function TripDriverCard({ trip ,onError, onSuccess, openMenuTripId, setOp
            
         </div>
         <span className="text-base font-semibold">
-          ${trip.seatPrice}
+          ${formatPrice(trip.seatPrice)}
         </span>
       </div>
 

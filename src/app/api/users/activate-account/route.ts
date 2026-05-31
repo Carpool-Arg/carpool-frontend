@@ -1,23 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { API_URL } from "@/constants/api";
+import { VoidResponse } from "@/shared/types/response";
 
-export async function GET(req: NextRequest) {
-  const token = req.nextUrl.searchParams.get("token");
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const token = body.token;
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/email-verified?status=error", req.url));
-  }
+    if (!token) {
+      return NextResponse.json(
+        { data: null, messages: 'Token inválido', state: "ERROR" },
+        { status: 400 }
+      );
+    }
 
-  const response = await fetch(`${API_URL}/users/activate-account`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
-  });
+    const res = await fetch(`${API_URL}/users/activate-account`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
 
-  if (response.ok) {
-    return NextResponse.redirect(new URL("/email-verified?status=success", req.url));
-  } else {
-    return NextResponse.redirect(new URL("/email-verified?status=error", req.url));
+    const response: VoidResponse = await res.json();
+
+    if (!res.ok || response.state === "ERROR") {
+      const messages =
+        response.messages?.length > 0
+          ? response.messages
+          : ["Error desconocido"];
+      return NextResponse.json(
+        { data: null, messages, state: "ERROR" },
+        { status: res.ok ? 200 : res.status }
+      );
+    }
+
+    return NextResponse.json(response, { status: res.status });
+  } catch (error: unknown) {
+    // Manejo de errores inesperados
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    const errorRes = NextResponse.json(
+      { data: null, messages: [message], state: "ERROR" },
+      { status: 500 }
+    );
+    return errorRes;
   }
 }

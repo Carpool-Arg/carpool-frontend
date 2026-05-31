@@ -119,7 +119,7 @@ export default function NewPassengerReview() {
   
     if (isChecking) {
       return (
-        <div className="h-full my-auto w-lg">
+        <div className="h-full my-auto w-full">
           <NewDriverReviewSkeleton/>
         </div>
       );
@@ -158,7 +158,7 @@ export default function NewPassengerReview() {
         
 
         {errors.rating && (
-          <span className="text-sm text-red-500">
+          <span className="text-xs text-red-500">
             {errors.rating.message}
           </span>
         )}
@@ -184,7 +184,7 @@ export default function NewPassengerReview() {
         <div className="flex justify-between text-xs text-gray-500">
           <span>{commentValue.length}/250</span>
           {errors.comment && (
-            <span className="text-red-500">
+            <span className="text-red-500 text-xs">
               {errors.comment.message}
             </span>
           )}

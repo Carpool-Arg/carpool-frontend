@@ -193,7 +193,7 @@ export function CityAutocomplete({
       )}
 
       {(error) && (
-        <p className="text-error text-sm mt-1">
+        <p className="text-error text-xs mt-1">
           {error}
         </p>
       )}

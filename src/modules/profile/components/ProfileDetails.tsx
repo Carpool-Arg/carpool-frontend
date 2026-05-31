@@ -327,7 +327,7 @@ export default function ProfileDetails() {
                   </Select>
 
                   {errors.gender && (
-                    <p className="text-red-500 mt-1">{errors.gender.message}</p>
+                    <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
                   )}
                 </div>
               )}

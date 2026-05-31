@@ -1,190 +1,197 @@
 'use client'
 
 import { useEffect, useState } from "react"
-
-import { Clock, Mail, XCircle } from "lucide-react"
+import { Clock, Mail, XCircle, Send, CheckCircle } from "lucide-react"
 import { Input } from "@/components/ux/Input"
 import { Button } from "@/components/ux/Button"
 
 type MailFormProps = {
-    queryEmail: boolean
-    title: string 
-    subtitle: string
-    buttonText: string
-    tokenExpiration: string
-    paramMail?:string
-    onResend: (email: string) => Promise<void>
+  queryEmail: boolean
+  title: string
+  subtitle: string
+  buttonText: string
+  tokenExpiration: string
+  paramMail?: string
+  onResend: (email: string) => Promise<void>
 }
 
 export default function MailForm({
-    queryEmail,
-    title,
-    subtitle,
-    buttonText,
-    tokenExpiration,
-    paramMail,
-    onResend,
-}: MailFormProps){
-    const [email, setEmail] = useState<string>('')
-    const [cooldown,setCooldown] = useState<number>(0)
-    const [loading,setLoading] = useState<boolean>(false)
-    const [message, setMessage] = useState<string>('')
-    const [error, setError] = useState<string>('')
+  queryEmail,
+  title,
+  subtitle,
+  buttonText,
+  tokenExpiration,
+  paramMail,
+  onResend,
+}: MailFormProps) {
+  const [email, setEmail] = useState<string>('')
+  const [cooldown, setCooldown] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [message, setMessage] = useState<string>('')
+  const [error, setError] = useState<string>('')
 
-    const [hasQueryEmail, setHasQueryEmail] = useState<boolean>(queryEmail) //guarda el boolean para saber si hubo o no query param
-    const [initialMail, setInitialMail] = useState<string>(paramMail || '') //guarda el email del query param
+  const [hasQueryEmail, setHasQueryEmail] = useState<boolean>(queryEmail)
+  const [initialMail, setInitialMail] = useState<string>(paramMail || '')
 
-    
-    const handleResend = async () => {
-      //si hay email por query param usa ese sino el email ingresado en el form
-      const targetEmail = hasQueryEmail ? initialMail : email
+  const handleResend = async () => {
+    const targetEmail = hasQueryEmail ? initialMail : email
 
-      if (!targetEmail) {
-        setError('Ingresá un correo válido')
-        return
-      }
-
-      setError('')
-      setLoading(true)
-      setMessage('')
-
-      try {
-        await onResend(targetEmail) // usás el correcto según el caso
-        setMessage('Correo enviado correctamente.')
-        setCooldown(30) // cooldown
-        const interval = setInterval(() => {
-          setCooldown((prev) => {
-            if (prev <= 1) {
-              clearInterval(interval)
-              return 0
-            }
-            return prev - 1
-          })
-        }, 1000)
-      } catch (error: unknown) {
-        setError('Hubo un problema al reenviar el correo.')
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
+    if (!targetEmail) {
+      setError('Ingresá un correo válido')
+      return
     }
 
-    const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    setError('')
+    setLoading(true)
+    setMessage('')
 
-
-    const handleSend = async () => {
-      if (!isValidEmail(email)) {
-        setError('Ingresá un correo electrónico válido.');
-        return;
-      }
-      try {
-        await handleResend() // renvia el correo
-        setHasQueryEmail(true) // simula que el email viene del query param
-        setInitialMail(email) // guarda el email para que se muestre en la pantalla correcta
-      } catch (err) {
-        console.error(err)
-      }
+    try {
+      await onResend(targetEmail)
+      setMessage('Correo enviado correctamente.')
+      setCooldown(30)
+      const interval = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    } catch (error: unknown) {
+      setError('Hubo un problema al reenviar el correo.')
+      console.error(error)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    useEffect(() => {
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  const handleSend = async () => {
+    if (!isValidEmail(email)) {
+      setError('Ingresá un correo electrónico válido.')
+      return
+    }
+    try {
+      await handleResend()
+      setHasQueryEmail(true)
+      setInitialMail(email)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
     if (message || error) {
-        const timer = setTimeout(() => {
-        setMessage('');
-        setError('');
-        }, 5000); 
-        return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+        setMessage('')
+        setError('')
+      }, 5000)
+      return () => clearTimeout(timer)
     }
-    }, [message, error]);
+  }, [message, error])
 
-    const obscureEmail = (email: string) => {
-        const [user, domain] = email.split('@')
-        return `${user[0]}***@${domain}`
-    }
+  const obscureEmail = (email: string) => {
+    const [user, domain] = email.split('@')
+    return `${user[0]}***@${domain}`
+  }
 
-    return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center py-6">
+  const steps = [
+    'Abrí tu aplicación de correo electrónico',
+    'Buscá el correo de verificación',
+    'Hacé clic en el botón de activación del correo',
+  ]
 
-      {/* Icono */}
-      <div className="w-20 h-20 bg-gray-1/90 rounded-full flex items-center justify-center mb-4">
-        <Mail className="w-10 h-10 text-primary" />
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+
+      {/* Ícono */}
+      <div className="w-16 h-16 rounded-full border border-gray-11/60 bg-gray-7 flex items-center justify-center mb-6">
+        <Mail className="w-7 h-7 text-gray-11" />
       </div>
 
-      {/* Título y subtítulo */}
-      <h1 className="text-2xl font-semibold mb-2">{title}</h1>
-      <p className="text-gray-3 mt-4 max-w-md font-inter">
-        {(hasQueryEmail && initialMail)
-          ? `Te enviamos un correo a: ${obscureEmail(initialMail)}. Revisa tu bandeja de entrada.`
+      {/* Título */}
+      <h1 className="text-xl font-semibold text-center mb-2">{title}</h1>
+
+      {/* Subtítulo */}
+      <p className="text-sm text-gray-11 text-center max-w-sm leading-relaxed mb-6 font-inter">
+        {hasQueryEmail && initialMail
+          ? <>Te enviamos un correo a{' '}<span className="font-medium text-white">{obscureEmail(initialMail)}</span>. Revisá tu bandeja de entrada.</>
           : subtitle}
       </p>
 
-      {/* Input y botón si no hay queryEmail */}
+      {/* Input si no hay email */}
       {!hasQueryEmail && (
-          <div className="my-6 flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full max-w-sm mb-6">
           <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="example@gmail.com"
-            />
+            className="flex-1"
+          />
           <Button
             onClick={handleSend}
             disabled={loading || cooldown > 0}
             variant="outline"
-            >
+            className="flex-1"
+          >
             {cooldown > 0 ? `Reenviar en ${cooldown}s` : buttonText}
           </Button>
         </div>
       )}
 
       {/* Pasos */}
-      <div className="flex flex-col items-start space-y-4 max-w-md font-inter mt-4 px-4">
-        {['Abrí tu aplicación de correo electrónico', 'Buscá el correo de verificación (revisá spam)', 'Hacé clic en el botón de activación'].map(
-            (step, index) => (
-                <div
-                key={index}
-                className="flex items-start space-x-3 text-sm text-gray-5"
-                >
-              <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-semibold text-primary">
-                  {index + 1}
-                </span>
-              </div>
-              <p className="text-left">{step}</p>
+      <div className="w-full max-w-sm bg-gray-8 rounded-xl border border-gray-2 divide-y divide-gray-2/70 mb-6">
+        {steps.map((step, index) => (
+          <div key={index} className="flex items-start gap-3 px-4 py-3">
+            <div className="w-6 h-6 rounded-full bg-white/90 border border-gray-200 flex items-center justify-center shrink-0">
+              <span className="text-xs font-semibold text-gray-10">{index + 1}</span>
             </div>
-          )
-        )}
+            <p className="text-sm text-gray-11 leading-relaxed font-inter">{step}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Tiempo de expiración */}
-      <div className="mt-8 flex items-center space-x-2 text-sm text-gray-500">
-        <Clock className="w-4 h-4" />
-        <p>El enlace expira en {tokenExpiration}.</p>
+      {/* Expiración */}
+      <div className="flex items-center gap-1.5 text-xs text-gray-11/75 mb-6">
+        <Clock className="w-3.5 h-3.5" />
+        <span>El enlace expira en {tokenExpiration}</span>
       </div>
 
-      {/* Mensajes */}
-      {(loading && hasQueryEmail)  && <p className="mt-4 text-primary">Reenviando correo...</p>}
-      {(message && hasQueryEmail) && <p className="mt-4 text-success">{message}</p>}
-        {(error) && (
-            <div
-                className="fixed bottom-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white 
-                bg-error"
-                >
-                <XCircle className="w-5 h-5" />
-                <span>{error}</span>
-            </div>
-        )}
+      {/* Estado de carga y éxito */}
+      {loading && hasQueryEmail && (
+        <p className="text-sm text-gray-400 mb-3">Reenviando correo...</p>
+      )}
 
-      {/* Botón secundario si hay queryEmail */}
+      {message && hasQueryEmail && (
+        <div className="flex items-center gap-2 text-sm text-success mb-3">
+          <CheckCircle className="w-4 h-4" />
+          <span>{message}</span>
+        </div>
+      )}
+
+      {/* Botón de reenvío */}
       {hasQueryEmail && (
         <Button
           onClick={handleResend}
           disabled={loading || cooldown > 0}
           variant="outline"
-          className="mt-6 text-sm"
-          >
+          className="flex items-center gap-2 text-sm"
+        >
+          <Send className="w-3.5 h-3.5" />
           {cooldown > 0 ? `Reenviar en ${cooldown}s` : buttonText}
         </Button>
+      )}
+
+      {/* Toast de error */}
+      {error && (
+        <div className="fixed bottom-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm shadow-sm">
+          <XCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
     </div>
   )

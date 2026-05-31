@@ -303,6 +303,8 @@ export function TripForm() {
     }
   };
 
+  const startDateError = errors.startDateTime?.message || dateError;
+
   if (vehiclesLoading) {
     return (
       <div className="flex flex-col justify-start gap-4 w-full">
@@ -508,12 +510,10 @@ export function TripForm() {
                     .slice(0, 16)}
                   step="60"
                 />
-                {errors.startDateTime && (
-                  <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
+                {startDateError && (
+                  <p className="text-red-500 text-xs mt-1">{startDateError}</p>
                 )}
-                { dateError && (
-                  <p className="text-red-500 text-sm mt-1">{dateError}</p>
-                )}
+                
               </div>
 
               <div className="grid grid-cols-2 gap-6">
@@ -541,7 +541,7 @@ export function TripForm() {
                     />
 
                   </div>
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.availableSeat
                       ? errors.availableSeat.message
                       : watch("availableSeat") >= ((selectedVehicle?.availableSeats) ?? 0)
@@ -582,7 +582,7 @@ export function TripForm() {
                   />
                 </div>
                   {errors.seatPrice && (
-                    <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
+                    <p className="text-red-500 text-xs mt-1">{errors.seatPrice.message}</p>
                   )}
                 </div>
 
@@ -601,7 +601,7 @@ export function TripForm() {
                 )}
 
                 {priceCalculationError && !calculatingPrice && (
-                  <p className="text-sm text-red-500 mt-2">
+                  <p className="text-xs text-red-500 mt-2">
                     {priceCalculationError}
                   </p>
                 )}

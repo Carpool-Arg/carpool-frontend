@@ -66,7 +66,7 @@ export function VehicleForm() {
       const baseData: vehicleFormData = {
         ...step2Form.getValues(),
         ...data,
-        color: data.color.replace("#", "").toLowerCase(),
+        color: data.color.toLowerCase(),
         vehicleTypeId: step1Form.getValues().vehicleTypeId, // Nota el guion bajo
       };
       
@@ -106,7 +106,7 @@ export function VehicleForm() {
               />
 
               {step1Form.formState.errors.vehicleTypeId && (
-                <p className="text-red-500 text-sm">{step1Form.formState.errors.vehicleTypeId.message}</p>
+                <p className="text-red-500 text-xs">{step1Form.formState.errors.vehicleTypeId.message}</p>
               )}
             </div>
             
@@ -219,7 +219,7 @@ export function VehicleForm() {
                   </div>
 
                   {step2Form.formState.errors.color?.message && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-xs text-red-500">
                       {step2Form.formState.errors.color?.message}
                     </p>
                   )}
