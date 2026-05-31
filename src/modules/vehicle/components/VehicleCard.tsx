@@ -11,6 +11,7 @@ interface VehicleCardProps {
 }
 
 export function VehicleCard({ vehicle, onClick }: VehicleCardProps) {
+
   return (
     <div
       onClick={onClick}
@@ -39,6 +40,13 @@ export function VehicleCard({ vehicle, onClick }: VehicleCardProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        
+        <span
+          className="inline-block w-3 h-3 rounded-full border border-gray-11/30"
+          style={{
+            backgroundColor: vehicle.color,
+          }}
+        />
         <p className="text-sm font-inter ">
           {formatDomain(vehicle.domain)}
         </p>

@@ -161,10 +161,7 @@ export default function Results() {
       <FilterBar
         selectedDate={departureDate}
         onDateChange={(date) => {
-          if (!date) { setDepartureDate(undefined); return; }
-          const normalized = new Date(date);
-          normalized.setHours(0, 0, 0, 0);
-          setDepartureDate(normalized.toISOString().slice(0, 10));
+          setDepartureDate(date);
         }}
         sortByRating={orderByDriverRating}
         setSortByRating={setOrderByDriverRating}

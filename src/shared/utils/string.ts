@@ -31,6 +31,18 @@ export function formatDate(dateString: string): string {
   });
 }
 
+export function formatDateUTC(dateString: string): string {
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 //saca tildes
 export const normalizeText = (text: string) =>
   text

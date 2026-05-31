@@ -515,10 +515,10 @@ export function UpdateTripForm() {
               step="60"
             />
             {errors.startDateTime && (
-              <p className="text-red-500 text-sm mt-1">{errors.startDateTime.message}</p>
+              <p className="text-red-500 text-xs mt-1">{errors.startDateTime.message}</p>
             )}
             {dateError && (
-              <p className="text-red-500 text-sm mt-1">{dateError}</p>
+              <p className="text-red-500 text-xs mt-1">{dateError}</p>
             )}
             
           </div>
@@ -548,7 +548,7 @@ export function UpdateTripForm() {
                 />
 
               </div>
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 text-xs mt-1">
                 {errors.availableSeat
                   ? errors.availableSeat.message
                   : watch("availableSeat") >= ((currentVehicle?.availableSeats) ?? 0)
@@ -594,7 +594,7 @@ export function UpdateTripForm() {
               />
             </div>
               {errors.seatPrice && (
-                <p className="text-red-500 text-sm mt-1">{errors.seatPrice.message}</p>
+                <p className="text-red-500 text-xs mt-1">{errors.seatPrice.message}</p>
               )}
             </div>
             <div className="col-span-2">
@@ -610,7 +610,7 @@ export function UpdateTripForm() {
               )}
 
               {priceCalculationError && !calculatingPrice && (
-                <p className="text-sm text-red-500 mt-2">
+                <p className="text-xs text-red-500 mt-2">
                   {priceCalculationError}
                 </p>
               )}
@@ -640,7 +640,7 @@ export function UpdateTripForm() {
               </h2>
             </div>
 
-            {vehiclesError && <p className="text-sm text-red-500">{vehiclesError}</p>} 
+            {vehiclesError && <p className="text-xs text-red-500">{vehiclesError}</p>} 
 
             <VehicleSelector
               selectedVehicleId={selectedVehicleId}
