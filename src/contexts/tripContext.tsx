@@ -101,7 +101,10 @@ export function TripProvider({ children }: { children: ReactNode }) {
     if (!currentTrip) return
     setArriveLoading(true)
     
-    const nextStop = currentTrip.tripStops.find(
+    const nextStop = currentTrip.tripStops.sort((a, b) => {
+    if (a.tripStop.order == null || b.tripStop.order == null) return 0;
+      return a.tripStop.order - b.tripStop.order;
+    }).find(
       stop => !stop.arrivalDateTime
     )
 
